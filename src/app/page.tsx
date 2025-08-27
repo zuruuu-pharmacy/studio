@@ -86,7 +86,7 @@ export default function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="flex-grow flex items-end justify-end mt-auto">
-                  <Link href={tool.href} passHref legacyBehavior>
+                  <Link href={tool.href} passHref>
                     <Button variant="ghost" className="text-primary group-hover:bg-accent/50">
                         Use Tool <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </Button>
