@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, Home, LayoutDashboard, ShieldAlert, Waves } from "lucide-react";
+import { BookText, Calculator, FlaskConical, Home, LayoutDashboard, ShieldAlert, Waves, ScanEye } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -27,6 +27,7 @@ const menuItems = [
   { href: "/dose-calculator", label: "Dose Calculator", icon: Calculator },
   { href: "/interaction-checker", label: "Interaction Checker", icon: FlaskConical },
   { href: "/allergy-checker", label: "Allergy Checker", icon: ShieldAlert },
+  { href: "/prescription-reader", label: "Prescription Reader", icon: ScanEye },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {

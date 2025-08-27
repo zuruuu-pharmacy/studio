@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const tools = [
@@ -31,6 +31,13 @@ const tools = [
     description: "Identify potential allergies and cross-reactivity risks.",
     href: "/allergy-checker",
     color: "text-red-500",
+  },
+    {
+    icon: ScanEye,
+    title: "Prescription Reader",
+    description: "Analyze a prescription image to extract medications and instructions.",
+    href: "/prescription-reader",
+    color: "text-orange-500",
   },
 ];
 
