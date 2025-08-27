@@ -187,8 +187,9 @@ export function MonographClient() {
                       <AccordionContent className="px-6 pb-4">
                         <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap dark:prose-invert">
                           {content.split('\n').map((line, index) => {
-                              if (line.trim().startsWith('-') || line.trim().startsWith('*')) {
-                                return <p key={index} className="m-0 ml-4">{line}</p>;
+                              const trimmedLine = line.trim();
+                              if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+                                return <p key={index} className="m-0 ml-4">{trimmedLine}</p>;
                               }
                               return <p key={index} className="m-0">{line}</p>;
                           })}
