@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { ModeProvider } from '@/contexts/mode-context';
 import { Toaster } from '@/components/ui/toaster';
+import { PatientProvider } from '@/contexts/patient-context';
 
 export const metadata: Metadata = {
   title: 'Zuruu AI Pharmacy',
@@ -22,8 +23,10 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <ModeProvider>
-          {children}
-          <Toaster />
+          <PatientProvider>
+            {children}
+            <Toaster />
+          </PatientProvider>
         </ModeProvider>
       </body>
     </html>

@@ -1,9 +1,16 @@
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const tools = [
+  {
+    icon: User,
+    title: "Patient History",
+    description: "Manage patient history details for use in other tools.",
+    href: "/patient-history",
+    color: "text-cyan-500",
+  },
   {
     icon: BookText,
     title: "Drug Monograph Lookup",
@@ -32,7 +39,7 @@ const tools = [
     href: "/allergy-checker",
     color: "text-red-500",
   },
-    {
+  {
     icon: ScanEye,
     title: "Prescription Reader",
     description: "Analyze a prescription image to extract medications and instructions.",
@@ -46,12 +53,12 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-8">
       <header className="bg-card shadow-sm rounded-lg p-8">
         <h1 className="text-4xl font-bold font-headline text-primary tracking-tight">Welcome to Zuruu AI Pharmacy</h1>
-        <p className="mt-2 text-lg text-muted-foreground">Your AI-powered suite of clinical tools for enhanced pharmaceutical care.</p>
+        <p className="mt-2 text-lg text-muted-foreground">Your AI-powered suite of clinical tools for enhanced pharmaceutical care. Start by entering patient history.</p>
       </header>
       
       <section>
         <h2 className="text-2xl font-semibold mb-4">Our Tools</h2>
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {tools.map((tool) => (
             <Card key={tool.title} className="hover:shadow-lg transition-shadow duration-300 flex flex-col">
               <CardHeader className="flex flex-row items-center gap-4">

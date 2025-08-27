@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, Home, LayoutDashboard, ShieldAlert, Waves, ScanEye } from "lucide-react";
+import { BookText, Calculator, FlaskConical, Home, LayoutDashboard, ShieldAlert, Waves, ScanEye, User } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -23,6 +23,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 
 const menuItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/patient-history", label: "Patient History", icon: User },
   { href: "/monograph", label: "Monograph Lookup", icon: BookText },
   { href: "/dose-calculator", label: "Dose Calculator", icon: Calculator },
   { href: "/interaction-checker", label: "Interaction Checker", icon: FlaskConical },
