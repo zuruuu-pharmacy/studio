@@ -61,6 +61,16 @@ export function AllergyClient() {
     }
   }, [state, toast]);
 
+  const handleFormSubmit = form.handleSubmit((data) => {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, value.toString());
+      }
+    });
+    formAction(formData);
+  });
+
   if (!patient.history && !patient.isEmergency) {
     return (
       <Card className="text-center">
@@ -89,7 +99,7 @@ export function AllergyClient() {
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(() => form.trigger().then(valid => valid && formAction(new FormData(form.control.fields._f Vg.form))))} className="space-y-4">
+                <form onSubmit={handleFormSubmit} className="space-y-4">
                   <FormField name="medicationName" control={form.control} render={({ field }) => (
                     <FormItem><FormLabel>Medication to Check</FormLabel><FormControl><Input placeholder="e.g., Penicillin" {...field} /></FormControl><FormMessage /></FormItem>
                   )} />
