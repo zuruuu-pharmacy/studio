@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useTransition, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { readPrescription, type ReadPrescriptionOutput } from "@/ai/flows/prescription-reader";
 import { Button } from "@/components/ui/button";
@@ -15,62 +15,72 @@ import { Badge } from "@/components/ui/badge";
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
 
 export function PrescriptionReaderClient() {
-  const [state, formAction, isPending] = useActionState<ReadPrescriptionOutput | { error: string } | null, FormData>(
-    async (previousState, formData) => {
-      const file = formData.get("prescriptionImage") as File;
-      if (!file || file.size === 0) {
-        return { error: "Please upload an image of the prescription." };
-      }
-      if (file.size > MAX_FILE_SIZE) {
-        return { error: "File is too large. Please upload an image under 4MB." };
-      }
+    const [state, setState] = useState<ReadPrescriptionOutput | { error: string } | null>(null);
+    const [isPending, startTransition] = useTransition();
+    const { toast } = useToast();
+    const [preview, setPreview] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const formRef = useRef<HTMLFormElement>(null);
 
-      try {
-        const photoDataUri = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
+    useEffect(() => {
+        if (state && 'error' in state && state.error) {
+        toast({ variant: "destructive", title: "Error", description: state.error });
+        }
+    }, [state, toast]);
 
-        const result = await readPrescription({ photoDataUri });
-        return result;
-      } catch (e) {
-        console.error(e);
-        return { error: "Failed to analyze prescription. The image may be unreadable or in an unsupported format." };
-      }
-    },
-    null
-  );
-
-  const { toast } = useToast();
-  const [preview, setPreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (state && 'error' in state && state.error) {
-      toast({ variant: "destructive", title: "Error", description: state.error });
-    }
-  }, [state, toast]);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > MAX_FILE_SIZE) {
-        toast({ variant: "destructive", title: "Error", description: "File size exceeds 4MB limit." });
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+        if (file.size > MAX_FILE_SIZE) {
+            toast({ variant: "destructive", title: "Error", description: "File size exceeds 4MB limit." });
+            setPreview(null);
+            if(fileInputRef.current) fileInputRef.current.value = "";
+            return;
+        }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+        } else {
         setPreview(null);
-        if(fileInputRef.current) fileInputRef.current.value = "";
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setPreview(null);
+        }
+    };
+    
+    const formAction = async (formData: FormData) => {
+        const file = formData.get("prescriptionImage") as File;
+        if (!file || file.size === 0) {
+            setState({ error: "Please upload an image of the prescription." });
+            return;
+        }
+        if (file.size > MAX_FILE_SIZE) {
+            setState({ error: "File is too large. Please upload an image under 4MB." });
+            return;
+        }
+
+        try {
+            const photoDataUri = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+
+            const result = await readPrescription({ photoDataUri });
+            setState(result);
+        } catch (e) {
+            console.error(e);
+            setState({ error: "Failed to analyze prescription. The image may be unreadable or in an unsupported format." });
+        }
     }
-  };
+    
+    const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        startTransition(() => {
+            formAction(formData);
+        });
+    }
 
   return (
     <div className="grid md:grid-cols-3 gap-6">
@@ -80,7 +90,7 @@ export function PrescriptionReaderClient() {
             <CardTitle>Upload Prescription</CardTitle>
           </CardHeader>
           <CardContent>
-            <form action={formAction} className="space-y-4">
+            <form ref={formRef} onSubmit={handleFormSubmit} className="space-y-4">
               <div className="space-y-2">
                 <label htmlFor="prescriptionImage" className="font-medium">Prescription Image</label>
                 <Input
