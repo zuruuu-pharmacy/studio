@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useState } from 'react';
+import { useActionState, useEffect, useMemo } from 'react';
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -38,7 +38,6 @@ const monographSections = [
 
 function parseMonograph(text: string) {
     const sections: Record<string, string> = {};
-    let lastIndex = 0;
 
     for (let i = 0; i < monographSections.length; i++) {
         const currentSection = monographSections[i];
@@ -110,6 +109,15 @@ export function MonographClient() {
     return Object.keys(monographData).slice(0, 3); // Show first 3 sections for patients
   }, [monographData, mode]);
 
+  const handleFormSubmit = form.handleSubmit(() => {
+    form.trigger().then(valid => {
+      if (valid) {
+        const formData = new FormData(form.control.fields._f.form);
+        formAction(formData);
+      }
+    });
+  });
+
   return (
     <div className="grid md:grid-cols-3 gap-6">
       <div className="md:col-span-1">
@@ -119,7 +127,7 @@ export function MonographClient() {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form action={formAction} className="space-y-4">
+              <form onSubmit={handleFormSubmit} className="space-y-4">
                 <FormField
                   control={form.control}
                   name="drugName"

@@ -71,7 +71,7 @@ export function AllergyClient() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Link href="/patient-history" passHref legacyBehavior>
+          <Link href="/patient-history" passHref>
             <Button><User className="mr-2"/>Go to Patient History</Button>
           </Link>
         </CardContent>
@@ -89,7 +89,7 @@ export function AllergyClient() {
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form action={formAction} className="space-y-4">
+                <form onSubmit={form.handleSubmit(() => form.trigger().then(valid => valid && formAction(new FormData(form.control.fields._f Vg.form))))} className="space-y-4">
                   <FormField name="medicationName" control={form.control} render={({ field }) => (
                     <FormItem><FormLabel>Medication to Check</FormLabel><FormControl><Input placeholder="e.g., Penicillin" {...field} /></FormControl><FormMessage /></FormItem>
                   )} />

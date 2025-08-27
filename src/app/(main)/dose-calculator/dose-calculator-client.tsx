@@ -65,6 +65,16 @@ export function DoseCalculatorClient() {
     }
   }, [state, toast]);
 
+  const handleFormSubmit = form.handleSubmit((data) => {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+            formData.append(key, value.toString());
+        }
+    });
+    formAction(formData);
+  });
+
   return (
     <div className="grid md:grid-cols-3 gap-6">
       <div className="md:col-span-1">
@@ -74,7 +84,7 @@ export function DoseCalculatorClient() {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form action={formAction} className="space-y-4">
+              <form onSubmit={handleFormSubmit} className="space-y-4">
                 <FormField name="drugName" control={form.control} render={({ field }) => (
                   <FormItem><FormLabel>Drug Name</FormLabel><FormControl><Input placeholder="e.g., Amoxicillin" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />

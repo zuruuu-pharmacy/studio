@@ -70,6 +70,15 @@ export function InteractionClient() {
     }
   }, [state, toast]);
 
+  const handleFormSubmit = form.handleSubmit(() => {
+    form.trigger().then(valid => {
+        if (valid) {
+            const formData = new FormData(form.control.fields._f.form);
+            formAction(formData);
+        }
+    });
+  });
+
   return (
     <div className="grid md:grid-cols-3 gap-6">
       <div className="md:col-span-1">
@@ -79,7 +88,7 @@ export function InteractionClient() {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form action={formAction} className="space-y-4">
+              <form onSubmit={handleFormSubmit} className="space-y-4">
                 {fields.map((field, index) => (
                   <FormField
                     key={field.id}
