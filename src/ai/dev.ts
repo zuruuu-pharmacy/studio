@@ -1,1 +1,7 @@
-// Flows will be imported for their side effects in this file.
+import { config } from 'dotenv';
+config();
+
+import '@/ai/flows/ai-interaction-engine.ts';
+import '@/ai/flows/ai-dose-calculator.ts';
+import '@/ai/flows/allergy-checker.ts';
+import '@/ai/flows/drug-monograph-lookup.ts';

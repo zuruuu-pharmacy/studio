@@ -1,0 +1,164 @@
+"use client";
+
+import { useActionState, useEffect } from "react";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, useFieldArray } from "react-hook-form";
+import { checkDrugInteractions, type CheckDrugInteractionsOutput } from "@/ai/flows/ai-interaction-engine";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2, PlusCircle, XCircle, AlertTriangle, ShieldCheck, ShieldQuestion } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { useMode } from "@/contexts/mode-context";
+
+const formSchema = z.object({
+  medications: z.array(z.object({ value: z.string().min(2, "Required") })).min(2, "At least two medications are required"),
+  labResults: z.string().optional(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
+const severityMap: { [key: string]: { icon: React.ElementType, color: string, badge: "destructive" | "secondary" | "default" } } = {
+  'high': { icon: AlertTriangle, color: 'text-red-500', badge: 'destructive' },
+  'moderate': { icon: ShieldQuestion, color: 'text-yellow-500', badge: 'default' },
+  'low': { icon: ShieldCheck, color: 'text-green-500', badge: 'secondary' },
+};
+
+export function InteractionClient() {
+  const [state, formAction, isPending] = useActionState<CheckDrugInteractionsOutput | { error: string } | null, FormData>(
+    async (previousState, formData) => {
+      const medications = formData.getAll("medications").map(m => m.toString()).filter(m => m.length > 1);
+      const labResults = formData.get("labResults")?.toString();
+
+      if (medications.length < 2) {
+        return { error: "Please provide at least two medications." };
+      }
+      try {
+        const result = await checkDrugInteractions({ medications, labResults });
+        return result;
+      } catch (e) {
+        console.error(e);
+        return { error: "Failed to check interactions. Please try again." };
+      }
+    },
+    null
+  );
+
+  const { mode } = useMode();
+  const { toast } = useToast();
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      medications: [{ value: "" }, { value: "" }],
+      labResults: "",
+    },
+  });
+  
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "medications",
+  });
+
+  useEffect(() => {
+    if (state && 'error' in state && state.error) {
+      toast({ variant: "destructive", title: "Error", description: state.error });
+    }
+  }, [state, toast]);
+
+  return (
+    <div className="grid md:grid-cols-3 gap-6">
+      <div className="md:col-span-1">
+        <Card>
+          <CardHeader>
+            <CardTitle>Medication List</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form action={formAction} className="space-y-4">
+                {fields.map((field, index) => (
+                  <FormField
+                    key={field.id}
+                    control={form.control}
+                    name={`medications.${index}.value`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Medication {index + 1}</FormLabel>
+                        <div className="flex items-center gap-2">
+                          <FormControl>
+                            <Input placeholder="e.g., Warfarin" {...field} name="medications" />
+                          </FormControl>
+                          {fields.length > 2 && (
+                            <Button variant="ghost" size="icon" onClick={() => remove(index)} type="button">
+                              <XCircle className="h-5 w-5 text-destructive" />
+                            </Button>
+                          )}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
+                <Button type="button" variant="outline" size="sm" onClick={() => append({ value: "" })}>
+                  <PlusCircle className="mr-2 h-4 w-4" /> Add Medication
+                </Button>
+                <FormField control={form.control} name="labResults" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Relevant Lab Results (Optional)</FormLabel>
+                    <FormControl><Textarea placeholder="e.g., INR 2.5, K+ 4.0" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <Button type="submit" disabled={isPending} className="w-full">
+                  {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Check Interactions
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="md:col-span-2">
+        {isPending && <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}
+        {state && 'interactions' in state && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Interaction Results</CardTitle>
+              {state.interactions.length === 0 && <CardDescription>No significant interactions found.</CardDescription>}
+            </CardHeader>
+            <CardContent>
+              {state.interactions.length > 0 && (
+                <Accordion type="multiple" className="w-full" defaultValue={state.interactions.map((_, i) => `item-${i}`)}>
+                  {state.interactions.map((interaction, index) => {
+                    const severity = interaction.severity.toLowerCase();
+                    const SeverityIcon = severityMap[severity]?.icon || ShieldQuestion;
+                    return (
+                      <AccordionItem value={`item-${index}`} key={index}>
+                        <AccordionTrigger className="text-lg font-semibold">
+                          <div className="flex items-center gap-4">
+                            <SeverityIcon className={`h-6 w-6 ${severityMap[severity]?.color || 'text-gray-500'}`} />
+                            <p>{interaction.interactingDrugs.join(' + ')}</p>
+                            <Badge variant={severityMap[severity]?.badge || 'default'}>{interaction.severity}</Badge>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 pl-10">
+                           <p><strong>Interacting Drugs:</strong> {interaction.interactingDrugs.join(', ')}</p>
+                           {mode === 'pharmacist' && <p><strong>Mechanism:</strong> {interaction.mechanism}</p>}
+                           <p><strong>Suggested Actions:</strong> {interaction.suggestedActions}</p>
+                        </AccordionContent>
+                      </AccordionItem>
+                    );
+                  })}
+                </Accordion>
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </div>
+  );
+}

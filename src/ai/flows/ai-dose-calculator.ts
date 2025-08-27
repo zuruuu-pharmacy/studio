@@ -1,0 +1,79 @@
+'use server';
+
+/**
+ * @fileOverview An AI dose calculator that calculates dosages based on patient-specific factors.
+ *
+ * - calculateDosage - A function that handles the dosage calculation process.
+ * - CalculateDosageInput - The input type for the calculateDosage function.
+ * - CalculateDosageOutput - The return type for the calculateDosage function.
+ */
+
+import {ai} from '@/ai/genkit';
+import {z} from 'genkit';
+
+const CalculateDosageInputSchema = z.object({
+  drugName: z.string().describe('The name of the drug.'),
+  patientWeightKg: z.number().describe('The patient\u2019s weight in kilograms.'),
+  patientAgeYears: z.number().describe('The patient\u2019s age in years.'),
+  renalFunction: z
+    .string()
+    .optional()
+    .describe('The patient\u2019s renal function (e.g., normal, mild impairment, severe impairment).'),
+  hepaticFunction:
+    z.string().optional().describe('The patient\u2019s hepatic function (e.g., normal, mild impairment, severe impairment).'),
+  availableFormulations: z
+    .string()
+    .optional()
+    .describe('Available formulations of the drug (e.g., 250mg tablets, 500mg tablets).'),
+});
+
+export type CalculateDosageInput = z.infer<typeof CalculateDosageInputSchema>;
+
+const CalculateDosageOutputSchema = z.object({
+  calculatedDosage: z.string().describe('The calculated dosage of the drug.'),
+  calculationSteps: z.string().describe('The steps taken to calculate the dosage.'),
+  references: z.string().describe('References or sources used for the dosage calculation.'),
+  roundedDosageSuggestion: z
+    .string()
+    .optional()
+    .describe('Suggested rounded dosage based on available formulations.'),
+});
+
+export type CalculateDosageOutput = z.infer<typeof CalculateDosageOutputSchema>;
+
+export async function calculateDosage(input: CalculateDosageInput): Promise<CalculateDosageOutput> {
+  return calculateDosageFlow(input);
+}
+
+const prompt = ai.definePrompt({
+  name: 'calculateDosagePrompt',
+  input: {schema: CalculateDosageInputSchema},
+  output: {schema: CalculateDosageOutputSchema},
+  prompt: `You are an expert pharmacist specializing in calculating drug dosages based on patient-specific factors.
+
+  Given the following information, calculate the appropriate dosage for the drug, showing all calculation steps and references.
+  If the available formulations are provided, and if appropriate, consider recommending a rounded dosage that matches the available formulations.
+
+  Drug Name: {{{drugName}}}
+  Patient Weight (kg): {{{patientWeightKg}}}
+  Patient Age (years): {{{patientAgeYears}}}
+  Renal Function: {{{renalFunction}}}
+  Hepatic Function: {{{hepaticFunction}}}
+  Available Formulations: {{{availableFormulations}}}
+
+  Ensure that the calculated dosage, calculation steps, and references are clearly stated.
+  If a rounded dosage is suggested, explain the reasoning behind it.
+`,
+});
+
+const calculateDosageFlow = ai.defineFlow(
+  {
+    name: 'calculateDosageFlow',
+    inputSchema: CalculateDosageInputSchema,
+    outputSchema: CalculateDosageOutputSchema,
+  },
+  async input => {
+    const {output} = await prompt(input);
+    return output!;
+  }
+);
