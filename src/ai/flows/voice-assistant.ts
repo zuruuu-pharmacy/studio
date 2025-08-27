@@ -29,19 +29,14 @@ export async function voiceAssistant(input: VoiceAssistantInput): Promise<VoiceA
   return voiceAssistantFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'voiceAssistantPrompt',
-  input: {schema: z.object({ query: z.string(), language: z.string()})},
-  output: {schema: z.object({ answer: z.string() })},
-  prompt: `You are a helpful pharmacy assistant. A user is asking a question.
+const prompt = `You are a helpful pharmacy assistant. A user is asking a question.
   
-  User's question: {{{query}}}
-  
-  Please answer the user's question. Your response should be in the language with code '{{language}}'.
-  The context is a pharmacy application with tools for drug monographs, dose calculation, interaction checking, allergy checking, and prescription reading.
-  If the user asks about something outside of this scope, politely decline to answer.
-  Be helpful and concise.`,
-});
+User's question: {{{query}}}
+
+Please answer the user's question. Your response should be in the language with code '{{language}}'.
+The context is a pharmacy application with tools for drug monographs, dose calculation, interaction checking, allergy checking, and prescription reading.
+If the user asks about something outside of this scope, politely decline to answer.
+Be helpful and concise.`;
 
 async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 2): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -68,31 +63,35 @@ const voiceAssistantFlow = ai.defineFlow(
     outputSchema: VoiceAssistantOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input);
-    const textResponse = output!.answer;
-    
-    const { media } = await ai.generate({
+    const { output } = await ai.generate({
         model: googleAI.model('gemini-2.5-flash-preview-tts'),
         config: {
-          responseModalities: ['AUDIO'],
+          responseModalities: ['TEXT','AUDIO'],
           speechConfig: {
             voiceConfig: {
               languageCode: input.language
             },
           },
         },
-        prompt: textResponse,
+        prompt: prompt.replace('{{{query}}}', input.query).replace('{{language}}', input.language),
       });
 
-    if (!media) {
-      throw new Error('No audio media returned from TTS model.');
+    if (!output?.message.content) {
+        throw new Error('No content returned from model.');
     }
     
-    const audioBuffer = Buffer.from(media.url.substring(media.url.indexOf(',') + 1), 'base64');
+    const textPart = output.message.content.find(p => p.text);
+    const audioPart = output.message.content.find(p => p.media);
+
+    if (!textPart || !audioPart || !audioPart.media?.url) {
+      throw new Error('No text or audio media returned from TTS model.');
+    }
+    
+    const audioBuffer = Buffer.from(audioPart.media.url.substring(audioPart.media.url.indexOf(',') + 1), 'base64');
     const wavAudio = await toWav(audioBuffer);
 
     return {
-      textResponse,
+      textResponse: textPart.text!,
       audioResponse: `data:audio/wav;base64,${wavAudio}`,
     };
   }
