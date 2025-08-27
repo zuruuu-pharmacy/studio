@@ -9,11 +9,12 @@ import { Label } from "@/components/ui/label";
 import { Waves } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
+    // Simulate signup and login
     document.cookie = "session=true; path=/; max-age=3600";
     router.push('/');
     router.refresh();
@@ -48,7 +49,7 @@ export default function LoginPage() {
           alt="Abstract decorative image"
           fill
           className="object-cover"
-          data-ai-hint="abstract gradient"
+          data-ai-hint="abstract texture"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-primary/50 to-accent/50" />
         <div className="absolute top-8 left-8 flex items-center gap-2">
@@ -59,19 +60,19 @@ export default function LoginPage() {
       <div className="flex items-center justify-center p-8 bg-background">
         <Card className="w-full max-w-md shadow-none border-none">
           <CardHeader className="text-left space-y-2">
-            <CardTitle className="text-3xl font-bold tracking-tight">Login to your Account</CardTitle>
-            <CardDescription>Enter your credentials to access your pharmacy suite</CardDescription>
+            <CardTitle className="text-3xl font-bold tracking-tight">Create an Account</CardTitle>
+            <CardDescription>Join our platform to access your pharmacy suite.</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleLogin} className="space-y-6">
+            <form onSubmit={handleSignup} className="space-y-6">
                <div className="flex flex-col sm:flex-row gap-4">
                   <Button variant="outline" className="w-full py-6 text-base" type="button" onClick={handleSocialLogin}>
                       <GoogleIcon className="h-5 w-5 mr-2" />
-                      Sign in with Google
+                      Sign up with Google
                   </Button>
                   <Button variant="outline" className="w-full py-6 text-base" type="button" onClick={handleSocialLogin}>
                       <AppleIcon className="h-5 w-5 mr-2" />
-                     Sign in with Apple
+                     Sign up with Apple
                   </Button>
                </div>
                <div className="flex items-center">
@@ -79,30 +80,29 @@ export default function LoginPage() {
                     <span className="mx-4 text-xs uppercase text-muted-foreground">Or</span>
                     <div className="flex-grow border-t border-muted" />
                </div>
-
+               
+              <div className="space-y-2">
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input id="fullName" type="text" placeholder="John Doe" required className="py-6"/>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <Input id="email" type="email" placeholder="pharmacist@example.com" required className="py-6"/>
               </div>
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-                        Forgot password?
-                    </Link>
-                </div>
+                <Label htmlFor="password">Password</Label>
                 <Input id="password" type="password" required className="py-6" />
               </div>
               <Button type="submit" className="w-full py-6 text-lg">
-                Sign In
+                Create Account
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex justify-center">
             <p className="text-sm text-muted-foreground">
-              Don't have an account?{" "}
-              <Link href="/signup" className="font-semibold text-primary hover:underline">
-                Sign up
+              Already have an account?{" "}
+              <Link href="/login" className="font-semibold text-primary hover:underline">
+                Sign in
               </Link>
             </p>
           </CardFooter>
