@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useMemo } from 'react';
+import { useActionState, useEffect, useMemo, useTransition } from 'react';
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -60,7 +60,8 @@ function parseMonograph(text: string) {
 
 
 export function MonographClient() {
-  const [state, formAction, isPending] = useActionState<DrugMonographLookupOutput | { error: string } | null, FormData>(
+  const [isPending, startTransition] = useTransition();
+  const [state, formAction] = useActionState<DrugMonographLookupOutput | { error: string } | null, FormData>(
     async (previousState, formData) => {
       const parsed = formSchema.safeParse(Object.fromEntries(formData));
       if (!parsed.success) {
@@ -112,11 +113,13 @@ export function MonographClient() {
   const handleFormSubmit = form.handleSubmit((data) => {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        formData.append(key, value.toString());
-      }
+        if (value !== undefined && value !== null) {
+            formData.append(key, value.toString());
+        }
     });
-    formAction(formData);
+    startTransition(() => {
+      formAction(formData);
+    });
   });
 
   return (

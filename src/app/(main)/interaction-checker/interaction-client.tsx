@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useTransition } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -30,7 +30,8 @@ const severityMap: { [key: string]: { icon: React.ElementType, color: string, ba
 };
 
 export function InteractionClient() {
-  const [state, formAction, isPending] = useActionState<CheckDrugInteractionsOutput | { error: string } | null, FormData>(
+  const [isPending, startTransition] = useTransition();
+  const [state, formAction] = useActionState<CheckDrugInteractionsOutput | { error: string } | null, FormData>(
     async (previousState, formData) => {
       const medications = formData.getAll("medications").map(m => m.toString()).filter(m => m.length > 1);
       const labResults = formData.get("labResults")?.toString();
@@ -73,8 +74,17 @@ export function InteractionClient() {
   const handleFormSubmit = form.handleSubmit(() => {
     form.trigger().then(valid => {
         if (valid) {
-            const formData = new FormData(form.control.fields._f.form);
-            formAction(formData);
+            const formData = new FormData();
+            const formValues = form.getValues();
+            formValues.medications.forEach(med => {
+                formData.append('medications', med.value);
+            });
+            if(formValues.labResults) {
+                formData.append('labResults', formValues.labResults);
+            }
+            startTransition(() => {
+              formAction(formData);
+            });
         }
     });
   });
@@ -99,7 +109,7 @@ export function InteractionClient() {
                         <FormLabel>Medication {index + 1}</FormLabel>
                         <div className="flex items-center gap-2">
                           <FormControl>
-                            <Input placeholder="e.g., Warfarin" {...field} name="medications" />
+                            <Input placeholder="e.g., Warfarin" {...field} />
                           </FormControl>
                           {fields.length > 2 && (
                             <Button variant="ghost" size="icon" onClick={() => remove(index)} type="button">

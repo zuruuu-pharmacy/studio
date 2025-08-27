@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useTransition } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -26,7 +26,8 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export function DoseCalculatorClient() {
-  const [state, formAction, isPending] = useActionState<CalculateDosageOutput | { error: string } | null, FormData>(
+  const [isPending, startTransition] = useTransition();
+  const [state, formAction] = useActionState<CalculateDosageOutput | { error: string } | null, FormData>(
     async (previousState, formData) => {
       const parsed = formSchema.safeParse(Object.fromEntries(formData));
       if (!parsed.success) {
@@ -72,7 +73,9 @@ export function DoseCalculatorClient() {
             formData.append(key, value.toString());
         }
     });
-    formAction(formData);
+    startTransition(() => {
+      formAction(formData);
+    });
   });
 
   return (

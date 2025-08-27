@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -25,7 +25,8 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export function AllergyClient() {
-  const [state, formAction, isPending] = useActionState<AllergyCheckerOutput | { error: string } | null, FormData>(
+  const [isPending, startTransition] = useTransition();
+  const [state, formAction] = useActionState<AllergyCheckerOutput | { error: string } | null, FormData>(
     async (previousState, formData) => {
       const parsed = formSchema.safeParse(Object.fromEntries(formData));
       if (!parsed.success) {
@@ -68,7 +69,9 @@ export function AllergyClient() {
         formData.append(key, value.toString());
       }
     });
-    formAction(formData);
+    startTransition(() => {
+      formAction(formData);
+    });
   });
 
   if (!patient.history && !patient.isEmergency) {
