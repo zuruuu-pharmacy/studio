@@ -13,6 +13,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from 'lucide-react';
 import { useMode } from '@/contexts/mode-context';
+import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
   drugName: z.string().min(2, { message: "Drug name must be at least 2 characters." }),
@@ -38,23 +39,35 @@ const monographSections = [
 
 function parseMonograph(text: string) {
     const sections: Record<string, string> = {};
+    if (!text) return sections;
+
+    let content = text;
+    // Sometimes the model returns the drug name as a title, remove it.
+    const firstLine = text.substring(0, text.indexOf('\n')).toLowerCase();
+    if (firstLine.includes("monograph for")) {
+        content = text.substring(text.indexOf('\n') + 1);
+    }
 
     for (let i = 0; i < monographSections.length; i++) {
         const currentSection = monographSections[i];
         const nextSection = monographSections[i + 1];
         
-        const startIndex = text.indexOf(currentSection);
+        // Use a case-insensitive regex to find section headers
+        const startIndex = content.toLowerCase().indexOf(currentSection.toLowerCase());
         if (startIndex === -1) continue;
 
-        let endIndex = nextSection ? text.indexOf(nextSection, startIndex) : text.length;
-        if (endIndex === -1) endIndex = text.length;
+        let endIndex = nextSection ? content.toLowerCase().indexOf(nextSection.toLowerCase(), startIndex) : content.length;
+        if (endIndex === -1) endIndex = content.length;
 
-        const content = text.substring(startIndex + currentSection.length, endIndex).trim();
-        sections[currentSection] = content;
+        const sectionContent = content.substring(startIndex + currentSection.length, endIndex).trim().replace(/^-+|-+$/g, '').trim();
+        if (sectionContent) {
+          sections[currentSection] = sectionContent;
+        }
     }
     
     if (Object.keys(sections).length > 0) return sections;
     
+    // Fallback if no sections are found
     return { "Full Monograph": text };
 }
 
@@ -107,10 +120,12 @@ export function MonographClient() {
   const defaultAccordionItems = useMemo(() => {
     if (!monographData) return [];
     if (mode === 'pharmacist') return Object.keys(monographData);
-    return Object.keys(monographData).slice(0, 3); // Show first 3 sections for patients
+    // For patients, show key sections by default
+    const patientSections = ["Indications", "Side Effects", "Dosing", "Administration"];
+    return Object.keys(monographData).filter(section => patientSections.includes(section));
   }, [monographData, mode]);
 
-  const handleFormSubmit = form.handleSubmit((data) => {
+  const handleFormSubmit = (data: FormValues) => {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -120,7 +135,7 @@ export function MonographClient() {
     startTransition(() => {
       formAction(formData);
     });
-  });
+  };
 
   return (
     <div className="grid md:grid-cols-3 gap-6">
@@ -131,7 +146,7 @@ export function MonographClient() {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={handleFormSubmit} className="space-y-4">
+              <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
                 <FormField
                   control={form.control}
                   name="drugName"
@@ -160,17 +175,28 @@ export function MonographClient() {
         {monographData && (
           <Card>
             <CardHeader>
-              <CardTitle>Monograph for {form.getValues("drugName")}</CardTitle>
+              <CardTitle className="text-3xl font-bold font-headline">Monograph for {form.getValues("drugName")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <Accordion type="multiple" defaultValue={defaultAccordionItems} className="w-full">
+              <Accordion type="multiple" defaultValue={defaultAccordionItems} className="w-full space-y-4">
                 {Object.entries(monographData).map(([section, content]) => (
-                  <AccordionItem value={section} key={section}>
-                    <AccordionTrigger className="text-lg font-semibold">{section}</AccordionTrigger>
-                    <AccordionContent className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap">
-                      {content}
-                    </AccordionContent>
-                  </AccordionItem>
+                   (mode === 'pharmacist' || defaultAccordionItems.includes(section)) && (
+                  <Card key={section} className="bg-background/50">
+                    <AccordionItem value={section} className="border-b-0">
+                      <AccordionTrigger className="text-xl font-semibold p-4 hover:no-underline">{section}</AccordionTrigger>
+                      <AccordionContent className="px-6 pb-4">
+                        <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap dark:prose-invert">
+                          {content.split('\n').map((line, index) => {
+                              if (line.trim().startsWith('-') || line.trim().startsWith('*')) {
+                                return <p key={index} className="m-0 ml-4">{line}</p>;
+                              }
+                              return <p key={index} className="m-0">{line}</p>;
+                          })}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Card>
+                   )
                 ))}
               </Accordion>
             </CardContent>
