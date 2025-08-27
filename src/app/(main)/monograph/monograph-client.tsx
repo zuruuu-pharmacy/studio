@@ -109,13 +109,14 @@ export function MonographClient() {
     return Object.keys(monographData).slice(0, 3); // Show first 3 sections for patients
   }, [monographData, mode]);
 
-  const handleFormSubmit = form.handleSubmit(() => {
-    form.trigger().then(valid => {
-      if (valid) {
-        const formData = new FormData(form.control.fields._f.form);
-        formAction(formData);
+  const handleFormSubmit = form.handleSubmit((data) => {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, value.toString());
       }
     });
+    formAction(formData);
   });
 
   return (
