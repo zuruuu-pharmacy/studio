@@ -14,7 +14,20 @@ import {z} from 'genkit';
 const AllergyCheckerInputSchema = z.object({
   medicationName: z.string().describe('The name of the medication to check for allergies.'),
   patientAllergies: z.string().describe('A comma-separated list of patient allergies.'),
-  patientMedicalHistory: z.string().optional().describe('Additional patient medical history.'),
+  isEmergency: z.boolean().describe('Whether this is an emergency situation.'),
+  patientMedicalHistory: z
+    .string()
+    .optional()
+    .describe('General patient medical history if not a detailed workup.'),
+  detailedHistory: z
+    .object({
+      pastMedicalHistory: z.string().optional(),
+      familyHistory: z.string().optional(),
+      socialHistory: z.string().optional(),
+      medicationHistory: z.string().optional(),
+    })
+    .optional()
+    .describe('Detailed patient history for a non-emergency workup.'),
 });
 export type AllergyCheckerInput = z.infer<typeof AllergyCheckerInputSchema>;
 
@@ -40,7 +53,20 @@ You will use the provided information to assess the allergy risk associated with
 
 Medication to check: {{{medicationName}}}
 Patient Allergies: {{{patientAllergies}}}
+
+{{#if isEmergency}}
+This is an emergency. Provide a rapid assessment based on the limited information.
+{{else}}
+This is a non-emergency workup. Consider the detailed history provided.
 Patient Medical History: {{{patientMedicalHistory}}}
+{{#if detailedHistory}}
+Detailed History:
+- Past Medical History: {{{detailedHistory.pastMedicalHistory}}}
+- Family History: {{{detailedHistory.familyHistory}}}
+- Social History: {{{detailedHistory.socialHistory}}}
+- Medication History: {{{detailedHistory.medicationHistory}}}
+{{/if}}
+{{/if}}
 
 Based on this information, determine if there is an allergy or cross-reactivity risk. Provide details about the risk, suggest alternative medication options, and offer guidance for the pharmacist.
 
