@@ -6,21 +6,29 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Waves } from "lucide-react";
+import { Loader2, Waves } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleResetRequest = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-        title: "Password Reset Email Sent",
-        description: "If an account exists for the email, a reset link has been sent.",
-    });
-    router.push('/login');
+    setIsLoading(true);
+
+    // Simulate network request
+    setTimeout(() => {
+        toast({
+            title: "Password Reset Email Sent",
+            description: "If an account exists for the email, a reset link has been sent.",
+        });
+        router.push('/login');
+        setIsLoading(false);
+    }, 1000);
   };
 
   return (
@@ -51,7 +59,8 @@ export default function ForgotPasswordPage() {
                 <Label htmlFor="email">Email Address</Label>
                 <Input id="email" type="email" placeholder="pharmacist@example.com" required className="py-6"/>
               </div>
-              <Button type="submit" className="w-full py-6 text-lg">
+              <Button type="submit" className="w-full py-6 text-lg" disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Send Reset Link
               </Button>
             </form>

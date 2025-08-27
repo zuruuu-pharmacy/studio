@@ -6,24 +6,37 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Waves } from "lucide-react";
+import { Loader2, Waves } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function SignupPage() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSocialLoading, setIsSocialLoading] = useState<null | 'google' | 'apple'>(null);
+
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate signup and login
-    document.cookie = "session=true; path=/; max-age=3600";
-    router.push('/');
-    router.refresh();
+    setIsLoading(true);
+    // Simulate network request
+    setTimeout(() => {
+        document.cookie = "session=true; path=/; max-age=3600";
+        router.push('/');
+        router.refresh();
+        setIsLoading(false);
+    }, 1000);
   };
 
-  const handleSocialLogin = () => {
-    document.cookie = "session=true; path=/; max-age=3600";
-    router.push('/');
-    router.refresh();
+  const handleSocialLogin = (provider: 'google' | 'apple') => {
+    setIsSocialLoading(provider);
+    // Simulate network request
+    setTimeout(() => {
+        document.cookie = "session=true; path=/; max-age=3600";
+        router.push('/');
+        router.refresh();
+        setIsSocialLoading(null);
+    }, 1000);
   }
 
   const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -66,12 +79,12 @@ export default function SignupPage() {
           <CardContent>
             <form onSubmit={handleSignup} className="space-y-6">
                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button variant="outline" className="w-full py-6 text-base" type="button" onClick={handleSocialLogin}>
-                      <GoogleIcon className="h-5 w-5 mr-2" />
+                  <Button variant="outline" className="w-full py-6 text-base" type="button" onClick={() => handleSocialLogin('google')} disabled={isSocialLoading !== null}>
+                      {isSocialLoading === 'google' ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <GoogleIcon className="h-5 w-5 mr-2" />}
                       Sign up with Google
                   </Button>
-                  <Button variant="outline" className="w-full py-6 text-base" type="button" onClick={handleSocialLogin}>
-                      <AppleIcon className="h-5 w-5 mr-2" />
+                  <Button variant="outline" className="w-full py-6 text-base" type="button" onClick={() => handleSocialLogin('apple')} disabled={isSocialLoading !== null}>
+                      {isSocialLoading === 'apple' ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <AppleIcon className="h-5 w-5 mr-2" />}
                      Sign up with Apple
                   </Button>
                </div>
@@ -93,7 +106,8 @@ export default function SignupPage() {
                 <Label htmlFor="password">Password</Label>
                 <Input id="password" type="password" required className="py-6" />
               </div>
-              <Button type="submit" className="w-full py-6 text-lg">
+              <Button type="submit" className="w-full py-6 text-lg" disabled={isLoading || isSocialLoading !== null}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Create Account
               </Button>
             </form>
