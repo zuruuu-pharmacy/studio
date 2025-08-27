@@ -15,35 +15,35 @@ const tools = [
   {
     icon: BookText,
     title: "Drug Monograph Lookup",
-    description: "Access comprehensive drug information, including MOA, side effects, and more.",
+    description: "Access comprehensive drug information.",
     href: "/monograph",
     color: "text-blue-500",
   },
   {
     icon: Calculator,
     title: "AI Dose Calculator",
-    description: "Calculate patient-specific dosages with clear steps and references.",
+    description: "Calculate patient-specific dosages.",
     href: "/dose-calculator",
     color: "text-green-500",
   },
   {
     icon: FlaskConical,
     title: "AI Interaction Engine",
-    description: "Check for multi-drug interactions, with severity and management advice.",
+    description: "Check for multi-drug interactions.",
     href: "/interaction-checker",
     color: "text-purple-500",
   },
   {
     icon: ShieldAlert,
     title: "Allergy Checker",
-    description: "Identify potential allergies and cross-reactivity risks.",
+    description: "Identify potential allergies & cross-reactivity.",
     href: "/allergy-checker",
     color: "text-red-500",
   },
   {
     icon: ScanEye,
     title: "Prescription Reader",
-    description: "Analyze a prescription image to extract medications and instructions.",
+    description: "Analyze a prescription image.",
     href: "/prescription-reader",
     color: "text-orange-500",
   },
@@ -52,38 +52,51 @@ const tools = [
 export default function DashboardPage() {
   return (
     <AppShell>
-        <div className="flex flex-col gap-8">
-        <header className="bg-card shadow-sm rounded-lg p-8">
-            <h1 className="text-4xl font-bold font-headline text-primary tracking-tight">Welcome to Zuruu AI Pharmacy</h1>
-            <p className="mt-2 text-lg text-muted-foreground">Your AI-powered suite of clinical tools for enhanced pharmaceutical care. Start by entering patient history.</p>
+      <div className="flex flex-col gap-8">
+        <header className="relative bg-primary text-primary-foreground rounded-lg p-8 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 opacity-50"></div>
+          <div className="relative z-10">
+            <h1 className="text-4xl font-bold font-headline tracking-tight">Welcome to Zuruu AI Pharmacy</h1>
+            <p className="mt-2 text-lg text-primary-foreground/90 max-w-2xl">
+              Your AI-powered suite of clinical tools for enhanced pharmaceutical care. 
+              Start by setting up a patient's history or explore our tools.
+            </p>
+            <div className="mt-6">
+              <Link href="/patient-history" passHref>
+                <Button variant="secondary" size="lg">
+                  <User className="mr-2" /> Get Started with Patient History
+                </Button>
+              </Link>
+            </div>
+          </div>
         </header>
         
         <section>
-            <h2 className="text-2xl font-semibold mb-4">Our Tools</h2>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <h2 className="text-2xl font-semibold mb-4 text-foreground/90">Clinical Tools</h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
             {tools.map((tool) => (
-                <Card key={tool.title} className="hover:shadow-lg transition-shadow duration-300 flex flex-col">
-                <CardHeader className="flex flex-row items-center gap-4">
-                    <div className={`p-3 bg-primary/10 rounded-full ${tool.color}`}>
+              <Card key={tool.title} className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col group">
+                <CardHeader className="flex flex-row items-start gap-4">
+                  <div className={`p-3 bg-primary/10 rounded-lg ${tool.color}`}>
                     <tool.icon className="w-8 h-8" />
-                    </div>
-                    <div>
-                    <CardTitle className="text-xl">{tool.title}</CardTitle>
+                  </div>
+                  <div className="flex-1">
+                    <CardTitle className="text-xl mb-1">{tool.title}</CardTitle>
                     <CardDescription>{tool.description}</CardDescription>
-                    </div>
+                  </div>
                 </CardHeader>
-                <CardContent className="flex-grow flex items-end justify-end">
-                    <Link href={tool.href} passHref legacyBehavior>
-                    <Button variant="ghost" className="text-primary hover:text-primary">
-                        Use Tool <ArrowRight className="ml-2 h-4 w-4" />
+                <CardContent className="flex-grow flex items-end justify-end mt-auto">
+                  <Link href={tool.href} passHref legacyBehavior>
+                    <Button variant="ghost" className="text-primary group-hover:bg-accent/50">
+                        Use Tool <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </Button>
-                    </Link>
+                  </Link>
                 </CardContent>
-                </Card>
+              </Card>
             ))}
-            </div>
+          </div>
         </section>
-        </div>
+      </div>
     </AppShell>
   );
 }

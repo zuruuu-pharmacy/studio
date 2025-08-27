@@ -26,9 +26,7 @@ export default function RootLayout({
       <body>
         <ModeProvider>
           <PatientProvider>
-            <AppShell>
               {children}
-            </AppShell>
             <VoiceAssistant />
             <Toaster />
           </PatientProvider>
