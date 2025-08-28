@@ -1,27 +1,21 @@
+
 "use client";
 
-import { useActionState, useEffect, useTransition } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useTransition, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { analyzeLabReport, type LabReportAnalyzerOutput } from "@/ai/flows/lab-report-analyzer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, TestTube, FileText, Lightbulb, AlertTriangle } from "lucide-react";
+import { Loader2, Upload, TestTube, FileText, Lightbulb, AlertTriangle, ScanEye } from "lucide-react";
 import { usePatient } from "@/contexts/patient-context";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
-const formSchema = z.object({
-  reportText: z.string().min(20, "Lab report text is too short."),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
 
 const severityMap: { [key: string]: { color: string, badge: "destructive" | "secondary" | "default" } } = {
   'critical': { color: 'text-red-500', badge: 'destructive' },
@@ -31,33 +25,13 @@ const severityMap: { [key: string]: { color: string, badge: "destructive" | "sec
 
 
 export function LabAnalyzerClient() {
+  const [state, setState] = useState<LabReportAnalyzerOutput | { error: string } | null>(null);
   const [isPending, startTransition] = useTransition();
-  const [state, formAction] = useActionState<LabReportAnalyzerOutput | { error: string } | null, FormData>(
-    async (previousState, formData) => {
-      const parsed = formSchema.safeParse(Object.fromEntries(formData));
-      if (!parsed.success) {
-        return { error: "Invalid input. Check the form field." };
-      }
-      try {
-        const result = await analyzeLabReport({
-            ...parsed.data,
-            detailedHistory: patientState.activePatient || undefined,
-        });
-        return result;
-      } catch (e) {
-        console.error(e);
-        return { error: "Failed to analyze the report. Please try again." };
-      }
-    },
-    null
-  );
-
-  const { patientState } = usePatient();
   const { toast } = useToast();
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { reportText: "" },
-  });
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const { patientState } = usePatient();
 
   useEffect(() => {
     if (state && 'error' in state && state.error) {
@@ -65,44 +39,106 @@ export function LabAnalyzerClient() {
     }
   }, [state, toast]);
 
-  const handleFormSubmit = form.handleSubmit((data) => {
-    const formData = new FormData();
-    formData.append("reportText", data.reportText);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast({ variant: "destructive", title: "Error", description: "File size exceeds 4MB limit." });
+        setPreview(null);
+        if(fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setPreview(null);
+    }
+  };
+
+  const formAction = async (formData: FormData) => {
+    const file = formData.get("labReportImage") as File;
+    if (!file || file.size === 0) {
+        setState({ error: "Please upload an image of the lab report." });
+        return;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+        setState({ error: "File is too large. Please upload an image under 4MB." });
+        return;
+    }
+
+    try {
+        const photoDataUri = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+
+        const result = await analyzeLabReport({
+            photoDataUri,
+            detailedHistory: patientState.activePatient || undefined,
+        });
+        setState(result);
+    } catch (e) {
+        console.error(e);
+        setState({ error: "Failed to analyze report. The image may be unreadable or in an unsupported format." });
+    }
+  }
+
+  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
     startTransition(() => {
-      formAction(formData);
+        formAction(formData);
     });
-  });
+  }
+
 
   return (
     <div className="grid md:grid-cols-3 gap-6">
       <div className="md:col-span-1">
         <Card>
           <CardHeader>
-            <CardTitle>Lab Report Input</CardTitle>
+            <CardTitle>Upload Lab Report</CardTitle>
             {patientState.activePatient && <CardDescription>Analyzing for {patientState.activePatient.demographics?.name}</CardDescription>}
           </CardHeader>
           <CardContent>
-            <Form {...form}>
-              <form onSubmit={handleFormSubmit} className="space-y-4">
-                <FormField name="reportText" control={form.control} render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Paste Lab Report Text</FormLabel>
-                    <FormControl><Textarea placeholder="Paste the entire lab report here..." {...field} rows={15} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <Button type="submit" disabled={isPending} className="w-full">
-                  {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Analyze Report
-                </Button>
-              </form>
-            </Form>
+            <form ref={formRef} onSubmit={handleFormSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="labReportImage" className="font-medium">Lab Report Image</label>
+                <Input
+                  id="labReportImage"
+                  name="labReportImage"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  ref={fileInputRef}
+                  className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+                />
+              </div>
+
+              {preview && (
+                <div className="mt-4 border rounded-lg p-2 bg-muted">
+                  <p className="text-sm font-medium mb-2 text-center">Image Preview</p>
+                  <Image src={preview} alt="Lab report preview" width={400} height={400} className="rounded-md w-full h-auto object-contain" />
+                </div>
+              )}
+              
+              <Button type="submit" disabled={isPending || !preview} className="w-full">
+                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                Analyze Report
+              </Button>
+            </form>
           </CardContent>
         </Card>
       </div>
       <div className="md:col-span-2 space-y-6">
         {isPending && <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}
-        {state && 'summary' in state && (
+        
+        {state && 'summary' in state ? (
           <>
             <Card>
                 <CardHeader>
@@ -171,6 +207,14 @@ export function LabAnalyzerClient() {
                 </CardContent>
             </Card>
           </>
+        ) : (
+           !isPending && (
+             <Card className="flex flex-col items-center justify-center h-full min-h-[300px] text-center p-6 bg-muted/50">
+                <ScanEye className="h-16 w-16 text-muted-foreground/50 mb-4" />
+                <h3 className="text-xl font-semibold text-muted-foreground">Waiting for Lab Report</h3>
+                <p className="text-muted-foreground/80 mt-2">Upload an image to start the analysis.</p>
+            </Card>
+          )
         )}
       </div>
     </div>

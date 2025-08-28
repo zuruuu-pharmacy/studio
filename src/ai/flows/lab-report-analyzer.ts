@@ -42,7 +42,7 @@ const demographicsSchema = z.object({
 
 
 const LabReportAnalyzerInputSchema = z.object({
-  reportText: z.string().describe('The full text of the lab report.'),
+  photoDataUri: z.string().describe("A photo of the lab report, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
   detailedHistory: detailedHistorySchema.describe('Optional detailed patient history for context.'),
 });
 export type LabReportAnalyzerInput = z.infer<typeof LabReportAnalyzerInputSchema>;
@@ -70,14 +70,14 @@ const prompt = ai.definePrompt({
   output: {schema: LabReportAnalyzerOutputSchema},
   prompt: `You are an expert clinical pathologist and pharmacist.
 
-  Analyze the provided lab report text in the context of the patient's history (if available).
+  Analyze the provided lab report image in the context of the patient's history (if available).
   - Identify all values that are outside of their normal reference ranges.
   - For each abnormal value, provide the test name, the patient's value, the normal range, a clinical interpretation, and the severity.
   - Provide a concise overall summary of the findings.
   - Offer clear, actionable recommendations for the pharmacist, such as potential medication adjustments, dosage considerations, or suggested follow-up tests.
 
-  ## Lab Report Text
-  {{{reportText}}}
+  ## Lab Report Image
+  {{media url=photoDataUri}}
 
   {{#if detailedHistory}}
   ## Patient Context for Analysis
