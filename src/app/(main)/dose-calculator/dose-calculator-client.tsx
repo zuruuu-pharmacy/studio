@@ -74,7 +74,7 @@ export function DoseCalculatorClient() {
      startTransition(() => {
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => {
-            if (value !== undefined && value !== null) {
+            if (value !== undefined && value !== null && value !== '') {
                 formData.append(key, value.toString());
             }
         });
@@ -105,13 +105,13 @@ export function DoseCalculatorClient() {
                   <FormItem><FormLabel>Patient Age (years)</FormLabel><FormControl><Input type="number" placeholder="e.g., 45" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField name="renalFunction" control={form.control} render={({ field }) => (
-                  <FormItem><FormLabel>Renal Function</FormLabel><FormControl><Input placeholder="e.g., CrCl 50 ml/min" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem><FormLabel>Renal Function (Optional)</FormLabel><FormControl><Input placeholder="e.g., CrCl 50 ml/min" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField name="hepaticFunction" control={form.control} render={({ field }) => (
-                  <FormItem><FormLabel>Hepatic Function</FormLabel><FormControl><Input placeholder="e.g., Mild impairment" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem><FormLabel>Hepatic Function (Optional)</FormLabel><FormControl><Input placeholder="e.g., Mild impairment" {...field} /></FormControl><FormMessage /></FormMessage /></FormItem>
                 )} />
                 <FormField name="availableFormulations" control={form.control} render={({ field }) => (
-                  <FormItem><FormLabel>Available Formulations</FormLabel><FormControl><Input placeholder="e.g., 250mg, 500mg tablets" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem><FormLabel>Available Formulations (Optional)</FormLabel><FormControl><Input placeholder="e.g., 250mg, 500mg tablets" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <Button type="submit" disabled={isPending} className="w-full">
                   {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

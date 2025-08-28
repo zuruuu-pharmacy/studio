@@ -62,6 +62,7 @@ const prompt = ai.definePrompt({
 
   When calculating, use standard clinical formulas (e.g., mg/kg/day). Show all calculation steps and references. The dosage is highly dependent on the reason the patient is taking the medication.
   If available formulations are provided, and if appropriate, consider recommending a rounded dosage.
+  If renal or hepatic function are not provided, calculate a general dose and add a note that the dose may need adjustment in patients with kidney or liver disease.
 
   Drug Name: {{{drugName}}}
   Indication: {{{indication}}}
