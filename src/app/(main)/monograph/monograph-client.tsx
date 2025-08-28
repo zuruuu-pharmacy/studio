@@ -13,7 +13,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from 'lucide-react';
 import { useMode } from '@/contexts/mode-context';
-import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const formSchema = z.object({
   drugName: z.string().min(2, { message: "Drug name must be at least 2 characters." }),
@@ -21,56 +21,58 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const monographSections = [
-    "Mechanism of Action (MOA)",
-    "Pharmacokinetics/Pharmacodynamics (PK/PD)",
-    "Indications",
-    "Contraindications",
-    "Side Effects",
-    "Monitoring",
-    "Dosing",
-    "Administration",
-    "Storage",
-    "Pregnancy/Lactation Information",
-    "Drug Interactions",
-    "Clinical Trials Information",
-    "Other Information",
-];
+const patientSections = {
+    "Indications": "indications",
+    "Side Effects": "sideEffects",
+    "Dosing": "dosing",
+    "Administration": "administration"
+};
 
-function parseMonograph(text: string) {
-    const sections: Record<string, string> = {};
-    if (!text) return sections;
-
-    let content = text;
-    // Sometimes the model returns the drug name as a title, remove it.
-    const firstLine = text.substring(0, text.indexOf('\n')).toLowerCase();
-    if (firstLine.includes("monograph for")) {
-        content = text.substring(text.indexOf('\n') + 1);
+const pharmacistSections = {
+    pharmacology: {
+        "Mechanism of Action": "mechanismOfAction",
+        "Pharmacokinetics": "pharmacokinetics",
+        "Indications": "indications",
+        "Contraindications": "contraindications",
+        "Side Effects": "sideEffects",
+        "Monitoring": "monitoring",
+    },
+    pharmaceutical: {
+        "Dosing": "dosing",
+        "Administration": "administration",
+        "Storage": "storage",
+        "Drug Interactions": "drugInteractions",
+    },
+    research: {
+        "Pregnancy/Lactation": "pregnancyLactation",
+        "Clinical Trials": "clinicalTrials",
+        "Other Information": "otherInformation",
     }
+};
 
-    for (let i = 0; i < monographSections.length; i++) {
-        const currentSection = monographSections[i];
-        const nextSection = monographSections[i + 1];
-        
-        // Use a case-insensitive regex to find section headers
-        const startIndex = content.toLowerCase().indexOf(currentSection.toLowerCase());
-        if (startIndex === -1) continue;
-
-        let endIndex = nextSection ? content.toLowerCase().indexOf(nextSection.toLowerCase(), startIndex) : content.length;
-        if (endIndex === -1) endIndex = content.length;
-
-        const sectionContent = content.substring(startIndex + currentSection.length, endIndex).trim().replace(/^-+|-+$/g, '').trim();
-        if (sectionContent) {
-          sections[currentSection] = sectionContent;
-        }
-    }
-    
-    if (Object.keys(sections).length > 0) return sections;
-    
-    // Fallback if no sections are found
-    return { "Full Monograph": text };
+function MonographSection({ title, content }: { title: string; content: string }) {
+    if (!content) return null;
+    return (
+        <Card className="bg-background/50">
+            <Accordion type="single" collapsible>
+                <AccordionItem value={title} className="border-b-0">
+                    <AccordionTrigger className="text-xl font-semibold p-4 hover:no-underline">{title}</AccordionTrigger>
+                    <AccordionContent className="px-6 pb-4">
+                        <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap dark:prose-invert">
+                           {content.split('\n').map((line, index) => {
+                              const trimmedLine = line.trim();
+                              if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+                                return <p key={index} className="m-0 ml-4">{trimmedLine}</p>;
+                              }
+                              return <p key={index} className="m-0">{line}</p>;
+                          })}
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        </Card>
+    );
 }
-
 
 export function MonographClient() {
   const [isPending, startTransition] = useTransition();
@@ -111,21 +113,13 @@ export function MonographClient() {
   }, [state, toast]);
   
   const monographData = useMemo(() => {
-    if (state && 'monograph' in state) {
-      return parseMonograph(state.monograph);
+    if (state && 'pharmacology' in state) {
+      return state;
     }
     return null;
   }, [state]);
 
-  const defaultAccordionItems = useMemo(() => {
-    if (!monographData) return [];
-    if (mode === 'pharmacist') return Object.keys(monographData);
-    // For patients, show key sections by default
-    const patientSections = ["Indications", "Side Effects", "Dosing", "Administration"];
-    return Object.keys(monographData).filter(section => patientSections.includes(section));
-  }, [monographData, mode]);
-
-  const handleFormSubmit = (data: FormValues) => {
+  const handleFormSubmit = form.handleSubmit((data: FormValues) => {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -135,7 +129,7 @@ export function MonographClient() {
     startTransition(() => {
       formAction(formData);
     });
-  };
+  });
 
   return (
     <div className="grid md:grid-cols-3 gap-6">
@@ -146,7 +140,7 @@ export function MonographClient() {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
+              <form onSubmit={handleFormSubmit} className="space-y-4">
                 <FormField
                   control={form.control}
                   name="drugName"
@@ -178,28 +172,37 @@ export function MonographClient() {
               <CardTitle className="text-3xl font-bold font-headline">Monograph for {form.getValues("drugName")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <Accordion type="multiple" defaultValue={defaultAccordionItems} className="w-full space-y-4">
-                {Object.entries(monographData).map(([section, content]) => (
-                   (mode === 'pharmacist' || defaultAccordionItems.includes(section)) && (
-                  <Card key={section} className="bg-background/50">
-                    <AccordionItem value={section} className="border-b-0">
-                      <AccordionTrigger className="text-xl font-semibold p-4 hover:no-underline">{section}</AccordionTrigger>
-                      <AccordionContent className="px-6 pb-4">
-                        <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap dark:prose-invert">
-                          {content.split('\n').map((line, index) => {
-                              const trimmedLine = line.trim();
-                              if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
-                                return <p key={index} className="m-0 ml-4">{trimmedLine}</p>;
-                              }
-                              return <p key={index} className="m-0">{line}</p>;
-                          })}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Card>
-                   )
-                ))}
-              </Accordion>
+              {mode === 'pharmacist' ? (
+                <Tabs defaultValue="pharmacology" className="w-full">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="pharmacology">Pharmacology</TabsTrigger>
+                    <TabsTrigger value="pharmaceutical">Pharmaceutical</TabsTrigger>
+                    <TabsTrigger value="research">Research</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="pharmacology" className="mt-4 space-y-4">
+                    {Object.entries(pharmacistSections.pharmacology).map(([title, key]) => (
+                        <MonographSection key={key} title={title} content={monographData.pharmacology[key as keyof typeof monographData.pharmacology]} />
+                    ))}
+                  </TabsContent>
+                  <TabsContent value="pharmaceutical" className="mt-4 space-y-4">
+                    {Object.entries(pharmacistSections.pharmaceutical).map(([title, key]) => (
+                         <MonographSection key={key} title={title} content={monographData.pharmaceutical[key as keyof typeof monographData.pharmaceutical]} />
+                    ))}
+                  </TabsContent>
+                  <TabsContent value="research" className="mt-4 space-y-4">
+                     {Object.entries(pharmacistSections.research).map(([title, key]) => (
+                         <MonographSection key={key} title={title} content={monographData.research[key as keyof typeof monographData.research]} />
+                    ))}
+                  </TabsContent>
+                </Tabs>
+              ) : (
+                <div className="space-y-4">
+                  {Object.entries(patientSections).map(([title, key]) => {
+                    const content = monographData.pharmacology[key as keyof typeof monographData.pharmacology] || monographData.pharmaceutical[key as keyof typeof monographData.pharmaceutical];
+                    return <MonographSection key={key} title={title} content={content} />
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
