@@ -54,6 +54,8 @@ export function DoseCalculatorClient() {
     defaultValues: {
       drugName: "",
       indication: "",
+      patientWeightKg: "" as any,
+      patientAgeYears: "" as any,
       renalFunction: "",
       hepaticFunction: "",
       availableFormulations: "",
