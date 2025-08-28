@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { usePatient, type PatientHistory } from "@/contexts/patient-context";
+import { usePatient } from "@/contexts/patient-context";
 import { useMode } from "@/contexts/mode-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -10,17 +10,19 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { User, Stethoscope, BriefcaseMedical } from "lucide-react";
+import { User, Stethoscope, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis } from "lucide-react";
 
 const PHARMACIST_CODE = "239773";
 
 export default function RoleSelectionPage() {
   const [pharmacistModalOpen, setPharmacistModalOpen] = useState(false);
-  const [patientModalOpen, setPatientModalOpen] = useState(false);
-  const [newPatientModalOpen, setNewPatientModalOpen] = useState(false);
+  const [patientOptionsModalOpen, setPatientOptionsModalOpen] = useState(false);
+  const [patientLoginModalOpen, setPatientLoginModalOpen] = useState(false);
+  
   const [pharmacistCode, setPharmacistCode] = useState("");
   const [patientName, setPatientName] = useState("");
   const [patientPhone, setPatientPhone] = useState("");
+
   const { setMode } = useMode();
   const { patientState, setActivePatient, addOrUpdatePatient, clearActivePatient } = usePatient();
   const router = useRouter();
@@ -55,17 +57,33 @@ export default function RoleSelectionPage() {
     if (existingPatient) {
       setActivePatient(existingPatient.id);
       toast({ title: "Welcome Back!", description: `Loading profile for ${existingPatient.demographics?.name}.` });
-      router.push("/patient-history");
+      router.push("/dashboard");
     } else {
-      // New patient flow
-      clearActivePatient();
-      addOrUpdatePatient({ demographics: { name: patientName, phoneNumber: patientPhone } });
-      toast({ title: "Welcome!", description: "Please choose an option to continue." });
-      setPatientModalOpen(false);
-      setNewPatientModalOpen(true);
+      // If patient not found, treat as new registration
+       clearActivePatient();
+       addOrUpdatePatient({ demographics: { name: patientName, phoneNumber: patientPhone } });
+       toast({ title: "Welcome!", description: "Let's create your patient history." });
+       router.push("/patient-history");
     }
+    setPatientLoginModalOpen(false);
   };
   
+  const handleNewPatient = () => {
+    setMode('patient');
+    clearActivePatient();
+    router.push('/patient-history');
+  }
+
+  const handleEmergency = () => {
+    setMode('patient');
+    router.push('/emergency');
+  }
+
+  const openPatientLogin = () => {
+    setPatientOptionsModalOpen(false);
+    setPatientLoginModalOpen(true);
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
       <Card className="w-full max-w-4xl shadow-2xl">
@@ -78,12 +96,12 @@ export default function RoleSelectionPage() {
         </CardHeader>
         <CardContent className="grid md:grid-cols-2 gap-8 p-8">
           <div
-            onClick={() => setPatientModalOpen(true)}
+            onClick={() => setPatientOptionsModalOpen(true)}
             className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer"
           >
             <User className="mx-auto h-16 w-16 text-primary mb-4" />
             <h3 className="text-2xl font-semibold">I am a Patient</h3>
-            <p className="text-muted-foreground mt-2">Access your profile or create a new one.</p>
+            <p className="text-muted-foreground mt-2">Access your profile or get emergency help.</p>
           </div>
           <div
             onClick={() => setPharmacistModalOpen(true)}
@@ -119,12 +137,45 @@ export default function RoleSelectionPage() {
         </DialogContent>
       </Dialog>
       
-      {/* Patient Modal */}
-      <Dialog open={patientModalOpen} onOpenChange={setPatientModalOpen}>
+      {/* Patient Options Modal */}
+      <Dialog open={patientOptionsModalOpen} onOpenChange={setPatientOptionsModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Patient Access</DialogTitle>
-            <DialogDescription>Please enter your details to find or create your profile.</DialogDescription>
+            <DialogTitle>Patient Options</DialogTitle>
+            <DialogDescription>How can we help you today?</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4">
+             <Button onClick={openPatientLogin} variant="outline" size="lg" className="h-auto py-4">
+              <LogIn className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">Patient Login</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Access your existing patient profile.</p>
+              </div>
+            </Button>
+             <Button onClick={handleNewPatient} variant="outline" size="lg" className="h-auto py-4">
+              <UserPlus className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">New Patient Registration</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Create a new patient history form.</p>
+              </div>
+            </Button>
+             <Button onClick={handleEmergency} variant="destructive" size="lg" className="h-auto py-4">
+              <ShieldEllipsis className="mr-4"/>
+               <div>
+                <p className="font-semibold text-base text-left">Emergency</p>
+                <p className="font-normal text-sm text-destructive-foreground/80 text-left">Get immediate help and information.</p>
+              </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Patient Login Modal */}
+      <Dialog open={patientLoginModalOpen} onOpenChange={setPatientLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Login</DialogTitle>
+            <DialogDescription>Please enter your details to find your profile.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
              <div className="space-y-2">
@@ -138,20 +189,6 @@ export default function RoleSelectionPage() {
           </div>
           <DialogFooter>
             <Button onClick={handlePatientLogin}>Continue</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* New Patient Options Modal */}
-      <Dialog open={newPatientModalOpen} onOpenChange={setNewPatientModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Welcome, {patientName}!</DialogTitle>
-            <DialogDescription>How would you like to proceed?</DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex-col sm:flex-col sm:space-x-0 gap-2">
-            <Button onClick={() => router.push('/patient-history')} variant="default" size="lg">Create Patient History</Button>
-            <Button onClick={() => router.push('/emergency')} variant="destructive" size="lg">Emergency</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

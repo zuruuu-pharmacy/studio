@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
+import { usePatient } from "@/contexts/patient-context";
 
 const pharmacistTools = [
   {
@@ -93,9 +94,12 @@ const patientTools = [
 
 export default function DashboardPage() {
   const { mode } = useMode();
+  const { patientState } = usePatient();
   const isPharmacist = mode === 'pharmacist';
   const tools = isPharmacist ? pharmacistTools : patientTools;
-  const headerTitle = isPharmacist ? "Welcome to Zuruu AI Pharmacy" : "Welcome, Patient";
+  const patientName = patientState.activePatient?.demographics?.name || "Patient";
+
+  const headerTitle = isPharmacist ? "Welcome to Zuruu AI Pharmacy" : `Welcome, ${patientName}`;
   const headerDescription = isPharmacist 
     ? "Your AI-powered suite of clinical tools for enhanced pharmaceutical care. Start by managing your patients or explore the tools directly."
     : "This is your personal health dashboard. Access your history or get help in an emergency.";
