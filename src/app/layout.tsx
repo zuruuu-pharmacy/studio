@@ -3,7 +3,6 @@ import './globals.css';
 import { ModeProvider } from '@/contexts/mode-context';
 import { Toaster } from '@/components/ui/toaster';
 import { PatientProvider } from '@/contexts/patient-context';
-import { AppShell } from '@/components/app-shell';
 import { MohsinChatbot } from '@/components/mohsin-chatbot';
 
 export const metadata: Metadata = {
@@ -26,9 +25,7 @@ export default function RootLayout({
       <body>
         <ModeProvider>
           <PatientProvider>
-            <AppShell>
-              {children}
-            </AppShell>
+            {children}
             <Toaster />
             <MohsinChatbot />
           </PatientProvider>

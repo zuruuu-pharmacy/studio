@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, Home, LayoutDashboard, ShieldAlert, Waves, ScanEye, User, Users, TestTube } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -18,12 +18,11 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { ModeToggle } from "@/components/mode-toggle";
+import { Logo } from "@/components/logo";
 
 const menuItems = [
-    { href: "/", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/monograph", label: "Monograph Lookup", icon: BookText },
     { href: "/dose-calculator", label: "Dose Calculator", icon: Calculator },
     { href: "/interaction-checker", label: "Interaction Checker", icon: FlaskConical },
@@ -43,7 +42,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2 p-2">
-              <Waves className="h-8 w-8 text-primary" />
+              <Logo />
               <div>
                 <h1 className="text-xl font-bold font-headline text-primary">Zuruu AI</h1>
                 <p className="text-xs text-muted-foreground">By DR.Mohsin Saleem</p>
