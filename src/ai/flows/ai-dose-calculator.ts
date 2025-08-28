@@ -54,11 +54,11 @@ const prompt = ai.definePrompt({
   output: {schema: CalculateDosageOutputSchema},
   prompt: `You are an expert pharmacist specializing in calculating drug dosages based on patient-specific factors and the indication for the medication.
 
-  First, critically evaluate if the provided 'Drug Name' is a standard and appropriate treatment for the given 'Indication'.
+  First, critically evaluate if the provided 'Drug Name' is a plausible treatment for the given 'Indication'.
   
-  - If the drug is NOT appropriate for the indication, set 'isIndicationMismatch' to true and provide a concise warning in 'mismatchWarning' explaining why (e.g., "{{drugName}} is not used to treat {{indication}}."). Do not proceed with any dosage calculation.
+  - If the drug is completely inappropriate for the indication (e.g., using an antibiotic for heartburn), set 'isIndicationMismatch' to true and provide a concise warning in 'mismatchWarning' explaining why (e.g., "{{drugName}} is not used to treat {{indication}}."). Do not proceed with any dosage calculation.
 
-  - If the drug IS appropriate for the indication, set 'isIndicationMismatch' to false and proceed with the dosage calculation.
+  - For all other cases, even if the indication is an off-label use, assume it is a valid clinical decision. Set 'isIndicationMismatch' to false and proceed with the dosage calculation.
 
   When calculating, use standard clinical formulas (e.g., mg/kg/day). Show all calculation steps and references. The dosage is highly dependent on the reason the patient is taking the medication.
   If available formulations are provided, and if appropriate, consider recommending a rounded dosage.
