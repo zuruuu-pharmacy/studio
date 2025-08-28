@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ReactNode } from 'react';
@@ -11,8 +12,15 @@ export interface PatientHistory {
     gender?: string;
     maritalStatus?: string;
     occupation?: string;
-    contactInfo?: string;
+    country?: string;
+    province?: string;
+    district?: string;
+    town?: string;
+    block?: string;
+    street?: string;
+    houseNo?: string;
     hospitalId?: string;
+    phoneNumber?: string;
   };
   // 2. Presenting Complaint (PC)
   presentingComplaint?: string;
