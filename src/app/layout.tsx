@@ -4,7 +4,6 @@ import { ModeProvider } from '@/contexts/mode-context';
 import { Toaster } from '@/components/ui/toaster';
 import { PatientProvider } from '@/contexts/patient-context';
 import { AppShell } from '@/components/app-shell';
-import { VoiceAssistant } from '@/components/voice-assistant';
 
 export const metadata: Metadata = {
   title: 'Zuruu AI Pharmacy',
@@ -29,7 +28,6 @@ export default function RootLayout({
             <AppShell>
               {children}
             </AppShell>
-            <VoiceAssistant />
             <Toaster />
           </PatientProvider>
         </ModeProvider>
