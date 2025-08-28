@@ -4,10 +4,10 @@
 import { useState, useTransition, useRef, useEffect } from "react";
 import { MessageCircle, Send, Loader2, X, Bot } from "lucide-react";
 import { Button } from "./ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 import { cn } from "@/lib/utils";
 import { mohsinChatbot } from "@/ai/flows/mohsin-chatbot";
 
@@ -56,94 +56,94 @@ export function MohsinChatbot() {
   return (
     <>
       <Button
-        onClick={() => setIsOpen(true)}
+        onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-lg z-50"
         size="icon"
       >
-        <Bot className="h-8 w-8" />
-        <span className="sr-only">Open Chatbot</span>
+        {isOpen ? <X className="h-8 w-8" /> : <Bot className="h-8 w-8" />}
+        <span className="sr-only">Toggle Chatbot</span>
       </Button>
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-md flex flex-col h-[70vh]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Bot className="h-6 w-6" /> Mohsin's AI Assistant
-            </DialogTitle>
-          </DialogHeader>
-          <div className="flex-grow flex flex-col-reverse overflow-hidden">
-            <ScrollArea className="h-[calc(70vh-150px)]" ref={scrollAreaRef}>
-              <div className="p-4 space-y-4">
-                {messages.length === 0 && (
-                    <div className="text-center text-muted-foreground">Ask me anything!</div>
-                )}
-                {messages.map((message, index) => (
-                  <div
-                    key={index}
-                    className={cn(
-                      "flex items-start gap-3",
-                      message.role === "user" ? "justify-end" : "justify-start"
+      {isOpen && (
+         <Card className="fixed bottom-24 right-6 z-50 w-full max-w-sm h-[70vh] flex flex-col">
+            <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                <Bot className="h-6 w-6" /> Mohsin's AI Assistant
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-grow flex flex-col-reverse overflow-hidden p-0">
+                <ScrollArea className="h-full" ref={scrollAreaRef}>
+                <div className="p-4 space-y-4">
+                    {messages.length === 0 && (
+                        <div className="text-center text-muted-foreground">Ask me anything!</div>
                     )}
-                  >
-                    {message.role === "model" && (
-                      <Avatar className="h-8 w-8">
-                         <AvatarFallback><Bot/></AvatarFallback>
-                      </Avatar>
-                    )}
+                    {messages.map((message, index) => (
                     <div
-                      className={cn(
-                        "max-w-xs rounded-lg p-3 text-sm",
-                        message.role === "user"
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted"
-                      )}
+                        key={index}
+                        className={cn(
+                        "flex items-start gap-3",
+                        message.role === "user" ? "justify-end" : "justify-start"
+                        )}
                     >
-                      {message.content}
+                        {message.role === "model" && (
+                        <Avatar className="h-8 w-8">
+                            <AvatarFallback><Bot/></AvatarFallback>
+                        </Avatar>
+                        )}
+                        <div
+                        className={cn(
+                            "max-w-xs rounded-lg p-3 text-sm",
+                            message.role === "user"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted"
+                        )}
+                        >
+                        {message.content}
+                        </div>
+                        {message.role === "user" && (
+                        <Avatar className="h-8 w-8">
+                            <AvatarFallback>U</AvatarFallback>
+                        </Avatar>
+                        )}
                     </div>
-                     {message.role === "user" && (
-                      <Avatar className="h-8 w-8">
-                         <AvatarFallback>U</AvatarFallback>
-                      </Avatar>
+                    ))}
+                    {isPending && (
+                    <div className="flex items-center gap-3 justify-start">
+                        <Avatar className="h-8 w-8">
+                            <AvatarFallback><Bot/></AvatarFallback>
+                        </Avatar>
+                        <div className="bg-muted p-3 rounded-lg">
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        </div>
+                    </div>
                     )}
-                  </div>
-                ))}
-                {isPending && (
-                  <div className="flex items-center gap-3 justify-start">
-                    <Avatar className="h-8 w-8">
-                         <AvatarFallback><Bot/></AvatarFallback>
-                    </Avatar>
-                    <div className="bg-muted p-3 rounded-lg">
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
-          </div>
-          <div className="p-4 border-t">
-            <div className="relative">
-              <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                placeholder="Type your message..."
-                className="pr-12"
-                disabled={isPending}
-              />
-              <Button
-                type="submit"
-                size="icon"
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
-                onClick={handleSendMessage}
-                disabled={isPending || !input.trim()}
-              >
-                <Send className="h-4 w-4" />
-                <span className="sr-only">Send</span>
-              </Button>
+                </div>
+                </ScrollArea>
+            </CardContent>
+            <div className="p-4 border-t">
+                <div className="relative">
+                <Input
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                    placeholder="Type your message..."
+                    className="pr-12"
+                    disabled={isPending}
+                />
+                <Button
+                    type="submit"
+                    size="icon"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
+                    onClick={handleSendMessage}
+                    disabled={isPending || !input.trim()}
+                >
+                    <Send className="h-4 w-4" />
+                    <span className="sr-only">Send</span>
+                </Button>
+                </div>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+        </Card>
+      )}
     </>
   );
 }
