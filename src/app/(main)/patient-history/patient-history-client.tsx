@@ -1,3 +1,4 @@
+
 "use client";
 
 import { z } from "zod";
@@ -83,7 +84,7 @@ export function PatientHistoryClient() {
             <form onSubmit={handleHistorySubmit} className="space-y-4">
               <FormField name="pastMedicalHistory" control={historyForm.control} render={({ field }) => (<FormItem><FormLabel>Past Medical History</FormLabel><FormControl><Textarea placeholder="Chronic illnesses, surgeries, etc." {...field} /></FormControl><FormMessage /></FormItem>)} />
               <FormField name="familyHistory" control={historyForm.control} render={({ field }) => (<FormItem><FormLabel>Family History</FormLabel><FormControl><Textarea placeholder="Relevant genetic conditions, allergies in family, etc." {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField name="socialHistory" control={historyForm.control} render={({ field }) => (<FormItem><FormLabel>Social History</FormLabel><FormControl><Textarea placeholder="e.g., Smoking status, alcohol use, occupation" {...field} /></FormControl><FormMessage /></FormMessage></FormItem>)} />
+              <FormField name="socialHistory" control={historyForm.control} render={({ field }) => (<FormItem><FormLabel>Social History</FormLabel><FormControl><Textarea placeholder="e.g., Smoking status, alcohol use, occupation" {...field} /></FormControl><FormMessage /></FormItem>)} />
               <FormField name="medicationHistory" control={historyForm.control} render={({ field }) => (<FormItem><FormLabel>Current Medication History</FormLabel><FormControl><Textarea placeholder="List all current medications, including OTC and supplements." {...field} /></FormControl><FormMessage /></FormItem>)} />
               <div className="flex justify-end pt-4 gap-4">
                 <Button type="submit">
