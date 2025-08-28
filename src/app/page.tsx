@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppShell } from "@/components/app-shell";
 
@@ -53,6 +53,13 @@ const tools = [
     description: "Analyze a prescription image.",
     href: "/prescription-reader",
     color: "text-orange-500",
+  },
+  {
+    icon: TestTube,
+    title: "Lab Report Analyzer",
+    description: "Interpret and analyze lab report data.",
+    href: "/lab-analyzer",
+    color: "text-indigo-500",
   },
 ];
 

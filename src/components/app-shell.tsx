@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, Home, LayoutDashboard, ShieldAlert, Waves, ScanEye, User, Users } from "lucide-react";
+import { BookText, Calculator, FlaskConical, Home, LayoutDashboard, ShieldAlert, Waves, ScanEye, User, Users, TestTube } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -29,6 +29,7 @@ const menuItems = [
   { href: "/interaction-checker", label: "Interaction Checker", icon: FlaskConical },
   { href: "/allergy-checker", label: "Allergy Checker", icon: ShieldAlert },
   { href: "/prescription-reader", label: "Prescription Reader", icon: ScanEye },
+  { href: "/lab-analyzer", label: "Lab Analyzer", icon: TestTube },
   { href: "/patients", label: "Patients", icon: Users },
   { href: "/patient-history", label: "Patient History Form", icon: User },
 ];
