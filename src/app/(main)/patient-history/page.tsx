@@ -1,9 +1,7 @@
 import { PatientHistoryClient } from "./patient-history-client";
-import { AppShell } from "@/components/app-shell";
 
 export default function PatientHistoryPage() {
   return (
-    <AppShell>
       <div>
         <h1 className="text-3xl font-bold mb-2 font-headline">Patient History</h1>
         <p className="text-muted-foreground mb-6">
@@ -11,6 +9,5 @@ export default function PatientHistoryPage() {
         </p>
         <PatientHistoryClient />
       </div>
-    </AppShell>
   );
 }

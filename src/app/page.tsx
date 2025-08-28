@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AppShell } from "@/components/app-shell";
 
 const tools = [
   {
@@ -65,7 +64,6 @@ const tools = [
 
 export default function DashboardPage() {
   return (
-    <AppShell>
       <div className="flex flex-col gap-8">
         <header className="relative bg-primary text-primary-foreground rounded-lg p-8 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 opacity-50"></div>
@@ -111,6 +109,5 @@ export default function DashboardPage() {
           </div>
         </section>
       </div>
-    </AppShell>
   );
 }

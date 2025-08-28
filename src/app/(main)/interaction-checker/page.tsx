@@ -4,7 +4,6 @@
 import { useState } from "react";
 import { InteractionClient } from "./interaction-client";
 import { DrugFoodInteractionClient } from "./drug-food-interaction-client";
-import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { FlaskConical, Salad } from "lucide-react";
 
@@ -38,7 +37,6 @@ export default function InteractionCheckerPage() {
   };
 
   return (
-    <AppShell>
       <div>
         <h1 className="text-3xl font-bold mb-2 font-headline">AI Interaction Engine</h1>
         <p className="text-muted-foreground mb-6">
@@ -53,6 +51,5 @@ export default function InteractionCheckerPage() {
         )}
         {renderContent()}
       </div>
-    </AppShell>
   );
 }
