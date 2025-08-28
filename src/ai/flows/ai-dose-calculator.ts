@@ -31,9 +31,11 @@ const CalculateDosageInputSchema = z.object({
 export type CalculateDosageInput = z.infer<typeof CalculateDosageInputSchema>;
 
 const CalculateDosageOutputSchema = z.object({
-  calculatedDosage: z.string().describe('The calculated dosage of the drug.'),
-  calculationSteps: z.string().describe('The steps taken to calculate the dosage, using general formulas.'),
-  references: z.string().describe('References or sources used for the dosage calculation.'),
+  isIndicationMismatch: z.boolean().describe('Whether the drug is inappropriate for the given indication.'),
+  mismatchWarning: z.string().optional().describe('A warning message if the indication is mismatched.'),
+  calculatedDosage: z.string().optional().describe('The calculated dosage of the drug.'),
+  calculationSteps: z.string().optional().describe('The steps taken to calculate the dosage, using general formulas.'),
+  references: z.string().optional().describe('References or sources used for the dosage calculation.'),
   roundedDosageSuggestion: z
     .string()
     .optional()
@@ -52,10 +54,14 @@ const prompt = ai.definePrompt({
   output: {schema: CalculateDosageOutputSchema},
   prompt: `You are an expert pharmacist specializing in calculating drug dosages based on patient-specific factors and the indication for the medication.
 
-  Given the following information, calculate the appropriate dosage for the drug using standard clinical formulas (e.g., mg/kg/day). Show all calculation steps and references.
-  The dosage is highly dependent on the reason the patient is taking the medication.
+  First, critically evaluate if the provided 'Drug Name' is a standard and appropriate treatment for the given 'Indication'.
+  
+  - If the drug is NOT appropriate for the indication, set 'isIndicationMismatch' to true and provide a concise warning in 'mismatchWarning' explaining why (e.g., "{{drugName}} is not used to treat {{indication}}."). Do not proceed with any dosage calculation.
 
-  If the available formulations are provided, and if appropriate, consider recommending a rounded dosage that matches the available formulations.
+  - If the drug IS appropriate for the indication, set 'isIndicationMismatch' to false and proceed with the dosage calculation.
+
+  When calculating, use standard clinical formulas (e.g., mg/kg/day). Show all calculation steps and references. The dosage is highly dependent on the reason the patient is taking the medication.
+  If available formulations are provided, and if appropriate, consider recommending a rounded dosage.
 
   Drug Name: {{{drugName}}}
   Indication: {{{indication}}}
@@ -64,9 +70,6 @@ const prompt = ai.definePrompt({
   Renal Function: {{{renalFunction}}}
   Hepatic Function: {{{hepaticFunction}}}
   Available Formulations: {{{availableFormulations}}}
-
-  Ensure that the calculated dosage, calculation steps (using general formulas), and references are clearly stated.
-  If a rounded dosage is suggested, explain the reasoning behind it.
 `,
 });
 

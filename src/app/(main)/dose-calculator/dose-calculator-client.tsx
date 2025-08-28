@@ -10,9 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Beaker, FileText, CheckCircle } from "lucide-react";
+import { Loader2, Beaker, FileText, CheckCircle, AlertTriangle } from "lucide-react";
 import { useMode } from "@/contexts/mode-context";
 import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 
 const formSchema = z.object({
   drugName: z.string().min(2, "Required"),
@@ -123,43 +125,55 @@ export function DoseCalculatorClient() {
 
       <div className="md:col-span-2">
         {isPending && <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}
-        {state && 'calculatedDosage' in state && (
-          <Card className="bg-gradient-to-br from-background to-secondary/30">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold text-primary">Dosage Calculation Results</CardTitle>
-              <CardDescription>Results for {form.getValues("drugName")} for {form.getValues("indication")}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="p-6 bg-primary/10 rounded-lg text-center">
-                <h3 className="text-lg font-semibold text-primary-foreground/80">Calculated Dosage</h3>
-                <p className="text-4xl font-bold text-primary">{state.calculatedDosage}</p>
-              </div>
+        {state && 'isIndicationMismatch' in state && (
+          state.isIndicationMismatch ? (
+             <Alert variant="destructive" className="h-fit">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>Warning: Indication Mismatch</AlertTitle>
+                <AlertDescription>{state.mismatchWarning}</AlertDescription>
+             </Alert>
+          ) : state.calculatedDosage ? (
+            <Card className="bg-gradient-to-br from-background to-secondary/30">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-primary">Dosage Calculation Results</CardTitle>
+                <CardDescription>Results for {form.getValues("drugName")} for {form.getValues("indication")}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="p-6 bg-primary/10 rounded-lg text-center">
+                  <h3 className="text-lg font-semibold text-primary-foreground/80">Calculated Dosage</h3>
+                  <p className="text-4xl font-bold text-primary">{state.calculatedDosage}</p>
+                </div>
 
-              {state.roundedDosageSuggestion && (
-                 <div className="p-4 bg-accent/20 rounded-lg flex items-center gap-4">
-                  <CheckCircle className="h-6 w-6 text-accent" />
-                  <div>
-                    <h4 className="font-semibold">Rounding Suggestion</h4>
-                    <p className="text-muted-foreground">{state.roundedDosageSuggestion}</p>
+                {state.roundedDosageSuggestion && (
+                  <div className="p-4 bg-accent/20 rounded-lg flex items-center gap-4">
+                    <CheckCircle className="h-6 w-6 text-accent" />
+                    <div>
+                      <h4 className="font-semibold">Rounding Suggestion</h4>
+                      <p className="text-muted-foreground">{state.roundedDosageSuggestion}</p>
+                    </div>
                   </div>
-                 </div>
-              )}
+                )}
 
-              {mode === 'pharmacist' && (
-                <>
-                  <Separator />
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-semibold flex items-center gap-2"><Beaker className="h-5 w-5 text-primary"/>Calculation Steps</h3>
-                    <p className="p-4 bg-muted/50 rounded-md whitespace-pre-wrap font-code">{state.calculationSteps}</p>
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-semibold flex items-center gap-2"><FileText className="h-5 w-5 text-primary"/>References</h3>
-                    <p className="p-4 bg-muted/50 rounded-md whitespace-pre-wrap font-code text-sm">{state.references}</p>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
+                {mode === 'pharmacist' && (
+                  <>
+                    <Separator />
+                    {state.calculationSteps && (
+                      <div className="space-y-4">
+                        <h3 className="text-xl font-semibold flex items-center gap-2"><Beaker className="h-5 w-5 text-primary"/>Calculation Steps</h3>
+                        <p className="p-4 bg-muted/50 rounded-md whitespace-pre-wrap font-code">{state.calculationSteps}</p>
+                      </div>
+                    )}
+                    {state.references && (
+                      <div className="space-y-4">
+                        <h3 className="text-xl font-semibold flex items-center gap-2"><FileText className="h-5 w-5 text-primary"/>References</h3>
+                        <p className="p-4 bg-muted/50 rounded-md whitespace-pre-wrap font-code text-sm">{state.references}</p>
+                      </div>
+                    )}
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          ) : null
         )}
       </div>
     </div>
