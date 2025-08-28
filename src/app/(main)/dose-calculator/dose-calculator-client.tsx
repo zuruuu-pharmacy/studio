@@ -67,13 +67,13 @@ export function DoseCalculatorClient() {
   }, [state, toast]);
 
   const handleFormSubmit = form.handleSubmit((data) => {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-            formData.append(key, value.toString());
-        }
-    });
-    startTransition(() => {
+     startTransition(() => {
+        const formData = new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                formData.append(key, value.toString());
+            }
+        });
       formAction(formData);
     });
   });
