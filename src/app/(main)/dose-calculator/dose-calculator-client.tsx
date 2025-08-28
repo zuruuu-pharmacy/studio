@@ -108,7 +108,7 @@ export function DoseCalculatorClient() {
                   <FormItem><FormLabel>Renal Function (Optional)</FormLabel><FormControl><Input placeholder="e.g., CrCl 50 ml/min" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField name="hepaticFunction" control={form.control} render={({ field }) => (
-                  <FormItem><FormLabel>Hepatic Function (Optional)</FormLabel><FormControl><Input placeholder="e.g., Mild impairment" {...field} /></FormControl><FormMessage /></FormMessage /></FormItem>
+                  <FormItem><FormLabel>Hepatic Function (Optional)</FormLabel><FormControl><Input placeholder="e.g., Mild impairment" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField name="availableFormulations" control={form.control} render={({ field }) => (
                   <FormItem><FormLabel>Available Formulations (Optional)</FormLabel><FormControl><Input placeholder="e.g., 250mg, 500mg tablets" {...field} /></FormControl><FormMessage /></FormItem>
