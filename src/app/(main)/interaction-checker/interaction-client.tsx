@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useTransition } from "react";
+import { useActionState, useEffect, useMemo, useTransition } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -11,10 +11,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, XCircle, AlertTriangle, ShieldCheck, ShieldQuestion } from "lucide-react";
+import { Loader2, PlusCircle, XCircle, AlertTriangle, ShieldCheck, ShieldQuestion, Salad, FlaskConical } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { useMode } from "@/contexts/mode-context";
+import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
   medications: z.array(z.object({ value: z.string().min(2, "Required") })).min(2, "At least two medications are required"),
@@ -64,6 +65,16 @@ export function InteractionClient() {
     control: form.control,
     name: "medications",
   });
+
+  const { drugInteractions, foodInteractions } = useMemo(() => {
+    if (!state || !('interactions' in state)) {
+      return { drugInteractions: [], foodInteractions: [] };
+    }
+    const drugInteractions = state.interactions.filter(i => !i.interactingDrugs.includes('Food'));
+    const foodInteractions = state.interactions.filter(i => i.interactingDrugs.includes('Food'));
+    return { drugInteractions, foodInteractions };
+  }, [state]);
+
 
   useEffect(() => {
     if (state && 'error' in state && state.error) {
@@ -141,41 +152,85 @@ export function InteractionClient() {
           </CardContent>
         </Card>
       </div>
-      <div className="md:col-span-2">
+      <div className="md:col-span-2 space-y-6">
         {isPending && <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}
+        
         {state && 'interactions' in state && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Interaction Results</CardTitle>
-              {state.interactions.length === 0 && <CardDescription>No significant interactions found.</CardDescription>}
-            </CardHeader>
-            <CardContent>
-              {state.interactions.length > 0 && (
-                <Accordion type="multiple" className="w-full" defaultValue={state.interactions.map((_, i) => `item-${i}`)}>
-                  {state.interactions.map((interaction, index) => {
-                    const severity = interaction.severity.toLowerCase();
-                    const SeverityIcon = severityMap[severity]?.icon || ShieldQuestion;
-                    return (
-                      <AccordionItem value={`item-${index}`} key={index}>
-                        <AccordionTrigger className="text-lg font-semibold">
-                          <div className="flex items-center gap-4">
-                            <SeverityIcon className={`h-6 w-6 ${severityMap[severity]?.color || 'text-gray-500'}`} />
-                            <p>{interaction.interactingDrugs.join(' + ')}</p>
-                            <Badge variant={severityMap[severity]?.badge || 'default'}>{interaction.severity}</Badge>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="space-y-4 pl-10">
-                           <p><strong>Interacting Drugs:</strong> {interaction.interactingDrugs.join(', ')}</p>
-                           {mode === 'pharmacist' && <p><strong>Mechanism:</strong> {interaction.mechanism}</p>}
-                           <p><strong>Suggested Actions:</strong> {interaction.suggestedActions}</p>
-                        </AccordionContent>
-                      </AccordionItem>
-                    );
-                  })}
-                </Accordion>
-              )}
-            </CardContent>
-          </Card>
+          <>
+            {state.interactions.length === 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>No Interactions Found</CardTitle>
+                  <CardDescription>No significant drug-drug or drug-food interactions were found.</CardDescription>
+                </CardHeader>
+              </Card>
+            )}
+
+            {drugInteractions.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><FlaskConical className="h-6 w-6 text-primary"/> Drug-Drug Interactions</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Accordion type="multiple" className="w-full" defaultValue={drugInteractions.map((_, i) => `item-d-${i}`)}>
+                    {drugInteractions.map((interaction, index) => {
+                      const severity = interaction.severity.toLowerCase();
+                      const SeverityIcon = severityMap[severity]?.icon || ShieldQuestion;
+                      return (
+                        <AccordionItem value={`item-d-${index}`} key={index}>
+                          <AccordionTrigger className="text-lg font-semibold">
+                            <div className="flex items-center gap-4">
+                              <SeverityIcon className={`h-6 w-6 ${severityMap[severity]?.color || 'text-gray-500'}`} />
+                              <p>{interaction.interactingDrugs.join(' + ')}</p>
+                              <Badge variant={severityMap[severity]?.badge || 'default'}>{interaction.severity}</Badge>
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="space-y-4 pl-10">
+                             <p><strong>Interacting Drugs:</strong> {interaction.interactingDrugs.join(', ')}</p>
+                             {mode === 'pharmacist' && <p><strong>Mechanism:</strong> {interaction.mechanism}</p>}
+                             <p><strong>Suggested Actions:</strong> {interaction.suggestedActions}</p>
+                          </AccordionContent>
+                        </AccordionItem>
+                      );
+                    })}
+                  </Accordion>
+                </CardContent>
+              </Card>
+            )}
+
+            {foodInteractions.length > 0 && (
+              <Card>
+                 <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Salad className="h-6 w-6 text-green-500"/> Drug-Food Interactions</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Accordion type="multiple" className="w-full" defaultValue={foodInteractions.map((_, i) => `item-f-${i}`)}>
+                    {foodInteractions.map((interaction, index) => {
+                      const severity = interaction.severity.toLowerCase();
+                      const SeverityIcon = severityMap[severity]?.icon || ShieldQuestion;
+                       const drug = interaction.interactingDrugs.find(d => d !== 'Food');
+                      return (
+                        <AccordionItem value={`item-f-${index}`} key={index}>
+                          <AccordionTrigger className="text-lg font-semibold">
+                            <div className="flex items-center gap-4">
+                              <SeverityIcon className={`h-6 w-6 ${severityMap[severity]?.color || 'text-gray-500'}`} />
+                              <p>{drug} + Food</p>
+                              <Badge variant={severityMap[severity]?.badge || 'default'}>{interaction.severity}</Badge>
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="space-y-4 pl-10">
+                             <p><strong>Interacting Drug:</strong> {drug}</p>
+                             {mode === 'pharmacist' && <p><strong>Mechanism:</strong> {interaction.mechanism}</p>}
+                             <p><strong>Suggested Actions:</strong> {interaction.suggestedActions}</p>
+                          </AccordionContent>
+                        </AccordionItem>
+                      );
+                    })}
+                  </Accordion>
+                </CardContent>
+              </Card>
+            )}
+          </>
         )}
       </div>
     </div>
