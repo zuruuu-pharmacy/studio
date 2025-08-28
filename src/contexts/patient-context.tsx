@@ -12,6 +12,7 @@ export interface PatientHistory {
     gender?: string;
     maritalStatus?: string;
     occupation?: string;
+    cnicOrPassport?: string;
     address?: string;
     hospitalId?: string;
     phoneNumber?: string;

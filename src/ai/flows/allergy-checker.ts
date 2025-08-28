@@ -18,6 +18,7 @@ const demographicsSchema = z.object({
   gender: z.string().optional(),
   maritalStatus: z.string().optional(),
   occupation: z.string().optional(),
+  cnicOrPassport: z.string().optional(),
   address: z.string().optional(),
   hospitalId: z.string().optional(),
   phoneNumber: z.string().optional(),
@@ -78,6 +79,7 @@ The 'allergyHistory' field within the detailed history is the most important sec
 ## Detailed Patient History for Context
 - **Demographics**: 
   - Name: {{detailedHistory.demographics.name}}, Age: {{detailedHistory.demographics.age}}, Gender: {{detailedHistory.demographics.gender}}
+  - CNIC/Passport: {{detailedHistory.demographics.cnicOrPassport}}
   - Address: {{detailedHistory.demographics.address}}
   - Phone: {{detailedHistory.demographics.phoneNumber}}
 - **Presenting Complaint**: {{detailedHistory.presentingComplaint}}
