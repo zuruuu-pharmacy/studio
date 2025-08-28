@@ -14,6 +14,8 @@ import { CheckCircle } from "lucide-react";
 import { usePatient } from "@/contexts/patient-context";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 const demographicsSchema = z.object({
   name: z.string().optional(),
@@ -46,13 +48,13 @@ type HistoryFormValues = z.infer<typeof historySchema>;
 
 const formSections = [
     { id: 'demographics', title: '1. Patient Identification (Demographics)', fields: [
-        { name: 'demographics.name', label: 'Name', placeholder: 'Full Name' },
-        { name: 'demographics.age', label: 'Age / Date of Birth', placeholder: 'e.g., 45 years' },
-        { name: 'demographics.gender', label: 'Gender', placeholder: 'e.g., Male' },
-        { name: 'demographics.maritalStatus', label: 'Marital Status', placeholder: 'e.g., Married' },
-        { name: 'demographics.occupation', label: 'Occupation', placeholder: 'e.g., Teacher' },
-        { name: 'demographics.contactInfo', label: 'Address / Contact Info', placeholder: 'Phone or Address' },
-        { name: 'demographics.hospitalId', label: 'Hospital ID / MRN', placeholder: 'If applicable' },
+        { name: 'demographics.name', label: 'Name', placeholder: 'Full Name', type: 'input' },
+        { name: 'demographics.age', label: 'Age / Date of Birth', placeholder: 'e.g., 45 years', type: 'input' },
+        { name: 'demographics.gender', label: 'Gender', placeholder: 'Select Gender', type: 'select', options: ['Male', 'Female', 'Other', 'Prefer not to say'] },
+        { name: 'demographics.maritalStatus', label: 'Marital Status', placeholder: 'Select Status', type: 'select', options: ['Single', 'Married', 'Divorced', 'Widowed', 'Separated', 'Prefer not to say'] },
+        { name: 'demographics.occupation', label: 'Occupation', placeholder: 'e.g., Teacher', type: 'input' },
+        { name: 'demographics.contactInfo', label: 'Address / Contact Info', placeholder: 'Phone or Address', type: 'input' },
+        { name: 'demographics.hospitalId', label: 'Hospital ID / MRN', placeholder: 'If applicable', type: 'input' },
     ]},
     { id: 'presentingComplaint', title: '2. Presenting Complaint (PC)', description: 'The patient’s main complaint in their own words.', field: { name: 'presentingComplaint', placeholder: 'e.g., "Shortness of breath for 2 days"' } },
     { id: 'historyOfPresentingIllness', title: '3. History of Presenting Illness (HPI)', description: 'A deeper dive into the presenting complaint (onset, duration, progression, etc.)', field: { name: 'historyOfPresentingIllness', placeholder: 'Describe the onset, duration, progression, associated symptoms...' } },
@@ -165,7 +167,20 @@ export function PatientHistoryClient() {
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>{f.label}</FormLabel>
-                                <FormControl><Input placeholder={f.placeholder} {...field} /></FormControl>
+                                {f.type === 'select' ? (
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder={f.placeholder} />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {f.options?.map(option => <SelectItem key={option} value={option}>{option}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                ) : (
+                                    <FormControl><Input placeholder={f.placeholder} {...field} /></FormControl>
+                                )}
                                 <FormMessage />
                               </FormItem>
                             )}
