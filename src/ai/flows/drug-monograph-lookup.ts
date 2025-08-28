@@ -19,7 +19,7 @@ const DrugMonographLookupOutputSchema = z.object({
   pharmacology: z.object({
     mechanismOfAction: z.string().describe('The mechanism of action (MOA).'),
     pharmacokinetics: z.string().describe('The pharmacokinetics and pharmacodynamics (PK/PD).'),
-    indications: z.string().describe('The approved indications for the drug.'),
+    indications: z.string().describe('The approved indications and desired therapeutic effects for the drug.'),
     contraindications: z.string().describe('Situations where the drug should not be used.'),
     sideEffects: z.string().describe('Common and severe side effects.'),
     monitoring: z.string().describe('Parameters to monitor during therapy.'),
@@ -56,7 +56,7 @@ const prompt = ai.definePrompt({
   ## Pharmacology
   - **Mechanism of Action (MOA)**
   - **Pharmacokinetics/Pharmacodynamics (PK/PD)**
-  - **Indications**
+  - **Indications and Therapeutic Effects**: What are the approved uses and desired effects?
   - **Contraindications**
   - **Side Effects**
   - **Monitoring**

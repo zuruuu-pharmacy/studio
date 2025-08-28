@@ -22,7 +22,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const patientSections = {
-    "Indications": "indications",
+    "Indications and Therapeutic Effects": "indications",
     "Side Effects": "sideEffects",
     "Dosing": "dosing",
     "Administration": "administration"
@@ -32,7 +32,7 @@ const pharmacistSections = {
     pharmacology: {
         "Mechanism of Action": "mechanismOfAction",
         "Pharmacokinetics": "pharmacokinetics",
-        "Indications": "indications",
+        "Indications and Therapeutic Effects": "indications",
         "Contraindications": "contraindications",
         "Side Effects": "sideEffects",
         "Monitoring": "monitoring",
@@ -123,9 +123,9 @@ export function MonographClient() {
   }, [state]);
 
   const handleFormSubmit = form.handleSubmit((data: FormValues) => {
-    const formData = new FormData();
-    formData.append("drugName", data.drugName);
     startTransition(() => {
+      const formData = new FormData();
+      formData.append("drugName", data.drugName);
       formAction(formData);
     });
   });
