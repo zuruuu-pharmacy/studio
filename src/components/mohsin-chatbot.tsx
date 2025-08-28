@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useTransition, useRef, useEffect } from "react";
@@ -64,14 +65,14 @@ export function MohsinChatbot() {
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-[425px] md:max-w-[600px] flex flex-col h-[80vh]">
+        <DialogContent className="sm:max-w-md flex flex-col h-[70vh]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Bot className="h-6 w-6" /> Mohsin's AI Assistant
             </DialogTitle>
           </DialogHeader>
           <div className="flex-grow flex flex-col-reverse overflow-hidden">
-            <ScrollArea className="h-[calc(80vh-150px)]" ref={scrollAreaRef}>
+            <ScrollArea className="h-[calc(70vh-150px)]" ref={scrollAreaRef}>
               <div className="p-4 space-y-4">
                 {messages.length === 0 && (
                     <div className="text-center text-muted-foreground">Ask me anything!</div>
