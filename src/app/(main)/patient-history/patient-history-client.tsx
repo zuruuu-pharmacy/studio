@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -9,9 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { HeartPulse, ClipboardPlus, CheckCircle } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { usePatient, type PatientHistory } from "@/contexts/patient-context";
+import { CheckCircle } from "lucide-react";
+import { usePatient } from "@/contexts/patient-context";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const historySchema = z.object({
@@ -26,7 +24,6 @@ type HistoryFormValues = z.infer<typeof historySchema>;
 export function PatientHistoryClient() {
   const { patient, setPatient } = usePatient();
   const { toast } = useToast();
-  const [showDialog, setShowDialog] = useState(!patient.history && !patient.isEmergency);
 
   const historyForm = useForm<HistoryFormValues>({
     resolver: zodResolver(historySchema),
@@ -38,23 +35,8 @@ export function PatientHistoryClient() {
     },
   });
 
-  const handleEmergency = () => {
-    setPatient({ history: null, isEmergency: true });
-    historyForm.reset();
-    setShowDialog(false);
-    toast({
-      title: "Emergency Mode Activated",
-      description: "Patient history will be bypassed for all tools.",
-      duration: 3000,
-    });
-  };
-
-  const handleNormal = () => {
-    setShowDialog(false);
-  };
-  
   const handleHistorySubmit = historyForm.handleSubmit((data) => {
-    setPatient({ history: data, isEmergency: false });
+    setPatient({ history: data });
     toast({
       title: "Patient History Saved",
       description: "The patient's history has been updated and will be used by the AI tools.",
@@ -63,29 +45,8 @@ export function PatientHistoryClient() {
   });
 
   const handleReset = () => {
-     setPatient({ history: null, isEmergency: false });
+     setPatient({ history: null });
      historyForm.reset();
-     setShowDialog(true);
-  }
-
-  if (patient.isEmergency) {
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Emergency Mode Active</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center gap-4 text-center">
-                <Alert variant="destructive" className="max-w-md">
-                    <HeartPulse className="h-4 w-4"/>
-                    <AlertTitle>Emergency Mode</AlertTitle>
-                    <AlertDescription>
-                        Patient history is currently being bypassed. All tools will operate with limited information.
-                    </AlertDescription>
-                </Alert>
-                <Button onClick={handleReset}>Reset and Enter History</Button>
-            </CardContent>
-        </Card>
-    )
   }
 
   if (patient.history) {
@@ -125,7 +86,6 @@ export function PatientHistoryClient() {
               <FormField name="socialHistory" control={historyForm.control} render={({ field }) => (<FormItem><FormLabel>Social History</FormLabel><FormControl><Textarea placeholder="e.g., Smoking status, alcohol use, occupation" {...field} /></FormControl><FormMessage /></FormItem>)} />
               <FormField name="medicationHistory" control={historyForm.control} render={({ field }) => (<FormItem><FormLabel>Current Medication History</FormLabel><FormControl><Textarea placeholder="List all current medications, including OTC and supplements." {...field} /></FormControl><FormMessage /></FormItem>)} />
               <div className="flex justify-end pt-4 gap-4">
-                <Button type="button" variant="destructive" onClick={() => setShowDialog(true)}>Switch to Emergency</Button>
                 <Button type="submit">
                   Save Patient History
                 </Button>
@@ -134,16 +94,6 @@ export function PatientHistoryClient() {
           </Form>
         </CardContent>
       </Card>
-
-      <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Select Check Type</DialogTitle><DialogDescription>Is this an emergency situation, or do you have time to enter the patient's history?</DialogDescription></DialogHeader>
-          <div className="grid grid-cols-2 gap-4 pt-4">
-            <Button variant="destructive" size="lg" onClick={handleEmergency}><HeartPulse className="mr-2" />Emergency</Button>
-            <Button variant="secondary" size="lg" onClick={handleNormal}><ClipboardPlus className="mr-2" />Enter History</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

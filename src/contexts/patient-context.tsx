@@ -12,7 +12,6 @@ export interface PatientHistory {
 
 interface PatientState {
     history: PatientHistory | null;
-    isEmergency: boolean;
 }
 
 interface PatientContextType {
@@ -23,7 +22,7 @@ interface PatientContextType {
 const PatientContext = createContext<PatientContextType | undefined>(undefined);
 
 export function PatientProvider({ children }: { children: ReactNode }) {
-  const [patient, setPatient] = useState<PatientState>({ history: null, isEmergency: false });
+  const [patient, setPatient] = useState<PatientState>({ history: null });
   
   const contextValue = useMemo(() => ({ patient, setPatient }), [patient]);
 

@@ -35,7 +35,7 @@ export function AllergyClient() {
       try {
         const result = await allergyChecker({
           ...parsed.data,
-          isEmergency: patient.isEmergency,
+          isEmergency: false, // Always false now
           detailedHistory: patient.history || undefined,
         });
         return result;
@@ -74,7 +74,7 @@ export function AllergyClient() {
     });
   });
 
-  if (!patient.history && !patient.isEmergency) {
+  if (!patient.history) {
     return (
       <Card className="text-center">
         <CardHeader>
