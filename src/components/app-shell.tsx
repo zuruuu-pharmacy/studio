@@ -19,8 +19,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
+import { useMode } from "@/contexts/mode-context";
 
-const menuItems = [
+const pharmacistMenuItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/monograph", label: "Monograph Lookup", icon: BookText },
     { href: "/dose-calculator", label: "Dose Calculator", icon: Calculator },
@@ -33,8 +34,17 @@ const menuItems = [
     { href: "/emergency", label: "Emergency", icon: ShieldEllipsis },
 ];
 
+const patientMenuItems = [
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/patient-history", label: "My History", icon: User },
+    { href: "/emergency", label: "Emergency", icon: ShieldEllipsis },
+];
+
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { mode } = useMode();
+  const isPharmacist = mode === 'pharmacist';
+  const menuItems = isPharmacist ? pharmacistMenuItems : patientMenuItems;
 
   return (
     <SidebarProvider>
