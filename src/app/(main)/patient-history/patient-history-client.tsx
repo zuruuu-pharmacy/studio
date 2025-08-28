@@ -52,7 +52,7 @@ const formSections = [
         { name: 'demographics.age', label: 'Age / Date of Birth', placeholder: 'e.g., 45 years', type: 'input' },
         { name: 'demographics.gender', label: 'Gender', placeholder: 'Select Gender', type: 'select', options: ['Male', 'Female', 'Other', 'Prefer not to say'] },
         { name: 'demographics.maritalStatus', label: 'Marital Status', placeholder: 'Select Status', type: 'select', options: ['Single', 'Married', 'Divorced', 'Widowed', 'Separated', 'Prefer not to say'] },
-        { name: 'demographics.occupation', label: 'Occupation', placeholder: 'e.g., Teacher', type: 'input' },
+        { name: 'demographics.occupation', label: 'Occupation', placeholder: 'Select Occupation', type: 'select', options: ['Healthcare Professional', 'Teacher / Educator', 'Engineer', 'IT Professional', 'Farmer', 'Laborer', 'Office Worker / Clerical', 'Business Owner / Entrepreneur', 'Student', 'Homemaker', 'Retired', 'Unemployed', 'Other'] },
         { name: 'demographics.contactInfo', label: 'Address / Contact Info', placeholder: 'Phone or Address', type: 'input' },
         { name: 'demographics.hospitalId', label: 'Hospital ID / MRN', placeholder: 'If applicable', type: 'input' },
     ]},
