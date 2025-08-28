@@ -11,23 +11,38 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
+const demographicsSchema = z.object({
+  name: z.string().optional(),
+  age: z.string().optional(),
+  gender: z.string().optional(),
+  maritalStatus: z.string().optional(),
+  occupation: z.string().optional(),
+  contactInfo: z.string().optional(),
+  hospitalId: z.string().optional(),
+}).optional();
+
+const detailedHistorySchema = z.object({
+  demographics: demographicsSchema,
+  presentingComplaint: z.string().optional(),
+  historyOfPresentingIllness: z.string().optional(),
+  pastMedicalHistory: z.string().optional(),
+  medicationHistory: z.string().optional(),
+  allergyHistory: z.string().optional(),
+  familyHistory: z.string().optional(),
+  socialHistory: z.string().optional(),
+  immunizationHistory: z.string().optional(),
+  reviewOfSystems: z.string().optional(),
+  lifestyleAndCompliance: z.string().optional(),
+  ideasAndConcerns: z.string().optional(),
+  pharmacistAssessment: z.string().optional(),
+  carePlan: z.string().optional(),
+}).optional();
+
+
 const AllergyCheckerInputSchema = z.object({
   medicationName: z.string().describe('The name of the medication to check for allergies.'),
-  patientAllergies: z.string().describe('A comma-separated list of patient allergies.'),
-  isEmergency: z.boolean().describe('Whether this is an emergency situation.'),
-  patientMedicalHistory: z
-    .string()
-    .optional()
-    .describe('General patient medical history if not a detailed workup.'),
-  detailedHistory: z
-    .object({
-      pastMedicalHistory: z.string().optional(),
-      familyHistory: z.string().optional(),
-      socialHistory: z.string().optional(),
-      medicationHistory: z.string().optional(),
-    })
-    .optional()
-    .describe('Detailed patient history for a non-emergency workup.'),
+  patientAllergies: z.string().describe('A comma-separated list of patient allergies (as a simple string).'),
+  detailedHistory: detailedHistorySchema.describe('Detailed patient history for a comprehensive workup.'),
 });
 export type AllergyCheckerInput = z.infer<typeof AllergyCheckerInputSchema>;
 
@@ -52,23 +67,30 @@ const prompt = ai.definePrompt({
 You will use the provided information to assess the allergy risk associated with prescribing a specific medication to a patient.
 
 Medication to check: {{{medicationName}}}
-Patient Allergies: {{{patientAllergies}}}
+Patient's listed allergies: {{{patientAllergies}}}
 
-{{#if isEmergency}}
-This is an emergency. Provide a rapid assessment based on the limited information.
-{{else}}
-This is a non-emergency workup. Consider the detailed history provided.
-Patient Medical History: {{{patientMedicalHistory}}}
+Use the patient's listed allergies as the primary source, but also consider the full detailed history for a comprehensive analysis.
+The 'allergyHistory' field within the detailed history is the most important section for this task.
+
 {{#if detailedHistory}}
-Detailed History:
-- Past Medical History: {{{detailedHistory.pastMedicalHistory}}}
-- Family History: {{{detailedHistory.familyHistory}}}
-- Social History: {{{detailedHistory.socialHistory}}}
-- Medication History: {{{detailedHistory.medicationHistory}}}
-{{/if}}
+## Detailed Patient History for Context
+- **Demographics**: Name: {{detailedHistory.demographics.name}}, Age: {{detailedHistory.demographics.age}}, Gender: {{detailedHistory.demographics.gender}}
+- **Presenting Complaint**: {{detailedHistory.presentingComplaint}}
+- **History of Presenting Illness**: {{detailedHistory.historyOfPresentingIllness}}
+- **Past Medical History**: {{detailedHistory.pastMedicalHistory}}
+- **Medication History**: {{detailedHistory.medicationHistory}}
+- **Allergy & ADR History**: {{detailedHistory.allergyHistory}}
+- **Family History**: {{detailedHistory.familyHistory}}
+- **Social History**: {{detailedHistory.socialHistory}}
+- **Immunization History**: {{detailedHistory.immunizationHistory}}
+- **Review of Systems**: {{detailedHistory.reviewOfSystems}}
+- **Lifestyle & Compliance**: {{detailedHistory.lifestyleAndCompliance}}
+- **Patient's Ideas & Concerns**: {{detailedHistory.ideasAndConcerns}}
+- **Pharmacist's Assessment**: {{detailedHistory.pharmacistAssessment}}
+- **Care Plan**: {{detailedHistory.carePlan}}
 {{/if}}
 
-Based on this information, determine if there is an allergy or cross-reactivity risk. Provide details about the risk, suggest alternative medication options, and offer guidance for the pharmacist.
+Based on all this information, determine if there is an allergy or cross-reactivity risk. Provide details about the risk, suggest alternative medication options, and offer guidance for the pharmacist.
 
 Respond in the format specified by the AllergyCheckerOutputSchema.`,
 });

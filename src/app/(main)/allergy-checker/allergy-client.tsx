@@ -35,7 +35,6 @@ export function AllergyClient() {
       try {
         const result = await allergyChecker({
           ...parsed.data,
-          isEmergency: false, // Always false now
           detailedHistory: patient.history || undefined,
         });
         return result;
@@ -53,8 +52,18 @@ export function AllergyClient() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { medicationName: "", patientAllergies: "" },
+    defaultValues: {
+      medicationName: "",
+      patientAllergies: patient.history?.allergyHistory || "",
+    },
   });
+  
+  useEffect(() => {
+    form.reset({
+      medicationName: "",
+      patientAllergies: patient.history?.allergyHistory || "",
+    });
+  }, [patient.history, form]);
 
   useEffect(() => {
     if (state && 'error' in state && state.error) {
@@ -107,7 +116,12 @@ export function AllergyClient() {
                     <FormItem><FormLabel>Medication to Check</FormLabel><FormControl><Input placeholder="e.g., Penicillin" {...field} /></FormControl><FormMessage /></FormItem>
                   )} />
                   <FormField name="patientAllergies" control={form.control} render={({ field }) => (
-                    <FormItem><FormLabel>Patient's Known Allergies</FormLabel><FormControl><Textarea placeholder="e.g., Sulfa drugs, Aspirin" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem>
+                      <FormLabel>Patient's Known Allergies</FormLabel>
+                      <FormControl><Textarea placeholder="e.g., Sulfa drugs, Aspirin" {...field} /></FormControl>
+                      <FormMessage />
+                      <p className="text-xs text-muted-foreground pt-1">This is pre-filled from the Allergy & ADR History section.</p>
+                    </FormItem>
                   )} />
                   <Button type="submit" disabled={isPending} className="w-full">
                     {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
