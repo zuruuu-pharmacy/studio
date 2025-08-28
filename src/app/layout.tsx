@@ -4,6 +4,7 @@ import { ModeProvider } from '@/contexts/mode-context';
 import { Toaster } from '@/components/ui/toaster';
 import { PatientProvider } from '@/contexts/patient-context';
 import { AppShell } from '@/components/app-shell';
+import { MohsinChatbot } from '@/components/mohsin-chatbot';
 
 export const metadata: Metadata = {
   title: 'Zuruu AI Pharmacy',
@@ -29,6 +30,7 @@ export default function RootLayout({
               {children}
             </AppShell>
             <Toaster />
+            <MohsinChatbot />
           </PatientProvider>
         </ModeProvider>
       </body>
