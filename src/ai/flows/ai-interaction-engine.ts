@@ -26,7 +26,7 @@ export type CheckDrugInteractionsInput = z.infer<
 
 const CheckDrugInteractionsOutputSchema = z.object({
   interactions: z.array(z.object({
-    severity: z.string().describe('The severity of the interaction.'),
+    severity: z.string().describe('The severity of the interaction (e.g., High, Moderate, Low).'),
     mechanism: z.string().describe('The mechanism of the interaction.'),
     suggestedActions: z.string().describe('Suggested actions or alternatives.'),
     interactingDrugs: z.array(z.string()).describe('The drugs (or food) involved in the interaction.')
