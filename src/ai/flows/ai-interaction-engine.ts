@@ -32,7 +32,7 @@ const CheckDrugInteractionsOutputSchema = z.object({
     interactingDrugs: z.array(z.string()).describe('The drugs (or food) involved in the interaction.')
   })).describe('A list of drug interactions, including drug-food interactions.'),
 });
-export type CheckDrugInteractionsOutput = z-infer<
+export type CheckDrugInteractionsOutput = z.infer<
   typeof CheckDrugInteractionsOutputSchema
 >;
 
