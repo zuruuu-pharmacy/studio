@@ -23,15 +23,15 @@ import { Separator } from "@/components/ui/separator";
 import { ModeToggle } from "@/components/mode-toggle";
 
 const menuItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/monograph", label: "Monograph Lookup", icon: BookText },
-  { href: "/dose-calculator", label: "Dose Calculator", icon: Calculator },
-  { href: "/interaction-checker", label: "Interaction Checker", icon: FlaskConical },
-  { href: "/allergy-checker", label: "Allergy Checker", icon: ShieldAlert },
-  { href: "/prescription-reader", label: "Prescription Reader", icon: ScanEye },
-  { href: "/lab-analyzer", label: "Lab Analyzer", icon: TestTube },
-  { href: "/patients", label: "Patients", icon: Users },
-  { href: "/patient-history", label: "Patient History Form", icon: User },
+    { href: "/", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/monograph", label: "Monograph Lookup", icon: BookText },
+    { href: "/dose-calculator", label: "Dose Calculator", icon: Calculator },
+    { href: "/interaction-checker", label: "Interaction Checker", icon: FlaskConical },
+    { href: "/allergy-checker", label: "Allergy Checker", icon: ShieldAlert },
+    { href: "/prescription-reader", label: "Prescription Reader", icon: ScanEye },
+    { href: "/lab-analyzer", label: "Lab Analyzer", icon: TestTube },
+    { href: "/patients", label: "Patients", icon: Users },
+    { href: "/patient-history", label: "Patient History Form", icon: User },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -44,7 +44,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           <SidebarHeader>
             <div className="flex items-center gap-2 p-2">
               <Waves className="h-8 w-8 text-primary" />
-              <h1 className="text-xl font-bold font-headline text-primary">Zuruu AI</h1>
+              <div>
+                <h1 className="text-xl font-bold font-headline text-primary">Zuruu AI</h1>
+                <p className="text-xs text-muted-foreground">By DR.Mohsin Saleem</p>
+              </div>
             </div>
           </SidebarHeader>
           <SidebarContent>
