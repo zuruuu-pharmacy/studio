@@ -23,13 +23,7 @@ const demographicsSchema = z.object({
   gender: z.string().optional(),
   maritalStatus: z.string().optional(),
   occupation: z.string().optional(),
-  country: z.string().optional(),
-  province: z.string().optional(),
-  district: z.string().optional(),
-  town: z.string().optional(),
-  block: z.string().optional(),
-  street: z.string().optional(),
-  houseNo: z.string().optional(),
+  address: z.string().optional(),
   hospitalId: z.string().optional(),
   phoneNumber: z.string().optional(),
 });
@@ -60,13 +54,7 @@ const formSections = [
         { name: 'demographics.gender', label: 'Gender', placeholder: 'Select Gender', type: 'select', options: ['Male', 'Female', 'Other', 'Prefer not to say'] },
         { name: 'demographics.maritalStatus', label: 'Marital Status', placeholder: 'Select Status', type: 'select', options: ['Single', 'Married', 'Divorced', 'Widowed', 'Separated', 'Prefer not to say'] },
         { name: 'demographics.occupation', label: 'Occupation', placeholder: 'Select Occupation', type: 'select', options: ['Healthcare Professional', 'Teacher / Educator', 'Engineer', 'IT Professional', 'Farmer', 'Laborer', 'Office Worker / Clerical', 'Business Owner / Entrepreneur', 'Student', 'Homemaker', 'Retired', 'Unemployed', 'Other'] },
-        { name: 'demographics.country', label: 'Country', placeholder: 'e.g., Pakistan', type: 'input' },
-        { name: 'demographics.province', label: 'Province', placeholder: 'e.g., Punjab', type: 'input' },
-        { name: 'demographics.district', label: 'District', placeholder: 'e.g., Lahore', type: 'input' },
-        { name: 'demographics.town', label: 'Town/City', placeholder: 'e.g., Gulberg', type: 'input' },
-        { name: 'demographics.block', label: 'Block/Sector', placeholder: 'e.g., Block B', type: 'input' },
-        { name: 'demographics.street', label: 'Street', placeholder: 'e.g., Street 5', type: 'input' },
-        { name: 'demographics.houseNo', label: 'House No.', placeholder: 'e.g., 123', type: 'input' },
+        { name: 'demographics.address', label: 'Address / Contact Info', placeholder: 'Full address including city', type: 'textarea' },
         { name: 'demographics.hospitalId', label: 'Hospital ID / MRN', placeholder: 'If applicable', type: 'input' },
         { name: 'demographics.phoneNumber', label: 'Phone Number', placeholder: '+92 3...', type: 'input' },
     ]},
@@ -92,13 +80,7 @@ const defaultFormValues: HistoryFormValues = {
         gender: '',
         maritalStatus: '',
         occupation: '',
-        country: '',
-        province: '',
-        district: '',
-        town: '',
-        block: '',
-        street: '',
-        houseNo: '',
+        address: '',
         hospitalId: '',
         phoneNumber: '',
     },
@@ -186,7 +168,7 @@ export function PatientHistoryClient() {
                             control={historyForm.control}
                             name={f.name as any}
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className={f.type === 'textarea' ? 'md:col-span-2' : ''}>
                                 <FormLabel>{f.label}</FormLabel>
                                 {f.type === 'select' ? (
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -199,6 +181,8 @@ export function PatientHistoryClient() {
                                             {f.options?.map(option => <SelectItem key={option} value={option}>{option}</SelectItem>)}
                                         </SelectContent>
                                     </Select>
+                                ) : f.type === 'textarea' ? (
+                                    <FormControl><Textarea placeholder={f.placeholder} {...field} /></FormControl>
                                 ) : (
                                     <FormControl><Input placeholder={f.placeholder} {...field} /></FormControl>
                                 )}

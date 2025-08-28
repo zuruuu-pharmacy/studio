@@ -12,13 +12,7 @@ export interface PatientHistory {
     gender?: string;
     maritalStatus?: string;
     occupation?: string;
-    country?: string;
-    province?: string;
-    district?: string;
-    town?: string;
-    block?: string;
-    street?: string;
-    houseNo?: string;
+    address?: string;
     hospitalId?: string;
     phoneNumber?: string;
   };
