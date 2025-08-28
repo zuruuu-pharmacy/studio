@@ -15,13 +15,13 @@ const historySchema = z.object({
   content: z.string(),
 });
 
+export type MohsinChatbotInput = z.infer<typeof MohsinChatbotInputSchema>;
 const MohsinChatbotInputSchema = z.object({
   history: z.array(historySchema).describe('The chat history.'),
 });
-export type MohsinChatbotInput = z.infer<typeof MohsinChatbotInputSchema>;
 
-const MohsinChatbotOutputSchema = z.string().describe('The chatbot response.');
 export type MohsinChatbotOutput = z.infer<typeof MohsinChatbotOutputSchema>;
+const MohsinChatbotOutputSchema = z.string().describe('The chatbot response.');
 
 export async function mohsinChatbot(input: MohsinChatbotInput): Promise<MohsinChatbotOutput> {
   return mohsinChatbotFlow(input);
@@ -40,7 +40,7 @@ const mohsinChatbotFlow = ai.defineFlow(
         messages: [
           {
             role: 'system',
-            content: `You are Mohsin's, a friendly and helpful AI assistant. Answer the user's questions as accurately as possible.`,
+            content: `You are Zuruu AI Assistant, a friendly and helpful AI assistant. Answer the user's questions as accurately as possible.`,
           },
           ...history,
         ],

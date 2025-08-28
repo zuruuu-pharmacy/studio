@@ -68,7 +68,7 @@ export function MohsinChatbot() {
          <Card className="fixed bottom-24 right-6 z-50 w-full max-w-sm h-[70vh] flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
-                <Bot className="h-6 w-6" /> Mohsin's AI Assistant
+                <Bot className="h-6 w-6" /> Zuruu AI Assistant
                 </CardTitle>
             </CardHeader>
             <CardContent className="flex-grow flex flex-col-reverse overflow-hidden p-0">
