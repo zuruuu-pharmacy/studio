@@ -36,17 +36,20 @@ const pharmacistSections = {
         "Contraindications": "contraindications",
         "Side Effects": "sideEffects",
         "Monitoring": "monitoring",
+        "Dosing": "dosing",
+        "Administration": "administration"
     },
     pharmaceutical: {
-        "Dosing": "dosing",
-        "Administration": "administration",
+        "Manufacturing Process": "manufacturingProcess",
+        "Raw Materials": "rawMaterials",
         "Storage": "storage",
         "Drug Interactions": "drugInteractions",
     },
     research: {
+        "Invention History": "inventionHistory",
+        "Recent Research": "recentResearch",
         "Pregnancy/Lactation": "pregnancyLactation",
         "Clinical Trials": "clinicalTrials",
-        "Other Information": "otherInformation",
     }
 };
 
@@ -54,8 +57,8 @@ function MonographSection({ title, content }: { title: string; content: string }
     if (!content) return null;
     return (
         <Card className="bg-background/50">
-            <Accordion type="single" collapsible>
-                <AccordionItem value={title} className="border-b-0">
+            <Accordion type="single" collapsible defaultValue="item-1">
+                <AccordionItem value="item-1" className="border-b-0">
                     <AccordionTrigger className="text-xl font-semibold p-4 hover:no-underline">{title}</AccordionTrigger>
                     <AccordionContent className="px-6 pb-4">
                         <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap dark:prose-invert">
@@ -121,11 +124,7 @@ export function MonographClient() {
 
   const handleFormSubmit = form.handleSubmit((data: FormValues) => {
     const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-            formData.append(key, value.toString());
-        }
-    });
+    formData.append("drugName", data.drugName);
     startTransition(() => {
       formAction(formData);
     });
@@ -199,7 +198,7 @@ export function MonographClient() {
                 <div className="space-y-4">
                   {Object.entries(patientSections).map(([title, key]) => {
                     const content = monographData.pharmacology[key as keyof typeof monographData.pharmacology] || monographData.pharmaceutical[key as keyof typeof monographData.pharmaceutical];
-                    return <MonographSection key={key} title={title} content={content} />
+                    return <MonographSection key={key} title={title} content={content as string} />
                   })}
                 </div>
               )}

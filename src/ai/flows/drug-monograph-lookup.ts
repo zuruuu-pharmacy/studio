@@ -23,17 +23,20 @@ const DrugMonographLookupOutputSchema = z.object({
     contraindications: z.string().describe('Situations where the drug should not be used.'),
     sideEffects: z.string().describe('Common and severe side effects.'),
     monitoring: z.string().describe('Parameters to monitor during therapy.'),
-  }),
-  pharmaceutical: z.object({
     dosing: z.string().describe('Recommended dosing for different indications and populations.'),
     administration: z.string().describe('Instructions for how to administer the drug.'),
+  }),
+  pharmaceutical: z.object({
+    manufacturingProcess: z.string().describe('Details on how the medication is made.'),
+    rawMaterials: z.string().describe('Information on the raw materials used in the formulation.'),
     storage: z.string().describe('Proper storage conditions.'),
     drugInteractions: z.string().describe('Known drug-drug or drug-food interactions.'),
   }),
   research: z.object({
+    inventionHistory: z.string().describe('The history of who invented the drug and its background.'),
+    recentResearch: z.string().describe('A summary of recent research and developments related to the drug.'),
     pregnancyLactation: z.string().describe('Information regarding use in pregnancy and lactation.'),
     clinicalTrials: z.string().describe('Summary of key clinical trials information.'),
-    otherInformation: z.string().describe('Any other relevant information or off-label uses.'),
   }),
 });
 export type DrugMonographLookupOutput = z.infer<typeof DrugMonographLookupOutputSchema>;
@@ -57,17 +60,20 @@ const prompt = ai.definePrompt({
   - **Contraindications**
   - **Side Effects**
   - **Monitoring**
-
-  ## Pharmaceutical
   - **Dosing**
   - **Administration**
+
+  ## Pharmaceutical
+  - **Manufacturing Process**: How is this medicine made?
+  - **Raw Materials**: What raw materials are used?
   - **Storage**
   - **Drug Interactions**
 
   ## Research
+  - **Invention History**: Who invented this drug and what is its background?
+  - **Recent Research**: What are the latest research developments for this drug?
   - **Pregnancy/Lactation Information**
   - **Clinical Trials Information**
-  - **Other Information** (including any notable off-label uses)
   `,
 });
 
