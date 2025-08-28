@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
   drugName: z.string().min(2, "Required"),
+  indication: z.string().min(3, "Indication is required"),
   patientWeightKg: z.coerce.number().positive("Must be positive"),
   patientAgeYears: z.coerce.number().int().positive("Must be a positive integer"),
   renalFunction: z.string().optional(),
@@ -50,6 +51,7 @@ export function DoseCalculatorClient() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       drugName: "",
+      indication: "",
       renalFunction: "",
       hepaticFunction: "",
       availableFormulations: "",
@@ -91,6 +93,9 @@ export function DoseCalculatorClient() {
                 <FormField name="drugName" control={form.control} render={({ field }) => (
                   <FormItem><FormLabel>Drug Name</FormLabel><FormControl><Input placeholder="e.g., Amoxicillin" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
+                 <FormField name="indication" control={form.control} render={({ field }) => (
+                  <FormItem><FormLabel>Indication for Use</FormLabel><FormControl><Input placeholder="e.g., Pneumonia" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
                 <FormField name="patientWeightKg" control={form.control} render={({ field }) => (
                   <FormItem><FormLabel>Patient Weight (kg)</FormLabel><FormControl><Input type="number" placeholder="e.g., 70" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
@@ -122,7 +127,7 @@ export function DoseCalculatorClient() {
           <Card className="bg-gradient-to-br from-background to-secondary/30">
             <CardHeader>
               <CardTitle className="text-2xl font-bold text-primary">Dosage Calculation Results</CardTitle>
-              <CardDescription>Results for {form.getValues("drugName")}</CardDescription>
+              <CardDescription>Results for {form.getValues("drugName")} for {form.getValues("indication")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="p-6 bg-primary/10 rounded-lg text-center">

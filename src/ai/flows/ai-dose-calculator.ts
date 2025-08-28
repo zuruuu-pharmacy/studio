@@ -15,6 +15,7 @@ const CalculateDosageInputSchema = z.object({
   drugName: z.string().describe('The name of the drug.'),
   patientWeightKg: z.number().describe('The patient\u2019s weight in kilograms.'),
   patientAgeYears: z.number().describe('The patient\u2019s age in years.'),
+  indication: z.string().describe('The patient\'s condition or reason for taking the medication (e.g., "Community-acquired pneumonia").'),
   renalFunction: z
     .string()
     .optional()
@@ -31,7 +32,7 @@ export type CalculateDosageInput = z.infer<typeof CalculateDosageInputSchema>;
 
 const CalculateDosageOutputSchema = z.object({
   calculatedDosage: z.string().describe('The calculated dosage of the drug.'),
-  calculationSteps: z.string().describe('The steps taken to calculate the dosage.'),
+  calculationSteps: z.string().describe('The steps taken to calculate the dosage, using general formulas.'),
   references: z.string().describe('References or sources used for the dosage calculation.'),
   roundedDosageSuggestion: z
     .string()
@@ -49,19 +50,22 @@ const prompt = ai.definePrompt({
   name: 'calculateDosagePrompt',
   input: {schema: CalculateDosageInputSchema},
   output: {schema: CalculateDosageOutputSchema},
-  prompt: `You are an expert pharmacist specializing in calculating drug dosages based on patient-specific factors.
+  prompt: `You are an expert pharmacist specializing in calculating drug dosages based on patient-specific factors and the indication for the medication.
 
-  Given the following information, calculate the appropriate dosage for the drug, showing all calculation steps and references.
+  Given the following information, calculate the appropriate dosage for the drug using standard clinical formulas (e.g., mg/kg/day). Show all calculation steps and references.
+  The dosage is highly dependent on the reason the patient is taking the medication.
+
   If the available formulations are provided, and if appropriate, consider recommending a rounded dosage that matches the available formulations.
 
   Drug Name: {{{drugName}}}
+  Indication: {{{indication}}}
   Patient Weight (kg): {{{patientWeightKg}}}
   Patient Age (years): {{{patientAgeYears}}}
   Renal Function: {{{renalFunction}}}
   Hepatic Function: {{{hepaticFunction}}}
   Available Formulations: {{{availableFormulations}}}
 
-  Ensure that the calculated dosage, calculation steps, and references are clearly stated.
+  Ensure that the calculated dosage, calculation steps (using general formulas), and references are clearly stated.
   If a rounded dosage is suggested, explain the reasoning behind it.
 `,
 });
