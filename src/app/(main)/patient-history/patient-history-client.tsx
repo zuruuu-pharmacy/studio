@@ -1,3 +1,4 @@
+
 "use client";
 
 import { z } from "zod";
@@ -68,13 +69,38 @@ const formSections = [
     { id: 'carePlan', title: '14. Plan (Pharmaceutical Care Plan)', description: 'Counseling points, communication with doctor, monitoring.', field: { name: 'carePlan', placeholder: 'e.g., Counsel patient on taking med with food, recommend monitoring BP...' } },
 ];
 
+const defaultFormValues: HistoryFormValues = {
+    demographics: {
+        name: '',
+        age: '',
+        gender: '',
+        maritalStatus: '',
+        occupation: '',
+        contactInfo: '',
+        hospitalId: '',
+    },
+    presentingComplaint: '',
+    historyOfPresentingIllness: '',
+    pastMedicalHistory: '',
+    medicationHistory: '',
+    allergyHistory: '',
+    familyHistory: '',
+    socialHistory: '',
+    immunizationHistory: '',
+    reviewOfSystems: '',
+    lifestyleAndCompliance: '',
+    ideasAndConcerns: '',
+    pharmacistAssessment: '',
+    carePlan: '',
+};
+
 export function PatientHistoryClient() {
   const { patient, setPatient } = usePatient();
   const { toast } = useToast();
 
   const historyForm = useForm<HistoryFormValues>({
     resolver: zodResolver(historySchema),
-    defaultValues: patient.history || {},
+    defaultValues: patient.history || defaultFormValues,
   });
 
   const handleHistorySubmit = historyForm.handleSubmit((data) => {
@@ -88,7 +114,7 @@ export function PatientHistoryClient() {
 
   const handleReset = () => {
      setPatient({ history: null });
-     historyForm.reset({});
+     historyForm.reset(defaultFormValues);
   }
 
   if (patient.history) {
