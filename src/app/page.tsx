@@ -17,11 +17,12 @@ const PHARMACIST_CODE = "239773";
 export default function RoleSelectionPage() {
   const [pharmacistModalOpen, setPharmacistModalOpen] = useState(false);
   const [patientModalOpen, setPatientModalOpen] = useState(false);
+  const [newPatientModalOpen, setNewPatientModalOpen] = useState(false);
   const [pharmacistCode, setPharmacistCode] = useState("");
   const [patientName, setPatientName] = useState("");
   const [patientPhone, setPatientPhone] = useState("");
   const { setMode } = useMode();
-  const { patientState, setActivePatient, clearActivePatient } = usePatient();
+  const { patientState, setActivePatient, addOrUpdatePatient, clearActivePatient } = usePatient();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -56,9 +57,12 @@ export default function RoleSelectionPage() {
       toast({ title: "Welcome Back!", description: `Loading profile for ${existingPatient.demographics?.name}.` });
       router.push("/patient-history");
     } else {
+      // New patient flow
       clearActivePatient();
-      toast({ title: "Welcome!", description: "Please create your patient history." });
-      router.push("/patient-history");
+      addOrUpdatePatient({ demographics: { name: patientName, phoneNumber: patientPhone } });
+      toast({ title: "Welcome!", description: "Please choose an option to continue." });
+      setPatientModalOpen(false);
+      setNewPatientModalOpen(true);
     }
   };
   
@@ -134,6 +138,20 @@ export default function RoleSelectionPage() {
           </div>
           <DialogFooter>
             <Button onClick={handlePatientLogin}>Continue</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* New Patient Options Modal */}
+      <Dialog open={newPatientModalOpen} onOpenChange={setNewPatientModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Welcome, {patientName}!</DialogTitle>
+            <DialogDescription>How would you like to proceed?</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col sm:flex-col sm:space-x-0 gap-2">
+            <Button onClick={() => router.push('/patient-history')} variant="default" size="lg">Create Patient History</Button>
+            <Button onClick={() => router.push('/emergency')} variant="destructive" size="lg">Emergency</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
