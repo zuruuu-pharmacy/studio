@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ReactNode } from "react";
@@ -23,13 +24,13 @@ import { ModeToggle } from "@/components/mode-toggle";
 
 const menuItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/patients", label: "Patients", icon: Users },
-  { href: "/patient-history", label: "Patient History Form", icon: User },
   { href: "/monograph", label: "Monograph Lookup", icon: BookText },
   { href: "/dose-calculator", label: "Dose Calculator", icon: Calculator },
   { href: "/interaction-checker", label: "Interaction Checker", icon: FlaskConical },
   { href: "/allergy-checker", label: "Allergy Checker", icon: ShieldAlert },
   { href: "/prescription-reader", label: "Prescription Reader", icon: ScanEye },
+  { href: "/patients", label: "Patients", icon: Users },
+  { href: "/patient-history", label: "Patient History Form", icon: User },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
