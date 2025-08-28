@@ -19,7 +19,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
-import { Logo } from "@/components/logo";
 
 const menuItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -42,7 +41,6 @@ export function AppShell({ children }: { children: ReactNode }) {
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2 p-2">
-              <Logo />
               <div>
                 <h1 className="text-xl font-bold font-headline text-primary">Zuruu AI</h1>
                 <p className="text-xs text-muted-foreground">By DR.Mohsin Saleem</p>
