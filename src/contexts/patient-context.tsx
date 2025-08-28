@@ -2,10 +2,11 @@
 "use client";
 
 import type { ReactNode } from 'react';
-import { createContext, useContext, useState, useMemo } from 'react';
+import { createContext, useContext, useState, useMemo, useEffect } from 'react';
 
 export interface PatientHistory {
   // 1. Patient Identification (Demographics)
+  id: string;
   demographics?: {
     name?: string;
     age?: string;
@@ -46,20 +47,91 @@ export interface PatientHistory {
 }
 
 interface PatientState {
-    history: PatientHistory | null;
+    activePatient: PatientHistory | null;
+    patients: PatientHistory[];
 }
 
 interface PatientContextType {
-  patient: PatientState;
-  setPatient: (patient: PatientState) => void;
+  patientState: PatientState;
+  setPatientState: React.Dispatch<React.SetStateAction<PatientState>>;
+  addOrUpdatePatient: (patientHistory: Omit<PatientHistory, 'id'> & { id?: string }) => void;
+  setActivePatient: (patientId: string | null) => void;
+  clearActivePatient: () => void;
+  resetPatientHistory: (patientId: string) => void;
 }
 
 const PatientContext = createContext<PatientContextType | undefined>(undefined);
 
+const LOCAL_STORAGE_KEY = 'pharmacy_patients';
+
 export function PatientProvider({ children }: { children: ReactNode }) {
-  const [patient, setPatient] = useState<PatientState>({ history: null });
+  const [patientState, setPatientState] = useState<PatientState>({ activePatient: null, patients: [] });
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    try {
+      const savedPatients = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (savedPatients) {
+        setPatientState(JSON.parse(savedPatients));
+      }
+    } catch (error) {
+      console.error("Failed to load patient data from localStorage", error);
+    }
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if(isLoaded) {
+        try {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(patientState));
+        } catch (error) {
+            console.error("Failed to save patient data to localStorage", error);
+        }
+    }
+  }, [patientState, isLoaded]);
+
+  const addOrUpdatePatient = (patientHistory: Omit<PatientHistory, 'id'> & { id?: string }) => {
+    setPatientState(prevState => {
+        const newPatients = [...prevState.patients];
+        if(patientHistory.id) {
+            const index = newPatients.findIndex(p => p.id === patientHistory.id);
+            if(index !== -1) {
+                newPatients[index] = { ...newPatients[index], ...patientHistory };
+                 return { ...prevState, patients: newPatients, activePatient: newPatients[index] };
+            }
+        }
+        
+        const newPatient = { ...patientHistory, id: Date.now().toString() };
+        newPatients.push(newPatient);
+        return { ...prevState, patients: newPatients, activePatient: newPatient };
+    });
+  };
   
-  const contextValue = useMemo(() => ({ patient, setPatient }), [patient]);
+  const setActivePatient = (patientId: string | null) => {
+    if (patientId === null) {
+        setPatientState(s => ({...s, activePatient: null}));
+        return;
+    }
+    const patientToSelect = patientState.patients.find(p => p.id === patientId);
+    if(patientToSelect) {
+        setPatientState(s => ({...s, activePatient: patientToSelect}));
+    }
+  }
+
+  const clearActivePatient = () => {
+    setPatientState(s => ({...s, activePatient: null}));
+  }
+  
+  const resetPatientHistory = (patientId: string) => {
+    setPatientState(prevState => {
+        const newPatients = prevState.patients.filter(p => p.id !== patientId);
+        const newActivePatient = prevState.activePatient?.id === patientId ? null : prevState.activePatient;
+        return { ...prevState, patients: newPatients, activePatient: newActivePatient };
+    });
+  };
+
+
+  const contextValue = useMemo(() => ({ patientState, setPatientState, addOrUpdatePatient, setActivePatient, clearActivePatient, resetPatientHistory }), [patientState]);
 
   return (
     <PatientContext.Provider value={contextValue}>

@@ -15,6 +15,8 @@ import { usePatient } from "@/contexts/patient-context";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 
 const demographicsSchema = z.object({
@@ -30,6 +32,7 @@ const demographicsSchema = z.object({
 });
 
 const historySchema = z.object({
+  id: z.string().optional(),
   demographics: demographicsSchema.optional(),
   presentingComplaint: z.string().optional(),
   historyOfPresentingIllness: z.string().optional(),
@@ -76,6 +79,7 @@ const formSections = [
 ];
 
 const defaultFormValues: HistoryFormValues = {
+    id: undefined,
     demographics: {
         name: '',
         age: '',
@@ -103,56 +107,58 @@ const defaultFormValues: HistoryFormValues = {
 };
 
 export function PatientHistoryClient() {
-  const { patient, setPatient } = usePatient();
+  const { patientState, addOrUpdatePatient, clearActivePatient, resetPatientHistory } = usePatient();
   const { toast } = useToast();
+  const router = useRouter();
 
   const historyForm = useForm<HistoryFormValues>({
     resolver: zodResolver(historySchema),
-    defaultValues: patient.history || defaultFormValues,
+    defaultValues: patientState.activePatient || defaultFormValues,
   });
+  
+  useEffect(() => {
+    historyForm.reset(patientState.activePatient || defaultFormValues)
+  }, [patientState.activePatient, historyForm]);
+
 
   const handleHistorySubmit = historyForm.handleSubmit((data) => {
-    setPatient({ history: data });
+    addOrUpdatePatient(data);
     toast({
       title: "Patient History Saved",
-      description: "The patient's history has been updated and will be used by the AI tools.",
+      description: "The patient's history has been saved.",
       duration: 3000,
     });
+    router.push('/patients');
   });
 
   const handleReset = () => {
-     setPatient({ history: null });
-     historyForm.reset(defaultFormValues);
+     if(patientState.activePatient) {
+        resetPatientHistory(patientState.activePatient.id);
+        toast({
+          title: "Patient Record Deleted",
+          description: "The patient's history has been removed.",
+        });
+     }
   }
-
-  if (patient.history) {
-     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Patient History on File</CardTitle>
-                <CardDescription>This information is being used by the other AI tools.</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center gap-4 text-center">
-                 <Alert variant="default" className="max-w-md bg-green-500/10 border-green-500 text-green-700 dark:text-green-400">
-                    <CheckCircle className="h-4 w-4 text-green-500"/>
-                    <AlertTitle>History Saved</AlertTitle>
-                    <AlertDescription>
-                        You can now use the other tools with this patient's history.
-                    </AlertDescription>
-                </Alert>
-                <Button onClick={handleReset}>Reset or Edit History</Button>
-            </CardContent>
-        </Card>
-     )
+  
+  const handleAddNew = () => {
+    clearActivePatient();
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Comprehensive Patient History</CardTitle>
-        <CardDescription>
-          Fill out the patient's history below. This information will enable more accurate analysis by the other AI tools.
-        </CardDescription>
+        <div className="flex justify-between items-center">
+            <div>
+                <CardTitle>Comprehensive Patient History</CardTitle>
+                <CardDescription>
+                {patientState.activePatient ? `Editing patient: ${patientState.activePatient.demographics?.name || 'N/A'}` : 'Creating a new patient record.'}
+                </CardDescription>
+            </div>
+            {patientState.activePatient && (
+                <Button onClick={handleAddNew} variant="outline">Add New Patient</Button>
+            )}
+        </div>
       </CardHeader>
       <CardContent>
         <Form {...historyForm}>
@@ -185,9 +191,9 @@ export function PatientHistoryClient() {
                                         </SelectContent>
                                     </Select>
                                 ) : f.type === 'textarea' ? (
-                                    <FormControl><Textarea placeholder={f.placeholder} {...field} /></FormControl>
+                                    <FormControl><Textarea placeholder={f.placeholder} {...field} value={field.value ?? ''} /></FormControl>
                                 ) : (
-                                    <FormControl><Input placeholder={f.placeholder} {...field} /></FormControl>
+                                    <FormControl><Input placeholder={f.placeholder} {...field} value={field.value ?? ''} /></FormControl>
                                 )}
                                 <FormMessage />
                               </FormItem>
@@ -200,7 +206,7 @@ export function PatientHistoryClient() {
                             name={section.field.name as any}
                             render={({ field }) => (
                               <FormItem>
-                                <FormControl><Textarea placeholder={section.field.placeholder} {...field} rows={4} /></FormControl>
+                                <FormControl><Textarea placeholder={section.field.placeholder} {...field} value={field.value ?? ''} rows={4} /></FormControl>
                                 <FormMessage />
                               </FormItem>
                             )}
@@ -211,9 +217,14 @@ export function PatientHistoryClient() {
                 </AccordionItem>
               ))}
             </Accordion>
-            <div className="flex justify-end pt-4">
+            <div className="flex justify-end pt-4 gap-4">
+              {patientState.activePatient && (
+                <Button type="button" variant="destructive" onClick={handleReset}>
+                    Delete Patient Record
+                </Button>
+              )}
               <Button type="submit">
-                Save Patient History
+                {patientState.activePatient ? 'Update Patient History' : 'Save Patient History'}
               </Button>
             </div>
           </form>

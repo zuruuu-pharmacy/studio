@@ -1,16 +1,23 @@
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppShell } from "@/components/app-shell";
 
 const tools = [
   {
-    icon: User,
-    title: "Patient History",
-    description: "Manage patient history details for use in other tools.",
-    href: "/patient-history",
+    icon: Users,
+    title: "Patients",
+    description: "Manage patient records and select an active patient.",
+    href: "/patients",
     color: "text-cyan-500",
+  },
+  {
+    icon: User,
+    title: "Patient History Form",
+    description: "Add or edit detailed patient history.",
+    href: "/patient-history",
+    color: "text-blue-400",
   },
   {
     icon: BookText,
@@ -59,12 +66,12 @@ export default function DashboardPage() {
             <h1 className="text-4xl font-bold font-headline tracking-tight">Welcome to Zuruu AI Pharmacy</h1>
             <p className="mt-2 text-lg text-primary-foreground/90 max-w-2xl">
               Your AI-powered suite of clinical tools for enhanced pharmaceutical care. 
-              Start by setting up a patient's history or explore our tools.
+              Start by managing your patients or explore the tools directly.
             </p>
             <div className="mt-6">
-              <Link href="/patient-history" passHref>
+              <Link href="/patients" passHref>
                 <Button variant="secondary" size="lg">
-                  <User className="mr-2" /> Get Started with Patient History
+                  <Users className="mr-2" /> Go to Patients
                 </Button>
               </Link>
             </div>
