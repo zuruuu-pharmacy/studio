@@ -7,15 +7,28 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlusCircle, User, Search, Edit } from "lucide-react";
+import { PlusCircle, User, Search, Edit, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { useMode } from "@/contexts/mode-context";
 
 function PatientCard({ record, onSelect, onEdit, isActive, mode }: { record: PatientRecord, onSelect: () => void, onEdit: () => void, isActive: boolean, mode: string }) {
     const { history } = record;
+    const router = useRouter();
+
+    const handleAction = () => {
+        if (mode === 'student') {
+            router.push(`/patients/${record.id}`);
+        } else {
+            onSelect();
+        }
+    }
+
     return (
-        <Card className={`hover:shadow-md transition-shadow ${isActive && mode !== 'student' ? 'border-primary ring-2 ring-primary' : ''} ${mode === 'student' ? 'cursor-default' : 'cursor-pointer'}`} onClick={onSelect}>
+        <Card 
+            className={`hover:shadow-md transition-shadow ${isActive && mode !== 'student' ? 'border-primary ring-2 ring-primary' : ''} cursor-pointer`} 
+            onClick={handleAction}
+        >
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <div>
@@ -29,17 +42,25 @@ function PatientCard({ record, onSelect, onEdit, isActive, mode }: { record: Pat
                             <Edit className="h-4 w-4" />
                         </Button>
                     )}
+                     {mode === 'student' && (
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                            <Eye className="h-4 w-4" />
+                            <span className="text-xs">View</span>
+                        </div>
+                    )}
                 </div>
                  {isActive && <Badge className="w-fit">Active Patient Case</Badge>}
             </CardHeader>
-            <CardContent>
-                <p className="text-sm text-muted-foreground">
-                    <span className="font-semibold">Phone:</span> {history.phoneNumber || "N/A"}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                     <span className="font-semibold">CNIC:</span> {history.cnicOrPassport || "N/A"}
-                </p>
-            </CardContent>
+            {mode !== 'student' && (
+                <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                        <span className="font-semibold">Phone:</span> {history.phoneNumber || "N/A"}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                        <span className="font-semibold">CNIC:</span> {history.cnicOrPassport || "N/A"}
+                    </p>
+                </CardContent>
+            )}
         </Card>
     )
 }
@@ -73,7 +94,10 @@ export function PatientsClient() {
   }
 
   const handleSelectRecord = (recordId: string) => {
-    if (mode === 'student') return; // Students cannot select patients
+    if (mode === 'student') {
+        router.push(`/patients/${recordId}`);
+        return;
+    }
     const user = patientState.users.find(u => u.patientHistoryId === recordId);
     if(user){
         setActiveUser(user.id);
@@ -113,6 +137,7 @@ export function PatientsClient() {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-10"
+                        disabled={mode === 'student'}
                     />
                 </div>
                 {mode === 'pharmacist' && (
