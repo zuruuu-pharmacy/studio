@@ -88,7 +88,7 @@ export default function RoleSelectionPage() {
         return;
     }
     if (!studentId.toLowerCase().includes('edu')) {
-        toast({ variant: "destructive", title: "Invalid Student ID", description: "Student ID must contain 'edu'." });
+        toast({ variant: "destructive", title: "Invalid Student ID" });
         return;
     }
 
