@@ -48,10 +48,11 @@ function SectionDisplay({ title, content }: { title: string, content: string | u
 }
 
 export default function PatientViewPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const { patientState } = usePatient();
   const { mode } = useMode();
 
-  const record = patientState.patientRecords.find(r => r.id === params.id);
+  const record = patientState.patientRecords.find(r => r.id === id);
 
   if (!record) {
     notFound();
