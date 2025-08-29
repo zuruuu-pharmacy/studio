@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, BrainCircuit } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -31,14 +31,12 @@ const pharmacistMenuItems = [
     { href: "/lab-analyzer", label: "Lab Analyzer", icon: TestTube },
     { href: "/patients", label: "Patients", icon: Users },
     { href: "/patient-history", label: "Patient History Form", icon: User },
-    { href: "/ai-assistant", label: "AI Assistant", icon: BrainCircuit },
     { href: "/emergency", label: "Emergency", icon: ShieldEllipsis },
 ];
 
 const patientMenuItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/patient-history", label: "My History", icon: User },
-    { href: "/ai-assistant", label: "AI Assistant", icon: BrainCircuit },
     { href: "/emergency", label: "Emergency", icon: ShieldEllipsis },
 ];
 
