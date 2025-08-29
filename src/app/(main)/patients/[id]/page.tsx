@@ -47,8 +47,7 @@ function SectionDisplay({ title, content }: { title: string, content: string | u
     );
 }
 
-export default function PatientViewPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function PatientViewPage({ params: { id } }: { params: { id: string } }) {
   const { patientState } = usePatient();
   const { mode } = useMode();
 
