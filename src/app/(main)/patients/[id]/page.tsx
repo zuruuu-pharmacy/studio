@@ -8,6 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { notFound, useParams } from 'next/navigation';
 import { User, ShieldAlert } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { BackButton } from "@/components/back-button";
 
 
 const formSections = [
@@ -73,6 +74,7 @@ export default function PatientViewPage() {
 
   return (
     <div>
+        <BackButton />
       <h1 className="text-3xl font-bold mb-2 font-headline">Patient Case Study</h1>
       <p className="text-muted-foreground mb-6">
         Viewing the health record for educational purposes. Personal information has been redacted.

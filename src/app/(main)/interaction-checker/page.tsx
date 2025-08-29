@@ -5,7 +5,8 @@ import { useState } from "react";
 import { InteractionClient } from "./interaction-client";
 import { DrugFoodInteractionClient } from "./drug-food-interaction-client";
 import { Button } from "@/components/ui/button";
-import { FlaskConical, Salad } from "lucide-react";
+import { FlaskConical, Salad, ArrowLeft } from "lucide-react";
+import { BackButton } from "@/components/back-button";
 
 export default function InteractionCheckerPage() {
   const [view, setView] = useState<"menu" | "drug-drug" | "drug-food">("menu");
@@ -38,6 +39,7 @@ export default function InteractionCheckerPage() {
 
   return (
       <div>
+        {view === 'menu' && <BackButton />}
         <h1 className="text-3xl font-bold mb-2 font-headline">AI Interaction Engine</h1>
         <p className="text-muted-foreground mb-6">
            {view === 'menu' && "Check for drug-drug or drug-food interactions."}
@@ -46,6 +48,7 @@ export default function InteractionCheckerPage() {
         </p>
          {view !== 'menu' && (
             <Button onClick={() => setView('menu')} variant="outline" className="mb-6">
+                <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Selection
             </Button>
         )}
