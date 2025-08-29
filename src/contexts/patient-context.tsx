@@ -3,79 +3,88 @@
 
 import type { ReactNode } from 'react';
 import { createContext, useContext, useState, useMemo, useEffect } from 'react';
+import type { Mode } from './mode-context';
 
 export interface PatientHistory {
-  // 1. Patient Identification (Demographics)
-  id: string;
-  demographics?: {
-    name?: string;
-    age?: string;
-    gender?: string;
-    maritalStatus?: string;
-    occupation?: string;
-    cnicOrPassport?: string;
-    address?: string;
-    hospitalId?: string;
-    phoneNumber?: string;
-  };
-  // 2. Presenting Complaint (PC)
+  // This represents the full patient history form data.
+  // Demographics are just one part of it.
+  name?: string;
+  age?: string;
+  gender?: string;
+  maritalStatus?: string;
+  occupation?: string;
+  cnicOrPassport?: string;
+  address?: string;
+  hospitalId?: string;
+  phoneNumber?: string;
   presentingComplaint?: string;
-  // 3. History of Presenting Illness (HPI)
   historyOfPresentingIllness?: string;
-  // 4. Past Medical History (PMH)
   pastMedicalHistory?: string;
-  // 5. Medication History
   medicationHistory?: string;
-  // 6. Allergy & ADR History
   allergyHistory?: string;
-  // 7. Family History
   familyHistory?: string;
-  // 8. Social History
   socialHistory?: string;
-  // 9. Immunization History
   immunizationHistory?: string;
-  // 10. Review of Systems (ROS)
   reviewOfSystems?: string;
-  // 11. Lifestyle & Compliance
   lifestyleAndCompliance?: string;
-  // 12. Patient’s Own Ideas & Concerns
   ideasAndConcerns?: string;
-  // 13. Pharmacist’s Assessment
   pharmacistAssessment?: string;
-  // 14. Plan (Pharmaceutical Care Plan)
   carePlan?: string;
 }
 
+export interface UserProfile {
+  id: string;
+  role: Mode;
+  demographics?: {
+    name?: string;
+    phoneNumber?: string;
+  };
+  studentId?: string; // Specific to students
+  patientHistoryId?: string; // Link to a patient history record
+}
+
+export interface PatientRecord {
+    id: string;
+    history: PatientHistory;
+}
+
+
 interface PatientState {
-    activePatient: PatientHistory | null;
-    patients: PatientHistory[];
+    activeUser: UserProfile | null;
+    users: UserProfile[];
+    patientRecords: PatientRecord[];
 }
 
 interface PatientContextType {
   patientState: PatientState;
-  setPatientState: React.Dispatch<React.SetStateAction<PatientState>>;
-  addOrUpdatePatient: (patientHistory: Omit<PatientHistory, 'id'> & { id?: string }) => void;
-  setActivePatient: (patientId: string | null) => void;
-  clearActivePatient: () => void;
-  resetPatientHistory: (patientId: string) => void;
+  addOrUpdateUser: (user: Omit<UserProfile, 'id'> & { id?: string }) => void;
+  setActiveUser: (userId: string | null) => void;
+  clearActiveUser: () => void;
+  addOrUpdatePatientRecord: (history: PatientHistory) => PatientRecord;
+  getActivePatientRecord: () => PatientRecord | undefined;
+  deletePatientRecord: (recordId: string) => void;
 }
 
 const PatientContext = createContext<PatientContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'pharmacy_patients';
+const LOCAL_STORAGE_KEY = 'pharmacy_data_v2';
 
 export function PatientProvider({ children }: { children: ReactNode }) {
-  const [patientState, setPatientState] = useState<PatientState>({ activePatient: null, patients: [] });
+  const [patientState, setPatientState] = useState<PatientState>({ activeUser: null, users: [], patientRecords: [] });
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     try {
-      const savedPatients = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (savedPatients) {
-        setPatientState(JSON.parse(savedPatients));
+      const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        // Basic validation to prevent crashes on data structure changes
+        if(parsedData.users && parsedData.patientRecords) {
+            setPatientState(parsedData);
+        }
       }
     } catch (error) {
-      console.error("Failed to load patient data from localStorage", error);
+      console.error("Failed to load data from localStorage", error);
     }
     setIsLoaded(true);
   }, []);
@@ -85,53 +94,108 @@ export function PatientProvider({ children }: { children: ReactNode }) {
         try {
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(patientState));
         } catch (error) {
-            console.error("Failed to save patient data to localStorage", error);
+            console.error("Failed to save data to localStorage", error);
         }
     }
   }, [patientState, isLoaded]);
 
-  const addOrUpdatePatient = (patientHistory: Omit<PatientHistory, 'id'> & { id?: string }) => {
+  const addOrUpdateUser = (user: Omit<UserProfile, 'id'> & { id?: string }) => {
     setPatientState(prevState => {
-        const newPatients = [...prevState.patients];
-        if(patientHistory.id) {
-            const index = newPatients.findIndex(p => p.id === patientHistory.id);
+        const newUsers = [...prevState.users];
+        if(user.id) { // Update existing user
+            const index = newUsers.findIndex(u => u.id === user.id);
             if(index !== -1) {
-                newPatients[index] = { ...newPatients[index], ...patientHistory };
-                 return { ...prevState, patients: newPatients, activePatient: newPatients[index] };
+                newUsers[index] = { ...newUsers[index], ...user };
+                 return { ...prevState, users: newUsers, activeUser: newUsers[index] };
             }
         }
-        
-        const newPatient = { ...patientHistory, id: Date.now().toString() };
-        newPatients.push(newPatient);
-        return { ...prevState, patients: newPatients, activePatient: newPatient };
+        // Add new user
+        const newUser = { ...user, id: Date.now().toString() } as UserProfile;
+        newUsers.push(newUser);
+        return { ...prevState, users: newUsers, activeUser: newUser };
     });
   };
   
-  const setActivePatient = (patientId: string | null) => {
-    if (patientId === null) {
-        setPatientState(s => ({...s, activePatient: null}));
+  const setActiveUser = (userId: string | null) => {
+    if (userId === null) {
+        setPatientState(s => ({...s, activeUser: null}));
         return;
     }
-    const patientToSelect = patientState.patients.find(p => p.id === patientId);
-    if(patientToSelect) {
-        setPatientState(s => ({...s, activePatient: patientToSelect}));
+    const userToSelect = patientState.users.find(u => u.id === userId);
+    if(userToSelect) {
+        setPatientState(s => ({...s, activeUser: userToSelect}));
     }
   }
 
-  const clearActivePatient = () => {
-    setPatientState(s => ({...s, activePatient: null}));
+  const clearActiveUser = () => {
+    setPatientState(s => ({...s, activeUser: null}));
   }
-  
-  const resetPatientHistory = (patientId: string) => {
+
+  const addOrUpdatePatientRecord = (history: PatientHistory & {id?: string}): PatientRecord => {
+    let newRecord: PatientRecord;
     setPatientState(prevState => {
-        const newPatients = prevState.patients.filter(p => p.id !== patientId);
-        const newActivePatient = prevState.activePatient?.id === patientId ? null : prevState.activePatient;
-        return { ...prevState, patients: newPatients, activePatient: newActivePatient };
+        const newRecords = [...prevState.patientRecords];
+        // The patient history form now manages its own ID.
+        // Let's assume a patient record ID is tied to a user.
+        // The form should associate with the activeUser's patientHistoryId.
+        const activeUserPatientHistoryId = prevState.activeUser?.patientHistoryId;
+
+        if(activeUserPatientHistoryId) {
+             const index = newRecords.findIndex(r => r.id === activeUserPatientHistoryId);
+             if (index !== -1) { // Update
+                newRecords[index] = { ...newRecords[index], history };
+                newRecord = newRecords[index];
+                return { ...prevState, patientRecords: newRecords };
+             }
+        }
+        
+        // Create new record
+        const recordId = `record_${Date.now().toString()}`;
+        newRecord = { id: recordId, history };
+        newRecords.push(newRecord);
+
+        // If there's an active user, link this new record to them
+        const newUsers = prevState.users.map(u => 
+            u.id === prevState.activeUser?.id ? { ...u, patientHistoryId: recordId } : u
+        );
+        const newActiveUser = prevState.activeUser ? {...prevState.activeUser, patientHistoryId: recordId} : null;
+
+        return { ...prevState, patientRecords: newRecords, users: newUsers, activeUser: newActiveUser };
+    });
+    // @ts-ignore
+    return newRecord;
+  }
+
+  const getActivePatientRecord = (): PatientRecord | undefined => {
+      if (!patientState.activeUser?.patientHistoryId) return undefined;
+      return patientState.patientRecords.find(r => r.id === patientState.activeUser!.patientHistoryId);
+  }
+
+  const deletePatientRecord = (recordId: string) => {
+    setPatientState(prevState => {
+        const newRecords = prevState.patientRecords.filter(r => r.id !== recordId);
+        // Unlink this record from any user that has it
+        const newUsers = prevState.users.map(u => 
+            u.patientHistoryId === recordId ? { ...u, patientHistoryId: undefined } : u
+        );
+        const newActiveUser = prevState.activeUser?.patientHistoryId === recordId 
+            ? { ...prevState.activeUser, patientHistoryId: undefined } 
+            : prevState.activeUser;
+            
+        return { ...prevState, patientRecords: newRecords, users: newUsers, activeUser: newActiveUser };
     });
   };
 
 
-  const contextValue = useMemo(() => ({ patientState, setPatientState, addOrUpdatePatient, setActivePatient, clearActivePatient, resetPatientHistory }), [patientState]);
+  const contextValue = useMemo(() => ({ 
+      patientState, 
+      addOrUpdateUser, 
+      setActiveUser, 
+      clearActiveUser, 
+      addOrUpdatePatientRecord,
+      getActivePatientRecord,
+      deletePatientRecord 
+    }), [patientState]);
 
   return (
     <PatientContext.Provider value={contextValue}>

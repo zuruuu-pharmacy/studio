@@ -31,7 +31,9 @@ export function LabAnalyzerClient() {
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
-  const { patientState } = usePatient();
+  const { getActivePatientRecord } = usePatient();
+  const activePatientRecord = getActivePatientRecord();
+
 
   useEffect(() => {
     if (state && 'error' in state && state.error) {
@@ -79,7 +81,7 @@ export function LabAnalyzerClient() {
 
         const result = await analyzeLabReport({
             photoDataUri,
-            detailedHistory: patientState.activePatient || undefined,
+            detailedHistory: activePatientRecord?.history,
         });
         setState(result);
     } catch (e) {
@@ -103,7 +105,7 @@ export function LabAnalyzerClient() {
         <Card>
           <CardHeader>
             <CardTitle>Upload Lab Report</CardTitle>
-            {patientState.activePatient && <CardDescription>Analyzing for {patientState.activePatient.demographics?.name}</CardDescription>}
+            {activePatientRecord && <CardDescription>Analyzing for {activePatientRecord.history.name}</CardDescription>}
           </CardHeader>
           <CardContent>
             <form ref={formRef} onSubmit={handleFormSubmit} className="space-y-4">

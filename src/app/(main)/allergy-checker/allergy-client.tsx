@@ -35,7 +35,7 @@ export function AllergyClient() {
       try {
         const result = await allergyChecker({
           ...parsed.data,
-          detailedHistory: patientState.activePatient || undefined,
+          detailedHistory: activePatientRecord?.history,
         });
         return result;
       } catch (e) {
@@ -47,23 +47,24 @@ export function AllergyClient() {
   );
 
   const { mode } = useMode();
-  const { patientState } = usePatient();
+  const { getActivePatientRecord } = usePatient();
+  const activePatientRecord = getActivePatientRecord();
   const { toast } = useToast();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       medicationName: "",
-      patientAllergies: patientState.activePatient?.allergyHistory || "",
+      patientAllergies: activePatientRecord?.history.allergyHistory || "",
     },
   });
   
   useEffect(() => {
     form.reset({
       medicationName: "",
-      patientAllergies: patientState.activePatient?.allergyHistory || "",
+      patientAllergies: activePatientRecord?.history.allergyHistory || "",
     });
-  }, [patientState.activePatient, form]);
+  }, [activePatientRecord, form]);
 
   useEffect(() => {
     if (state && 'error' in state && state.error) {
@@ -83,18 +84,18 @@ export function AllergyClient() {
     });
   });
 
-  if (!patientState.activePatient) {
+  if (!activePatientRecord) {
     return (
       <Card className="text-center">
         <CardHeader>
-          <CardTitle>No Active Patient</CardTitle>
+          <CardTitle>No Active Patient Case</CardTitle>
           <CardDescription>
-            Please select a patient or create a new one to use the allergy checker.
+            Please select a patient from the list or create a new one to use the allergy checker.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Link href="/patients" passHref>
-            <Button><User className="mr-2"/>Go to Patients</Button>
+            <Button><User className="mr-2"/>Go to Patient Records</Button>
           </Link>
         </CardContent>
       </Card>
@@ -109,7 +110,7 @@ export function AllergyClient() {
             <CardHeader>
               <CardTitle>Patient & Medication Details</CardTitle>
               <CardDescription>
-                Checking for {patientState.activePatient.demographics?.name}
+                Checking for {activePatientRecord.history.name}
               </CardDescription>
             </CardHeader>
             <CardContent>

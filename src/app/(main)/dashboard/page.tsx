@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, School } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
@@ -91,54 +91,79 @@ const patientTools = [
     }
 ];
 
-function StudentDashboard() {
-  return (
-    <Card className="w-full text-center">
-        <CardHeader>
-          <School className="mx-auto h-16 w-16 text-primary mb-4" />
-          <CardTitle className="text-3xl font-bold text-primary">Student Dashboard</CardTitle>
-          <CardDescription className="text-lg">Coming Soon!</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            Exciting new learning modules and features for students are under construction.
-          </p>
-        </CardContent>
-      </Card>
-  )
-}
+const studentTools = [
+    {
+        icon: UserPlus,
+        title: "Create Patient Case",
+        description: "Fill out a patient history form for a new case study.",
+        href: "/patient-history",
+        color: "text-blue-400",
+    },
+    {
+        icon: Users,
+        title: "View All Patient Cases",
+        description: "See all patient records entered into the system.",
+        href: "/patients",
+        color: "text-cyan-500",
+    },
+    {
+        icon: ShieldEllipsis,
+        title: "Emergency Information",
+        description: "Get information for emergency situations.",
+        href: "/emergency",
+        color: "text-red-600",
+    }
+];
 
 
 export default function DashboardPage() {
   const { mode } = useMode();
   const { patientState } = usePatient();
-  const patientName = patientState.activePatient?.demographics?.name || "Patient";
+  const activeUser = patientState.activeUser;
 
-  if (mode === 'student') {
-    return <StudentDashboard />
-  }
+  const tools = {
+    'pharmacist': pharmacistTools,
+    'patient': patientTools,
+    'student': studentTools,
+  }[mode] || [];
+  
+  const name = activeUser?.demographics?.name || (mode === 'patient' ? "Patient" : mode === 'student' ? 'Student' : 'Pharmacist');
 
-  const isPharmacist = mode === 'pharmacist';
-  const tools = isPharmacist ? pharmacistTools : patientTools;
+  const headerTitle = {
+    'pharmacist': "Welcome to Zuruu AI Pharmacy",
+    'patient': `Welcome, ${name}`,
+    'student': `Welcome, ${name}`,
+  }[mode];
+  
+  const headerDescription = {
+    'pharmacist': "Your AI-powered suite of clinical tools for enhanced pharmaceutical care. Start by managing your patients or explore the tools directly.",
+    'patient': "This is your personal health dashboard. Access your history or get help in an emergency.",
+    'student': "This is your student dashboard. Create new patient case studies or review existing ones."
+  }[mode];
+  
+  const headerButton = {
+    'pharmacist': (
+        <Link href="/patients" passHref>
+            <Button variant="secondary" size="lg"><Users className="mr-2" /> Go to Patients</Button>
+        </Link>
+    ),
+    'patient': (
+        <Link href="/patient-history" passHref>
+            <Button variant="secondary" size="lg"><User className="mr-2" /> My History</Button>
+        </Link>
+    ),
+    'student': (
+         <Link href="/patient-history" passHref>
+            <Button variant="secondary" size="lg"><UserPlus className="mr-2" /> Create New Case</Button>
+        </Link>
+    )
+  }[mode];
 
-  const headerTitle = isPharmacist ? "Welcome to Zuruu AI Pharmacy" : `Welcome, ${patientName}`;
-  const headerDescription = isPharmacist 
-    ? "Your AI-powered suite of clinical tools for enhanced pharmaceutical care. Start by managing your patients or explore the tools directly."
-    : "This is your personal health dashboard. Access your history or get help in an emergency.";
-
-  const headerButton = isPharmacist ? (
-     <Link href="/patients" passHref>
-        <Button variant="secondary" size="lg">
-          <Users className="mr-2" /> Go to Patients
-        </Button>
-      </Link>
-  ) : (
-     <Link href="/patient-history" passHref>
-        <Button variant="secondary" size="lg">
-          <User className="mr-2" /> My History
-        </Button>
-      </Link>
-  )
+  const toolsHeader = {
+    'pharmacist': 'Clinical Tools',
+    'patient': 'Your Options',
+    'student': 'Student Tools'
+  }[mode]
 
 
   return (
@@ -158,7 +183,7 @@ export default function DashboardPage() {
         
         <section>
           <h2 className="text-2xl font-semibold mb-4 text-foreground/90">
-             {isPharmacist ? "Clinical Tools" : "Your Options"}
+             {toolsHeader}
           </h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
             {tools.map((tool) => (
@@ -175,7 +200,7 @@ export default function DashboardPage() {
                 <CardContent className="flex-grow flex items-end justify-end mt-auto">
                   <Link href={tool.href} passHref>
                     <Button variant="ghost" className="text-primary group-hover:bg-accent/50">
-                        {isPharmacist ? "Use Tool" : "Go to Page"} <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        {mode === 'pharmacist' ? "Use Tool" : "Go to Page"} <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </Link>
                 </CardContent>

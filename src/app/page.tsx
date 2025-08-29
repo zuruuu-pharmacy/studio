@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { usePatient } from "@/contexts/patient-context";
+import { usePatient, UserProfile } from "@/contexts/patient-context";
 import { useMode } from "@/contexts/mode-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { User, Stethoscope, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School } from "lucide-react";
+import { User, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School } from "lucide-react";
 
 const PHARMACIST_CODE = "239773";
 
@@ -18,19 +18,23 @@ export default function RoleSelectionPage() {
   const [pharmacistModalOpen, setPharmacistModalOpen] = useState(false);
   const [patientOptionsModalOpen, setPatientOptionsModalOpen] = useState(false);
   const [patientLoginModalOpen, setPatientLoginModalOpen] = useState(false);
+  const [studentLoginModalOpen, setStudentLoginModalOpen] = useState(false);
   
   const [pharmacistCode, setPharmacistCode] = useState("");
   const [patientName, setPatientName] = useState("");
   const [patientPhone, setPatientPhone] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [studentId, setStudentId] = useState("");
 
   const { setMode } = useMode();
-  const { patientState, setActivePatient, addOrUpdatePatient, clearActivePatient } = usePatient();
+  const { patientState, setActiveUser, addOrUpdateUser, clearActiveUser } = usePatient();
   const router = useRouter();
   const { toast } = useToast();
 
   const handlePharmacistLogin = () => {
     if (pharmacistCode === PHARMACIST_CODE) {
       setMode("pharmacist");
+      clearActiveUser();
       router.push("/dashboard");
     } else {
       toast({
@@ -46,22 +50,26 @@ export default function RoleSelectionPage() {
         toast({ variant: "destructive", title: "Missing Information", description: "Please enter your name and phone number." });
         return;
     }
-    const existingPatient = patientState.patients.find(
+    const existingUser = patientState.users.find(
       (p) =>
+        p.role === 'patient' &&
         p.demographics?.name?.toLowerCase() === patientName.toLowerCase() &&
         p.demographics?.phoneNumber === patientPhone
     );
 
     setMode("patient");
 
-    if (existingPatient) {
-      setActivePatient(existingPatient.id);
-      toast({ title: "Welcome Back!", description: `Loading profile for ${existingPatient.demographics?.name}.` });
+    if (existingUser) {
+      setActiveUser(existingUser.id);
+      toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
       router.push("/dashboard");
     } else {
-      // If patient not found, treat as new registration
-       clearActivePatient();
-       addOrUpdatePatient({ demographics: { name: patientName, phoneNumber: patientPhone } });
+       clearActiveUser();
+       const newUser: Omit<UserProfile, 'id'> = {
+         role: 'patient',
+         demographics: { name: patientName, phoneNumber: patientPhone }
+       };
+       addOrUpdateUser(newUser);
        toast({ title: "Welcome!", description: "Let's create your patient history." });
        router.push("/patient-history");
     }
@@ -70,23 +78,58 @@ export default function RoleSelectionPage() {
   
   const handleNewPatient = () => {
     setMode('patient');
-    clearActivePatient();
+    clearActiveUser();
     router.push('/patient-history');
   }
 
-  const handleStudentAccess = () => {
+  const handleStudentLogin = () => {
+    if (!studentName || !studentId) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please enter your name and Student ID." });
+        return;
+    }
+    if (!studentId.toLowerCase().includes('edu')) {
+        toast({ variant: "destructive", title: "Invalid Student ID", description: "Student ID must contain 'edu'." });
+        return;
+    }
+
+    const existingUser = patientState.users.find(
+      (u) =>
+        u.role === 'student' &&
+        u.demographics?.name?.toLowerCase() === studentName.toLowerCase() &&
+        u.studentId === studentId
+    );
+    
     setMode("student");
+
+    if (existingUser) {
+        setActiveUser(existingUser.id);
+        toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+    } else {
+        const newUser: Omit<UserProfile, 'id'> = {
+            role: 'student',
+            demographics: { name: studentName },
+            studentId: studentId,
+        };
+        addOrUpdateUser(newUser);
+        toast({ title: "Welcome!", description: `Your student profile has been created, ${studentName}.` });
+    }
     router.push("/dashboard");
+    setStudentLoginModalOpen(false);
   };
 
   const handleEmergency = () => {
-    setMode('patient');
+    setMode('patient'); // Emergency defaults to patient view
+    clearActiveUser();
     router.push('/emergency');
   }
 
   const openPatientLogin = () => {
     setPatientOptionsModalOpen(false);
     setPatientLoginModalOpen(true);
+  }
+  
+  const openStudentLogin = () => {
+    setStudentLoginModalOpen(true);
   }
 
   return (
@@ -117,12 +160,12 @@ export default function RoleSelectionPage() {
             <p className="text-muted-foreground mt-2">Access the full suite of clinical tools.</p>
           </div>
            <div
-            onClick={handleStudentAccess}
+            onClick={openStudentLogin}
             className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
           >
             <School className="h-16 w-16 text-primary mb-4" />
             <h3 className="text-2xl font-semibold">I am a Student</h3>
-            <p className="text-muted-foreground mt-2">Access learning and training modules.</p>
+            <p className="text-muted-foreground mt-2">Login to access learning modules.</p>
           </div>
         </CardContent>
       </Card>
@@ -202,6 +245,29 @@ export default function RoleSelectionPage() {
           </div>
           <DialogFooter>
             <Button onClick={handlePatientLogin}>Continue</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+       {/* Student Login Modal */}
+       <Dialog open={studentLoginModalOpen} onOpenChange={setStudentLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Student Login</DialogTitle>
+            <DialogDescription>Please enter your details to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="student-name">Full Name</Label>
+                <Input id="student-name" value={studentName} onChange={(e) => setStudentName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="student-id">Student ID</Label>
+                <Input id="student-id" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g., user@university.edu"/>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleStudentLogin}>Login</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

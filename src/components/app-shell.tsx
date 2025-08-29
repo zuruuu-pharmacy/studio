@@ -20,17 +20,19 @@ import {
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useMode } from "@/contexts/mode-context";
+import { usePatient } from "@/contexts/patient-context";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 
 const pharmacistMenuItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/patients", label: "Patients", icon: Users },
+    { href: "/patient-history", label: "Patient History Form", icon: User },
     { href: "/monograph", label: "Monograph Lookup", icon: BookText },
     { href: "/dose-calculator", label: "Dose Calculator", icon: Calculator },
     { href: "/interaction-checker", label: "Interaction Checker", icon: FlaskConical },
     { href: "/allergy-checker", label: "Allergy Checker", icon: ShieldAlert },
     { href: "/prescription-reader", label: "Prescription Reader", icon: ScanEye },
     { href: "/lab-analyzer", label: "Lab Analyzer", icon: TestTube },
-    { href: "/patients", label: "Patients", icon: Users },
-    { href: "/patient-history", label: "Patient History Form", icon: User },
     { href: "/emergency", label: "Emergency", icon: ShieldEllipsis },
 ];
 
@@ -42,13 +44,16 @@ const patientMenuItems = [
 
 const studentMenuItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/patient-history", label: "Create Patient Case", icon: UserPlus },
+    { href: "/emergency", label: "Emergency Info", icon: ShieldEllipsis },
 ];
 
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { mode } = useMode();
-  
+  const { patientState } = usePatient();
+
   const menuItems = () => {
     switch (mode) {
       case 'pharmacist':
@@ -61,6 +66,14 @@ export function AppShell({ children }: { children: ReactNode }) {
         return [];
     }
   }
+  
+  const getInitials = (name?: string) => {
+    if (!name) return "?";
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  }
+  
+  const activeUser = patientState.activeUser;
+  const userName = activeUser?.demographics?.name || (mode === 'pharmacist' ? 'Pharmacist' : 'Guest');
 
   return (
     <SidebarProvider>
@@ -92,7 +105,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
-            {/* Can add user profile here */}
+             <div className="flex items-center gap-3 p-2">
+                <Avatar>
+                    <AvatarFallback>{getInitials(userName)}</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-sidebar-foreground truncate">{userName}</span>
+                    <span className="text-xs text-sidebar-foreground/70">{activeUser?.role || mode}</span>
+                </div>
+            </div>
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>

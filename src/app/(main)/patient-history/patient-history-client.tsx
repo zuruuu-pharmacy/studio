@@ -10,17 +10,16 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle } from "lucide-react";
-import { usePatient } from "@/contexts/patient-context";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { usePatient, type PatientHistory } from "@/contexts/patient-context";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useMode } from "@/contexts/mode-context";
 
 
-const demographicsSchema = z.object({
-  name: z.string().optional(),
+const historySchema = z.object({
+  name: z.string().min(1, "Name is required"),
   age: z.string().optional(),
   gender: z.string().optional(),
   maritalStatus: z.string().optional(),
@@ -29,11 +28,6 @@ const demographicsSchema = z.object({
   address: z.string().optional(),
   hospitalId: z.string().optional(),
   phoneNumber: z.string().optional(),
-});
-
-const historySchema = z.object({
-  id: z.string().optional(),
-  demographics: demographicsSchema.optional(),
   presentingComplaint: z.string().optional(),
   historyOfPresentingIllness: z.string().optional(),
   pastMedicalHistory: z.string().optional(),
@@ -49,19 +43,20 @@ const historySchema = z.object({
   carePlan: z.string().optional(),
 });
 
+
 type HistoryFormValues = z.infer<typeof historySchema>;
 
 const formSections = [
     { id: 'demographics', title: '1. Patient Identification (Demographics)', fields: [
-        { name: 'demographics.name', label: 'Name', placeholder: 'Full Name', type: 'input' },
-        { name: 'demographics.age', label: 'Age / Date of Birth', placeholder: 'e.g., 45 years', type: 'input' },
-        { name: 'demographics.gender', label: 'Gender', placeholder: 'Select Gender', type: 'select', options: ['Male', 'Female', 'Other', 'Prefer not to say'] },
-        { name: 'demographics.maritalStatus', label: 'Marital Status', placeholder: 'Select Status', type: 'select', options: ['Single', 'Married', 'Divorced', 'Widowed', 'Separated', 'Prefer not to say'] },
-        { name: 'demographics.occupation', label: 'Occupation', placeholder: 'Select Occupation', type: 'select', options: ['Healthcare Professional', 'Teacher / Educator', 'Engineer', 'IT Professional', 'Farmer', 'Laborer', 'Office Worker / Clerical', 'Business Owner / Entrepreneur', 'Student', 'Homemaker', 'Retired', 'Unemployed', 'Other'] },
-        { name: 'demographics.cnicOrPassport', label: 'CNIC or Passport No.', placeholder: 'e.g., 12345-1234567-1', type: 'input' },
-        { name: 'demographics.address', label: 'Address / Contact Info', placeholder: 'Full address including city', type: 'textarea' },
-        { name: 'demographics.hospitalId', label: 'Hospital ID / MRN', placeholder: 'If applicable', type: 'input' },
-        { name: 'demographics.phoneNumber', label: 'Phone Number', placeholder: '+92 3...', type: 'input' },
+        { name: 'name', label: 'Name', placeholder: 'Full Name', type: 'input' },
+        { name: 'age', label: 'Age / Date of Birth', placeholder: 'e.g., 45 years', type: 'input' },
+        { name: 'gender', label: 'Gender', placeholder: 'Select Gender', type: 'select', options: ['Male', 'Female', 'Other', 'Prefer not to say'] },
+        { name: 'maritalStatus', label: 'Marital Status', placeholder: 'Select Status', type: 'select', options: ['Single', 'Married', 'Divorced', 'Widowed', 'Separated', 'Prefer not to say'] },
+        { name: 'occupation', label: 'Occupation', placeholder: 'Select Occupation', type: 'select', options: ['Healthcare Professional', 'Teacher / Educator', 'Engineer', 'IT Professional', 'Farmer', 'Laborer', 'Office Worker / Clerical', 'Business Owner / Entrepreneur', 'Student', 'Homemaker', 'Retired', 'Unemployed', 'Other'] },
+        { name: 'cnicOrPassport', label: 'CNIC or Passport No.', placeholder: 'e.g., 12345-1234567-1', type: 'input' },
+        { name: 'address', label: 'Address / Contact Info', placeholder: 'Full address including city', type: 'textarea' },
+        { name: 'hospitalId', label: 'Hospital ID / MRN', placeholder: 'If applicable', type: 'input' },
+        { name: 'phoneNumber', label: 'Phone Number', placeholder: '+92 3...', type: 'input' },
     ]},
     { id: 'presentingComplaint', title: '2. Presenting Complaint (PC)', description: 'The patient’s main complaint in their own words.', field: { name: 'presentingComplaint', placeholder: 'e.g., "Shortness of breath for 2 days"' } },
     { id: 'historyOfPresentingIllness', title: '3. History of Presenting Illness (HPI)', description: 'A deeper dive into the presenting complaint (onset, duration, progression, etc.)', field: { name: 'historyOfPresentingIllness', placeholder: 'Describe the onset, duration, progression, associated symptoms...' } },
@@ -79,18 +74,15 @@ const formSections = [
 ];
 
 const defaultFormValues: HistoryFormValues = {
-    id: undefined,
-    demographics: {
-        name: '',
-        age: '',
-        gender: '',
-        maritalStatus: '',
-        occupation: '',
-        cnicOrPassport: '',
-        address: '',
-        hospitalId: '',
-        phoneNumber: '',
-    },
+    name: '',
+    age: '',
+    gender: '',
+    maritalStatus: '',
+    occupation: '',
+    cnicOrPassport: '',
+    address: '',
+    hospitalId: '',
+    phoneNumber: '',
     presentingComplaint: '',
     historyOfPresentingIllness: '',
     pastMedicalHistory: '',
@@ -107,56 +99,75 @@ const defaultFormValues: HistoryFormValues = {
 };
 
 export function PatientHistoryClient() {
-  const { patientState, addOrUpdatePatient, clearActivePatient, resetPatientHistory } = usePatient();
+  const { mode } = useMode();
+  const { addOrUpdatePatientRecord, getActivePatientRecord, deletePatientRecord, clearActiveUser, patientState } = usePatient();
   const { toast } = useToast();
   const router = useRouter();
 
+  const activePatientRecord = useMemo(getActivePatientRecord, [patientState.activeUser, patientState.patientRecords]);
+
   const historyForm = useForm<HistoryFormValues>({
     resolver: zodResolver(historySchema),
-    defaultValues: patientState.activePatient || defaultFormValues,
+    defaultValues: activePatientRecord?.history || defaultFormValues,
   });
   
   useEffect(() => {
-    historyForm.reset(patientState.activePatient || defaultFormValues)
-  }, [patientState.activePatient, historyForm]);
+    historyForm.reset(activePatientRecord?.history || defaultFormValues);
+  }, [activePatientRecord, historyForm]);
 
 
-  const handleHistorySubmit = historyForm.handleSubmit((data) => {
-    addOrUpdatePatient(data);
+  const handleHistorySubmit = historyForm.handleSubmit((data: PatientHistory) => {
+    const savedRecord = addOrUpdatePatientRecord(data);
     toast({
       title: "Patient History Saved",
-      description: "The patient's history has been saved.",
+      description: `The history for ${data.name} has been saved.`,
       duration: 3000,
     });
-    router.push('/patients');
+    // For students and pharmacists, go to the patient list to see the new entry
+    if (mode === 'student' || mode === 'pharmacist') {
+        router.push('/patients');
+    }
   });
 
   const handleReset = () => {
-     if(patientState.activePatient) {
-        resetPatientHistory(patientState.activePatient.id);
+     if(activePatientRecord) {
+        deletePatientRecord(activePatientRecord.id);
         toast({
           title: "Patient Record Deleted",
-          description: "The patient's history has been removed.",
+          description: `The record for ${activePatientRecord.history.name} has been removed.`,
         });
+        router.push('/patients');
      }
   }
   
   const handleAddNew = () => {
-    clearActivePatient();
+    clearActiveUser(); // This clears the user, which in turn clears the active record for the form
   }
+
+  const isEditing = !!activePatientRecord;
+  const cardTitle = {
+    'pharmacist': isEditing ? 'Edit Patient History' : 'Add New Patient History',
+    'patient': 'My Patient History',
+    'student': 'Create New Patient Case Study',
+  }[mode];
+
+  const cardDescription = {
+     'pharmacist': isEditing ? `Editing record for: ${activePatientRecord?.history.name}` : 'Creating a new patient record.',
+     'patient': `Editing your personal health record.`,
+     'student': 'Fill out the form to create a new case for analysis.',
+  }[mode];
+
 
   return (
     <Card>
       <CardHeader>
         <div className="flex justify-between items-center">
             <div>
-                <CardTitle>Comprehensive Patient History</CardTitle>
-                <CardDescription>
-                {patientState.activePatient ? `Editing patient: ${patientState.activePatient.demographics?.name || 'N/A'}` : 'Creating a new patient record.'}
-                </CardDescription>
+                <CardTitle>{cardTitle}</CardTitle>
+                <CardDescription>{cardDescription}</CardDescription>
             </div>
-            {patientState.activePatient && (
-                <Button onClick={handleAddNew} variant="outline">Add New Patient</Button>
+             {(mode === 'pharmacist' || mode === 'student') && (
+                <Button onClick={handleAddNew} variant="outline">Add New</Button>
             )}
         </div>
       </CardHeader>
@@ -180,7 +191,7 @@ export function PatientHistoryClient() {
                               <FormItem className={f.type === 'textarea' ? 'md:col-span-2' : ''}>
                                 <FormLabel>{f.label}</FormLabel>
                                 {f.type === 'select' ? (
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value ?? ''}>
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder={f.placeholder} />
@@ -218,13 +229,13 @@ export function PatientHistoryClient() {
               ))}
             </Accordion>
             <div className="flex justify-end pt-4 gap-4">
-              {patientState.activePatient && (
+              {isEditing && (
                 <Button type="button" variant="destructive" onClick={handleReset}>
-                    Delete Patient Record
+                    Delete Record
                 </Button>
               )}
               <Button type="submit">
-                {patientState.activePatient ? 'Update Patient History' : 'Save Patient History'}
+                {isEditing ? 'Update History' : 'Save History'}
               </Button>
             </div>
           </form>
