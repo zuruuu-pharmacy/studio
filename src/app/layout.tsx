@@ -3,7 +3,6 @@ import './globals.css';
 import { ModeProvider } from '@/contexts/mode-context';
 import { Toaster } from '@/components/ui/toaster';
 import { PatientProvider } from '@/contexts/patient-context';
-import { MohsinChatbot } from '@/components/mohsin-chatbot';
 
 export const metadata: Metadata = {
   title: 'Zuruu AI Pharmacy',
@@ -27,7 +26,6 @@ export default function RootLayout({
           <PatientProvider>
             {children}
             <Toaster />
-            <MohsinChatbot />
           </PatientProvider>
         </ModeProvider>
       </body>
