@@ -40,7 +40,7 @@ const mohsinChatbotFlow = ai.defineFlow(
         messages: [
           {
             role: 'system',
-            content: `You are Zuruu AI Assistant, a friendly and helpful AI assistant. Answer the user's questions as accurately as possible.`,
+            content: [{ text: `You are Zuruu AI Assistant, a friendly and helpful AI assistant. Answer the user's questions as accurately as possible.`}],
           },
           ...history.map(h => ({ role: h.role, content: [{ text: h.content }]})),
         ],
