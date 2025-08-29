@@ -37,15 +37,13 @@ const aiAssistantFlow = ai.defineFlow(
   async ({history}) => {
     const llmResponse = await ai.generate({
       model: 'googleai/gemini-1.5-pro-latest',
-      prompt: {
-        messages: [
+      prompt: [
           {
             role: 'system',
             content: [{ text: `You are Zuruu AI Assistant, a friendly and helpful AI assistant. Answer the user's questions as accurately as possible.`}],
           },
           ...history.map(h => ({ role: h.role, content: [{ text: h.content }]})),
         ],
-      },
     });
 
     return llmResponse.text;
