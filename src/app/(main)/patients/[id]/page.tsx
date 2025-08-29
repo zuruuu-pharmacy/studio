@@ -5,7 +5,7 @@ import { usePatient, type PatientHistory, type PatientRecord } from "@/contexts/
 import { useMode } from "@/contexts/mode-context";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { User, ShieldAlert } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -47,7 +47,9 @@ function SectionDisplay({ title, content }: { title: string, content: string | u
     );
 }
 
-export default function PatientViewPage({ params: { id } }: { params: { id: string } }) {
+export default function PatientViewPage() {
+  const params = useParams();
+  const id = params.id as string;
   const { patientState } = usePatient();
   const { mode } = useMode();
 
