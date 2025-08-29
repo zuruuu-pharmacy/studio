@@ -35,16 +35,14 @@ const mohsinChatbotFlow = ai.defineFlow(
   },
   async ({history}) => {
     const llmResponse = await ai.generate({
-      model: 'googleai/gemini-1.5-flash',
-      prompt: {
-        messages: [
-          {
-            role: 'system',
-            content: `You are Zuruu AI Assistant, a friendly and helpful AI assistant. Answer the user's questions as accurately as possible.`,
-          },
-          ...history,
-        ],
-      },
+      model: 'googleai/gemini-1.5-pro-latest',
+      prompt: [
+        {
+          role: 'system',
+          content: `You are Zuruu AI Assistant, a friendly and helpful AI assistant. Answer the user's questions as accurately as possible.`,
+        },
+        ...history,
+      ],
     });
 
     return llmResponse.text;
