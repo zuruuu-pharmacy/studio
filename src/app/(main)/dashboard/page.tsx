@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, School } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
@@ -89,15 +89,37 @@ const patientTools = [
         href: "/emergency",
         color: "text-red-600",
     }
-]
+];
+
+function StudentDashboard() {
+  return (
+    <Card className="w-full text-center">
+        <CardHeader>
+          <School className="mx-auto h-16 w-16 text-primary mb-4" />
+          <CardTitle className="text-3xl font-bold text-primary">Student Dashboard</CardTitle>
+          <CardDescription className="text-lg">Coming Soon!</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">
+            Exciting new learning modules and features for students are under construction.
+          </p>
+        </CardContent>
+      </Card>
+  )
+}
 
 
 export default function DashboardPage() {
   const { mode } = useMode();
   const { patientState } = usePatient();
+  const patientName = patientState.activePatient?.demographics?.name || "Patient";
+
+  if (mode === 'student') {
+    return <StudentDashboard />
+  }
+
   const isPharmacist = mode === 'pharmacist';
   const tools = isPharmacist ? pharmacistTools : patientTools;
-  const patientName = patientState.activePatient?.demographics?.name || "Patient";
 
   const headerTitle = isPharmacist ? "Welcome to Zuruu AI Pharmacy" : `Welcome, ${patientName}`;
   const headerDescription = isPharmacist 

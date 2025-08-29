@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -40,11 +40,27 @@ const patientMenuItems = [
     { href: "/emergency", label: "Emergency", icon: ShieldEllipsis },
 ];
 
+const studentMenuItems = [
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+];
+
+
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { mode } = useMode();
-  const isPharmacist = mode === 'pharmacist';
-  const menuItems = isPharmacist ? pharmacistMenuItems : patientMenuItems;
+  
+  const menuItems = () => {
+    switch (mode) {
+      case 'pharmacist':
+        return pharmacistMenuItems;
+      case 'patient':
+        return patientMenuItems;
+      case 'student':
+        return studentMenuItems;
+      default:
+        return [];
+    }
+  }
 
   return (
     <SidebarProvider>
@@ -60,7 +76,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {menuItems().map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <Link href={item.href} passHref>
                     <SidebarMenuButton
@@ -84,7 +100,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <SidebarTrigger className="md:hidden" />
             <div className="hidden md:block">
               <h2 className="text-lg font-semibold">
-                {menuItems.find(item => item.href === pathname)?.label || 'Dashboard'}
+                {menuItems().find(item => item.href === pathname)?.label || 'Dashboard'}
               </h2>
             </div>
             <ModeToggle />

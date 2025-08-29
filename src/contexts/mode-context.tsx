@@ -3,11 +3,10 @@
 import type { ReactNode } from 'react';
 import { createContext, useContext, useState, useMemo } from 'react';
 
-export type Mode = 'patient' | 'pharmacist';
+export type Mode = 'patient' | 'pharmacist' | 'student';
 
 interface ModeContextType {
   mode: Mode;
-  toggleMode: () => void;
   setMode: (mode: Mode) => void;
 }
 
@@ -15,12 +14,8 @@ const ModeContext = createContext<ModeContextType | undefined>(undefined);
 
 export function ModeProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<Mode>('pharmacist');
-
-  const toggleMode = () => {
-    setMode((prevMode) => (prevMode === 'patient' ? 'pharmacist' : 'patient'));
-  };
   
-  const contextValue = useMemo(() => ({ mode, toggleMode, setMode }), [mode]);
+  const contextValue = useMemo(() => ({ mode, setMode }), [mode]);
 
   return (
     <ModeContext.Provider value={contextValue}>

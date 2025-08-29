@@ -2,10 +2,9 @@
 "use client";
 
 import { useMode } from "@/contexts/mode-context";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Users, Stethoscope } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { LogOut } from "lucide-react";
 
 export function ModeToggle() {
   const { mode } = useMode();
@@ -18,20 +17,10 @@ export function ModeToggle() {
 
   return (
     <div className="flex items-center space-x-2">
-      <Label htmlFor="mode-toggle" className="flex items-center gap-2 cursor-pointer">
-        <Users className="h-5 w-5" />
-        <span>Patient</span>
-      </Label>
-      <Switch
-        id="mode-toggle"
-        checked={mode === "pharmacist"}
-        onCheckedChange={handleModeChange}
-        aria-label="Toggle between patient and pharmacist mode"
-      />
-      <Label htmlFor="mode-toggle" className="flex items-center gap-2 cursor-pointer">
-        <Stethoscope className="h-5 w-5" />
-        <span>Pharmacist</span>
-      </Label>
+      <Button onClick={handleModeChange} variant="outline" size="sm">
+        <LogOut className="mr-2 h-4 w-4" />
+         <span>Switch Role ({mode})</span>
+      </Button>
     </div>
   );
 }

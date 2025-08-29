@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { User, Stethoscope, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis } from "lucide-react";
+import { User, Stethoscope, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School } from "lucide-react";
 
 const PHARMACIST_CODE = "239773";
 
@@ -74,6 +74,11 @@ export default function RoleSelectionPage() {
     router.push('/patient-history');
   }
 
+  const handleStudentAccess = () => {
+    setMode("student");
+    router.push("/dashboard");
+  };
+
   const handleEmergency = () => {
     setMode('patient');
     router.push('/emergency');
@@ -86,7 +91,7 @@ export default function RoleSelectionPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
-      <Card className="w-full max-w-4xl shadow-2xl">
+      <Card className="w-full max-w-5xl shadow-2xl">
         <CardHeader className="text-center">
             <div className="mx-auto mb-4">
                 
@@ -94,22 +99,30 @@ export default function RoleSelectionPage() {
           <CardTitle className="text-3xl font-headline">Welcome to Zuruu AI Pharmacy</CardTitle>
           <CardDescription>Please select your role to continue</CardDescription>
         </CardHeader>
-        <CardContent className="grid md:grid-cols-2 gap-8 p-8">
+        <CardContent className="grid md:grid-cols-3 gap-8 p-8">
           <div
             onClick={() => setPatientOptionsModalOpen(true)}
-            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer"
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
           >
-            <User className="mx-auto h-16 w-16 text-primary mb-4" />
+            <User className="h-16 w-16 text-primary mb-4" />
             <h3 className="text-2xl font-semibold">I am a Patient</h3>
             <p className="text-muted-foreground mt-2">Access your profile or get emergency help.</p>
           </div>
           <div
             onClick={() => setPharmacistModalOpen(true)}
-            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer"
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
           >
-            <BriefcaseMedical className="mx-auto h-16 w-16 text-primary mb-4" />
+            <BriefcaseMedical className="h-16 w-16 text-primary mb-4" />
             <h3 className="text-2xl font-semibold">I am a Pharmacist</h3>
             <p className="text-muted-foreground mt-2">Access the full suite of clinical tools.</p>
+          </div>
+           <div
+            onClick={handleStudentAccess}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <School className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Student</h3>
+            <p className="text-muted-foreground mt-2">Access learning and training modules.</p>
           </div>
         </CardContent>
       </Card>
