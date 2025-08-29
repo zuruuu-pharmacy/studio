@@ -229,7 +229,7 @@ export function PatientHistoryClient() {
               ))}
             </Accordion>
             <div className="flex justify-end pt-4 gap-4">
-              {isEditing && (
+              {isEditing && mode === 'pharmacist' && (
                 <Button type="button" variant="destructive" onClick={handleReset}>
                     Delete Record
                 </Button>

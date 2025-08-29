@@ -102,7 +102,7 @@ const studentTools = [
     {
         icon: Users,
         title: "View All Patient Cases",
-        description: "See all patient records entered into the system.",
+        description: "View all patient records entered into the system for learning.",
         href: "/patients",
         color: "text-cyan-500",
     },

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -9,11 +10,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { PlusCircle, User, Search, Edit } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { useMode } from "@/contexts/mode-context";
 
-function PatientCard({ record, onSelect, onEdit, isActive }: { record: PatientRecord, onSelect: () => void, onEdit: () => void, isActive: boolean }) {
+function PatientCard({ record, onSelect, onEdit, isActive, mode }: { record: PatientRecord, onSelect: () => void, onEdit: () => void, isActive: boolean, mode: string }) {
     const { history } = record;
     return (
-        <Card className={`cursor-pointer hover:shadow-md transition-shadow ${isActive ? 'border-primary ring-2 ring-primary' : ''}`} onClick={onSelect}>
+        <Card className={`hover:shadow-md transition-shadow ${isActive && mode !== 'student' ? 'border-primary ring-2 ring-primary' : ''} ${mode === 'student' ? 'cursor-default' : 'cursor-pointer'}`} onClick={onSelect}>
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <div>
@@ -22,9 +24,11 @@ function PatientCard({ record, onSelect, onEdit, isActive }: { record: PatientRe
                             {history.age || 'N/A'} | {history.gender || 'N/A'}
                         </CardDescription>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); onEdit(); }}>
-                        <Edit className="h-4 w-4" />
-                    </Button>
+                    {mode === 'pharmacist' && (
+                        <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); onEdit(); }}>
+                            <Edit className="h-4 w-4" />
+                        </Button>
+                    )}
                 </div>
                  {isActive && <Badge className="w-fit">Active Patient Case</Badge>}
             </CardHeader>
@@ -42,6 +46,7 @@ function PatientCard({ record, onSelect, onEdit, isActive }: { record: PatientRe
 
 export function PatientsClient() {
   const { patientState, setActiveUser, clearActiveUser } = usePatient();
+  const { mode } = useMode();
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
 
@@ -62,43 +67,34 @@ export function PatientsClient() {
   }, [searchTerm, patientState.patientRecords]);
 
   const handleAddNew = () => {
+    if (mode !== 'pharmacist') return;
     clearActiveUser();
     router.push('/patient-history');
   }
 
   const handleSelectRecord = (recordId: string) => {
-    // Find the user associated with this patient record to make them active.
-    // This allows other tools to use this patient's context.
-    // If no user is associated, we can still proceed to edit.
+    if (mode === 'student') return; // Students cannot select patients
     const user = patientState.users.find(u => u.patientHistoryId === recordId);
     if(user){
         setActiveUser(user.id);
     } else {
-        // If no user is directly linked, we create a temporary active user context
-        // to hold the history ID, allowing editing.
-        // This is a bit of a workaround.
         clearActiveUser();
-        // A better approach would be to ensure a user is always linked
-        // For now, let's just go to edit.
         handleEditRecord(recordId);
     }
   }
   
   const handleEditRecord = (recordId: string) => {
+    if (mode !== 'pharmacist') return;
     const user = patientState.users.find(u => u.patientHistoryId === recordId);
     if(user){
         setActiveUser(user.id);
     } else {
-        // Create a temporary user to hold the patientHistoryId
-        // This is a new concept to handle unlinked records
         const tempUser = { 
             id: `temp_${recordId}`, 
-            role: 'pharmacist', // Assume pharmacist is editing
+            role: 'pharmacist', 
             patientHistoryId: recordId 
         };
         setActiveUser(tempUser.id);
-        // This temp user won't be saved, it's just for the session
-        // Note: this part of the logic might need refinement based on desired UX
     }
     router.push('/patient-history');
   }
@@ -119,10 +115,12 @@ export function PatientsClient() {
                         className="pl-10"
                     />
                 </div>
-                <Button onClick={handleAddNew}>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add New Record
-                </Button>
+                {mode === 'pharmacist' && (
+                    <Button onClick={handleAddNew}>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Add New Record
+                    </Button>
+                )}
             </CardContent>
        </Card>
 
@@ -130,7 +128,9 @@ export function PatientsClient() {
         <Card>
           <CardHeader>
             <CardTitle>Patient Record List</CardTitle>
-            <CardDescription>Select a record to make it the active case for the AI tools.</CardDescription>
+            <CardDescription>
+                {mode === 'pharmacist' ? "Select a record to make it the active case for the AI tools." : "Viewing all patient cases for educational purposes."}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[500px] pr-4">
@@ -142,6 +142,7 @@ export function PatientsClient() {
                     onSelect={() => handleSelectRecord(record.id)}
                     onEdit={() => handleEditRecord(record.id)}
                     isActive={patientState.activeUser?.patientHistoryId === record.id}
+                    mode={mode}
                    />
                 ))}
               </div>
@@ -153,12 +154,16 @@ export function PatientsClient() {
             <CardHeader>
                  <User className="mx-auto h-12 w-12 text-muted-foreground" />
                 <CardTitle>No Patient Records Found</CardTitle>
-                <CardDescription>Get started by adding your first patient record.</CardDescription>
+                <CardDescription>
+                    {mode === 'pharmacist' ? "Get started by adding your first patient record." : "There are no patient records to display."}
+                </CardDescription>
             </CardHeader>
             <CardContent>
-                <Button onClick={handleAddNew}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Add New Patient Record
-                </Button>
+                 {mode === 'pharmacist' && (
+                    <Button onClick={handleAddNew}>
+                        <PlusCircle className="mr-2 h-4 w-4" /> Add New Patient Record
+                    </Button>
+                )}
             </CardContent>
         </Card>
       )}
