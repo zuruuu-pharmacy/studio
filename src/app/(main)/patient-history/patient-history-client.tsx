@@ -130,7 +130,7 @@ export function PatientHistoryClient() {
   });
 
   const handleReset = () => {
-     if(activePatientRecord) {
+     if(activePatientRecord && mode === 'pharmacist') {
         deletePatientRecord(activePatientRecord.id);
         toast({
           title: "Patient Record Deleted",
@@ -148,7 +148,7 @@ export function PatientHistoryClient() {
   const cardTitle = {
     'pharmacist': isEditing ? 'Edit Patient History' : 'Add New Patient History',
     'patient': 'My Patient History',
-    'student': 'My Student Health Record',
+    'student': 'My Health Record',
   }[mode];
 
   const cardDescription = {

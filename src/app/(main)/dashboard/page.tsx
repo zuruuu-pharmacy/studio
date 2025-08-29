@@ -94,7 +94,7 @@ const patientTools = [
 const studentTools = [
     {
         icon: User,
-        title: "My Patient History",
+        title: "My Health History",
         description: "Fill out your personal health record for case studies.",
         href: "/patient-history",
         color: "text-blue-400",
@@ -154,7 +154,7 @@ export default function DashboardPage() {
     ),
     'student': (
          <Link href="/patient-history" passHref>
-            <Button variant="secondary" size="lg"><User className="mr-2" /> My Patient History</Button>
+            <Button variant="secondary" size="lg"><User className="mr-2" /> My Health History</Button>
         </Link>
     )
   }[mode];
