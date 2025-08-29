@@ -8,7 +8,8 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z, generate} from 'genkit';
+import {z} from 'genkit';
+import {generate} from 'genkit';
 
 const historySchema = z.object({
   role: z.enum(['user', 'model']),
@@ -35,7 +36,7 @@ const mohsinChatbotFlow = ai.defineFlow(
   },
   async ({history}) => {
     const llmResponse = await generate({
-      model: ai.model,
+      model: 'googleai/gemini-1.5-flash',
       prompt: {
         messages: [
           {
@@ -47,6 +48,6 @@ const mohsinChatbotFlow = ai.defineFlow(
       },
     });
 
-    return llmResponse.text();
+    return llmResponse.text;
   }
 );
