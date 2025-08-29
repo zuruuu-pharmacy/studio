@@ -123,8 +123,8 @@ export function PatientHistoryClient() {
       description: `The history for ${data.name} has been saved.`,
       duration: 3000,
     });
-    // For students and pharmacists, go to the patient list to see the new entry
-    if (mode === 'student' || mode === 'pharmacist') {
+    // For pharmacists, go to the patient list to see the new entry
+    if (mode === 'pharmacist') {
         router.push('/patients');
     }
   });
@@ -148,13 +148,13 @@ export function PatientHistoryClient() {
   const cardTitle = {
     'pharmacist': isEditing ? 'Edit Patient History' : 'Add New Patient History',
     'patient': 'My Patient History',
-    'student': 'Create New Patient Case Study',
+    'student': 'My Student Health Record',
   }[mode];
 
   const cardDescription = {
      'pharmacist': isEditing ? `Editing record for: ${activePatientRecord?.history.name}` : 'Creating a new patient record.',
      'patient': `Editing your personal health record.`,
-     'student': 'Fill out the form to create a new case for analysis.',
+     'student': 'This health record will serve as your patient case study.',
   }[mode];
 
 
@@ -166,7 +166,7 @@ export function PatientHistoryClient() {
                 <CardTitle>{cardTitle}</CardTitle>
                 <CardDescription>{cardDescription}</CardDescription>
             </div>
-             {(mode === 'pharmacist' || mode === 'student') && (
+             {mode === 'pharmacist' && (
                 <Button onClick={handleAddNew} variant="outline">Add New</Button>
             )}
         </div>

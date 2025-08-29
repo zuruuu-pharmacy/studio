@@ -111,7 +111,7 @@ export default function RoleSelectionPage() {
             studentId: studentId,
         };
         addOrUpdateUser(newUser);
-        toast({ title: "Welcome!", description: `Your student profile has been created, ${studentName}.` });
+        toast({ title: "Welcome!", description: `Your student profile has been created, ${studentName}. Let's create your health record.` });
     }
     router.push("/dashboard");
     setStudentLoginModalOpen(false);

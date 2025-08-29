@@ -93,9 +93,9 @@ const patientTools = [
 
 const studentTools = [
     {
-        icon: UserPlus,
-        title: "Create Patient Case",
-        description: "Fill out a patient history form for a new case study.",
+        icon: User,
+        title: "My Patient History",
+        description: "Fill out your personal health record for case studies.",
         href: "/patient-history",
         color: "text-blue-400",
     },
@@ -138,7 +138,7 @@ export default function DashboardPage() {
   const headerDescription = {
     'pharmacist': "Your AI-powered suite of clinical tools for enhanced pharmaceutical care. Start by managing your patients or explore the tools directly.",
     'patient': "This is your personal health dashboard. Access your history or get help in an emergency.",
-    'student': "This is your student dashboard. Create new patient case studies or review existing ones."
+    'student': "This is your student dashboard. Create your patient case study or review existing ones."
   }[mode];
   
   const headerButton = {
@@ -154,7 +154,7 @@ export default function DashboardPage() {
     ),
     'student': (
          <Link href="/patient-history" passHref>
-            <Button variant="secondary" size="lg"><UserPlus className="mr-2" /> Create New Case</Button>
+            <Button variant="secondary" size="lg"><User className="mr-2" /> My Patient History</Button>
         </Link>
     )
   }[mode];
