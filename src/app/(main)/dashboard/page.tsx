@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
@@ -65,6 +65,13 @@ const pharmacistTools = [
     href: "/lab-analyzer",
     color: "text-indigo-500",
   },
+  {
+    icon: FileClock,
+    title: "Adherence Tracker",
+    description: "Generate a medication adherence report.",
+    href: "/adherence-tracker",
+    color: "text-teal-500",
+  },
    {
     icon: ShieldEllipsis,
     title: "Emergency",
@@ -88,6 +95,13 @@ const patientTools = [
         description: "Upload and analyze a new prescription from your doctor.",
         href: "/prescription-reader",
         color: "text-orange-500",
+    },
+    {
+        icon: FileClock,
+        title: "Adherence Tracker",
+        description: "Track and report your medication adherence.",
+        href: "/adherence-tracker",
+        color: "text-teal-500",
     },
     {
         icon: ShieldEllipsis,
