@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -27,6 +27,7 @@ const pharmacistMenuItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/patients", label: "Patients", icon: Users },
     { href: "/patient-history", label: "Patient History Form", icon: User },
+    { href: "/symptom-checker", label: "Symptom Checker", icon: Stethoscope },
     { href: "/monograph", label: "Monograph Lookup", icon: BookText },
     { href: "/dose-calculator", label: "Dose Calculator", icon: Calculator },
     { href: "/interaction-checker", label: "Interaction Checker", icon: FlaskConical },
@@ -40,6 +41,7 @@ const pharmacistMenuItems = [
 const patientMenuItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/patient-history", label: "My History", icon: User },
+    { href: "/symptom-checker", label: "Symptom Checker", icon: Stethoscope },
     { href: "/adherence-tracker", label: "Adherence Tracker", icon: FileClock },
     { href: "/emergency", label: "Emergency", icon: ShieldEllipsis },
 ];

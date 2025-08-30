@@ -10,6 +10,8 @@ import '@/ai/flows/prescription-reader.ts';
 import '@/ai/flows/drug-food-interaction.ts';
 import '@/ai/flows/lab-report-analyzer.ts';
 import '@/ai/flows/adherence-reporter.ts';
+import '@/ai/flows/symptom-checker.ts';
+
 
 
 

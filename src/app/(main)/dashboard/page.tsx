@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
@@ -22,6 +22,13 @@ const pharmacistTools = [
     description: "Add or edit detailed patient history.",
     href: "/patient-history",
     color: "text-blue-400",
+  },
+  {
+    icon: Stethoscope,
+    title: "Symptom Checker",
+    description: "Guide patients through a symptom triage.",
+    href: "/symptom-checker",
+    color: "text-rose-500",
   },
   {
     icon: BookText,
@@ -88,6 +95,13 @@ const patientTools = [
         description: "View or update your personal and medical information.",
         href: "/patient-history",
         color: "text-blue-400",
+    },
+    {
+        icon: Stethoscope,
+        title: "Symptom Checker",
+        description: "Analyze your symptoms with an AI assistant.",
+        href: "/symptom-checker",
+        color: "text-rose-500",
     },
     {
         icon: ScanEye,
