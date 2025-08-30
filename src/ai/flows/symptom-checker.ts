@@ -33,7 +33,7 @@ const TriageAnswerSchema = z.object({
 });
 
 // Input schema for the main flow
-export const GetSymptomAnalysisInputSchema = z.object({
+const GetSymptomAnalysisInputSchema = z.object({
   initialSymptoms: z.string().describe("The patient's initial symptoms in their own words."),
   detailedHistory: detailedHistorySchema,
   // Answers are optional; they are only provided in the second step of the flow.
@@ -42,7 +42,7 @@ export const GetSymptomAnalysisInputSchema = z.object({
 export type GetSymptomAnalysisInput = z.infer<typeof GetSymptomAnalysisInputSchema>;
 
 // Output schema for the main flow
-export const GetSymptomAnalysisOutputSchema = z.object({
+const GetSymptomAnalysisOutputSchema = z.object({
   // In step 1, the flow returns triage questions.
   triageQuestions: z.array(TriageQuestionSchema).optional().describe('A list of follow-up questions to ask the patient.'),
   
