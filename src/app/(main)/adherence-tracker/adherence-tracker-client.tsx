@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, PlusCircle, XCircle, FileClock, PieChart, Info } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { usePatient } from "@/contexts/patient-context";
 
 const formSchema = z.object({
   medications: z.array(z.object({
@@ -25,6 +26,9 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
+
+const defaultMedication = { medicineName: "", dosageStrength: "", frequency: "", dosesPrescribed: 0, dosesTaken: 0 };
+
 
 export function AdherenceTrackerClient() {
   const [isPending, startTransition] = useTransition();
@@ -60,18 +64,37 @@ export function AdherenceTrackerClient() {
   );
 
   const { toast } = useToast();
+  const { patientState, clearLastPrescription } = usePatient();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      medications: [{ medicineName: "", dosageStrength: "", frequency: "", dosesPrescribed: 0, dosesTaken: 0 }],
+      medications: [defaultMedication],
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control: form.control,
     name: "medications",
   });
   
+  useEffect(() => {
+    if (patientState.lastPrescription) {
+      const newMedications = patientState.lastPrescription.medications.map(med => ({
+        medicineName: med.name,
+        dosageStrength: med.dosage,
+        frequency: med.frequency,
+        dosesPrescribed: 0,
+        dosesTaken: 0,
+      }));
+      if (newMedications.length > 0) {
+        replace(newMedications);
+      }
+      clearLastPrescription();
+    }
+  }, [patientState.lastPrescription, replace, clearLastPrescription]);
+
+
   useEffect(() => {
     if (state && 'error' in state && state.error) {
       toast({ variant: "destructive", title: "Error", description: state.error });
@@ -122,7 +145,7 @@ export function AdherenceTrackerClient() {
                       </Card>
                     ))}
                 </div>
-                <Button type="button" variant="outline" size="sm" onClick={() => append({ medicineName: "", dosageStrength: "", frequency: "", dosesPrescribed: 0, dosesTaken: 0 })}>
+                <Button type="button" variant="outline" size="sm" onClick={() => append(defaultMedication)}>
                   <PlusCircle className="mr-2 h-4 w-4" /> Add Another Medication
                 </Button>
                 <Button type="submit" disabled={isPending} className="w-full">

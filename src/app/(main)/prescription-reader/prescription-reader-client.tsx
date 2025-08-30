@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useTransition, useEffect, useRef, useState } from "react";
@@ -7,10 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Upload, Pill, Stethoscope, FileText, AlertCircle, ScanEye, AlertTriangle } from "lucide-react";
+import { Loader2, Upload, Pill, Stethoscope, FileText, AlertCircle, ScanEye, AlertTriangle, FileClock } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { usePatient } from "@/contexts/patient-context";
+import { useRouter } from "next/navigation";
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
 
@@ -21,6 +24,8 @@ export function PrescriptionReaderClient() {
     const [preview, setPreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
+    const { setLastPrescription } = usePatient();
+    const router = useRouter();
 
     useEffect(() => {
         if (state && 'error' in state && state.error) {
@@ -82,6 +87,13 @@ export function PrescriptionReaderClient() {
         });
     }
 
+    const handleStartTracking = () => {
+        if (state && 'medications' in state) {
+            setLastPrescription(state);
+            router.push('/adherence-tracker');
+        }
+    }
+
   return (
     <div className="grid md:grid-cols-3 gap-6">
       <div className="md:col-span-1">
@@ -127,7 +139,13 @@ export function PrescriptionReaderClient() {
             <Alert variant="default" className="bg-green-500/10 border-green-500 text-green-700 dark:text-green-400">
                 <FileText className="h-4 w-4 text-green-500" />
                 <AlertTitle>Analysis Complete</AlertTitle>
-                <AlertDescription>The prescription has been successfully analyzed. Please review for accuracy.</AlertDescription>
+                <AlertDescription className="flex justify-between items-center">
+                    <span>The prescription has been successfully analyzed. Please review for accuracy.</span>
+                    <Button size="sm" onClick={handleStartTracking}>
+                        <FileClock className="mr-2"/>
+                        Start Adherence Tracking
+                    </Button>
+                </AlertDescription>
             </Alert>
           
             {state.diagnosis && (

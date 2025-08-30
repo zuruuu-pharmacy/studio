@@ -4,6 +4,7 @@
 import type { ReactNode } from 'react';
 import { createContext, useContext, useState, useMemo, useEffect } from 'react';
 import type { Mode } from './mode-context';
+import type { ReadPrescriptionOutput } from '@/ai/flows/prescription-reader';
 
 export interface PatientHistory {
   // This represents the full patient history form data.
@@ -53,6 +54,7 @@ interface PatientState {
     activeUser: UserProfile | null;
     users: UserProfile[];
     patientRecords: PatientRecord[];
+    lastPrescription: ReadPrescriptionOutput | null;
 }
 
 interface PatientContextType {
@@ -63,6 +65,8 @@ interface PatientContextType {
   addOrUpdatePatientRecord: (history: PatientHistory) => PatientRecord;
   getActivePatientRecord: () => PatientRecord | undefined;
   deletePatientRecord: (recordId: string) => void;
+  setLastPrescription: (prescription: ReadPrescriptionOutput) => void;
+  clearLastPrescription: () => void;
 }
 
 const PatientContext = createContext<PatientContextType | undefined>(undefined);
@@ -70,7 +74,7 @@ const PatientContext = createContext<PatientContextType | undefined>(undefined);
 const LOCAL_STORAGE_KEY = 'pharmacy_data_v2';
 
 export function PatientProvider({ children }: { children: ReactNode }) {
-  const [patientState, setPatientState] = useState<PatientState>({ activeUser: null, users: [], patientRecords: [] });
+  const [patientState, setPatientState] = useState<PatientState>({ activeUser: null, users: [], patientRecords: [], lastPrescription: null });
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -80,6 +84,8 @@ export function PatientProvider({ children }: { children: ReactNode }) {
         const parsedData = JSON.parse(savedData);
         // Basic validation to prevent crashes on data structure changes
         if(parsedData.users && parsedData.patientRecords) {
+            // Don't persist lastPrescription across page loads
+            parsedData.lastPrescription = null;
             setPatientState(parsedData);
         }
       }
@@ -92,7 +98,8 @@ export function PatientProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if(isLoaded) {
         try {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(patientState));
+            const dataToSave = { ...patientState, lastPrescription: null };
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataToSave));
         } catch (error) {
             console.error("Failed to save data to localStorage", error);
         }
@@ -186,6 +193,14 @@ export function PatientProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const setLastPrescription = (prescription: ReadPrescriptionOutput) => {
+    setPatientState(s => ({ ...s, lastPrescription: prescription }));
+  };
+
+  const clearLastPrescription = () => {
+    setPatientState(s => ({ ...s, lastPrescription: null }));
+  };
+
 
   const contextValue = useMemo(() => ({ 
       patientState, 
@@ -194,7 +209,9 @@ export function PatientProvider({ children }: { children: ReactNode }) {
       clearActiveUser, 
       addOrUpdatePatientRecord,
       getActivePatientRecord,
-      deletePatientRecord 
+      deletePatientRecord,
+      setLastPrescription,
+      clearLastPrescription
     }), [patientState]);
 
   return (
