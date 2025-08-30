@@ -95,7 +95,13 @@ export function SymptomCheckerClient() {
   
   const symptomForm = useForm<SymptomFormValues>({ resolver: zodResolver(symptomFormSchema) });
   const answerForm = useForm<AnswerFormValues>();
-  const newPatientForm = useForm<NewPatientValues>({ resolver: zodResolver(newPatientSchema) });
+  const newPatientForm = useForm<NewPatientValues>({
+    resolver: zodResolver(newPatientSchema),
+    defaultValues: {
+      name: "",
+      phoneNumber: "",
+    },
+  });
 
   useEffect(() => {
     if (state) {
@@ -352,3 +358,5 @@ export function SymptomCheckerClient() {
     </Card>
   );
 }
+
+    
