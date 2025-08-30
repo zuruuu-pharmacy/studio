@@ -41,6 +41,21 @@ const GetSymptomAnalysisInputSchema = z.object({
 });
 export type GetSymptomAnalysisInput = z.infer<typeof GetSymptomAnalysisInputSchema>;
 
+const organSystems = z.enum([
+    'Cardiovascular',
+    'Respiratory',
+    'Gastrointestinal',
+    'Nervous',
+    'Musculoskeletal',
+    'Integumentary',
+    'Urinary',
+    'Endocrine',
+    'Lymphatic/Immune',
+    'Reproductive',
+    'Hematologic',
+    'General',
+]);
+
 // Output schema for the main flow
 const GetSymptomAnalysisOutputSchema = z.object({
   // In step 1, the flow returns triage questions.
@@ -54,6 +69,8 @@ const GetSymptomAnalysisOutputSchema = z.object({
     })).describe('A list of the top 2-3 most likely conditions.'),
     severity: z.enum(['Red', 'Yellow', 'Green']).describe('The overall severity level (Red: Urgent, Yellow: Moderate, Green: Mild).'),
     recommendation: z.string().describe('The recommended next step for the patient (e.g., "Go to ER", "Consult a doctor").'),
+    mostRelevantSystem: organSystems.describe("The single most relevant organ system for these symptoms (e.g., 'Cardiovascular', 'Respiratory')."),
+    summaryForHistory: z.string().describe("A concise summary of the encounter (symptoms and possible conditions) suitable for adding to a patient's medical history file."),
     disclaimer: z.string().default('This is not a medical diagnosis. Please consult a healthcare professional for advice.'),
   }).optional(),
 });
@@ -108,7 +125,9 @@ const symptomCheckerFlow = ai.defineFlow(
             - Yellow: Needs medical attention soon (e.g., persistent fever, non-urgent but concerning symptoms).
             - Green: Likely mild and can be managed with home care.
         4.  Provide a clear, actionable recommendation.
-        5.  Include the standard disclaimer.
+        5.  Based on the symptoms and your analysis, determine the single most relevant organ system.
+        6.  Create a concise summary of the encounter (initial symptoms, key answers, and possible conditions) that can be saved to the patient's history under the relevant organ system section.
+        7.  Include the standard disclaimer.
 
         Respond ONLY with the final analysis object.
         `,

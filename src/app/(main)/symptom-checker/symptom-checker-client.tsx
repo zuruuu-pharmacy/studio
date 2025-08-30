@@ -14,11 +14,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Forward, AlertTriangle, Activity, ShieldPlus, HeartPulse, Sparkles } from "lucide-react";
+import { Loader2, Forward, AlertTriangle, Activity, ShieldPlus, HeartPulse, Sparkles, Save, UserPlus } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { usePatient } from "@/contexts/patient-context";
+import { usePatient, type PatientHistory, type UserProfile } from "@/contexts/patient-context";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { useMode } from "@/contexts/mode-context";
+import { useRouter } from "next/navigation";
+
 
 // Form schema for the initial symptom input
 const symptomFormSchema = z.object({
@@ -35,6 +39,12 @@ const answerFormSchema = z.object({
 });
 type AnswerFormValues = z.infer<typeof answerFormSchema>;
 
+const newPatientSchema = z.object({
+    name: z.string().min(1, "Name is required"),
+    phoneNumber: z.string().optional(),
+});
+type NewPatientValues = z.infer<typeof newPatientSchema>;
+
 // Severity styling map
 const severityMap: { [key: string]: { icon: React.ElementType, color: string, badge: "destructive" | "secondary" | "default" } } = {
   'Red': { icon: HeartPulse, color: 'text-red-500', badge: 'destructive' },
@@ -47,7 +57,6 @@ export function SymptomCheckerClient() {
   const [isPending, startTransition] = useTransition();
   const [state, formAction] = useActionState<GetSymptomAnalysisOutput | { error: string } | null, FormData>(
     async (previousState, formData) => {
-      // This action handles both steps of the flow
       const initialSymptoms = formData.get("initialSymptoms") as string;
       const answers: { question: string, answer: string }[] = [];
       let i = 0;
@@ -75,13 +84,18 @@ export function SymptomCheckerClient() {
   );
 
   const { toast } = useToast();
-  const { getActivePatientRecord } = usePatient();
+  const { mode } = useMode();
+  const router = useRouter();
+  const { getActivePatientRecord, addOrUpdatePatientRecord, addOrUpdateUser, setActiveUser, patientState } = usePatient();
   const activePatientRecord = getActivePatientRecord();
-
+  
   const [currentStep, setCurrentStep] = useState<'symptoms' | 'questions' | 'analysis'>('symptoms');
+  const [saveToHistoryModalOpen, setSaveToHistoryModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
   const symptomForm = useForm<SymptomFormValues>({ resolver: zodResolver(symptomFormSchema) });
   const answerForm = useForm<AnswerFormValues>();
+  const newPatientForm = useForm<NewPatientValues>({ resolver: zodResolver(newPatientSchema) });
 
   useEffect(() => {
     if (state) {
@@ -117,6 +131,73 @@ export function SymptomCheckerClient() {
     setCurrentStep('symptoms');
   }
 
+  const handleSaveToHistory = () => {
+    if (mode === 'patient') {
+      if (!activePatientRecord || !state?.analysis) return;
+      
+      const newNote = `[${new Date().toISOString().split('T')[0]}] Symptom Check: ${state.analysis.summaryForHistory}`;
+      const system = state.analysis.mostRelevantSystem;
+      
+      const updatedHistory: PatientHistory = {
+        ...activePatientRecord.history,
+        systemicNotes: {
+          ...activePatientRecord.history.systemicNotes,
+          [system]: `${activePatientRecord.history.systemicNotes?.[system] || ''}\n\n${newNote}`.trim(),
+        }
+      };
+      addOrUpdatePatientRecord(updatedHistory);
+      toast({ title: 'Saved to History', description: `Analysis saved to the ${system} section.` });
+      resetFlow();
+    } else { // Pharmacist
+      setSaveToHistoryModalOpen(true);
+    }
+  };
+
+  const handlePharmacistSave = newPatientForm.handleSubmit(async (data: NewPatientValues) => {
+    if (!state?.analysis) return;
+    setIsSaving(true);
+    
+    // Find existing patient or create a new user profile
+    let targetUser = patientState.users.find(u => u.demographics?.name === data.name && u.demographics?.phoneNumber === data.phoneNumber);
+    if (!targetUser) {
+        const newUser: Omit<UserProfile, 'id'> = { role: 'patient', demographics: data };
+        // This is tricky because addOrUpdateUser is async in its effect. Let's manage it here.
+        const id = Date.now().toString();
+        targetUser = { ...newUser, id };
+        addOrUpdateUser(targetUser);
+    }
+    
+    setActiveUser(targetUser.id);
+    
+    // Now get the record for this user (or a new one)
+    let recordToUpdate = patientState.patientRecords.find(r => r.id === targetUser?.patientHistoryId);
+    let historyToUpdate = recordToUpdate?.history || { name: data.name, phoneNumber: data.phoneNumber, systemicNotes: {} };
+
+    const newNote = `[${new Date().toISOString().split('T')[0]}] Symptom Check (Pharmacist Assisted): ${state.analysis.summaryForHistory}`;
+    const system = state.analysis.mostRelevantSystem;
+
+    const updatedHistory: PatientHistory = {
+      ...historyToUpdate,
+      systemicNotes: {
+        ...historyToUpdate.systemicNotes,
+        [system]: `${historyToUpdate.systemicNotes?.[system] || ''}\n\n${newNote}`.trim(),
+      }
+    };
+    
+    const savedRecord = addOrUpdatePatientRecord(updatedHistory);
+
+    // Update user with the record ID if it's new
+    if (!targetUser.patientHistoryId) {
+        addOrUpdateUser({ ...targetUser, patientHistoryId: savedRecord.id });
+    }
+
+    toast({ title: "Saved to Patient History", description: `Analysis saved for ${data.name}.` });
+    setSaveToHistoryModalOpen(false);
+    setIsSaving(false);
+    resetFlow();
+  });
+
+
   // RENDER LOGIC
   if (isPending) {
     return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
@@ -142,6 +223,7 @@ export function SymptomCheckerClient() {
 
                 <div className="space-y-3">
                     <h3 className="font-semibold text-xl">Possible Conditions</h3>
+                    <p className="text-sm text-muted-foreground">Most Relevant System: <Badge variant="outline">{analysis.mostRelevantSystem}</Badge></p>
                     {analysis.possibleConditions.map((cond, i) => (
                         <div key={i} className="p-3 bg-muted/50 rounded-md">
                            <div className="flex justify-between items-center">
@@ -151,8 +233,41 @@ export function SymptomCheckerClient() {
                         </div>
                     ))}
                 </div>
-
-                <Button onClick={resetFlow} className="w-full">Start New Analysis</Button>
+                
+                <Alert>
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Save Analysis?</AlertTitle>
+                    <AlertDescription>Would you like to save a summary of this analysis to the health history?</AlertDescription>
+                    <div className="flex gap-4 mt-4">
+                        <Button onClick={handleSaveToHistory}><Save className="mr-2"/>Save to History</Button>
+                        <Button onClick={resetFlow} variant="outline">Start New Analysis</Button>
+                    </div>
+                </Alert>
+                 {/* Pharmacist Save Modal */}
+                <Dialog open={saveToHistoryModalOpen} onOpenChange={setSaveToHistoryModalOpen}>
+                    <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Save to Patient History</DialogTitle>
+                        <DialogDescription>Find an existing patient or create a new record.</DialogDescription>
+                    </DialogHeader>
+                    <Form {...newPatientForm}>
+                        <form onSubmit={handlePharmacistSave} className="space-y-4">
+                            <FormField name="name" control={newPatientForm.control} render={({ field }) => (
+                                <FormItem><FormLabel>Patient Name</FormLabel><FormControl><Input {...field} placeholder="Full Name" /></FormControl><FormMessage /></FormItem>
+                            )} />
+                            <FormField name="phoneNumber" control={newPatientForm.control} render={({ field }) => (
+                                <FormItem><FormLabel>Patient Phone (Optional)</FormLabel><FormControl><Input {...field} placeholder="Phone Number" /></FormControl><FormMessage /></FormItem>
+                            )} />
+                             <DialogFooter>
+                                <Button type="submit" disabled={isSaving}>
+                                    {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                                    Save
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    </Form>
+                    </DialogContent>
+                </Dialog>
             </CardContent>
         </Card>
     );

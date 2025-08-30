@@ -6,9 +6,21 @@ import { createContext, useContext, useState, useMemo, useEffect } from 'react';
 import type { Mode } from './mode-context';
 import type { ReadPrescriptionOutput } from '@/ai/flows/prescription-reader';
 
+export type OrganSystem = 
+    | 'Cardiovascular'
+    | 'Respiratory'
+    | 'Gastrointestinal'
+    | 'Nervous'
+    | 'Musculoskeletal'
+    | 'Integumentary'
+    | 'Urinary'
+    | 'Endocrine'
+    | 'Lymphatic/Immune'
+    | 'Reproductive'
+    | 'Hematologic'
+    | 'General';
+
 export interface PatientHistory {
-  // This represents the full patient history form data.
-  // Demographics are just one part of it.
   name?: string;
   age?: string;
   gender?: string;
@@ -27,6 +39,7 @@ export interface PatientHistory {
   socialHistory?: string;
   immunizationHistory?: string;
   reviewOfSystems?: string;
+  systemicNotes?: Partial<Record<OrganSystem, string>>;
   lifestyleAndCompliance?: string;
   ideasAndConcerns?: string;
   pharmacistAssessment?: string;
@@ -59,7 +72,7 @@ interface PatientState {
 
 interface PatientContextType {
   patientState: PatientState;
-  addOrUpdateUser: (user: Omit<UserProfile, 'id'> & { id?: string }) => void;
+  addOrUpdateUser: (user: Omit<UserProfile, 'id'> & { id?: string }) => UserProfile;
   setActiveUser: (userId: string | null) => void;
   clearActiveUser: () => void;
   addOrUpdatePatientRecord: (history: PatientHistory) => PatientRecord;
@@ -106,21 +119,25 @@ export function PatientProvider({ children }: { children: ReactNode }) {
     }
   }, [patientState, isLoaded]);
 
-  const addOrUpdateUser = (user: Omit<UserProfile, 'id'> & { id?: string }) => {
+  const addOrUpdateUser = (user: Omit<UserProfile, 'id'> & { id?: string }): UserProfile => {
+    let updatedUser: UserProfile;
     setPatientState(prevState => {
         const newUsers = [...prevState.users];
         if(user.id) { // Update existing user
             const index = newUsers.findIndex(u => u.id === user.id);
             if(index !== -1) {
-                newUsers[index] = { ...newUsers[index], ...user };
+                updatedUser = { ...newUsers[index], ...user };
+                newUsers[index] = updatedUser;
                  return { ...prevState, users: newUsers, activeUser: newUsers[index] };
             }
         }
         // Add new user
-        const newUser = { ...user, id: Date.now().toString() } as UserProfile;
-        newUsers.push(newUser);
-        return { ...prevState, users: newUsers, activeUser: newUser };
+        updatedUser = { ...user, id: Date.now().toString() } as UserProfile;
+        newUsers.push(updatedUser);
+        return { ...prevState, users: newUsers, activeUser: updatedUser };
     });
+    // @ts-ignore
+    return updatedUser;
   };
   
   const setActiveUser = (userId: string | null) => {
@@ -142,9 +159,6 @@ export function PatientProvider({ children }: { children: ReactNode }) {
     let newRecord: PatientRecord;
     setPatientState(prevState => {
         const newRecords = [...prevState.patientRecords];
-        // The patient history form now manages its own ID.
-        // Let's assume a patient record ID is tied to a user.
-        // The form should associate with the activeUser's patientHistoryId.
         const activeUserPatientHistoryId = prevState.activeUser?.patientHistoryId;
 
         if(activeUserPatientHistoryId) {

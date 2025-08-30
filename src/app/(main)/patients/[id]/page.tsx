@@ -32,21 +32,27 @@ const formSections = [
     { id: 'socialHistory', title: '8. Social History', field: 'socialHistory' },
     { id: 'immunizationHistory', title: '9. Immunization History', field: 'immunizationHistory' },
     { id: 'reviewOfSystems', title: '10. Review of Systems (ROS)', field: 'reviewOfSystems' },
+    { id: 'systemicNotes', title: 'Systemic Notes (from Symptom Checker)' },
     { id: 'lifestyleAndCompliance', title: '11. Lifestyle & Compliance', field: 'lifestyleAndCompliance' },
     { id: 'ideasAndConcerns', title: '12. Patient’s Own Ideas & Concerns', field: 'ideasAndConcerns' },
     { id: 'pharmacistAssessment', title: '13. Pharmacist’s Assessment', field: 'pharmacistAssessment' },
     { id: 'carePlan', title: '14. Plan (Pharmaceutical Care Plan)', field: 'carePlan' },
 ];
 
-function SectionDisplay({ title, content }: { title: string, content: string | undefined }) {
-    if (!content) return null;
-    return (
-        <div>
-            <h3 className="font-semibold text-lg">{title}</h3>
-            <p className="text-muted-foreground whitespace-pre-wrap">{content}</p>
-        </div>
-    );
-}
+const systemicNotesFields = [
+    'Cardiovascular',
+    'Respiratory',
+    'Gastrointestinal',
+    'Nervous',
+    'Musculoskeletal',
+    'Integumentary',
+    'Urinary',
+    'Endocrine',
+    'Lymphatic/Immune',
+    'Reproductive',
+    'Hematologic',
+    'General',
+] as const;
 
 export default function PatientViewPage() {
   const params = useParams();
@@ -106,6 +112,22 @@ export default function PatientViewPage() {
                             ) : null
                         })}
                     </div>
+                  ) : section.id === 'systemicNotes' ? (
+                     <div className="space-y-4">
+                        {systemicNotesFields.map(systemName => {
+                             const note = history.systemicNotes?.[systemName as keyof typeof history.systemicNotes];
+                             if(!note) return null;
+                             return (
+                                 <div key={systemName}>
+                                    <p className="font-semibold">{systemName}</p>
+                                    <p className="text-muted-foreground whitespace-pre-wrap">{note}</p>
+                                 </div>
+                             )
+                        })}
+                        {(!history.systemicNotes || Object.values(history.systemicNotes).every(v => !v)) && (
+                             <p className="text-muted-foreground">No systemic notes recorded.</p>
+                        )}
+                     </div>
                   ) : section.field ? (
                     <p className="text-muted-foreground whitespace-pre-wrap">
                         {history[section.field as keyof PatientHistory] || 'No information provided.'}

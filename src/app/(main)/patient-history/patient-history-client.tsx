@@ -41,6 +41,21 @@ const historySchema = z.object({
   ideasAndConcerns: z.string().optional(),
   pharmacistAssessment: z.string().optional(),
   carePlan: z.string().optional(),
+  // Adding systemic notes to the schema
+  systemicNotes: z.object({
+    Cardiovascular: z.string().optional(),
+    Respiratory: z.string().optional(),
+    Gastrointestinal: z.string().optional(),
+    Nervous: z.string().optional(),
+    Musculoskeletal: z.string().optional(),
+    Integumentary: z.string().optional(),
+    Urinary: z.string().optional(),
+    Endocrine: z.string().optional(),
+    'Lymphatic/Immune': z.string().optional(),
+    Reproductive: z.string().optional(),
+    Hematologic: z.string().optional(),
+    General: z.string().optional(),
+  }).optional(),
 });
 
 
@@ -67,11 +82,27 @@ const formSections = [
     { id: 'socialHistory', title: '8. Social History', description: 'Smoking, alcohol use, diet, exercise, occupation, financial status.', field: { name: 'socialHistory', placeholder: 'e.g., Smoker (1 pack/day), social drinker, sedentary lifestyle...' } },
     { id: 'immunizationHistory', title: '9. Immunization History', description: 'Vaccination status.', field: { name: 'immunizationHistory', placeholder: 'e.g., Tetanus, hepatitis, flu, COVID...' } },
     { id: 'reviewOfSystems', title: '10. Review of Systems (ROS)', description: 'A quick screen of each organ system.', field: { name: 'reviewOfSystems', placeholder: 'General: weight loss, fever. CVS: chest pain. Respiratory: cough...' } },
+    { id: 'systemicNotes', title: 'Systemic Notes (from Symptom Checker)', description: 'Contains notes generated from the AI Symptom Checker, organized by organ system.' },
     { id: 'lifestyleAndCompliance', title: '11. Lifestyle & Compliance', description: 'How patients take their meds, missed doses, and barriers.', field: { name: 'lifestyleAndCompliance', placeholder: 'e.g., Uses pillbox, sometimes forgets evening dose, concerned about cost...' } },
     { id: 'ideasAndConcerns', title: '12. Patient’s Own Ideas & Concerns', description: 'What the patient thinks is causing their illness and their concerns.', field: { name: 'ideasAndConcerns', placeholder: 'e.g., "I think it\'s because of the spicy food I ate."...' } },
     { id: 'pharmacistAssessment', title: '13. Pharmacist’s Assessment', description: 'Summary of problems identified, goals of therapy.', field: { name: 'pharmacistAssessment', placeholder: 'e.g., Potential drug interaction between X and Y, non-adherence to medication Z...' } },
     { id: 'carePlan', title: '14. Plan (Pharmaceutical Care Plan)', description: 'Counseling points, communication with doctor, monitoring.', field: { name: 'carePlan', placeholder: 'e.g., Counsel patient on taking med with food, recommend monitoring BP...' } },
 ];
+
+const systemicNotesFields = [
+    'Cardiovascular',
+    'Respiratory',
+    'Gastrointestinal',
+    'Nervous',
+    'Musculoskeletal',
+    'Integumentary',
+    'Urinary',
+    'Endocrine',
+    'Lymphatic/Immune',
+    'Reproductive',
+    'Hematologic',
+    'General',
+] as const;
 
 const defaultFormValues: HistoryFormValues = {
     name: '',
@@ -92,6 +123,7 @@ const defaultFormValues: HistoryFormValues = {
     socialHistory: '',
     immunizationHistory: '',
     reviewOfSystems: '',
+    systemicNotes: {},
     lifestyleAndCompliance: '',
     ideasAndConcerns: '',
     pharmacistAssessment: '',
@@ -211,6 +243,23 @@ export function PatientHistoryClient() {
                             )}
                           />
                         ))
+                      ) : section.id === 'systemicNotes' ? (
+                          <div className="space-y-4">
+                            {systemicNotesFields.map(systemName => (
+                                <FormField
+                                    key={systemName}
+                                    control={historyForm.control}
+                                    name={`systemicNotes.${systemName}` as any}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>{systemName.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
+                                            <FormControl><Textarea placeholder={`Notes for ${systemName}...`} {...field} value={field.value ?? ''} /></FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            ))}
+                         </div>
                       ) : section.field ? (
                           <FormField
                             control={historyForm.control}
