@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Upload, Pill, Stethoscope, FileText, AlertCircle, ScanEye } from "lucide-react";
+import { Loader2, Upload, Pill, Stethoscope, FileText, AlertCircle, ScanEye, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -127,14 +127,17 @@ export function PrescriptionReaderClient() {
             <Alert variant="default" className="bg-green-500/10 border-green-500 text-green-700 dark:text-green-400">
                 <FileText className="h-4 w-4 text-green-500" />
                 <AlertTitle>Analysis Complete</AlertTitle>
-                <AlertDescription>The prescription has been successfully analyzed.</AlertDescription>
+                <AlertDescription>The prescription has been successfully analyzed. Please review for accuracy.</AlertDescription>
             </Alert>
           
             {state.diagnosis && (
               <Card>
                 <CardHeader className="flex flex-row items-center gap-4">
                   <Stethoscope className="h-6 w-6 text-primary" />
-                  <CardTitle>Doctor's Diagnosis</CardTitle>
+                  <div>
+                    <CardTitle>Doctor's Diagnosis</CardTitle>
+                    {state.prescription_date && <CardDescription>Date: {state.prescription_date}</CardDescription>}
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">{state.diagnosis}</p>
@@ -154,20 +157,34 @@ export function PrescriptionReaderClient() {
                       <TableHead>Medication</TableHead>
                       <TableHead>Dosage</TableHead>
                       <TableHead>Frequency</TableHead>
+                      <TableHead>Duration</TableHead>
                       <TableHead>Instructions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {state.medications.map((med, index) => (
                       <TableRow key={index}>
-                        <TableCell className="font-medium">{med.name}</TableCell>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            {med.status === 'uncertain' && <AlertTriangle className="h-4 w-4 text-destructive" title="Uncertain Recognition" />}
+                            {med.name}
+                          </div>
+                        </TableCell>
                         <TableCell>{med.dosage}</TableCell>
                         <TableCell>{med.frequency}</TableCell>
+                        <TableCell>{med.duration}</TableCell>
                         <TableCell>{med.instructions}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
+                {state.medications.some(m => m.status === 'uncertain') && (
+                    <Alert variant="destructive" className="mt-4">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle>Pharmacist Review Required</AlertTitle>
+                        <AlertDescription>One or more medications were difficult to read. Please verify the details before proceeding.</AlertDescription>
+                    </Alert>
+                )}
               </CardContent>
             </Card>
             
