@@ -20,7 +20,7 @@ const formSchema = z.object({
     medicineName: z.string().min(2, "Required"),
     dosageStrength: z.string().min(2, "Required"),
     frequency: z.string().optional(),
-    dosesPrescribed: z.coerce.number().int().positive("Must be > 0"),
+    dosesPrescribed: z.coerce.number().int().min(0, "Must be >= 0"),
     dosesTaken: z.coerce.number().int().min(0, "Cannot be negative"),
   })).min(1, "At least one medication is required"),
 });
@@ -84,13 +84,14 @@ export function AdherenceTrackerClient() {
         medicineName: med.name,
         dosageStrength: med.dosage,
         frequency: med.frequency,
-        dosesPrescribed: 0,
-        dosesTaken: 0,
+        dosesPrescribed: 0, // Default to 0, user must input this
+        dosesTaken: 0,      // Default to 0, user must input this
       }));
       if (newMedications.length > 0) {
         replace(newMedications);
       }
-      clearLastPrescription();
+      // Important: Clear the prescription from context so it doesn't pre-fill again on subsequent visits
+      clearLastPrescription(); 
     }
   }, [patientState.lastPrescription, replace, clearLastPrescription]);
 
