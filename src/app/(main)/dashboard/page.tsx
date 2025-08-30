@@ -77,10 +77,17 @@ const pharmacistTools = [
 const patientTools = [
     {
         icon: User,
-        title: "My Patient History",
+        title: "My Health History",
         description: "View or update your personal and medical information.",
         href: "/patient-history",
         color: "text-blue-400",
+    },
+    {
+        icon: ScanEye,
+        title: "Upload Prescription",
+        description: "Upload and analyze a new prescription from your doctor.",
+        href: "/prescription-reader",
+        color: "text-orange-500",
     },
     {
         icon: ShieldEllipsis,
