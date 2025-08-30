@@ -156,7 +156,7 @@ export function PatientProvider({ children }: { children: ReactNode }) {
   }
 
   const addOrUpdatePatientRecord = (history: PatientHistory & {id?: string}): PatientRecord => {
-    let newRecord: PatientRecord;
+    let newRecord: PatientRecord | undefined = undefined;
     setPatientState(prevState => {
         const newRecords = [...prevState.patientRecords];
         const activeUserPatientHistoryId = prevState.activeUser?.patientHistoryId;
@@ -172,8 +172,9 @@ export function PatientProvider({ children }: { children: ReactNode }) {
         
         // Create new record
         const recordId = `record_${Date.now().toString()}`;
-        newRecord = { id: recordId, history };
-        newRecords.push(newRecord);
+        const createdRecord = { id: recordId, history };
+        newRecords.push(createdRecord);
+        newRecord = createdRecord;
 
         // If there's an active user, link this new record to them
         const newUsers = prevState.users.map(u => 
@@ -183,7 +184,19 @@ export function PatientProvider({ children }: { children: ReactNode }) {
 
         return { ...prevState, patientRecords: newRecords, users: newUsers, activeUser: newActiveUser };
     });
-    // @ts-ignore
+    
+    if(!newRecord) {
+        // This case should not happen if logic is correct, but as a fallback, create a non-state version.
+        // This might happen if called when there is no active user.
+        const activeUserPatientHistoryId = patientState.activeUser?.patientHistoryId;
+        const existingRecord = activeUserPatientHistoryId ? patientState.patientRecords.find(r => r.id === activeUserPatientHistoryId) : undefined;
+        if(existingRecord) {
+            newRecord = {...existingRecord, history};
+        } else {
+             newRecord = { id: `record_${Date.now().toString()}`, history };
+        }
+    }
+    
     return newRecord;
   }
 
