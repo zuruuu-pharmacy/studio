@@ -18,6 +18,7 @@ import { Loader2, Forward, AlertTriangle, Activity, ShieldPlus, HeartPulse, Spar
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { usePatient } from "@/contexts/patient-context";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 
 // Form schema for the initial symptom input
 const symptomFormSchema = z.object({
