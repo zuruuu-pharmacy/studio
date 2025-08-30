@@ -21,6 +21,7 @@ export type OrganSystem =
     | 'General';
 
 export interface PatientHistory {
+  id?: string; // Add optional id for easier updates
   name?: string;
   age?: string;
   gender?: string;
@@ -63,23 +64,23 @@ export interface PatientRecord {
 }
 
 
-interface PatientState {
-    activeUser: UserProfile | null;
-    users: UserProfile[];
-    patientRecords: PatientRecord[];
-    lastPrescription: ReadPrescriptionOutput | null;
-}
-
 interface PatientContextType {
   patientState: PatientState;
   addOrUpdateUser: (user: Omit<UserProfile, 'id'> & { id?: string }) => UserProfile;
   setActiveUser: (userId: string | null) => void;
   clearActiveUser: () => void;
-  addOrUpdatePatientRecord: (history: PatientHistory) => PatientRecord;
+  addOrUpdatePatientRecord: (history: PatientHistory, recordId?: string) => PatientRecord;
   getActivePatientRecord: () => PatientRecord | undefined;
   deletePatientRecord: (recordId: string) => void;
   setLastPrescription: (prescription: ReadPrescriptionOutput) => void;
   clearLastPrescription: () => void;
+}
+
+interface PatientState {
+    activeUser: UserProfile | null;
+    users: UserProfile[];
+    patientRecords: PatientRecord[];
+    lastPrescription: ReadPrescriptionOutput | null;
 }
 
 const PatientContext = createContext<PatientContextType | undefined>(undefined);
@@ -155,49 +156,42 @@ export function PatientProvider({ children }: { children: ReactNode }) {
     setPatientState(s => ({...s, activeUser: null}));
   }
 
-  const addOrUpdatePatientRecord = (history: PatientHistory & {id?: string}): PatientRecord => {
+  const addOrUpdatePatientRecord = (history: PatientHistory, recordIdToUpdate?: string): PatientRecord => {
     let newRecord: PatientRecord | undefined = undefined;
+    
+    // Determine the ID to use: passed in ID, or the active user's linked ID.
+    const recordId = recordIdToUpdate || patientState.activeUser?.patientHistoryId;
+
     setPatientState(prevState => {
         const newRecords = [...prevState.patientRecords];
-        const activeUserPatientHistoryId = prevState.activeUser?.patientHistoryId;
-
-        if(activeUserPatientHistoryId) {
-             const index = newRecords.findIndex(r => r.id === activeUserPatientHistoryId);
-             if (index !== -1) { // Update
+        
+        if(recordId) {
+             const index = newRecords.findIndex(r => r.id === recordId);
+             if (index !== -1) { // Update existing record
                 newRecords[index] = { ...newRecords[index], history };
                 newRecord = newRecords[index];
                 return { ...prevState, patientRecords: newRecords };
              }
         }
         
-        // Create new record
-        const recordId = `record_${Date.now().toString()}`;
-        const createdRecord = { id: recordId, history };
+        // If no matching record was found to update, create a new one.
+        const newRecordId = `record_${Date.now().toString()}`;
+        const createdRecord = { id: newRecordId, history };
         newRecords.push(createdRecord);
         newRecord = createdRecord;
 
-        // If there's an active user, link this new record to them
+        // If there's an active user without a history, link this new record to them.
         const newUsers = prevState.users.map(u => 
-            u.id === prevState.activeUser?.id ? { ...u, patientHistoryId: recordId } : u
+            (u.id === prevState.activeUser?.id && !u.patientHistoryId) ? { ...u, patientHistoryId: newRecordId } : u
         );
-        const newActiveUser = prevState.activeUser ? {...prevState.activeUser, patientHistoryId: recordId} : null;
+        const newActiveUser = (prevState.activeUser && !prevState.activeUser.patientHistoryId) 
+            ? {...prevState.activeUser, patientHistoryId: newRecordId} 
+            : prevState.activeUser;
 
         return { ...prevState, patientRecords: newRecords, users: newUsers, activeUser: newActiveUser };
     });
     
-    if(!newRecord) {
-        // This case should not happen if logic is correct, but as a fallback, create a non-state version.
-        // This might happen if called when there is no active user.
-        const activeUserPatientHistoryId = patientState.activeUser?.patientHistoryId;
-        const existingRecord = activeUserPatientHistoryId ? patientState.patientRecords.find(r => r.id === activeUserPatientHistoryId) : undefined;
-        if(existingRecord) {
-            newRecord = {...existingRecord, history};
-        } else {
-             newRecord = { id: `record_${Date.now().toString()}`, history };
-        }
-    }
-    
-    return newRecord;
+    return newRecord!;
   }
 
   const getActivePatientRecord = (): PatientRecord | undefined => {

@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Forward, AlertTriangle, Activity, ShieldPlus, HeartPulse, Sparkles, Save, UserPlus } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { usePatient, type PatientHistory, type UserProfile } from "@/contexts/patient-context";
+import { usePatient, type PatientHistory, type UserProfile, type PatientRecord } from "@/contexts/patient-context";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -163,43 +163,44 @@ export function SymptomCheckerClient() {
     if (!state?.analysis) return;
     setIsSaving(true);
     
-    // Find existing patient or create a new user profile
-    let targetUser = patientState.users.find(u => u.demographics?.name === data.name && u.demographics?.phoneNumber === data.phoneNumber);
-    if (!targetUser) {
-        const newUser: Omit<UserProfile, 'id'> = { role: 'patient', demographics: data };
-        // This is tricky because addOrUpdateUser is async in its effect. Let's manage it here.
-        const id = Date.now().toString();
-        targetUser = { ...newUser, id };
-        addOrUpdateUser(targetUser);
-    }
-    
-    setActiveUser(targetUser.id);
-    
-    // Now get the record for this user (or a new one)
-    let recordToUpdate = patientState.patientRecords.find(r => r.id === targetUser?.patientHistoryId);
-    let historyToUpdate = recordToUpdate?.history || { name: data.name, phoneNumber: data.phoneNumber, systemicNotes: {} };
+    // Find existing patient record by name and phone number.
+    const existingRecord = patientState.patientRecords.find(
+      (r) =>
+        r.history.name?.toLowerCase() === data.name.toLowerCase() &&
+        r.history.phoneNumber === data.phoneNumber
+    );
 
     const newNote = `[${new Date().toISOString().split('T')[0]}] Symptom Check (Pharmacist Assisted): ${state.analysis.summaryForHistory}`;
     const system = state.analysis.mostRelevantSystem;
 
-    const updatedHistory: PatientHistory = {
-      ...historyToUpdate,
-      systemicNotes: {
-        ...historyToUpdate.systemicNotes,
-        [system]: `${historyToUpdate.systemicNotes?.[system] || ''}\n\n${newNote}`.trim(),
-      }
-    };
-    
-    const savedRecord = addOrUpdatePatientRecord(updatedHistory);
+    if (existingRecord) {
+      // Update existing record
+      const historyToUpdate = existingRecord.history;
+      const updatedHistory: PatientHistory = {
+        ...historyToUpdate,
+        systemicNotes: {
+          ...historyToUpdate.systemicNotes,
+          [system]: `${historyToUpdate.systemicNotes?.[system] || ''}\n\n${newNote}`.trim(),
+        },
+      };
+      addOrUpdatePatientRecord(updatedHistory, existingRecord.id);
+      toast({ title: "History Updated", description: `Analysis saved to existing record for ${data.name}.` });
 
-    // Update user with the record ID if it's new
-    if (!targetUser.patientHistoryId) {
-        addOrUpdateUser({ ...targetUser, patientHistoryId: savedRecord.id });
+    } else {
+      // Create new record for a new patient
+      const newHistory: PatientHistory = {
+        name: data.name,
+        phoneNumber: data.phoneNumber,
+        systemicNotes: {
+          [system]: newNote,
+        },
+      };
+      addOrUpdatePatientRecord(newHistory);
+      toast({ title: "New Patient Record Created", description: `Analysis saved for new patient ${data.name}.` });
     }
-
-    toast({ title: "Saved to Patient History", description: `Analysis saved for ${data.name}.` });
-    setSaveToHistoryModalOpen(false);
+    
     setIsSaving(false);
+    setSaveToHistoryModalOpen(false);
     resetFlow();
   });
 
