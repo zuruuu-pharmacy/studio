@@ -188,14 +188,14 @@ function LifestyleSuggestions() {
   
   if (isLoading) {
     return (
-      <div>
+      <section>
         <h2 className="text-2xl font-semibold mb-4 text-foreground/90">Daily Health Alerts</h2>
         <div className="space-y-3">
             <Skeleton className="h-12 w-full" />
             <Skeleton className="h-12 w-full" />
             <Skeleton className="h-12 w-full" />
         </div>
-      </div>
+      </section>
     );
   }
 
@@ -204,7 +204,7 @@ function LifestyleSuggestions() {
   }
 
   return (
-    <div>
+    <section>
       <h2 className="text-2xl font-semibold mb-4 text-foreground/90">Daily Health Alerts</h2>
       <div className="space-y-4">
         {suggestions.suggestions.map((suggestion, index) => {
@@ -221,7 +221,7 @@ function LifestyleSuggestions() {
           );
         })}
       </div>
-    </div>
+    </section>
   )
 }
 
