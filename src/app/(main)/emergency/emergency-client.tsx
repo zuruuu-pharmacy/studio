@@ -95,43 +95,6 @@ export function EmergencyClient() {
                     <EmergencyActionButton href={`tel:${activePatientRecord.history.phoneNumber || ''}`} icon={Phone} title="Call Emergency Contact" description="Contact family or a caregiver." variant="secondary"/>
                     <EmergencyActionButton href="https://maps.google.com" icon={MapPin} title="Share Location" description="Send a map of your current location." variant="secondary"/>
                 </div>
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><MessageSquare />Pre-formatted Emergency Message</CardTitle>
-                        <CardDescription>Copy this message and send it via SMS or WhatsApp.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-sm p-4 bg-muted rounded-md whitespace-pre-wrap">{state.formattedSms}</p>
-                        <Button onClick={() => copyToClipboard(state.formattedSms)} className="mt-4 w-full">
-                            <Clipboard className="mr-2"/> Copy Message
-                        </Button>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><HeartPulse />Critical Medical Info</CardTitle>
-                         {state.primaryRisk && <p className="text-sm text-destructive font-semibold pt-2">{state.primaryRisk}</p>}
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                        <div><strong>Name:</strong> {state.patientSummary.name}</div>
-                        <div><strong>Age:</strong> {state.patientSummary.age}</div>
-                        <div><strong>Gender:</strong> {state.patientSummary.gender}</div>
-                        <div><strong>Chronic Conditions:</strong> {state.patientSummary.chronicConditions}</div>
-                        <div><strong>Current Medications:</strong> {state.patientSummary.currentMedications}</div>
-                        <div><strong>Allergies:</strong> {state.patientSummary.allergies}</div>
-                    </CardContent>
-                </Card>
-
-                 {state.firstAidTips && (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><Info />First Aid Suggestions</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">{state.firstAidTips}</p>
-                        </CardContent>
-                    </Card>
-                )}
             </div>
         )
     }
