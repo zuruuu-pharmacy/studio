@@ -99,7 +99,6 @@ Allergies: Penicillin
 Meds: Amlodipine, Metformin
 Conditions: Hypertension, Type 2 Diabetes
 Location: [Location will be attached]
-Time: [Timestamp]
 Please send urgent help!
 
 Now, generate the emergency payload based on the provided patient data.
@@ -118,3 +117,4 @@ const emergencyAssistantFlow = ai.defineFlow(
     return output!;
   }
 );
+
