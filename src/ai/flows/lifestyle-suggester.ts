@@ -47,7 +47,7 @@ export type LifestyleSuggesterInput = z.infer<typeof LifestyleSuggesterInputSche
 
 const LifestyleSuggesterOutputSchema = z.object({
   suggestions: z.array(z.object({
-    category: z.string().describe('The category of the suggestion (e.g., "Diet", "Exercise", "Monitoring").'),
+    category: z.string().describe('The category of the suggestion (e.g., "Seasonal Health Alert", "General Wellness", "Preventive Care").'),
     message: z.string().describe('The actionable suggestion, prefixed with a priority emoji (🟢, 🟡, or 🔴).'),
     priority: z.enum(['High', 'Medium', 'Low']).describe('The priority of the suggestion.'),
   })),
@@ -63,54 +63,40 @@ const prompt = ai.definePrompt({
   name: 'lifestyleSuggesterPrompt',
   input: {schema: LifestyleSuggesterInputSchema},
   output: {schema: LifestyleSuggesterOutputSchema},
-  prompt: `You are an AI health assistant integrated into a patient dashboard. Your role is to analyze a patient’s profile and generate simple, daily lifestyle and preventive care suggestions. Always keep advice safe, evidence-based, and practical for everyday life.
-
-Analyze the following patient data:
-- **Age**: {{detailedHistory.demographics.age}}
-- **Gender**: {{detailedHistory.demographics.gender}}
-- **Past Medical History (Chronic Diseases)**: {{detailedHistory.pastMedicalHistory}}
-- **Medication History**: {{detailedHistory.medicationHistory}}
-- **Social History (Lifestyle Info)**: {{detailedHistory.socialHistory}}
-- **Lifestyle & Compliance**: {{detailedHistory.lifestyleAndCompliance}}
-
+  prompt: `You are an AI public health advisor integrated into a patient dashboard. Your role is to provide general, timely health advice based on common seasonal conditions.
 
 **Your Task:**
-Generate 4-5 personalized, bite-sized suggestions based on the data.
+Generate 3-4 actionable health tips appropriate for the general population. The advice should focus on prevention of common, seasonal public health issues. For the context of this request, assume it is the rainy season in South Asia (e.g., Pakistan), where risks like Dengue, Malaria, and water-borne diseases are high.
 
-**Personalization Logic:**
-- **Age-based:**
-  - 20s-30s: Focus on fitness, sleep, and mental wellness.
-  - 40s-50s: Focus on preventive screenings, weight management, and stress reduction.
-  - 60+: Focus on mobility, fall prevention, and chronic disease management.
-- **Condition-based:**
-  - Diabetes: Suggest blood sugar checks, carb-conscious diet tips, and foot care.
-  - Hypertension: Suggest low-salt meals, blood pressure monitoring, and relaxation techniques.
-  - Obesity/Overweight: Suggest portion control, low-calorie swaps, and micro-exercise.
-- **Lifestyle-based:**
-  - Smoker: Provide gentle quitting tips or reduction strategies.
-  - Sedentary: Suggest small, achievable movement goals (e.g., "Take a 10-min walk").
+**Personalization Logic (use only for tailoring the message tone, not for deep personalization):**
+- **Patient Profile**: {{detailedHistory.demographics.age}}, {{detailedHistory.pastMedicalHistory}}
+- If the patient has chronic conditions, you can add a small note to a relevant suggestion, e.g., "(Important for diabetics)".
+- Do NOT focus on the patient's specific medication or detailed history. Keep the advice broad.
+
+**Content Focus:**
+- **Primary Focus**: Generate tips for preventing Dengue fever and other mosquito-borne illnesses (e.g., "🔴 Clear stagnant water from pots and coolers to stop mosquito breeding.").
+- **Secondary Focus**: Include advice on preventing water-borne diseases (e.g., "🟡 Drink boiled or filtered water to avoid stomach infections.").
+- **General Wellness**: Add a general tip about diet or hygiene.
 
 **Delivery Format:**
-- **Tone:** Friendly, encouraging, and actionable.
-- **Categories:** "Dietary Habits", "Exercise & Movement", "Preventive Monitoring", "Mental Wellness", or a specific "Disease-specific Care" (e.g., "Diabetes Care").
+- **Tone:** Authoritative, clear, and encouraging.
+- **Categories:** "Seasonal Health Alert", "General Wellness", "Preventive Care".
 - **Priority:** Assign a priority ("High", "Medium", "Low").
 - **Message Formatting:** You MUST start each message with an emoji based on the priority:
-  - 🔴 for High priority (e.g., critical monitoring).
+  - 🔴 for High priority (e.g., critical prevention step).
   - 🟡 for Medium priority (e.g., important daily habit).
   - 🟢 for Low priority (e.g., general wellness tip).
 
 **Example Output:**
-For a 52-year-old male with Diabetes & Hypertension, who is sedentary:
 {
   "suggestions": [
-    { "category": "Preventive Monitoring", "message": "🔴 Check your blood sugar at 8 AM before breakfast.", "priority": "High" },
-    { "category": "Hypertension Care", "message": "🟡 Keep salt low in tonight’s meal and log your BP reading.", "priority": "Medium" },
-    { "category": "Dietary Habits", "message": "🟢 Swap fried snacks with fruit for evening hunger.", "priority": "Low" },
-    { "category": "Exercise & Movement", "message": "🟢 Take a 10-minute evening walk after dinner.", "priority": "Low" }
+    { "category": "Seasonal Health Alert", "message": "🔴 To prevent Dengue, ensure there is no stagnant water around your home. Check plant pots and air coolers daily.", "priority": "High" },
+    { "category": "Preventive Care", "message": "🟡 Use mosquito repellent, especially during dawn and dusk, to protect yourself from bites.", "priority": "Medium" },
+    { "category": "General Wellness", "message": "🟢 Wash your hands thoroughly before eating to prevent water-borne illnesses.", "priority": "Low" }
   ]
 }
 
-Now, generate the suggestions for the provided patient.
+Now, generate the suggestions based on this public health context.
 `,
 });
 
@@ -126,3 +112,4 @@ const lifestyleSuggesterFlow = ai.defineFlow(
     return output!;
   }
 );
+

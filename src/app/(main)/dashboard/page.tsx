@@ -10,7 +10,7 @@ import { usePatient } from "@/contexts/patient-context";
 import { useEffect, useState } from "react";
 import { getLifestyleSuggestions, type LifestyleSuggesterOutput } from "@/ai/flows/lifestyle-suggester";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 const pharmacistTools = [
   {
@@ -155,10 +155,9 @@ const studentTools = [
 ];
 
 const suggestionIcons: { [key: string]: React.ElementType } = {
-  "Dietary Habits": Utensils,
-  "Exercise & Movement": Zap,
-  "Preventive Monitoring": HeartPulse,
-  "Mental Wellness": Brain,
+  "Seasonal Health Alert": Zap,
+  "Preventive Care": ShieldAlert,
+  "General Wellness": HeartPulse,
   "default": HeartPulse,
 };
 
@@ -189,17 +188,14 @@ function LifestyleSuggestions() {
   
   if (isLoading) {
     return (
-      <Card>
-          <CardHeader>
-            <CardTitle>Daily Health Suggestions</CardTitle>
-            <CardDescription>Personalized tips to help you stay healthy.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-          </CardContent>
-      </Card>
+      <div>
+        <h2 className="text-2xl font-semibold mb-4 text-foreground/90">Daily Health Alerts</h2>
+        <div className="space-y-3">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+        </div>
+      </div>
     );
   }
 
@@ -208,27 +204,24 @@ function LifestyleSuggestions() {
   }
 
   return (
-    <Card className="bg-gradient-to-br from-background to-secondary/30">
-        <CardHeader>
-            <CardTitle>Your Daily Health Suggestions</CardTitle>
-            <CardDescription>Personalized tips to help you stay on track with your health goals.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-            {suggestions.suggestions.map((suggestion, index) => {
-              const Icon = suggestionIcons[suggestion.category] || suggestionIcons['default'];
-              const colorClass = priorityColors[suggestion.priority] || 'border-muted';
-              return (
-                <Alert key={index} className={`flex items-center gap-4 ${colorClass}`}>
-                    <Icon className="h-6 w-6 text-primary" />
-                    <div className="flex-1">
-                        <AlertTitle className="font-semibold text-foreground/90">{suggestion.category}</AlertTitle>
-                        <p className="text-muted-foreground">{suggestion.message}</p>
-                    </div>
-                </Alert>
-              );
-            })}
-        </CardContent>
-    </Card>
+    <div>
+      <h2 className="text-2xl font-semibold mb-4 text-foreground/90">Daily Health Alerts</h2>
+      <div className="space-y-4">
+        {suggestions.suggestions.map((suggestion, index) => {
+          const Icon = suggestionIcons[suggestion.category] || suggestionIcons['default'];
+          const colorClass = priorityColors[suggestion.priority] || 'border-muted';
+          return (
+            <Alert key={index} className={`flex items-start gap-4 ${colorClass}`}>
+                <Icon className="h-5 w-5 text-primary mt-1" />
+                <div className="flex-1">
+                    <AlertTitle className="font-semibold text-foreground/90">{suggestion.category}</AlertTitle>
+                    <AlertDescription>{suggestion.message}</AlertDescription>
+                </div>
+            </Alert>
+          );
+        })}
+      </div>
+    </div>
   )
 }
 
