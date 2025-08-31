@@ -291,8 +291,6 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        {mode === 'patient' && <LifestyleSuggestions />}
-        
         <section>
           <h2 className="text-2xl font-semibold mb-4 text-foreground/90">
              {toolsHeader}
@@ -320,6 +318,8 @@ export default function DashboardPage() {
             ))}
           </div>
         </section>
+
+        {mode === 'patient' && <LifestyleSuggestions />}
       </div>
   );
 }
