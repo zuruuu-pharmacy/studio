@@ -3,10 +3,14 @@
 
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
+import { useEffect, useState } from "react";
+import { getLifestyleSuggestions, type LifestyleSuggesterOutput } from "@/ai/flows/lifestyle-suggester";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 
 const pharmacistTools = [
   {
@@ -150,6 +154,84 @@ const studentTools = [
     }
 ];
 
+const suggestionIcons: { [key: string]: React.ElementType } = {
+  "Dietary Habits": Utensils,
+  "Exercise & Movement": Zap,
+  "Preventive Monitoring": HeartPulse,
+  "Mental Wellness": Brain,
+  "default": HeartPulse,
+};
+
+const priorityColors: { [key: string]: string } = {
+  "High": "border-red-500/80 bg-red-500/10",
+  "Medium": "border-yellow-500/80 bg-yellow-500/10",
+  "Low": "border-green-500/80 bg-green-500/10",
+};
+
+
+function LifestyleSuggestions() {
+  const { getActivePatientRecord } = usePatient();
+  const [suggestions, setSuggestions] = useState<LifestyleSuggesterOutput | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const activePatientRecord = getActivePatientRecord();
+    if (activePatientRecord) {
+      getLifestyleSuggestions({ detailedHistory: activePatientRecord.history })
+        .then(setSuggestions)
+        .catch(() => setError("Could not load lifestyle suggestions."))
+        .finally(() => setIsLoading(false));
+    } else {
+        setIsLoading(false);
+    }
+  }, [getActivePatientRecord]);
+  
+  if (isLoading) {
+    return (
+      <Card>
+          <CardHeader>
+            <CardTitle>Daily Health Suggestions</CardTitle>
+            <CardDescription>Personalized tips to help you stay healthy.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+          </CardContent>
+      </Card>
+    );
+  }
+
+  if (error || !suggestions || suggestions.suggestions.length === 0) {
+    return null; // Don't show the card if there's an error or no suggestions
+  }
+
+  return (
+    <Card className="bg-gradient-to-br from-background to-secondary/30">
+        <CardHeader>
+            <CardTitle>Your Daily Health Suggestions</CardTitle>
+            <CardDescription>Personalized tips to help you stay on track with your health goals.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+            {suggestions.suggestions.map((suggestion, index) => {
+              const Icon = suggestionIcons[suggestion.category] || suggestionIcons['default'];
+              const colorClass = priorityColors[suggestion.priority] || 'border-muted';
+              return (
+                <Alert key={index} className={`flex items-center gap-4 ${colorClass}`}>
+                    <Icon className="h-6 w-6 text-primary" />
+                    <div className="flex-1">
+                        <AlertTitle className="font-semibold text-foreground/90">{suggestion.category}</AlertTitle>
+                        <p className="text-muted-foreground">{suggestion.message}</p>
+                    </div>
+                </Alert>
+              );
+            })}
+        </CardContent>
+    </Card>
+  )
+}
+
 
 export default function DashboardPage() {
   const { mode } = useMode();
@@ -215,6 +297,8 @@ export default function DashboardPage() {
             </div>
           </div>
         </header>
+
+        {mode === 'patient' && <LifestyleSuggestions />}
         
         <section>
           <h2 className="text-2xl font-semibold mb-4 text-foreground/90">
