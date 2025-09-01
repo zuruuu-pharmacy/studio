@@ -26,6 +26,7 @@ type State = {
 export function LifestyleSuggestions({ patientHistory }: { patientHistory: PatientHistory }) {
     const [isPending, startTransition] = useTransition();
     const { toast } = useToast();
+    
     const [state, setState] = useActionState<State, void>(
         async (previousState, payload) => {
             try {
@@ -45,10 +46,29 @@ export function LifestyleSuggestions({ patientHistory }: { patientHistory: Patie
     
     const handleGetTips = () => {
         startTransition(() => {
-            // The useActionState hook takes care of calling the action
-            // We just need to trigger it.
             setState();
         });
+    }
+    
+    // Initial call on component mount
+    useEffect(() => {
+        handleGetTips();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+
+    if (isPending && !state?.suggestions) {
+         return (
+             <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Lightbulb className="text-yellow-400"/> Daily Health Alerts</CardTitle>
+                </CardHeader>
+                <CardContent className="flex justify-center items-center h-24">
+                   <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                   <p className="ml-2 text-muted-foreground">Generating personalized tips...</p>
+                </CardContent>
+            </Card>
+        )
     }
 
     if (state?.suggestions) {
@@ -56,11 +76,16 @@ export function LifestyleSuggestions({ patientHistory }: { patientHistory: Patie
              <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2"><Lightbulb className="text-yellow-400"/> Daily Health Alerts</CardTitle>
-                    <CardDescription>Personalized tips for you. <Button variant="link" onClick={handleGetTips} disabled={isPending}>Refresh</Button></CardDescription>
+                    <CardDescription>
+                        Personalized tips for you. 
+                        <Button variant="link" onClick={handleGetTips} disabled={isPending}>
+                             {isPending ? <Loader2 className="h-4 w-4 animate-spin"/> : null}
+                            Refresh
+                        </Button>
+                    </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    {isPending && <div className="flex justify-center items-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>}
-                    {!isPending && state.suggestions.map((tip, index) => (
+                    {state.suggestions.map((tip, index) => (
                         <Alert key={index} variant={tip.priority === 'High' ? 'destructive' : 'default'} className="bg-background/70">
                             <AlertTitle className="flex items-center gap-2">
                                 <span className="text-lg">{tip.emoji}</span>
@@ -74,6 +99,7 @@ export function LifestyleSuggestions({ patientHistory }: { patientHistory: Patie
         )
     }
 
+    // Fallback or error state
     return (
         <Card className="text-center">
             <CardHeader>
