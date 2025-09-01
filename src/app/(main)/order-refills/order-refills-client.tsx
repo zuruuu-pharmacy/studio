@@ -35,16 +35,25 @@ export function OrderRefillsClient() {
         const dispensedDate = lastPrescription.prescription_date || new Date().toISOString().split('T')[0];
 
         const refillPromises = lastPrescription.medications.map(med => {
-          // Simple parsing for quantity. E.g., "30 tablets" -> 30
+          // Simple parsing for quantity. E.g., "7 days" -> 7
           const quantityMatch = med.duration.match(/\d+/);
-          const quantity = quantityMatch ? parseInt(quantityMatch[0], 10) : 30; // Default to 30 if not found
+          // Simple parsing for daily consumption from frequency
+          let dailyConsumption = 1;
+          if (med.frequency.toLowerCase().includes('twice') || med.frequency.toLowerCase().includes('bd')) {
+              dailyConsumption = 2;
+          } else if (med.frequency.toLowerCase().includes('thrice') || med.frequency.toLowerCase().includes('tds')) {
+              dailyConsumption = 3;
+          }
+          const durationDays = quantityMatch ? parseInt(quantityMatch[0], 10) : 7; // Default to 7 days if not found
+          const totalQuantity = dailyConsumption * durationDays;
+
 
           return manageRefill({
             medication: {
               name: med.name,
               strength: med.dosage, // Assuming dosage field contains strength
               dosage: med.frequency,
-              quantityDispensed: quantity,
+              quantityDispensed: totalQuantity,
               dispensedDate: dispensedDate,
             }
           });
@@ -74,13 +83,22 @@ export function OrderRefillsClient() {
     });
   }
 
+  if (isPending) {
+    return (
+        <div className="flex justify-center items-center h-48">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="ml-4 text-muted-foreground">Analyzing your prescription for Zuruu AI Pharmacy...</p>
+        </div>
+    );
+  }
+
   if (!lastPrescription) {
     return (
       <Card className="text-center">
         <CardHeader>
           <CardTitle>Link a Prescription to Begin</CardTitle>
           <CardDescription>
-            To track refills, first upload and analyze a prescription.
+            To order from Zuruu AI Pharmacy, first upload and analyze a prescription.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -94,13 +112,6 @@ export function OrderRefillsClient() {
 
   return (
     <div className="space-y-6">
-        {isPending && (
-            <div className="flex justify-center items-center h-48">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                <p className="ml-4 text-muted-foreground">Analyzing your prescription for refill tracking...</p>
-            </div>
-        )}
-
         {state && state.map((result, index) => (
              'error' in result ? (
                 <Alert key={index} variant="destructive">
@@ -134,7 +145,7 @@ export function OrderRefillsClient() {
                         <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
                            <ShoppingCart className="h-10 w-10 text-primary"/>
                            <div>
-                                { (result.refill_reminder.status === 'Active' || result.refill_reminder.status === 'Urgent') && result.order ? (
+                                { (result.order && (result.refill_reminder.status === 'Active' || result.refill_reminder.status === 'Urgent')) ? (
                                     <>
                                         <p className="text-sm text-muted-foreground">Suggested Pharmacy</p>
                                         <p className="font-semibold">{result.order.partner_pharmacy}</p>

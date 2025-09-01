@@ -113,7 +113,7 @@ export function PatientProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if(isLoaded) {
         try {
-            const dataToSave = { ...patientState, lastPrescription: null };
+            const dataToSave = { ...patientState, lastPrescription: null }; // Never save lastPrescription
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataToSave));
         } catch (error) {
             console.error("Failed to save data to localStorage", error);

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Upload, Pill, Stethoscope, FileText, AlertCircle, ScanEye, AlertTriangle, FileClock, BrainCircuit } from "lucide-react";
+import { Loader2, Upload, Pill, Stethoscope, FileText, AlertCircle, ScanEye, AlertTriangle, FileClock, BrainCircuit, ShoppingCart } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -91,10 +91,10 @@ export function PrescriptionReaderClient() {
         });
     }
 
-    const handleStartTracking = () => {
+    const handleStartOrdering = () => {
         if (state && 'medications' in state) {
             setLastPrescription(state);
-            router.push('/adherence-tracker');
+            router.push('/order-refills');
         }
     }
 
@@ -147,9 +147,9 @@ export function PrescriptionReaderClient() {
                 <AlertTitle>Analysis Complete</AlertTitle>
                 <AlertDescription className="flex justify-between items-center">
                     <span>The prescription has been successfully analyzed. Please review for accuracy.</span>
-                    <Button size="sm" onClick={handleStartTracking}>
-                        <FileClock className="mr-2"/>
-                        Start Adherence Tracking
+                    <Button size="sm" onClick={handleStartOrdering}>
+                        <ShoppingCart className="mr-2"/>
+                        Order from Pharmacy
                     </Button>
                 </AlertDescription>
             </Alert>
