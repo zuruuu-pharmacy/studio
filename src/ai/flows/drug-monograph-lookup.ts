@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Drug Monograph Lookup AI agent.
@@ -49,6 +50,7 @@ const prompt = ai.definePrompt({
   name: 'drugMonographLookupPrompt',
   input: {schema: DrugMonographLookupInputSchema},
   output: {schema: DrugMonographLookupOutputSchema},
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are a highly skilled pharmacist providing a structured drug monograph for {{drugName}}.
 
   Provide a comprehensive drug monograph organized into the following sections:
