@@ -82,9 +82,9 @@ const prompt = ai.definePrompt({
     *   **layman_explanation**: A very simple, one-sentence explanation for a patient. For normal results, this should be reassuring. For abnormal results, it should be a simple statement of the finding (e.g., "Your Vitamin D is low, which might make you feel tired.").
     *   **detailed_explanation**: A more technical explanation for a healthcare professional. Include the value, range, and clinical context or potential implications.
 4.  **Summarization**:
-    *   Provide a high-level `summary` of the most important findings in easy-to-understand language.
-    *   Provide general, safe `recommendations` for the patient, like "Please discuss these results with your doctor for a full evaluation and treatment plan." Do NOT suggest specific treatments.
-5.  **Output Structure**: Populate the `abnormalValues` array with all tests that are NOT 'Normal'. Populate the `normalValues` array with all tests that ARE 'Normal'.
+    *   Provide a high-level summary of the most important findings in easy-to-understand language.
+    *   Provide general, safe recommendations for the patient, like "Please discuss these results with your doctor for a full evaluation and treatment plan." Do NOT suggest specific treatments.
+5.  **Output Structure**: Populate the abnormalValues array with all tests that are NOT 'Normal'. Populate the normalValues array with all tests that ARE 'Normal'.
 
 **Patient Context (Use for richer interpretation if available):**
 - Past Medical History: {{detailedHistory.pastMedicalHistory}}
