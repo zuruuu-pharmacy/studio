@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -10,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { User, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School } from "lucide-react";
+import { User, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School, Siren } from "lucide-react";
 
 const PHARMACIST_CODE = "239773";
 
@@ -214,6 +215,13 @@ export default function RoleSelectionPage() {
                 <p className="font-semibold text-base text-left">New Patient Registration</p>
                 <p className="font-normal text-sm text-muted-foreground text-left">Create a new patient history form.</p>
               </div>
+            </Button>
+            <Button onClick={handleEmergency} variant="destructive" size="lg" className="h-auto py-4">
+                <Siren className="mr-4 text-destructive-foreground" />
+                 <div>
+                    <p className="font-semibold text-base text-left">Emergency Help</p>
+                    <p className="font-normal text-sm text-destructive-foreground/80 text-left">Immediately get assistance.</p>
+                </div>
             </Button>
           </div>
         </DialogContent>

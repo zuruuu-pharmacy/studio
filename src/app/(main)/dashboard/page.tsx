@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
@@ -99,6 +99,13 @@ const patientTools = [
         description: "Analyze your symptoms with an AI assistant.",
         href: "/symptom-checker",
         color: "text-rose-500",
+    },
+    {
+        icon: Siren,
+        title: "Emergency Help",
+        description: "Get immediate assistance and access critical info.",
+        href: "/emergency",
+        color: "text-red-600",
     },
     {
         icon: ScanEye,
