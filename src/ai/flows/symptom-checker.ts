@@ -91,6 +91,83 @@ export async function getSymptomAnalysis(input: GetSymptomAnalysisInput): Promis
 }
 
 
+// STEP 2: The prompt for the final analysis, after questions have been answered.
+const analysisPrompt = ai.definePrompt({
+  name: 'symptomAnalysisFinalPrompt',
+  input: { schema: GetSymptomAnalysisInputSchema },
+  output: { schema: GetSymptomAnalysisOutputSchema },
+  tools: [findAvailableDoctors],
+  model: 'googleai/gemini-1.5-flash',
+  prompt: `You are an AI medical assistant performing a symptom analysis.
+  
+  You have already asked triage questions and received the patient's answers.
+  Now, analyze all the information to provide a final report.
+
+  **Patient's Initial Symptoms:**
+  {{{initialSymptoms}}}
+
+  **Patient's Answers to Triage Questions:**
+  {{#each answers}}
+  - Q: {{this.question}}
+  - A: {{this.answer}}
+  {{/each}}
+
+  {{#if detailedHistory}}
+  **Relevant Patient History:**
+  - Past Medical History: {{detailedHistory.pastMedicalHistory}}
+  - Medication History: {{detailedHistory.medicationHistory}}
+  - Allergies: {{detailedHistory.allergyHistory}}
+  - Social History: {{detailedHistory.socialHistory}}
+  {{/if}}
+
+  **Your Task:**
+  1.  Identify the top 2-3 possible conditions based on all available information.
+  2.  Assign a likelihood (High, Moderate, Low) to each condition.
+  3.  Determine a final severity classification (Red, Yellow, Green).
+      - Red: Potential emergency (e.g., chest pain with shortness of breath, signs of stroke). Recommendation should be "Go to ER immediately or call an ambulance".
+      - Yellow: Needs medical attention soon (e.g., persistent fever, non-urgent but concerning symptoms). Recommendation should be "Consult a doctor soon".
+      - Green: Likely mild and can be managed with home care.
+  4.  Provide a clear, actionable recommendation based on the severity.
+  5.  If, and only if, the recommendation is to "Consult a doctor soon", you MUST use the 'findAvailableDoctors' tool to suggest nearby doctors. Do not use the tool otherwise.
+  6.  Based on the symptoms and your analysis, determine the single most relevant organ system.
+  7.  Create a concise summary of the encounter (initial symptoms, key answers, and possible conditions) that can be saved to the patient's history under the relevant organ system section.
+  8.  Include the standard disclaimer.
+
+  Respond ONLY with the final analysis object.
+  `,
+});
+
+// STEP 1: The prompt to generate the initial triage questions.
+const triagePrompt = ai.definePrompt({
+  name: 'symptomAnalysisTriagePrompt',
+  input: { schema: GetSymptomAnalysisInputSchema },
+  output: { schema: GetSymptomAnalysisOutputSchema },
+  model: 'googleai/gemini-1.5-flash',
+  prompt: `You are an AI medical assistant performing a symptom triage.
+
+  A patient has provided their initial symptoms. Your task is to generate a short list of simple, highly relevant follow-up questions to help narrow down the possible conditions.
+
+  **Patient's Initial Symptoms:**
+  {{{initialSymptoms}}}
+  
+  {{#if detailedHistory}}
+  **Relevant Patient History:**
+  - Past Medical History: {{detailedHistory.pastMedicalHistory}}
+  - Medication History: {{detailedHistory.medicationHistory}}
+  - Allergies: {{detailedHistory.allergyHistory}}
+  - Social History: {{detailedHistory.socialHistory}}
+  {{/if}}
+
+  **Your Task:**
+  - Generate 3-5 critical follow-up questions.
+  - Questions should be easy for a layperson to understand (no medical jargon).
+  - Choose the question type ('yes_no', 'multiple_choice', 'text') that is most appropriate for each question.
+  
+  Respond ONLY with the triage questions object.
+  `,
+});
+
+
 const symptomCheckerFlow = ai.defineFlow(
   {
     name: 'symptomCheckerFlow',
@@ -98,87 +175,12 @@ const symptomCheckerFlow = ai.defineFlow(
     outputSchema: GetSymptomAnalysisOutputSchema,
   },
   async (input) => {
-    // If we have answers, this is the second step. We need to generate the final analysis.
+    // If we have answers, this is the second step. Run the analysis prompt.
     if (input.answers && input.answers.length > 0) {
-      const analysisPrompt = ai.definePrompt({
-        name: 'symptomAnalysisFinalPrompt',
-        input: { schema: GetSymptomAnalysisInputSchema },
-        output: { schema: GetSymptomAnalysisOutputSchema },
-        tools: [findAvailableDoctors],
-        model: 'googleai/gemini-1.5-flash',
-        prompt: `You are an AI medical assistant performing a symptom analysis.
-        
-        You have already asked triage questions and received the patient's answers.
-        Now, analyze all the information to provide a final report.
-
-        **Patient's Initial Symptoms:**
-        {{{initialSymptoms}}}
-
-        **Patient's Answers to Triage Questions:**
-        {{#each answers}}
-        - Q: {{this.question}}
-        - A: {{this.answer}}
-        {{/each}}
-
-        {{#if detailedHistory}}
-        **Relevant Patient History:**
-        - Past Medical History: {{detailedHistory.pastMedicalHistory}}
-        - Medication History: {{detailedHistory.medicationHistory}}
-        - Allergies: {{detailedHistory.allergyHistory}}
-        - Social History: {{detailedHistory.socialHistory}}
-        {{/if}}
-
-        **Your Task:**
-        1.  Identify the top 2-3 possible conditions based on all available information.
-        2.  Assign a likelihood (High, Moderate, Low) to each condition.
-        3.  Determine a final severity classification (Red, Yellow, Green).
-            - Red: Potential emergency (e.g., chest pain with shortness of breath, signs of stroke). Recommendation should be "Go to ER immediately or call an ambulance".
-            - Yellow: Needs medical attention soon (e.g., persistent fever, non-urgent but concerning symptoms). Recommendation should be "Consult a doctor soon".
-            - Green: Likely mild and can be managed with home care.
-        4.  Provide a clear, actionable recommendation based on the severity.
-        5.  **If, and only if, the recommendation is to "Consult a doctor soon", you MUST use the 'findAvailableDoctors' tool to suggest nearby doctors.** Do not use the tool otherwise.
-        6.  Based on the symptoms and your analysis, determine the single most relevant organ system.
-        7.  Create a concise summary of the encounter (initial symptoms, key answers, and possible conditions) that can be saved to the patient's history under the relevant organ system section.
-        8.  Include the standard disclaimer.
-
-        Respond ONLY with the final analysis object.
-        `,
-      });
-
       const { output } = await analysisPrompt(input);
       return output!;
-
     } else {
-      // If we don't have answers, this is the first step. We need to generate triage questions.
-      const triagePrompt = ai.definePrompt({
-        name: 'symptomAnalysisTriagePrompt',
-        input: { schema: GetSymptomAnalysisInputSchema },
-        output: { schema: GetSymptomAnalysisOutputSchema },
-        model: 'googleai/gemini-1.5-flash',
-        prompt: `You are an AI medical assistant performing a symptom triage.
-
-        A patient has provided their initial symptoms. Your task is to generate a short list of simple, highly relevant follow-up questions to help narrow down the possible conditions.
-
-        **Patient's Initial Symptoms:**
-        {{{initialSymptoms}}}
-        
-        {{#if detailedHistory}}
-        **Relevant Patient History:**
-        - Past Medical History: {{detailedHistory.pastMedicalHistory}}
-        - Medication History: {{detailedHistory.medicationHistory}}
-        - Allergies: {{detailedHistory.allergyHistory}}
-        - Social History: {{detailedHistory.socialHistory}}
-        {{/if}}
-
-        **Your Task:**
-        - Generate 3-5 critical follow-up questions.
-        - Questions should be easy for a layperson to understand (no medical jargon).
-        - Choose the question type ('yes_no', 'multiple_choice', 'text') that is most appropriate for each question.
-        
-        Respond ONLY with the triage questions object.
-        `,
-      });
-
+      // If we don't have answers, this is the first step. Run the triage prompt.
       const { output } = await triagePrompt(input);
       return output!;
     }
