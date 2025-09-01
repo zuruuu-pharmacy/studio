@@ -105,6 +105,7 @@ const symptomCheckerFlow = ai.defineFlow(
         input: { schema: GetSymptomAnalysisInputSchema },
         output: { schema: GetSymptomAnalysisOutputSchema },
         tools: [findAvailableDoctors],
+        model: 'googleai/gemini-1.5-flash',
         prompt: `You are an AI medical assistant performing a symptom analysis.
         
         You have already asked triage questions and received the patient's answers.
@@ -153,6 +154,7 @@ const symptomCheckerFlow = ai.defineFlow(
         name: 'symptomAnalysisTriagePrompt',
         input: { schema: GetSymptomAnalysisInputSchema },
         output: { schema: GetSymptomAnalysisOutputSchema },
+        model: 'googleai/gemini-1.5-flash',
         prompt: `You are an AI medical assistant performing a symptom triage.
 
         A patient has provided their initial symptoms. Your task is to generate a short list of simple, highly relevant follow-up questions to help narrow down the possible conditions.
