@@ -135,7 +135,7 @@ const symptomCheckerFlow = ai.defineFlow(
             - Yellow: Needs medical attention soon (e.g., persistent fever, non-urgent but concerning symptoms). Recommendation should be "Consult a doctor soon".
             - Green: Likely mild and can be managed with home care.
         4.  Provide a clear, actionable recommendation based on the severity.
-        5.  **If the recommendation is to "Consult a doctor soon", you MUST use the 'findAvailableDoctors' tool to suggest nearby doctors.**
+        5.  **If, and only if, the recommendation is to "Consult a doctor soon", you MUST use the 'findAvailableDoctors' tool to suggest nearby doctors.** Do not use the tool otherwise.
         6.  Based on the symptoms and your analysis, determine the single most relevant organ system.
         7.  Create a concise summary of the encounter (initial symptoms, key answers, and possible conditions) that can be saved to the patient's history under the relevant organ system section.
         8.  Include the standard disclaimer.
