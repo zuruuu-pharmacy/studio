@@ -82,15 +82,15 @@ export function EmergencyClient() {
             toast({ variant: 'destructive', title: 'Location not available', description: 'Cannot share location. Please ensure it is enabled.'});
             return;
         }
-        if (!activePatientRecord?.history.phoneNumber) {
-             toast({ variant: 'destructive', title: 'No Caregiver Number', description: 'There is no phone number in the patient record to send the location to.'});
+        if (!activePatientRecord?.history.caretakerPhoneNumber) {
+             toast({ variant: 'destructive', title: 'No Caregiver Number', description: 'There is no caretaker phone number in the patient record to send the location to.'});
             return;
         }
         
         const mapsLink = `https://maps.google.com/?q=${location.lat},${location.lng}`;
         const message = encodeURIComponent(`🚨 Emergency Alert 🚨\nHelp needed for ${activePatientRecord.history.name}. My current location is: ${mapsLink}`);
         // Format number for WhatsApp: remove non-digits. Assume it includes country code.
-        const whatsAppNumber = activePatientRecord.history.phoneNumber.replace(/\D/g, '');
+        const whatsAppNumber = activePatientRecord.history.caretakerPhoneNumber.replace(/\D/g, '');
 
         window.open(`https://wa.me/${whatsAppNumber}?text=${message}`, '_blank');
     }

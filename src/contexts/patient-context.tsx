@@ -31,6 +31,7 @@ export interface PatientHistory {
   address?: string;
   hospitalId?: string;
   phoneNumber?: string;
+  caretakerPhoneNumber?: string;
   presentingComplaint?: string;
   historyOfPresentingIllness?: string;
   pastMedicalHistory?: string;
