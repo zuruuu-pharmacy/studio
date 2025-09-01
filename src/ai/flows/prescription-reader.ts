@@ -49,6 +49,7 @@ const prompt = ai.definePrompt({
   name: 'readPrescriptionPrompt',
   input: {schema: ReadPrescriptionInputSchema},
   output: {schema: ReadPrescriptionOutputSchema},
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are an expert AI medical assistant specializing in reading and interpreting handwritten or printed medical prescriptions. Your primary goal is accuracy and safety.
 
 Analyze the following prescription image. Extract the information and convert it into the structured format defined by the output schema.

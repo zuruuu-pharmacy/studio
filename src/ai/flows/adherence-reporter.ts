@@ -48,6 +48,7 @@ const prompt = ai.definePrompt({
   name: 'adherenceReporterPrompt',
   input: {schema: AdherenceReportInputSchema},
   output: {schema: AdherenceReportOutputSchema},
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are an AI healthcare assistant specializing in medication adherence.
 
 Analyze the provided medication and adherence data for a patient. Your task is to calculate adherence rates and provide a comprehensive report.

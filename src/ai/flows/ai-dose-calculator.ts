@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -52,6 +53,7 @@ const prompt = ai.definePrompt({
   name: 'calculateDosagePrompt',
   input: {schema: CalculateDosageInputSchema},
   output: {schema: CalculateDosageOutputSchema},
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are an expert pharmacist specializing in calculating drug dosages based on patient-specific factors and the indication for the medication.
 
   First, critically evaluate if the provided 'Drug Name' is a plausible treatment for the given 'Indication'.

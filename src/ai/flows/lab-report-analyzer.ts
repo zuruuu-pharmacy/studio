@@ -68,6 +68,7 @@ const prompt = ai.definePrompt({
   name: 'labReportAnalyzerPrompt',
   input: {schema: LabReportAnalyzerInputSchema},
   output: {schema: LabReportAnalyzerOutputSchema},
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are an expert clinical pathologist and pharmacist.
 
   Analyze the provided lab report image in the context of the patient's history (if available).
@@ -99,4 +100,3 @@ const labReportAnalyzerFlow = ai.defineFlow(
     return output!;
   }
 );
-

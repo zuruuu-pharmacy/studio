@@ -33,6 +33,7 @@ const prompt = ai.definePrompt({
   name: 'checkDrugFoodInteractionPrompt',
   input: {schema: CheckDrugFoodInteractionInputSchema},
   output: {schema: CheckDrugFoodInteractionOutputSchema},
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are a clinical pharmacist expert in drug-food interactions.
 
   Analyze the provided medication to identify its most significant and common food interaction. If there are multiple, focus on the one with the highest clinical relevance.

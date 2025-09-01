@@ -65,6 +65,7 @@ const prompt = ai.definePrompt({
   name: 'allergyCheckerPrompt',
   input: {schema: AllergyCheckerInputSchema},
   output: {schema: AllergyCheckerOutputSchema},
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are a clinical pharmacist specializing in drug allergies and cross-reactivity.
 
 You will use the provided information to assess the allergy risk associated with prescribing a specific medication to a patient.

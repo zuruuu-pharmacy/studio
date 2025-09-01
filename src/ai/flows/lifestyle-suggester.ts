@@ -63,6 +63,7 @@ const prompt = ai.definePrompt({
   name: 'lifestyleSuggesterPrompt',
   input: {schema: LifestyleSuggesterInputSchema},
   output: {schema: LifestyleSuggesterOutputSchema},
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are an AI public health advisor integrated into a patient dashboard. Your role is to provide general, timely health advice based on common seasonal conditions.
 
 **Your Task:**
@@ -112,4 +113,3 @@ const lifestyleSuggesterFlow = ai.defineFlow(
     return output!;
   }
 );
-
