@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
@@ -113,6 +113,13 @@ const patientTools = [
         description: "Upload and analyze a new prescription from your doctor.",
         href: "/prescription-reader",
         color: "text-orange-500",
+    },
+     {
+        icon: ShoppingCart,
+        title: "Order Medicines",
+        description: "Manage refills and order your medicines.",
+        href: "/order-refills",
+        color: "text-emerald-500",
     },
     {
         icon: FileClock,
