@@ -6,7 +6,7 @@ import { usePatient } from '@/contexts/patient-context';
 import { getEmergencyAssistance, type EmergencyAssistanceOutput } from '@/ai/flows/emergency-assistant';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, Siren, Phone, User, ShieldAlert, MessageSquare, MapPin } from 'lucide-react';
+import { Loader2, Siren, Phone, User, ShieldAlert, MessageSquare, MapPin, Hospital, Stethoscope, Pill } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import Link from 'next/link';
@@ -34,6 +34,33 @@ function EmergencyActionButton({ href, icon: Icon, title, description, variant =
     return content;
 }
 
+function LocationCard({ title, icon: Icon, locations }: { title: string, icon: React.ElementType, locations?: {name: string, address: string, phone: string}[] }) {
+    if (!locations || locations.length === 0) return null;
+    
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Icon className="h-5 w-5 text-primary"/>{title}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {locations.map((loc, index) => (
+                    <div key={index} className="p-3 bg-muted/50 rounded-lg">
+                        <p className="font-bold">{loc.name}</p>
+                        <p className="text-sm text-muted-foreground">{loc.address}</p>
+                        <div className="flex gap-2 mt-2">
+                             <a href={`tel:${loc.phone}`} className="flex-1">
+                                <Button variant="outline" size="sm" className="w-full"><Phone/>Call</Button>
+                             </a>
+                             <a href={`https://maps.google.com/?q=${encodeURIComponent(loc.address)}`} target="_blank" rel="noopener noreferrer" className="flex-1">
+                                <Button variant="outline" size="sm" className="w-full"><MapPin/>Directions</Button>
+                             </a>
+                        </div>
+                    </div>
+                ))}
+            </CardContent>
+        </Card>
+    );
+}
 
 export function EmergencyClient() {
     const [state, setState] = useState<EmergencyAssistanceOutput | null>(null);
@@ -57,24 +84,40 @@ export function EmergencyClient() {
                 // Request location first
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
-                        setLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+                        const loc = { lat: position.coords.latitude, lng: position.coords.longitude };
+                        setLocation(loc);
                         setLocationError(null);
+                        // Trigger AI flow only after getting location
+                        triggerEmergencyFlow(loc);
                     },
                     (error) => {
                         console.error("Geolocation error:", error);
                         setLocationError("Could not get location. Please enable location services.");
                         toast({ variant: 'destructive', title: 'Location Error', description: 'Could not get your location. Please enable it in your browser.' });
+                        // Trigger flow even without location
+                        triggerEmergencyFlow(null);
                     }
                 );
-                
-                const result = await getEmergencyAssistance({ detailedHistory: activePatientRecord.history });
-                setState(result);
-                setView('activated');
             } catch (e) {
                 console.error(e);
                 toast({ variant: 'destructive', title: 'Error', description: 'Failed to get emergency assistance data.' });
             }
         });
+    }
+    
+    const triggerEmergencyFlow = async (loc: LocationState | null) => {
+        if (!activePatientRecord) return;
+        try {
+            const result = await getEmergencyAssistance({ 
+                detailedHistory: activePatientRecord.history,
+                location: loc || undefined,
+             });
+            setState(result);
+            setView('activated');
+        } catch(e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to get emergency assistance data.' });
+        }
     }
 
     const handleShareLocation = () => {
@@ -137,6 +180,10 @@ export function EmergencyClient() {
                     />
                 </div>
                 {locationError && <p className="text-sm text-center text-destructive">{locationError}</p>}
+                
+                <LocationCard title="Nearby Hospitals" icon={Hospital} locations={state.hospitals} />
+                <LocationCard title="Nearby Pharmacies" icon={Pill} locations={state.pharmacies} />
+                <LocationCard title="Available Doctors" icon={Stethoscope} locations={state.doctors} />
             </div>
         )
     }

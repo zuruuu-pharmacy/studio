@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { findAvailableDoctors, findNearbyHospitals, findNearbyPharmacies } from '@/ai/tools/healthcare-finder';
 
 const demographicsSchema = z.object({
   name: z.string().optional(),
@@ -21,6 +22,7 @@ const demographicsSchema = z.object({
   address: z.string().optional(),
   hospitalId: z.string().optional(),
   phoneNumber: z.string().optional(),
+  caretakerPhoneNumber: z.string().optional(),
 }).optional();
 
 const detailedHistorySchema = z.object({
@@ -50,6 +52,12 @@ const EmergencyAssistanceInputSchema = z.object({
 });
 export type EmergencyAssistanceInput = z.infer<typeof EmergencyAssistanceInputSchema>;
 
+const LocationSchema = z.object({
+    name: z.string(),
+    address: z.string(),
+    phone: z.string(),
+});
+
 const EmergencyAssistanceOutputSchema = z.object({
     patientSummary: z.object({
         name: z.string().describe("Patient's full name."),
@@ -63,6 +71,9 @@ const EmergencyAssistanceOutputSchema = z.object({
     formattedSms: z.string().describe("A pre-formatted, concise SMS message ready to be sent to emergency services and contacts."),
     firstAidTips: z.string().optional().describe("Simple, on-the-spot first aid tips for a caregiver based on the patient's likely condition."),
     primaryRisk: z.string().optional().describe("The most likely primary risk based on history (e.g., 'Known cardiac patient - possible heart attack')."),
+    hospitals: z.array(LocationSchema).optional().describe("List of nearby hospitals."),
+    pharmacies: z.array(LocationSchema).optional().describe("List of nearby pharmacies."),
+    doctors: z.array(LocationSchema).optional().describe("List of available doctors."),
 });
 export type EmergencyAssistanceOutput = z.infer<typeof EmergencyAssistanceOutputSchema>;
 
@@ -75,6 +86,7 @@ const prompt = ai.definePrompt({
   name: 'emergencyAssistantPrompt',
   input: {schema: EmergencyAssistanceInputSchema},
   output: {schema: EmergencyAssistanceOutputSchema},
+  tools: [findAvailableDoctors, findNearbyHospitals, findNearbyPharmacies],
   prompt: `You are an AI emergency assistant. Your role is to immediately process a patient's health data upon an emergency trigger and create a structured, actionable alert.
 
 **Patient's Medical Data:**
@@ -91,6 +103,7 @@ const prompt = ai.definePrompt({
 2.  **Identify Primary Risk**: Based on the history, determine the most immediate, likely risk. For example, if the patient has a history of hypertension and chest pain complaints, state 'Known cardiac patient'. If they have epilepsy, state 'Known epileptic patient'.
 3.  **Generate First Aid Tips**: Provide 1-2 very simple, actionable first aid tips a layperson could perform while waiting for help. Base this on the primary risk. (e.g., for cardiac risk: "Help them sit down and stay calm."; for seizure risk: "Lay them on their side, clear the area of hard objects.").
 4.  **Format an Emergency SMS**: Create a clear, concise emergency message. It MUST start with "🚨 Emergency Alert 🚨" and include Name, Age, a summary of conditions, and a placeholder for location. Keep it very short.
+5.  **Find Healthcare**: Use the available tools to find nearby hospitals, pharmacies, and doctors.
 
 **Example SMS:**
 🚨 Emergency Alert 🚨

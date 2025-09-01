@@ -13,9 +13,4 @@ import '@/ai/flows/adherence-reporter.ts';
 import '@/ai/flows/symptom-checker.ts';
 import '@/ai/flows/lifestyle-suggester.ts';
 import '@/ai/flows/emergency-assistant.ts';
-
-
-
-
-
-
+import '@/ai/tools/healthcare-finder.ts';

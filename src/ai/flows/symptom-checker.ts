@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { findAvailableDoctors } from '@/ai/tools/healthcare-finder';
 
 // Optional patient history schema for providing more context
 const detailedHistorySchema = z.object({
@@ -56,6 +57,13 @@ const organSystems = z.enum([
     'General',
 ]);
 
+const SuggestedDoctorSchema = z.object({
+    name: z.string(),
+    specialty: z.string(),
+    phone: z.string(),
+    address: z.string(),
+});
+
 // Output schema for the main flow
 const GetSymptomAnalysisOutputSchema = z.object({
   // In step 1, the flow returns triage questions.
@@ -71,6 +79,7 @@ const GetSymptomAnalysisOutputSchema = z.object({
     recommendation: z.string().describe('The recommended next step for the patient (e.g., "Go to ER", "Consult a doctor").'),
     mostRelevantSystem: organSystems.describe("The single most relevant organ system for these symptoms (e.g., 'Cardiovascular', 'Respiratory')."),
     summaryForHistory: z.string().describe("A concise summary of the encounter (symptoms and possible conditions) suitable for adding to a patient's medical history file."),
+    suggestedDoctors: z.array(SuggestedDoctorSchema).optional().describe('A list of suggested doctors if the recommendation is to consult one.'),
     disclaimer: z.string().default('This is not a medical diagnosis. Please consult a healthcare professional for advice.'),
   }).optional(),
 });
@@ -95,6 +104,7 @@ const symptomCheckerFlow = ai.defineFlow(
         name: 'symptomAnalysisFinalPrompt',
         input: { schema: GetSymptomAnalysisInputSchema },
         output: { schema: GetSymptomAnalysisOutputSchema },
+        tools: [findAvailableDoctors],
         prompt: `You are an AI medical assistant performing a symptom analysis.
         
         You have already asked triage questions and received the patient's answers.
@@ -121,13 +131,14 @@ const symptomCheckerFlow = ai.defineFlow(
         1.  Identify the top 2-3 possible conditions based on all available information.
         2.  Assign a likelihood (High, Moderate, Low) to each condition.
         3.  Determine a final severity classification (Red, Yellow, Green).
-            - Red: Potential emergency (e.g., chest pain with shortness of breath, signs of stroke).
-            - Yellow: Needs medical attention soon (e.g., persistent fever, non-urgent but concerning symptoms).
+            - Red: Potential emergency (e.g., chest pain with shortness of breath, signs of stroke). Recommendation should be "Go to ER immediately or call an ambulance".
+            - Yellow: Needs medical attention soon (e.g., persistent fever, non-urgent but concerning symptoms). Recommendation should be "Consult a doctor soon".
             - Green: Likely mild and can be managed with home care.
-        4.  Provide a clear, actionable recommendation.
-        5.  Based on the symptoms and your analysis, determine the single most relevant organ system.
-        6.  Create a concise summary of the encounter (initial symptoms, key answers, and possible conditions) that can be saved to the patient's history under the relevant organ system section.
-        7.  Include the standard disclaimer.
+        4.  Provide a clear, actionable recommendation based on the severity.
+        5.  **If the recommendation is to "Consult a doctor soon", you MUST use the 'findAvailableDoctors' tool to suggest nearby doctors.**
+        6.  Based on the symptoms and your analysis, determine the single most relevant organ system.
+        7.  Create a concise summary of the encounter (initial symptoms, key answers, and possible conditions) that can be saved to the patient's history under the relevant organ system section.
+        8.  Include the standard disclaimer.
 
         Respond ONLY with the final analysis object.
         `,
