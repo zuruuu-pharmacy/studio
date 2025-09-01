@@ -60,6 +60,7 @@ const prompt = ai.definePrompt({
   name: 'refillManagerPrompt',
   input: {schema: ManageRefillInputSchema},
   output: {schema: ManageRefillOutputSchema},
+  model: 'googleai/gemini-1.5-flash',
   tools: [findNearbyPharmaciesWithStock],
   prompt: `You are an AI pharmacy assistant responsible for managing prescription refills for Zuruu AI Pharmacy.
 
