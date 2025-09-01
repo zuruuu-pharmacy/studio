@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -15,7 +16,7 @@ const ReadPrescriptionInputSchema = z.object({
   photoDataUri: z
     .string()
     .describe(
-      "A photo of a prescription, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+      "A photo of a prescription, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
     ),
 });
 export type ReadPrescriptionInput = z.infer<typeof ReadPrescriptionInputSchema>;
@@ -48,7 +49,6 @@ const prompt = ai.definePrompt({
   name: 'readPrescriptionPrompt',
   input: {schema: ReadPrescriptionInputSchema},
   output: {schema: ReadPrescriptionOutputSchema},
-  model: 'googleai/gemini-1.5-flash',
   prompt: `You are an expert AI medical assistant specializing in reading and interpreting handwritten or printed medical prescriptions. Your primary goal is accuracy and safety.
 
 Analyze the following prescription image. Extract the information and convert it into the structured format defined by the output schema.
