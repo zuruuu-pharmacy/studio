@@ -28,7 +28,7 @@ function EmergencyActionButton({ href, icon: Icon, title, description, variant =
     );
     
     if (href && !onClick) {
-        return <a href={href} target="_blank" rel="noopener noreferrer" className="block">{content}</a>
+        return <a href={href} className="block">{content}</a>
     }
 
     return content;
