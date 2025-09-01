@@ -105,13 +105,6 @@ const patientTools = [
         color: "text-rose-500",
     },
     {
-        icon: Apple,
-        title: "My Diet Plan",
-        description: "Get a personalized diet plan from our AI nutritionist.",
-        href: "/diet-planner",
-        color: "text-lime-500",
-    },
-    {
         icon: Siren,
         title: "Emergency Help",
         description: "Get immediate assistance and access critical info.",
