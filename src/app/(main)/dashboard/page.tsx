@@ -7,6 +7,7 @@ import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, U
 import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
+import { LifestyleSuggestions } from "./lifestyle-suggestions";
 
 const pharmacistTools = [
   {
@@ -166,8 +167,10 @@ const studentTools = [
 
 export default function DashboardPage() {
   const { mode } = useMode();
-  const { patientState } = usePatient();
+  const { patientState, getActivePatientRecord } = usePatient();
   const activeUser = patientState.activeUser;
+  const activePatientRecord = getActivePatientRecord();
+
 
   const tools = {
     'pharmacist': pharmacistTools,
@@ -228,6 +231,12 @@ export default function DashboardPage() {
             </div>
           </div>
         </header>
+
+        {activePatientRecord && (
+          <section>
+            <LifestyleSuggestions patientHistory={activePatientRecord.history}/>
+          </section>
+        )}
 
         <section>
           <h2 className="text-2xl font-semibold mb-4 text-foreground/90">
