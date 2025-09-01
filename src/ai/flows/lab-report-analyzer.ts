@@ -47,16 +47,20 @@ const LabReportAnalyzerInputSchema = z.object({
 });
 export type LabReportAnalyzerInput = z.infer<typeof LabReportAnalyzerInputSchema>;
 
+const AnalyzedTestSchema = z.object({
+    name: z.string().describe('The name of the lab test (e.g., "Hemoglobin", "Creatinine").'),
+    value: z.string().describe('The patient\'s result for the test, including units.'),
+    reference_range: z.string().describe('The normal reference range for the test.'),
+    status: z.enum(['High', 'Normal', 'Low', 'Abnormal', 'Borderline']).describe('The status of the value (e.g., High, Normal, Low, Abnormal).'),
+    layman_explanation: z.string().describe('A short, plain-language explanation for the patient.'),
+    detailed_explanation: z.string().describe('A detailed medical explanation for a healthcare professional, including interpretation and potential significance.'),
+});
+
 const LabReportAnalyzerOutputSchema = z.object({
-  summary: z.string().describe('A high-level summary of the lab findings.'),
-  abnormalValues: z.array(z.object({
-    testName: z.string().describe('The name of the lab test (e.g., "Hemoglobin", "Creatinine").'),
-    value: z.string().describe('The patient\'s result for the test.'),
-    normalRange: z.string().describe('The normal reference range for the test.'),
-    interpretation: z.string().describe('A brief interpretation of the abnormal value in the clinical context.'),
-    severity: z.string().describe('The severity of the abnormality (e.g., "Mild", "Moderate", "Critical").'),
-  })).describe('A list of all values that are outside the normal range.'),
-  recommendations: z.string().describe('Clinical recommendations based on the findings, such as potential medication adjustments or follow-up tests.'),
+  summary: z.string().describe('A high-level summary of the lab findings, written in simple, understandable language.'),
+  recommendations: z.string().describe('General, safe next-step recommendations for the patient (e.g., "Discuss these results with your doctor.").'),
+  abnormalValues: z.array(AnalyzedTestSchema).describe('A list of all values that are outside the normal range.'),
+  normalValues: z.array(AnalyzedTestSchema).describe('A list of all values that are within the normal range.'),
 });
 export type LabReportAnalyzerOutput = z.infer<typeof LabReportAnalyzerOutputSchema>;
 
@@ -69,24 +73,28 @@ const prompt = ai.definePrompt({
   input: {schema: LabReportAnalyzerInputSchema},
   output: {schema: LabReportAnalyzerOutputSchema},
   model: 'googleai/gemini-1.5-flash',
-  prompt: `You are an expert clinical pathologist and pharmacist.
+  prompt: `You are an expert clinical pathologist AI. Your task is to analyze the provided lab report image, interpret the results, and present them in a structured way for both patients and healthcare professionals.
 
-  Analyze the provided lab report image in the context of the patient's history (if available).
-  - Identify all values that are outside of their normal reference ranges.
-  - For each abnormal value, provide the test name, the patient's value, the normal range, a clinical interpretation, and the severity.
-  - Provide a concise overall summary of the findings.
-  - Offer clear, actionable recommendations for the pharmacist, such as potential medication adjustments, dosage considerations, or suggested follow-up tests.
+**Analysis Steps:**
+1.  **OCR & Extraction**: Read the lab report image and extract every test, including its name, the patient's value with units, and the reference range.
+2.  **Categorization**: For each test, determine if the patient's value is 'High', 'Low', or 'Normal' compared to the reference range. Use 'Abnormal' for tests that are qualitative (e.g., Positive/Negative) and out of norm. Use 'Borderline' if a value is very close to the edge of the normal range.
+3.  **Dual Interpretation**: For EVERY test (both normal and abnormal), you must generate two explanations:
+    *   **layman_explanation**: A very simple, one-sentence explanation for a patient. For normal results, this should be reassuring. For abnormal results, it should be a simple statement of the finding (e.g., "Your Vitamin D is low, which might make you feel tired.").
+    *   **detailed_explanation**: A more technical explanation for a healthcare professional. Include the value, range, and clinical context or potential implications.
+4.  **Summarization**:
+    *   Provide a high-level `summary` of the most important findings in easy-to-understand language.
+    *   Provide general, safe `recommendations` for the patient, like "Please discuss these results with your doctor for a full evaluation and treatment plan." Do NOT suggest specific treatments.
+5.  **Output Structure**: Populate the `abnormalValues` array with all tests that are NOT 'Normal'. Populate the `normalValues` array with all tests that ARE 'Normal'.
 
-  ## Lab Report Image
-  {{media url=photoDataUri}}
+**Patient Context (Use for richer interpretation if available):**
+- Past Medical History: {{detailedHistory.pastMedicalHistory}}
+- Medication History: {{detailedHistory.medicationHistory}}
 
-  {{#if detailedHistory}}
-  ## Patient Context for Analysis
-  - **Presenting Complaint**: {{detailedHistory.presentingComplaint}}
-  - **Past Medical History**: {{detailedHistory.pastMedicalHistory}}
-  - **Medication History**: {{detailedHistory.medicationHistory}}
-  {{/if}}
-  `,
+**Lab Report Image to Analyze:**
+{{media url=photoDataUri}}
+
+Respond in the structured JSON format defined by the output schema.
+`,
 });
 
 const labReportAnalyzerFlow = ai.defineFlow(
