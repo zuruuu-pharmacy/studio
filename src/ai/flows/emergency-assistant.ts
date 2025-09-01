@@ -90,16 +90,11 @@ const prompt = ai.definePrompt({
 1.  **Create a Patient Summary**: Extract the most critical information into the 'patientSummary' object. Be concise. For blood group, state 'Unknown' if not available.
 2.  **Identify Primary Risk**: Based on the history, determine the most immediate, likely risk. For example, if the patient has a history of hypertension and chest pain complaints, state 'Known cardiac patient'. If they have epilepsy, state 'Known epileptic patient'.
 3.  **Generate First Aid Tips**: Provide 1-2 very simple, actionable first aid tips a layperson could perform while waiting for help. Base this on the primary risk. (e.g., for cardiac risk: "Help them sit down and stay calm."; for seizure risk: "Lay them on their side, clear the area of hard objects.").
-4.  **Format an Emergency SMS**: Create a clear, concise emergency message. It MUST start with "🚨 Emergency Alert 🚨" and include Name, Age, Allergies, Current Meds, Chronic Conditions, and a placeholder for location.
+4.  **Format an Emergency SMS**: Create a clear, concise emergency message. It MUST start with "🚨 Emergency Alert 🚨" and include Name, Age, a summary of conditions, and a placeholder for location. Keep it very short.
 
 **Example SMS:**
 🚨 Emergency Alert 🚨
-Patient: Ali Khan (Age 55, Male)
-Allergies: Penicillin
-Meds: Amlodipine, Metformin
-Conditions: Hypertension, Type 2 Diabetes
-Location: [Location will be attached]
-Please send urgent help!
+Help needed for Ali Khan (55). Has Hypertension, Diabetes. Allergies: Penicillin. At [Location].
 
 Now, generate the emergency payload based on the provided patient data.
 `,
@@ -117,4 +112,3 @@ const emergencyAssistantFlow = ai.defineFlow(
     return output!;
   }
 );
-

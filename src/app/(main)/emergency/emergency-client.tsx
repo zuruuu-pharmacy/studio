@@ -6,23 +6,32 @@ import { usePatient } from '@/contexts/patient-context';
 import { getEmergencyAssistance, type EmergencyAssistanceOutput } from '@/ai/flows/emergency-assistant';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, Siren, Phone, HeartPulse, User, ShieldAlert, MessageSquare, MapPin, Clipboard, Info } from 'lucide-react';
+import { Loader2, Siren, Phone, User, ShieldAlert, MessageSquare, MapPin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import Link from 'next/link';
 
-function EmergencyActionButton({ href, icon: Icon, title, description, variant = 'default' }: { href: string; icon: React.ElementType; title: string; description: string; variant?: 'default' | 'destructive' | 'secondary' }) {
-    return (
-        <a href={href} target="_blank" rel="noopener noreferrer" className="block">
-            <Button size="lg" variant={variant} className="w-full h-auto justify-start py-4">
-                <Icon className="h-8 w-8 mr-4" />
-                <div className="text-left">
-                    <p className="font-bold text-lg">{title}</p>
-                    <p className="text-sm opacity-90">{description}</p>
-                </div>
-            </Button>
-        </a>
-    )
+interface LocationState {
+    lat: number;
+    lng: number;
+}
+
+function EmergencyActionButton({ href, icon: Icon, title, description, variant = 'default', onClick, disabled }: { href?: string; icon: React.ElementType; title: string; description: string; variant?: 'default' | 'destructive' | 'secondary', onClick?: () => void; disabled?: boolean }) {
+    const content = (
+         <Button size="lg" variant={variant} className="w-full h-auto justify-start py-4" onClick={onClick} disabled={disabled}>
+            <Icon className="h-8 w-8 mr-4" />
+            <div className="text-left">
+                <p className="font-bold text-lg">{title}</p>
+                <p className="text-sm opacity-90">{description}</p>
+            </div>
+        </Button>
+    );
+    
+    if (href && !onClick) {
+        return <a href={href} target="_blank" rel="noopener noreferrer" className="block">{content}</a>
+    }
+
+    return content;
 }
 
 
@@ -33,6 +42,8 @@ export function EmergencyClient() {
     const activePatientRecord = getActivePatientRecord();
     const { toast } = useToast();
     const [view, setView] = useState<'initial' | 'activated'>('initial');
+    const [location, setLocation] = useState<LocationState | null>(null);
+    const [locationError, setLocationError] = useState<string | null>(null);
 
 
     const handleActivation = () => {
@@ -43,6 +54,19 @@ export function EmergencyClient() {
 
         startTransition(async () => {
             try {
+                // Request location first
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        setLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+                        setLocationError(null);
+                    },
+                    (error) => {
+                        console.error("Geolocation error:", error);
+                        setLocationError("Could not get location. Please enable location services.");
+                        toast({ variant: 'destructive', title: 'Location Error', description: 'Could not get your location. Please enable it in your browser.' });
+                    }
+                );
+                
                 const result = await getEmergencyAssistance({ detailedHistory: activePatientRecord.history });
                 setState(result);
                 setView('activated');
@@ -52,14 +76,25 @@ export function EmergencyClient() {
             }
         });
     }
-    
-    const copyToClipboard = (text: string) => {
-        navigator.clipboard.writeText(text).then(() => {
-            toast({ title: 'Copied to Clipboard', description: 'The emergency message is ready to be pasted.' });
-        }, () => {
-            toast({ variant: 'destructive', title: 'Failed to Copy' });
-        });
+
+    const handleShareLocation = () => {
+        if (!location) {
+            toast({ variant: 'destructive', title: 'Location not available', description: 'Cannot share location. Please ensure it is enabled.'});
+            return;
+        }
+        if (!activePatientRecord?.history.phoneNumber) {
+             toast({ variant: 'destructive', title: 'No Caregiver Number', description: 'There is no phone number in the patient record to send the location to.'});
+            return;
+        }
+        
+        const mapsLink = `https://maps.google.com/?q=${location.lat},${location.lng}`;
+        const message = encodeURIComponent(`🚨 Emergency Alert 🚨\nHelp needed for ${activePatientRecord.history.name}. My current location is: ${mapsLink}`);
+        // Format number for WhatsApp: remove non-digits. Assume it includes country code.
+        const whatsAppNumber = activePatientRecord.history.phoneNumber.replace(/\D/g, '');
+
+        window.open(`https://wa.me/${whatsAppNumber}?text=${message}`, '_blank');
     }
+    
     
     if (!activePatientRecord) {
       return (
@@ -92,9 +127,16 @@ export function EmergencyClient() {
                 </Alert>
                 <div className="grid md:grid-cols-2 gap-4">
                     <EmergencyActionButton href="tel:1122" icon={Siren} title="Call Ambulance (1122)" description="Immediately contact emergency services." variant="destructive"/>
-                    <EmergencyActionButton href={`tel:${activePatientRecord.history.phoneNumber || ''}`} icon={Phone} title="Call Emergency Contact" description="Contact family or a caregiver." variant="secondary"/>
-                    <EmergencyActionButton href="https://maps.google.com" icon={MapPin} title="Share Location" description="Send a map of your current location." variant="secondary"/>
+                    <EmergencyActionButton 
+                        icon={MessageSquare} 
+                        title="Share Location via WhatsApp" 
+                        description="Send location to your caregiver." 
+                        variant="secondary"
+                        onClick={handleShareLocation}
+                        disabled={!location}
+                    />
                 </div>
+                {locationError && <p className="text-sm text-center text-destructive">{locationError}</p>}
             </div>
         )
     }
