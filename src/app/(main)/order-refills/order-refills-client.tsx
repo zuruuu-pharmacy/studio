@@ -6,7 +6,7 @@ import { manageRefill, type ManageRefillOutput } from "@/ai/flows/refill-manager
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Link, Pill, ShoppingCart, CalendarClock, BellRing, CheckCircle, Truck } from "lucide-react";
+import { Loader2, Pill, ShoppingCart, CalendarClock, BellRing, CheckCircle, Truck } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { usePatient } from "@/contexts/patient-context";
 import { useRouter } from "next/navigation";
@@ -35,25 +35,38 @@ export function OrderRefillsClient() {
         const dispensedDate = lastPrescription.prescription_date || new Date().toISOString().split('T')[0];
 
         const refillPromises = lastPrescription.medications.map(med => {
-          // Simple parsing for quantity. E.g., "7 days" -> 7
-          const quantityMatch = med.duration.match(/\d+/);
-          // Simple parsing for daily consumption from frequency
+          // Improved logic to parse quantity from duration
           let dailyConsumption = 1;
-          if (med.frequency.toLowerCase().includes('twice') || med.frequency.toLowerCase().includes('bd')) {
+          const freqLower = med.frequency.toLowerCase();
+          if (freqLower.includes('twice') || freqLower.includes('bd')) {
               dailyConsumption = 2;
-          } else if (med.frequency.toLowerCase().includes('thrice') || med.frequency.toLowerCase().includes('tds')) {
+          } else if (freqLower.includes('thrice') || freqLower.includes('tds')) {
               dailyConsumption = 3;
+          } else if (freqLower.includes('four times') || freqLower.includes('qid')) {
+              dailyConsumption = 4;
           }
-          const durationDays = quantityMatch ? parseInt(quantityMatch[0], 10) : 7; // Default to 7 days if not found
-          const totalQuantity = dailyConsumption * durationDays;
 
+          let durationDays = 7; // Default duration
+          const durationLower = med.duration.toLowerCase();
+          const quantityMatch = durationLower.match(/\d+/);
+          if (quantityMatch) {
+            const num = parseInt(quantityMatch[0], 10);
+            if (durationLower.includes('week')) {
+                durationDays = num * 7;
+            } else if (durationLower.includes('month')) {
+                durationDays = num * 30;
+            } else {
+                durationDays = num;
+            }
+          }
+          const totalQuantity = dailyConsumption * durationDays;
 
           return manageRefill({
             medication: {
               name: med.name,
               strength: med.dosage, // Assuming dosage field contains strength
               dosage: med.frequency,
-              quantityDispensed: totalQuantity,
+              quantityDispensed: isNaN(totalQuantity) ? 30 : totalQuantity, // Fallback for "As needed"
               dispensedDate: dispensedDate,
             }
           });
@@ -103,7 +116,7 @@ export function OrderRefillsClient() {
         </CardHeader>
         <CardContent>
             <Button onClick={() => router.push('/prescription-reader')}>
-                <Link className="mr-2 h-4 w-4" /> Go to Prescription Reader
+                <Pill className="mr-2 h-4 w-4" /> Go to Prescription Reader
             </Button>
         </CardContent>
       </Card>
