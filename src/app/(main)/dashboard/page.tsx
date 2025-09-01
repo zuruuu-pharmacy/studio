@@ -3,14 +3,10 @@
 
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren, ShoppingCart, Microscope } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren, ShoppingCart, Microscope, Apple } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
-import { useEffect, useState } from "react";
-import { getLifestyleSuggestions, type LifestyleSuggesterOutput } from "@/ai/flows/lifestyle-suggester";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 const pharmacistTools = [
   {
@@ -33,6 +29,13 @@ const pharmacistTools = [
     description: "Guide patients through a symptom triage.",
     href: "/symptom-checker",
     color: "text-rose-500",
+  },
+   {
+    icon: Apple,
+    title: "Diet & Nutrition",
+    description: "Generate a diet plan based on patient profile.",
+    href: "/diet-planner",
+    color: "text-lime-500",
   },
   {
     icon: BookText,
@@ -101,6 +104,13 @@ const patientTools = [
         color: "text-rose-500",
     },
     {
+        icon: Apple,
+        title: "My Diet Plan",
+        description: "Get a personalized diet plan from our AI nutritionist.",
+        href: "/diet-planner",
+        color: "text-lime-500",
+    },
+    {
         icon: Siren,
         title: "Emergency Help",
         description: "Get immediate assistance and access critical info.",
@@ -153,78 +163,6 @@ const studentTools = [
         color: "text-cyan-500",
     },
 ];
-
-const suggestionIcons: { [key: string]: React.ElementType } = {
-  "Seasonal Health Alert": Zap,
-  "Preventive Care": ShieldAlert,
-  "General Wellness": HeartPulse,
-  "default": HeartPulse,
-};
-
-const priorityColors: { [key: string]: string } = {
-  "High": "border-red-500/80 bg-red-500/10",
-  "Medium": "border-yellow-500/80 bg-yellow-500/10",
-  "Low": "border-green-500/80 bg-green-500/10",
-};
-
-
-function LifestyleSuggestions() {
-  const { getActivePatientRecord } = usePatient();
-  const [suggestions, setSuggestions] = useState<LifestyleSuggesterOutput | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const activePatientRecord = getActivePatientRecord();
-    if (activePatientRecord) {
-      getLifestyleSuggestions({ detailedHistory: activePatientRecord.history })
-        .then(setSuggestions)
-        .catch(() => setError("Could not load lifestyle suggestions."))
-        .finally(() => setIsLoading(false));
-    } else {
-        setIsLoading(false);
-    }
-  }, [getActivePatientRecord]);
-  
-  if (isLoading) {
-    return (
-      <section>
-        <h2 className="text-2xl font-semibold mb-4 text-foreground/90">Daily Health Alerts</h2>
-        <div className="space-y-3">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-        </div>
-      </section>
-    );
-  }
-
-  if (error || !suggestions || suggestions.suggestions.length === 0) {
-    return null; // Don't show the card if there's an error or no suggestions
-  }
-
-  return (
-    <section>
-      <h2 className="text-2xl font-semibold mb-4 text-foreground/90">Daily Health Alerts</h2>
-      <div className="space-y-4">
-        {suggestions.suggestions.map((suggestion, index) => {
-          const Icon = suggestionIcons[suggestion.category] || suggestionIcons['default'];
-          const colorClass = priorityColors[suggestion.priority] || 'border-muted';
-          return (
-            <Alert key={index} className={`flex items-start gap-4 ${colorClass}`}>
-                <Icon className="h-5 w-5 text-primary mt-1" />
-                <div className="flex-1">
-                    <AlertTitle className="font-semibold text-foreground/90">{suggestion.category}</AlertTitle>
-                    <AlertDescription>{suggestion.message}</AlertDescription>
-                </div>
-            </Alert>
-          );
-        })}
-      </div>
-    </section>
-  )
-}
-
 
 export default function DashboardPage() {
   const { mode } = useMode();
@@ -318,8 +256,6 @@ export default function DashboardPage() {
             ))}
           </div>
         </section>
-
-        {mode === 'patient' && <LifestyleSuggestions />}
       </div>
   );
 }

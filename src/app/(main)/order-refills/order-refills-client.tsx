@@ -6,7 +6,7 @@ import { manageRefill, type ManageRefillOutput } from "@/ai/flows/refill-manager
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Pill, ShoppingCart, CalendarClock, BellRing, CheckCircle, Truck } from "lucide-react";
+import { Loader2, Pill, ShoppingCart, CalendarClock, BellRing, CheckCircle, Truck, Activity } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { usePatient } from "@/contexts/patient-context";
 import { useRouter } from "next/navigation";
@@ -27,7 +27,7 @@ export function OrderRefillsClient() {
   const { lastPrescription } = patientState;
   const [orderStatus, setOrderStatus] = useState<{ [key: string]: string }>({});
 
-  useEffect(() => {
+  const handleAnalyzePrescription = () => {
     if (!lastPrescription) return;
 
     startTransition(async () => {
@@ -35,7 +35,6 @@ export function OrderRefillsClient() {
         const dispensedDate = lastPrescription.prescription_date || new Date().toISOString().split('T')[0];
 
         const refillPromises = lastPrescription.medications.map(med => {
-          // Improved logic to parse quantity from duration
           let dailyConsumption = 1;
           const freqLower = med.frequency.toLowerCase();
           if (freqLower.includes('twice') || freqLower.includes('bd')) {
@@ -46,7 +45,7 @@ export function OrderRefillsClient() {
               dailyConsumption = 4;
           }
 
-          let durationDays = 7; // Default duration
+          let durationDays = 7;
           const durationLower = med.duration.toLowerCase();
           const quantityMatch = durationLower.match(/\d+/);
           if (quantityMatch) {
@@ -64,9 +63,9 @@ export function OrderRefillsClient() {
           return manageRefill({
             medication: {
               name: med.name,
-              strength: med.dosage, // Assuming dosage field contains strength
+              strength: med.dosage,
               dosage: med.frequency,
-              quantityDispensed: isNaN(totalQuantity) ? 30 : totalQuantity, // Fallback for "As needed"
+              quantityDispensed: isNaN(totalQuantity) ? 30 : totalQuantity,
               dispensedDate: dispensedDate,
             }
           });
@@ -78,15 +77,11 @@ export function OrderRefillsClient() {
       } catch (e) {
         console.error(e);
         setState([{ error: "Failed to process prescription for refill tracking." }]);
+      } finally {
+        clearLastPrescription(); // Clear after analysis
       }
     });
-
-    // Clear the prescription from context so it is not reused on subsequent visits
-    return () => {
-        clearLastPrescription();
-    }
-  }, [lastPrescription, clearLastPrescription, toast]);
-
+  }
 
   const handleOrderRefill = (medName: string) => {
     setOrderStatus(prev => ({...prev, [medName]: 'Ordered'}));
@@ -96,22 +91,13 @@ export function OrderRefillsClient() {
     });
   }
 
-  if (isPending) {
-    return (
-        <div className="flex justify-center items-center h-48">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-4 text-muted-foreground">Analyzing your prescription for Zuruu AI Pharmacy...</p>
-        </div>
-    );
-  }
-
-  if (!lastPrescription) {
+  if (!lastPrescription && !state) {
     return (
       <Card className="text-center">
         <CardHeader>
           <CardTitle>Link a Prescription to Begin</CardTitle>
           <CardDescription>
-            To order from Zuruu AI Pharmacy, first upload and analyze a prescription.
+            To order from Zuruu AI Pharmacy, first upload and analyze a prescription. The last analyzed prescription will be used here.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -122,9 +108,33 @@ export function OrderRefillsClient() {
       </Card>
     );
   }
+  
+  if (lastPrescription && !state && !isPending) {
+    return (
+         <Card className="text-center">
+            <CardHeader>
+                <CardTitle>Prescription Ready for Analysis</CardTitle>
+                <CardDescription>
+                    A prescription for {lastPrescription.medications.length} medication(s) is ready to be analyzed for refill tracking.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Button onClick={handleAnalyzePrescription} disabled={isPending}>
+                    <Activity className="mr-2 h-4 w-4" /> Analyze for Refills
+                </Button>
+            </CardContent>
+         </Card>
+    )
+  }
 
   return (
     <div className="space-y-6">
+        {isPending && (
+             <div className="flex justify-center items-center h-48">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="ml-4 text-muted-foreground">Analyzing your prescription for Zuruu AI Pharmacy...</p>
+            </div>
+        )}
         {state && state.map((result, index) => (
              'error' in result ? (
                 <Alert key={index} variant="destructive">
