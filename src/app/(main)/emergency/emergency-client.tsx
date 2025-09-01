@@ -79,7 +79,8 @@ export function EmergencyClient() {
             return;
         }
 
-        startTransition(async () => {
+        startTransition(() => {
+            // No need for async here, since the async part is in triggerEmergencyFlow
             try {
                 // Request location first
                 navigator.geolocation.getCurrentPosition(
@@ -116,7 +117,7 @@ export function EmergencyClient() {
             setView('activated');
         } catch(e) {
             console.error(e);
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to get emergency assistance data.' });
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to get emergency assistance data. You may have exceeded your API quota.' });
         }
     }
 
