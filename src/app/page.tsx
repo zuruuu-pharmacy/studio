@@ -215,13 +215,6 @@ export default function RoleSelectionPage() {
                 <p className="font-normal text-sm text-muted-foreground text-left">Create a new patient history form.</p>
               </div>
             </Button>
-             <Button onClick={handleEmergency} variant="destructive" size="lg" className="h-auto py-4">
-              <ShieldEllipsis className="mr-4"/>
-               <div>
-                <p className="font-semibold text-base text-left">Emergency</p>
-                <p className="font-normal text-sm text-destructive-foreground/80 text-left">Get immediate help and information.</p>
-              </div>
-            </Button>
           </div>
         </DialogContent>
       </Dialog>

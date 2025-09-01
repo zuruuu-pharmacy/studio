@@ -83,13 +83,6 @@ const pharmacistTools = [
     href: "/adherence-tracker",
     color: "text-teal-500",
   },
-   {
-    icon: ShieldEllipsis,
-    title: "Emergency",
-    description: "Access emergency resources.",
-    href: "/emergency",
-    color: "text-red-600",
-  },
 ];
 
 const patientTools = [
@@ -121,13 +114,6 @@ const patientTools = [
         href: "/adherence-tracker",
         color: "text-teal-500",
     },
-    {
-        icon: ShieldEllipsis,
-        title: "Emergency",
-        description: "Get information for emergency situations.",
-        href: "/emergency",
-        color: "text-red-600",
-    }
 ];
 
 const studentTools = [
@@ -145,13 +131,6 @@ const studentTools = [
         href: "/patients",
         color: "text-cyan-500",
     },
-    {
-        icon: ShieldEllipsis,
-        title: "Emergency Information",
-        description: "Get information for emergency situations.",
-        href: "/emergency",
-        color: "text-red-600",
-    }
 ];
 
 const suggestionIcons: { [key: string]: React.ElementType } = {

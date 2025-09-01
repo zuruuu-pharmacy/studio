@@ -35,7 +35,6 @@ const pharmacistMenuItems = [
     { href: "/prescription-reader", label: "Prescription Reader", icon: ScanEye },
     { href: "/lab-analyzer", label: "Lab Analyzer", icon: TestTube },
     { href: "/adherence-tracker", label: "Adherence Tracker", icon: FileClock },
-    { href: "/emergency", label: "Emergency", icon: ShieldEllipsis },
 ];
 
 const patientMenuItems = [
@@ -43,14 +42,12 @@ const patientMenuItems = [
     { href: "/patient-history", label: "My History", icon: User },
     { href: "/symptom-checker", label: "Symptom Checker", icon: Stethoscope },
     { href: "/adherence-tracker", label: "Adherence Tracker", icon: FileClock },
-    { href: "/emergency", label: "Emergency", icon: ShieldEllipsis },
 ];
 
 const studentMenuItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/patient-history", label: "My Health History", icon: User },
     { href: "/patients", label: "View Patient Cases", icon: Users },
-    { href: "/emergency", label: "Emergency Info", icon: ShieldEllipsis },
 ];
 
 
