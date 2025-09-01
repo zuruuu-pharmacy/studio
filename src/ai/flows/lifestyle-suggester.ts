@@ -34,9 +34,15 @@ export async function getLifestyleSuggestions(history: PatientHistory): Promise<
   });
 }
 
+// Define a new input schema for the prompt that includes the stringified notes
+const PromptInputSchema = LifestyleSuggestionsInputSchema.extend({
+    systemicNotesString: z.string().optional().describe('JSON string of systemic notes.'),
+});
+
+
 const prompt = ai.definePrompt({
   name: 'lifestyleSuggesterPrompt',
-  input: {schema: LifestyleSuggestionsInputSchema},
+  input: {schema: PromptInputSchema }, // Use the extended schema
   output: {schema: LifestyleSuggestionsOutputSchema},
   model: 'googleai/gemini-1.5-flash',
   prompt: `You are a proactive AI healthcare assistant. Your job is to provide 2-3 personalized, actionable health tips for a patient based on their profile and the current date.
@@ -49,7 +55,7 @@ const prompt = ai.definePrompt({
 -   **Allergies:** {{{detailedHistory.allergyHistory}}}
 -   **Social History:** {{{detailedHistory.socialHistory}}}
 -   **Review of Systems:** {{{detailedHistory.reviewOfSystems}}}
--   **Systemic Notes:** {{JSON.stringify detailedHistory.systemicNotes}}
+-   **Systemic Notes:** {{{systemicNotesString}}}
 
 **Task:**
 Generate 2-3 unique, actionable health suggestions for the user for today. The suggestions should be a mix of general preventive care and tips specific to their conditions.
@@ -76,7 +82,15 @@ const lifestyleSuggesterFlow = ai.defineFlow(
     outputSchema: LifestyleSuggestionsOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    // Pre-process the systemic notes into a string before calling the prompt.
+    const systemicNotesString = JSON.stringify(input.detailedHistory.systemicNotes, null, 2);
+
+    const promptInput = {
+        ...input,
+        systemicNotesString,
+    };
+    
+    const {output} = await prompt(promptInput);
     return output!;
   }
 );
