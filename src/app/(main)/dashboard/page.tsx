@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
@@ -166,10 +166,17 @@ const studentTools = [
     {
         icon: BookOpen,
         title: "Lecture Notes Library",
-        description: "Upload and analyze lecture notes with AI-powered study aids.",
+        description: "Upload and browse study materials for your class.",
         href: "/lecture-notes",
         color: "text-amber-500",
     },
+    {
+        icon: Library,
+        title: "AI E-Library",
+        description: "Search for any term and get instant, AI-powered definitions and summaries.",
+        href: "/e-library",
+        color: "text-sky-500",
+    }
 ];
 
 export default function DashboardPage() {
