@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -28,7 +28,7 @@ const pharmacistMenuItems = [
     { href: "/patients", label: "Patients", icon: Users },
     { href: "/patient-history", label: "Patient History Form", icon: User },
     { href: "/symptom-checker", label: "Symptom Checker", icon: Stethoscope },
-    { href: "/diet-planner", label: "Diet & Nutrition", icon: Apple },
+    { href: "/diet-planner", label: "Simple Diet Planner", icon: Apple },
     { href: "/monograph", label: "Monograph Lookup", icon: BookText },
     { href: "/dose-calculator", label: "Dose Calculator", icon: Calculator },
     { href: "/interaction-checker", label: "Interaction Checker", icon: FlaskConical },
@@ -41,8 +41,8 @@ const pharmacistMenuItems = [
 const patientMenuItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/patient-history", label: "My History", icon: User },
+    { href: "/nutrition-coach", label: "AI Nutrition Coach", icon: Bot },
     { href: "/symptom-checker", label: "Symptom Checker", icon: Stethoscope },
-    { href: "/diet-planner", label: "My Diet Plan", icon: Apple },
     { href: "/emergency", label: "Emergency Help", icon: Siren },
     { href: "/prescription-reader", label: "Upload Prescription", icon: ScanEye },
     { href: "/lab-analyzer", label: "Analyze Lab Report", icon: Microscope },

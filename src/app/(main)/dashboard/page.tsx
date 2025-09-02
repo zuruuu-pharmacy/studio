@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren, ShoppingCart, Microscope, Apple } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren, ShoppingCart, Microscope, Apple, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
@@ -33,7 +33,7 @@ const pharmacistTools = [
   },
    {
     icon: Apple,
-    title: "Diet & Nutrition",
+    title: "Simple Diet Planner",
     description: "Generate a diet plan based on patient profile.",
     href: "/diet-planner",
     color: "text-lime-500",
@@ -96,6 +96,13 @@ const patientTools = [
         description: "View or update your personal and medical information.",
         href: "/patient-history",
         color: "text-blue-400",
+    },
+     {
+        icon: Bot,
+        title: "AI Nutrition Coach",
+        description: "Get a personalized diet plan from our AI assistant.",
+        href: "/nutrition-coach",
+        color: "text-green-500",
     },
     {
         icon: Stethoscope,

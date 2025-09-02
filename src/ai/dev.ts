@@ -16,3 +16,5 @@ import '@/ai/tools/healthcare-finder.ts';
 import '@/ai/tools/pharmacy-finder.ts';
 import '@/ai/flows/diet-planner.ts';
 import '@/ai/flows/lifestyle-suggester.ts';
+import '@/ai/flows/nutrition-coach.ts';
+
