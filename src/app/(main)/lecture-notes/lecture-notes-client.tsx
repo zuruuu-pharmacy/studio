@@ -6,17 +6,21 @@ import Image from "next/image";
 import { useForm, FormProvider, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { analyzeLectureNotes, LectureNotesAnalyzerOutputSchema, type LectureNotesAnalyzerOutput } from "@/ai/flows/lecture-notes-analyzer";
+import { analyzeLectureNotes, type LectureNotesAnalyzerOutput } from "@/ai/flows/lecture-notes-analyzer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Upload, ScanEye, BookOpen, BrainCircuit, Bot, BadgeInfo, Milestone, Sigma, FileText, CheckCircle } from "lucide-react";
+import { Loader2, Upload, ScanEye, BookOpen, BrainCircuit, Bot, BadgeInfo, Milestone, Sigma, FileText, CheckCircle, KeyRound } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
+const TEACHER_CODE = "239774";
 
 const formSchema = z.object({
   topicName: z.string().min(3, "Please provide a topic name."),
@@ -30,6 +34,9 @@ export function LectureNotesClient() {
   const { toast } = useToast();
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showUpload, setShowUpload] = useState(false);
+  const [accessCode, setAccessCode] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const form = useForm<FormValues>({ resolver: zodResolver(formSchema) });
 
@@ -38,6 +45,17 @@ export function LectureNotesClient() {
       toast({ variant: "destructive", title: "Error", description: state.error });
     }
   }, [state, toast]);
+  
+  const handleAccessCodeCheck = () => {
+    if (accessCode === TEACHER_CODE) {
+      setShowUpload(true);
+      setIsModalOpen(false);
+      toast({title: "Access Granted", description: "You can now upload notes."});
+    } else {
+      toast({variant: "destructive", title: "Incorrect Code"});
+    }
+  }
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -135,55 +153,86 @@ export function LectureNotesClient() {
   return (
     <div className="grid md:grid-cols-3 gap-6">
       <div className="md:col-span-1">
-        <Card>
-          <CardHeader>
-            <CardTitle>Upload Note</CardTitle>
-            <CardDescription>Provide a topic and upload the note file.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={handleFormSubmit} className="space-y-4">
-                <FormField name="topicName" control={form.control} render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Note Topic</FormLabel>
-                    <FormControl><Input placeholder="e.g., Beta-blockers" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField name="noteFile" control={form.control} render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Note File</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        accept="image/*,application/pdf,.doc,.docx"
-                        ref={fileInputRef}
-                        onChange={(e) => {
-                           field.onChange(e.target.files);
-                           handleFileChange(e);
-                        }}
-                        className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
+        {showUpload ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>Upload Note</CardTitle>
+              <CardDescription>Provide a topic and upload the note file.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form onSubmit={handleFormSubmit} className="space-y-4">
+                  <FormField name="topicName" control={form.control} render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Note Topic</FormLabel>
+                      <FormControl><Input placeholder="e.g., Beta-blockers" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField name="noteFile" control={form.control} render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Note File</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          accept="image/*,application/pdf,.doc,.docx"
+                          ref={fileInputRef}
+                          onChange={(e) => {
+                            field.onChange(e.target.files);
+                            handleFileChange(e);
+                          }}
+                          className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
 
-                {preview && (
-                  <div className="mt-4 border rounded-lg p-2 bg-muted">
-                    <p className="text-sm font-medium mb-2 text-center">Image Preview</p>
-                    <Image src={preview} alt="Notes preview" width={400} height={400} className="rounded-md w-full h-auto object-contain" />
-                  </div>
-                )}
-                
-                <Button type="submit" disabled={isPending} className="w-full">
-                  {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
-                  Analyze & Enhance Notes
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+                  {preview && (
+                    <div className="mt-4 border rounded-lg p-2 bg-muted">
+                      <p className="text-sm font-medium mb-2 text-center">Image Preview</p>
+                      <Image src={preview} alt="Notes preview" width={400} height={400} className="rounded-md w-full h-auto object-contain" />
+                    </div>
+                  )}
+                  
+                  <Button type="submit" disabled={isPending} className="w-full">
+                    {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
+                    Analyze & Enhance Notes
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        ) : (
+             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                <DialogTrigger asChild>
+                    <Button className="w-full" size="lg">
+                        <Upload className="mr-2"/> Upload New Notes
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Teacher Access Required</DialogTitle>
+                        <DialogDescription>
+                            Please enter the access code to upload new study materials.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-2">
+                        <Label htmlFor="access-code">Access Code</Label>
+                        <Input 
+                            id="access-code"
+                            type="password"
+                            value={accessCode}
+                            onChange={(e) => setAccessCode(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleAccessCodeCheck()}
+                        />
+                    </div>
+                    <DialogFooter>
+                        <Button onClick={handleAccessCodeCheck}><KeyRound className="mr-2"/>Verify Code</Button>
+                    </DialogFooter>
+                </DialogContent>
+             </Dialog>
+        )}
       </div>
       <div className="md:col-span-2">
         {isPending ? (
@@ -197,8 +246,8 @@ export function LectureNotesClient() {
         ) : (
           <Card className="flex flex-col items-center justify-center h-full min-h-[300px] text-center p-6 bg-muted/50">
             <BookOpen className="h-16 w-16 text-muted-foreground/50 mb-4" />
-            <h3 className="text-xl font-semibold text-muted-foreground">Waiting for Lecture Notes</h3>
-            <p className="text-muted-foreground/80 mt-2">Upload a file to start the AI analysis.</p>
+            <h3 className="text-xl font-semibold text-muted-foreground">Lecture Notes Library</h3>
+            <p className="text-muted-foreground/80 mt-2">Analyzed notes will appear here. Teachers can upload new content.</p>
           </Card>
         )}
       </div>
