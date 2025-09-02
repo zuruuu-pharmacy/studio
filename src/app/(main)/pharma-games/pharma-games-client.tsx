@@ -26,7 +26,8 @@ const games = [
     icon: Search,
     title: "Word Search",
     description: "Find themed words for drug classes, herbal constituents, and medical abbreviations.",
-    status: "Coming Soon",
+    status: "Play Now",
+    href: "/pharma-games/word-search"
   },
   {
     icon: Puzzle,
