@@ -25,7 +25,7 @@ const FlashcardSchema = z.object({
 
 const formSchema = z.object({
   topic: z.string().min(3, "Please provide a topic name."),
-  noteFile: z.instanceof(File, { message: "A file is required." }),
+  noteFile: z.any().refine(file => file instanceof File, "A file is required."),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -56,17 +56,16 @@ export function FlashcardGeneratorClient() {
   const [isPending, startTransition] = useTransition();
   const [state, formAction] = useActionState<FlashcardGeneratorOutput | { error: string } | null, FormData>(
     async (previousState, formData) => {
-      const parsed = formSchema.safeParse({
-        topic: formData.get('topic'),
-        noteFile: formData.get('noteFile'),
-      });
-      if (!parsed.success) {
-        // Find the first error message to display
-        const firstError = Object.values(parsed.error.flatten().fieldErrors)[0]?.[0];
-        return { error: firstError || "Invalid input." };
-      }
       
-      const { topic, noteFile: file } = parsed.data;
+      const file = formData.get('noteFile') as File;
+      const topic = formData.get('topic') as string;
+
+      if (!file || file.size === 0) {
+        return { error: "A file is required." };
+      }
+      if (!topic || topic.length < 3) {
+        return { error: "Please provide a topic name." };
+      }
 
       if (file.size > MAX_FILE_SIZE) {
         return { error: "File size exceeds 10MB limit." };
@@ -103,13 +102,6 @@ export function FlashcardGeneratorClient() {
   }, [state, toast]);
 
   const fileRef = form.register("noteFile");
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.size > MAX_FILE_SIZE) {
-      toast({ variant: "destructive", title: "Error", description: "File size exceeds 10MB limit." });
-      form.setValue('noteFile', undefined as any);
-    }
-  };
 
   const handleFormSubmit = form.handleSubmit((data) => {
     const formData = new FormData();
@@ -131,9 +123,23 @@ export function FlashcardGeneratorClient() {
                 <FormField name="topic" control={form.control} render={({ field }) => (
                   <FormItem><FormLabel>Note Topic</FormLabel><FormControl><Input placeholder="e.g., Beta-blockers in Pharmacology" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
-                <FormField name="noteFile" control={form.control} render={({ field }) => (
+                <FormField name="noteFile" control={form.control} render={({ field: { onChange, ...fieldProps} }) => (
                   <FormItem><FormLabel>Note File (PDF, DOCX, etc.)</FormLabel><FormControl>
-                    <Input type="file" {...fileRef} onChange={handleFileChange} />
+                    <Input 
+                        type="file" 
+                        {...fieldProps}
+                        onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                                if (file.size > MAX_FILE_SIZE) {
+                                    toast({ variant: "destructive", title: "Error", description: "File size exceeds 10MB limit." });
+                                    form.setValue('noteFile', null);
+                                } else {
+                                    onChange(file);
+                                }
+                            }
+                        }} 
+                    />
                   </FormControl><FormMessage /></FormItem>
                 )} />
               <Button type="submit" disabled={isPending} className="w-full">
