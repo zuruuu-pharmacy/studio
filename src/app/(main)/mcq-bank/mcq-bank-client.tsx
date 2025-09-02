@@ -11,8 +11,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Search, HelpCircle, Check, X } from "lucide-react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Loader2, Search, HelpCircle, Check, X, Sparkles } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 
 const formSchema = z.object({
@@ -20,6 +22,10 @@ const formSchema = z.object({
 });
 type FormValues = z.infer<typeof formSchema>;
 
+const quizFormSchema = z.object({
+    answers: z.array(z.string()),
+});
+type QuizFormValues = z.infer<typeof quizFormSchema>;
 
 export function McqBankClient() {
   const [isPending, startTransition] = useTransition();
@@ -30,6 +36,9 @@ export function McqBankClient() {
         return { error: "Invalid input." };
       }
       try {
+        // Reset quiz state when generating new questions
+        setQuizState({ submitted: false, score: 0 });
+        quizForm.reset({ answers: [] });
         const result = await generateStudyMaterial(parsed.data);
         return result;
       } catch (e) {
@@ -46,6 +55,13 @@ export function McqBankClient() {
     defaultValues: { topic: "" },
   });
 
+  const quizForm = useForm<QuizFormValues>({
+    resolver: zodResolver(quizFormSchema),
+    defaultValues: { answers: [] }
+  });
+
+  const [quizState, setQuizState] = useState({ submitted: false, score: 0 });
+
   useEffect(() => {
     if (state && 'error' in state && state.error) {
       toast({ variant: "destructive", title: "Error", description: state.error });
@@ -56,6 +72,19 @@ export function McqBankClient() {
     const formData = new FormData();
     formData.append("topic", data.topic);
     startTransition(() => formAction(formData));
+  });
+
+  const handleQuizSubmit = quizForm.handleSubmit((data) => {
+    if (!state || !('quiz' in state)) return;
+
+    let correctAnswers = 0;
+    state.quiz.forEach((mcq, index) => {
+      if (data.answers[index] && mcq.correct_answer.startsWith(data.answers[index].charAt(0))) {
+        correctAnswers++;
+      }
+    });
+
+    setQuizState({ submitted: true, score: correctAnswers });
   });
 
   return (
@@ -107,30 +136,79 @@ export function McqBankClient() {
           <Card>
             <CardHeader>
                 <CardTitle className="text-2xl">Quiz on {state.topic}</CardTitle>
-                <CardDescription>Review the questions and explanations below.</CardDescription>
+                <CardDescription>Select your answer for each question and submit.</CardDescription>
             </CardHeader>
             <CardContent>
-               <Accordion type="multiple" className="w-full space-y-4">
-                {state.quiz.map((mcq, index) => (
-                      <AccordionItem value={`mcq-${index}`} key={index} className="border rounded-lg bg-background/50">
-                        <AccordionTrigger className="p-4 text-left font-semibold hover:no-underline">{mcq.question}</AccordionTrigger>
-                        <AccordionContent className="px-6 pb-4 space-y-4">
-                            <ul className="space-y-2">
-                              {mcq.options.map((opt, i) => (
-                                <li key={i} className="flex items-center gap-2">
-                                    {mcq.correct_answer.startsWith(opt.charAt(0)) ? <Check className="h-5 w-5 text-green-500"/> : <X className="h-5 w-5 text-red-500"/>}
-                                    <span className={mcq.correct_answer.startsWith(opt.charAt(0)) ? 'font-bold' : ''}>{opt}</span>
-                                </li>
-                              ))}
-                            </ul>
-                            <div className="p-4 bg-muted rounded-lg">
-                                <p className="font-semibold">Correct Answer: {mcq.correct_answer}</p>
-                                <p className="text-sm text-muted-foreground whitespace-pre-wrap mt-2">{mcq.explanation}</p>
-                            </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                ))}
-              </Accordion>
+              {quizState.submitted && (
+                <Alert className="mb-6 bg-primary/10 border-primary/50">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <AlertTitle>Quiz Result</AlertTitle>
+                    <AlertDescription>You scored {quizState.score} out of {state.quiz.length}. Review the explanations below.</AlertDescription>
+                </Alert>
+              )}
+
+              <Form {...quizForm}>
+                <form onSubmit={handleQuizSubmit} className="space-y-6">
+                    {state.quiz.map((mcq, index) => (
+                        <Card key={index} className="p-4 bg-muted/50">
+                            <p className="font-semibold mb-4">{index + 1}. {mcq.question}</p>
+                            <FormField
+                                control={quizForm.control}
+                                name={`answers.${index}`}
+                                render={({ field }) => (
+                                    <FormItem className="space-y-3">
+                                        <FormControl>
+                                            <RadioGroup
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                                className="flex flex-col space-y-1"
+                                                disabled={quizState.submitted}
+                                            >
+                                                {mcq.options.map((option, i) => {
+                                                    const isCorrect = mcq.correct_answer.startsWith(option.charAt(0));
+                                                    const isSelected = field.value === option;
+                                                    
+                                                    let itemClass = "";
+                                                    if (quizState.submitted) {
+                                                        if (isCorrect) itemClass = "text-green-600 font-bold";
+                                                        else if (isSelected && !isCorrect) itemClass = "text-red-600 line-through";
+                                                    }
+
+                                                    return (
+                                                         <FormItem key={i} className="flex items-center space-x-3 space-y-0">
+                                                            <FormControl>
+                                                                <RadioGroupItem value={option} />
+                                                            </FormControl>
+                                                            <Label className={`font-normal ${itemClass}`}>
+                                                                {option}
+                                                            </Label>
+                                                        </FormItem>
+                                                    )
+                                                })}
+                                            </RadioGroup>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            {quizState.submitted && (
+                                <div className="mt-4 p-4 bg-background/70 rounded-lg text-sm">
+                                    <p className="font-bold">Correct Answer: {mcq.correct_answer}</p>
+                                    <p className="text-muted-foreground whitespace-pre-wrap mt-2">{mcq.explanation}</p>
+                                </div>
+                            )}
+                        </Card>
+                    ))}
+                    
+                    {!quizState.submitted ? (
+                         <Button type="submit" className="w-full">Check Answers</Button>
+                    ) : (
+                        <Button type="button" onClick={handleFormSubmit} className="w-full" disabled={isPending}>
+                           {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Generate New Quiz'}
+                        </Button>
+                    )}
+                </form>
+              </Form>
             </CardContent>
           </Card>
         ) : (
@@ -146,3 +224,4 @@ export function McqBankClient() {
     </div>
   );
 }
+
