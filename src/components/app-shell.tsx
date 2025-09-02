@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -23,7 +23,7 @@ import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 
-const pharmacistMenuItems = [
+const pharmacistTools = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/patients", label: "Patients", icon: Users },
     { href: "/patient-history", label: "Patient History Form", icon: User },
@@ -66,6 +66,7 @@ const studentMenuItems = [
     { href: "/mcq-bank", label: "MCQ Bank", icon: HelpCircle },
     { href: "/sop-repository", label: "SOP Repository", icon: FileJson },
     { href: "/virtual-lab-simulator", label: "Virtual Lab Simulator", icon: Beaker },
+    { href: "/pharma-games", label: "Pharma Games", icon: Puzzle },
 ];
 
 
@@ -77,7 +78,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const menuItems = () => {
     switch (mode) {
       case 'pharmacist':
-        return pharmacistMenuItems;
+        return pharmacistTools;
       case 'patient':
         return patientMenuItems;
       case 'student':
