@@ -116,7 +116,7 @@ export async function generateCoachedDietPlan(input: NutritionCoachInput): Promi
 
 const prompt = ai.definePrompt({
   name: 'nutritionCoachPrompt',
-  input: {schema: NutritionCoachInputSchema},
+  input: {schema: z.object({jsonData: z.string()})},
   output: {schema: NutritionCoachOutputSchema},
   model: 'googleai/gemini-1.5-pro',
   prompt: `You are an expert AI Nutritionist and Dietitian. Your task is to act as a virtual diet coach.
@@ -153,7 +153,7 @@ Analyze all the data and generate a comprehensive, personalized diet plan.
 
 **Patient Data:**
 \`\`\`json
-{{{JSON input}}}
+{{{jsonData}}}
 \`\`\`
 
 Respond ONLY with the structured JSON output.
@@ -170,7 +170,7 @@ const nutritionCoachFlow = ai.defineFlow(
   async (input) => {
     // The prompt now expects the full input to be JSON stringified
     const promptInput = {
-      JSON: JSON.stringify(input, null, 2),
+      jsonData: JSON.stringify(input, null, 2),
     };
     
     const {output} = await prompt(promptInput);
