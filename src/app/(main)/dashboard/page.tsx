@@ -171,6 +171,13 @@ const studentTools = [
         color: "text-teal-500",
     },
     {
+        icon: FlaskConical,
+        title: "Drug Interaction Simulator",
+        description: "Explore and understand drug-drug interactions.",
+        href: "/interaction-checker",
+        color: "text-purple-500",
+    },
+    {
         icon: BookOpen,
         title: "Lecture Notes Library",
         description: "Upload and browse study materials for your class.",
@@ -200,7 +207,7 @@ const studentTools = [
     },
     {
         icon: FileHeart,
-        title: "AI Flashcard Generator",
+        title: "Flashcard Generator",
         description: "Automatically create study flashcards from your lecture notes.",
         href: "/flashcard-generator",
         color: "text-rose-500",
@@ -221,7 +228,7 @@ const studentTools = [
     },
     {
         icon: Beaker,
-        title: "Virtual Lab Simulation",
+        title: "Virtual Lab Simulator",
         description: "Run narrative-based lab simulations with AI-guided steps and feedback.",
         href: "/virtual-lab-simulator",
         color: "text-fuchsia-500",

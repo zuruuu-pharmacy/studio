@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, XCircle, AlertTriangle, ShieldCheck, ShieldQuestion, Salad, FlaskConical } from "lucide-react";
+import { Loader2, PlusCircle, XCircle, AlertTriangle, ShieldCheck, ShieldQuestion, Salad, FlaskConical, Stethoscope, Lightbulb } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { useMode } from "@/contexts/mode-context";
@@ -100,6 +100,19 @@ export function InteractionClient() {
         }
     });
   });
+  
+  function InfoRow({ label, content, icon: Icon }: { label: string; content?: string; icon: React.ElementType }) {
+    if (!content) return null;
+    return (
+        <div className="flex items-start gap-4">
+            <Icon className="h-5 w-5 text-muted-foreground mt-1" />
+            <div className="flex-1">
+                <p className="font-semibold text-foreground">{label}</p>
+                <p className="text-muted-foreground">{content}</p>
+            </div>
+        </div>
+    )
+  }
 
   return (
     <div className="grid md:grid-cols-3 gap-6">
@@ -179,17 +192,19 @@ export function InteractionClient() {
                       const SeverityIcon = severityMap[severity]?.icon || ShieldQuestion;
                       return (
                         <AccordionItem value={`item-d-${index}`} key={index}>
-                          <AccordionTrigger className="text-lg font-semibold">
+                          <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                             <div className="flex items-center gap-4">
                               <SeverityIcon className={`h-6 w-6 ${severityMap[severity]?.color || 'text-gray-500'}`} />
                               <p>{interaction.interactingDrugs.join(' + ')}</p>
                               <Badge variant={severityMap[severity]?.badge || 'default'}>{interaction.severity}</Badge>
                             </div>
                           </AccordionTrigger>
-                          <AccordionContent className="space-y-4 pl-10">
-                             <p><strong>Interacting Drugs:</strong> {interaction.interactingDrugs.join(', ')}</p>
-                             {mode === 'pharmacist' && <p><strong>Mechanism:</strong> {interaction.mechanism}</p>}
-                             <p><strong>Suggested Actions:</strong> {interaction.suggestedActions}</p>
+                          <AccordionContent className="space-y-4 pt-4">
+                             <InfoRow label="Clinical Consequences" content={interaction.clinicalConsequences} icon={Stethoscope}/>
+                             <InfoRow label="Mechanism" content={interaction.mechanism} icon={FlaskConical}/>
+                             <InfoRow label="Suggested Actions" content={interaction.suggestedActions} icon={ShieldCheck}/>
+                             <InfoRow label="Safer Alternative" content={interaction.saferAlternative} icon={PlusCircle}/>
+                             <InfoRow label="Educational Note" content={interaction.educationalNote} icon={Lightbulb}/>
                           </AccordionContent>
                         </AccordionItem>
                       );
@@ -212,17 +227,18 @@ export function InteractionClient() {
                        const drug = interaction.interactingDrugs.find(d => d !== 'Food');
                       return (
                         <AccordionItem value={`item-f-${index}`} key={index}>
-                          <AccordionTrigger className="text-lg font-semibold">
+                          <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                             <div className="flex items-center gap-4">
                               <SeverityIcon className={`h-6 w-6 ${severityMap[severity]?.color || 'text-gray-500'}`} />
                               <p>{drug} + Food</p>
                               <Badge variant={severityMap[severity]?.badge || 'default'}>{interaction.severity}</Badge>
                             </div>
                           </AccordionTrigger>
-                          <AccordionContent className="space-y-4 pl-10">
-                             <p><strong>Interacting Drug:</strong> {drug}</p>
-                             {mode === 'pharmacist' && <p><strong>Mechanism:</strong> {interaction.mechanism}</p>}
-                             <p><strong>Suggested Actions:</strong> {interaction.suggestedActions}</p>
+                           <AccordionContent className="space-y-4 pt-4">
+                             <InfoRow label="Clinical Consequences" content={interaction.clinicalConsequences} icon={Stethoscope}/>
+                             <InfoRow label="Mechanism" content={interaction.mechanism} icon={FlaskConical}/>
+                             <InfoRow label="Suggested Actions" content={interaction.suggestedActions} icon={ShieldCheck}/>
+                             <InfoRow label="Educational Note" content={interaction.educationalNote} icon={Lightbulb}/>
                           </AccordionContent>
                         </AccordionItem>
                       );

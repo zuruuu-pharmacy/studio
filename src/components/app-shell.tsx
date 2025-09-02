@@ -55,6 +55,7 @@ const studentMenuItems = [
     { href: "/patient-history", label: "My Health History", icon: User },
     { href: "/patients", label: "View Patient Cases", icon: Users },
     { href: "/clinical-case-simulator", label: "Clinical Case Simulator", icon: CaseSensitive },
+    { href: "/interaction-checker", label: "Interaction Simulator", icon: FlaskConical },
     { href: "/lecture-notes", label: "Lecture Notes Library", icon: BookOpen },
     { href: "/e-library", label: "AI E-Library", icon: Library },
     { href: "/study-material-generator", label: "Study Material Generator", icon: GraduationCap },
