@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -61,6 +61,7 @@ const studentMenuItems = [
     { href: "/herbal-hub", label: "Herbal Hub", icon: Leaf },
     { href: "/flashcard-generator", label: "Flashcard Generator", icon: FileHeart },
     { href: "/mcq-bank", label: "MCQ Bank", icon: HelpCircle },
+    { href: "/sop-repository", label: "SOP Repository", icon: FileJson },
 ];
 
 

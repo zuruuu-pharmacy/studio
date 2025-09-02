@@ -23,3 +23,4 @@ import '@/ai/flows/herbal-knowledge-hub.ts';
 import '@/ai/flows/study-material-generator.ts';
 import '@/ai/flows/flashcard-generator.ts';
 import '@/ai/flows/clinical-case-simulator.ts';
+import '@/ai/flows/sop-generator.ts';
