@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -58,6 +58,7 @@ const studentMenuItems = [
     { href: "/e-library", label: "AI E-Library", icon: Library },
     { href: "/study-material-generator", label: "Study Material Generator", icon: GraduationCap },
     { href: "/herbal-hub", label: "Herbal Hub", icon: Leaf },
+    { href: "/flashcard-generator", label: "Flashcard Generator", icon: FileHeart },
 ];
 
 
