@@ -25,8 +25,9 @@ const FlashcardSchema = z.object({
 
 const formSchema = z.object({
   topic: z.string().min(3, "Please provide a topic name."),
-  noteFile: z.any().refine(file => file?.length === 1, "A file is required."),
+  noteFile: z.instanceof(File, { message: "A file is required." }),
 });
+
 type FormValues = z.infer<typeof formSchema>;
 
 function Flashcard({ card, isFlipped, onClick }: { card: z.infer<typeof FlashcardSchema>, isFlipped: boolean, onClick: () => void }) {
@@ -55,12 +56,18 @@ export function FlashcardGeneratorClient() {
   const [isPending, startTransition] = useTransition();
   const [state, formAction] = useActionState<FlashcardGeneratorOutput | { error: string } | null, FormData>(
     async (previousState, formData) => {
-      const parsed = formSchema.safeParse(Object.fromEntries(formData));
+      const parsed = formSchema.safeParse({
+        topic: formData.get('topic'),
+        noteFile: formData.get('noteFile'),
+      });
       if (!parsed.success) {
-        return { error: "Invalid input." };
+        // Find the first error message to display
+        const firstError = Object.values(parsed.error.flatten().fieldErrors)[0]?.[0];
+        return { error: firstError || "Invalid input." };
       }
       
-      const file = parsed.data.noteFile[0];
+      const { topic, noteFile: file } = parsed.data;
+
       if (file.size > MAX_FILE_SIZE) {
         return { error: "File size exceeds 10MB limit." };
       }
@@ -72,7 +79,7 @@ export function FlashcardGeneratorClient() {
             reader.onerror = reject;
             reader.readAsDataURL(file);
         });
-        const result = await generateFlashcards({ noteDataUri, topic: parsed.data.topic, cardCount: 10 });
+        const result = await generateFlashcards({ noteDataUri, topic: topic, cardCount: 10 });
         return result;
       } catch (e) {
         console.error(e);
@@ -85,7 +92,7 @@ export function FlashcardGeneratorClient() {
   const { toast } = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { topic: "", noteFile: undefined },
+    defaultValues: { topic: "" },
   });
   const [flippedCard, setFlippedCard] = useState<number | null>(null);
 
@@ -95,18 +102,19 @@ export function FlashcardGeneratorClient() {
     }
   }, [state, toast]);
 
+  const fileRef = form.register("noteFile");
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.size > MAX_FILE_SIZE) {
       toast({ variant: "destructive", title: "Error", description: "File size exceeds 10MB limit." });
-      form.setValue('noteFile', undefined);
+      form.setValue('noteFile', undefined as any);
     }
   };
 
   const handleFormSubmit = form.handleSubmit((data) => {
     const formData = new FormData();
     formData.append("topic", data.topic);
-    formData.append("noteFile", data.noteFile[0]);
+    formData.append("noteFile", data.noteFile);
     startTransition(() => formAction(formData));
   });
 
@@ -125,7 +133,7 @@ export function FlashcardGeneratorClient() {
                 )} />
                 <FormField name="noteFile" control={form.control} render={({ field }) => (
                   <FormItem><FormLabel>Note File (PDF, DOCX, etc.)</FormLabel><FormControl>
-                    <Input type="file" ref={field.ref} name={field.name} onBlur={field.onBlur} onChange={(e) => { field.onChange(e.target.files); handleFileChange(e); }} />
+                    <Input type="file" {...fileRef} onChange={handleFileChange} />
                   </FormControl><FormMessage /></FormItem>
                 )} />
               <Button type="submit" disabled={isPending} className="w-full">
