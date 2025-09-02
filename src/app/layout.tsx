@@ -3,6 +3,7 @@ import './globals.css';
 import { ModeProvider } from '@/contexts/mode-context';
 import { Toaster } from '@/components/ui/toaster';
 import { PatientProvider } from '@/contexts/patient-context';
+import { LectureNotesProvider } from '@/contexts/lecture-notes-context';
 
 export const metadata: Metadata = {
   title: 'Zuruu AI Pharmacy',
@@ -24,8 +25,10 @@ export default function RootLayout({
       <body>
         <ModeProvider>
           <PatientProvider>
-            {children}
-            <Toaster />
+            <LectureNotesProvider>
+              {children}
+              <Toaster />
+            </LectureNotesProvider>
           </PatientProvider>
         </ModeProvider>
       </body>
