@@ -9,19 +9,19 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const FlashcardSchema = z.object({
+const FlashcardSchema = z.object({
     front: z.string().describe("The front of the flashcard (a question, term, or concept)."),
     back: z.string().describe("The back of the flashcard (the answer or definition)."),
 });
 
-export const FlashcardGeneratorInputSchema = z.object({
+const FlashcardGeneratorInputSchema = z.object({
   noteDataUri: z.string().describe("The lecture note document, as a data URI."),
   topic: z.string().describe("The main topic of the notes (e.g., 'Beta-blockers')."),
   cardCount: z.coerce.number().optional().default(10).describe("The desired number of flashcards."),
 });
 export type FlashcardGeneratorInput = z.infer<typeof FlashcardGeneratorInputSchema>;
 
-export const FlashcardGeneratorOutputSchema = z.object({
+const FlashcardGeneratorOutputSchema = z.object({
     flashcards: z.array(FlashcardSchema),
 });
 export type FlashcardGeneratorOutput = z.infer<typeof FlashcardGeneratorOutputSchema>;
@@ -66,3 +66,4 @@ const flashcardGeneratorFlow = ai.defineFlow(
     return output!;
   }
 );
+
