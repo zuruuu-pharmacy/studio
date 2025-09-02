@@ -1,89 +1,68 @@
 
 'use server';
 /**
- * @fileOverview Drug Monograph Lookup AI agent.
+ * @fileOverview Digital Formulary Reference & Comparison Tool
  *
- * - drugMonographLookup - A function that handles the drug monograph lookup process.
- * - DrugMonographLookupInput - The input type for the drugMonographLookup function.
- * - DrugMonographLookupOutput - The return type for the drugMonographLookup function.
+ * - drugFormularyLookup - A function that handles the drug formulary lookup process.
+ * - DrugFormularyInput - The input type for the drugFormularyLookup function.
+ * - DrugFormularyOutput - The return type for the drugFormularyLookup function.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const DrugMonographLookupInputSchema = z.object({
-  drugName: z.string().describe('The name of the drug to lookup.'),
+const DrugFormularyInputSchema = z.object({
+  drugName: z.string().describe('The generic name of the drug to look up.'),
 });
-export type DrugMonographLookupInput = z.infer<typeof DrugMonographLookupInputSchema>;
+export type DrugFormularyInput = z.infer<typeof DrugFormularyInputSchema>;
 
-const DrugMonographLookupOutputSchema = z.object({
-  pharmacology: z.object({
-    mechanismOfAction: z.string().describe('The mechanism of action (MOA).'),
-    pharmacokinetics: z.string().describe('The pharmacokinetics and pharmacodynamics (PK/PD).'),
-    indications: z.string().describe('The approved indications and desired therapeutic effects for the drug.'),
-    contraindications: z.string().describe('Situations where the drug should not be used.'),
-    sideEffects: z.string().describe('Common and severe side effects.'),
-    monitoring: z.string().describe('Parameters to monitor during therapy.'),
-    dosing: z.string().describe('Recommended dosing for different indications and populations.'),
-    administration: z.string().describe('Instructions for how to administer the drug.'),
+const DrugFormularyOutputSchema = z.object({
+  genericName: z.string().describe('The official generic name (INN) of the drug.'),
+  brandNames: z.string().describe('A comma-separated list of common local and international brand names.'),
+  therapeuticClass: z.string().describe('The primary therapeutic and pharmacological class of the drug.'),
+  dosageForms: z.string().describe('A list of available dosage forms and their strengths (e.g., "Tablet: 250mg, 500mg; Suspension: 125mg/5mL").'),
+  dosing: z.object({
+      adult: z.string().describe('Standard adult dosing guidelines, including route and frequency.'),
+      pediatric: z.string().describe('Standard pediatric dosing guidelines.'),
+      renalImpairment: z.string().describe('Dosing adjustments for patients with renal impairment.'),
+      hepaticImpairment: z.string().describe('Dosing adjustments for patients with hepatic impairment.'),
   }),
-  pharmaceutical: z.object({
-    manufacturingProcess: z.string().describe('Details on how the medication is made.'),
-    rawMaterials: z.string().describe('Information on the raw materials used in the formulation.'),
-    storage: z.string().describe('Proper storage conditions.'),
-    drugInteractions: z.string().describe('Known drug-drug or drug-food interactions.'),
-  }),
-  research: z.object({
-    inventionHistory: z.string().describe('The history of who invented the drug and its background.'),
-    recentResearch: z.string().describe('A summary of recent research and developments related to the drug.'),
-    pregnancyLactation: z.string().describe('Information regarding use in pregnancy and lactation.'),
-    clinicalTrials: z.string().describe('Summary of key clinical trials information.'),
-  }),
+  indications: z.string().describe('A list of approved and common off-label clinical uses.'),
+  contraindicationsAndWarnings: z.string().describe('A list of absolute contraindications and key warnings/precautions (e.g., for pregnancy, elderly).'),
+  adverseDrugReactions: z.string().describe('A list of common and serious adverse drug reactions.'),
+  drugInteractions: z.string().describe('A summary of the most clinically significant drug-drug and drug-food interactions.'),
+  formularyComparisonNotes: z.string().describe('A summary of key differences in dosing, indications, or availability between major formularies like BNF, USP, and local guidelines.'),
+  therapeuticAlternatives: z.string().describe('A list of suggested therapeutic alternatives, both within the same class and from different classes.'),
 });
-export type DrugMonographLookupOutput = z.infer<typeof DrugMonographLookupOutputSchema>;
+export type DrugFormularyOutput = z.infer<typeof DrugFormularyOutputSchema>;
 
-export async function drugMonographLookup(input: DrugMonographLookupInput): Promise<DrugMonographLookupOutput> {
-  return drugMonographLookupFlow(input);
+export async function drugFormularyLookup(input: DrugFormularyInput): Promise<DrugFormularyOutput> {
+  return drugFormularyLookupFlow(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'drugMonographLookupPrompt',
-  input: {schema: DrugMonographLookupInputSchema},
-  output: {schema: DrugMonographLookupOutputSchema},
+  name: 'drugFormularyLookupPrompt',
+  input: {schema: DrugFormularyInputSchema},
+  output: {schema: DrugFormularyOutputSchema},
   model: 'googleai/gemini-1.5-pro',
-  prompt: `You are a highly skilled pharmacist providing a structured drug monograph for {{drugName}}.
+  prompt: `You are an expert Clinical Drug Formulary Generator. Your task is to create a concise, structured, and clinically useful summary for {{{drugName}}}, drawing from BNF, USP, and standard Local Formularies.
 
-  Provide a comprehensive drug monograph organized into the following sections:
+Provide a comprehensive summary adhering to the specified JSON format. The information must be accurate, relevant, and targeted for pharmacy/medical students and clinicians.
 
-  ## Pharmacology
-  - **Mechanism of Action (MOA)**
-  - **Pharmacokinetics/Pharmacodynamics (PK/PD)**
-  - **Indications and Therapeutic Effects**: What are the approved uses and desired effects?
-  - **Contraindications**
-  - **Side Effects**
-  - **Monitoring**
-  - **Dosing**
-  - **Administration**
-
-  ## Pharmaceutical
-  - **Manufacturing Process**: How is this medicine made?
-  - **Raw Materials**: What raw materials are used?
-  - **Storage**
-  - **Drug Interactions**
-
-  ## Research
-  - **Invention History**: Who invented this drug and what is its background?
-  - **Recent Research**: What are the latest research developments for this drug?
-  - **Pregnancy/Lactation Information**
-  - **Clinical Trials Information**
-  `,
+**Key Instructions:**
+1.  **Be Specific:** For dosage forms, list the strengths (e.g., Tablet: 10mg, 20mg).
+2.  **Be Comprehensive:** Cover adult and pediatric dosing, and adjustments for renal/hepatic impairment.
+3.  **Highlight Differences:** The 'formularyComparisonNotes' field is critical. Explicitly state any significant differences between major formularies (BNF, USP, Local) regarding dosing, approved uses, or warnings.
+4.  **Be Practical:** For 'therapeuticAlternatives', suggest viable alternatives a clinician might consider if the primary drug is unavailable or contraindicated.
+5.  **Focus on Clinical Relevance:** For interactions and ADRs, focus on the most common and clinically significant ones.
+`,
 });
 
-const drugMonographLookupFlow = ai.defineFlow(
+const drugFormularyLookupFlow = ai.defineFlow(
   {
-    name: 'drugMonographLookupFlow',
-    inputSchema: DrugMonographLookupInputSchema,
-    outputSchema: DrugMonographLookupOutputSchema,
+    name: 'drugFormularyLookupFlow',
+    inputSchema: DrugFormularyInputSchema,
+    outputSchema: DrugFormularyOutputSchema,
   },
   async input => {
     const {output} = await prompt(input);

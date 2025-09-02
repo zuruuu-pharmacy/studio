@@ -1,19 +1,20 @@
+
 "use client";
 
 import { useActionState, useEffect, useMemo, useTransition } from 'react';
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { drugMonographLookup, type DrugMonographLookupOutput } from "@/ai/flows/drug-monograph-lookup";
+import { drugFormularyLookup, type DrugFormularyOutput } from "@/ai/flows/drug-monograph-lookup";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from 'lucide-react';
-import { useMode } from '@/contexts/mode-context';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Loader2, Pill, FlaskConical, AlertTriangle, User, GitCompareArrows, BookText } from 'lucide-react';
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 
 const formSchema = z.object({
   drugName: z.string().min(2, { message: "Drug name must be at least 2 characters." }),
@@ -21,82 +22,38 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const patientSections = {
-    "Indications and Therapeutic Effects": "indications",
-    "Side Effects": "sideEffects",
-    "Dosing": "dosing",
-    "Administration": "administration"
-};
-
-const pharmacistSections = {
-    pharmacology: {
-        "Mechanism of Action": "mechanismOfAction",
-        "Pharmacokinetics": "pharmacokinetics",
-        "Indications and Therapeutic Effects": "indications",
-        "Contraindications": "contraindications",
-        "Side Effects": "sideEffects",
-        "Monitoring": "monitoring",
-        "Dosing": "dosing",
-        "Administration": "administration"
-    },
-    pharmaceutical: {
-        "Manufacturing Process": "manufacturingProcess",
-        "Raw Materials": "rawMaterials",
-        "Storage": "storage",
-        "Drug Interactions": "drugInteractions",
-    },
-    research: {
-        "Invention History": "inventionHistory",
-        "Recent Research": "recentResearch",
-        "Pregnancy/Lactation": "pregnancyLactation",
-        "Clinical Trials": "clinicalTrials",
-    }
-};
-
-function MonographSection({ title, content }: { title: string; content: string }) {
+function InfoSection({ title, content, icon: Icon }: { title: string; content?: string; icon: React.ElementType }) {
     if (!content) return null;
     return (
-        <Card className="bg-background/50">
-            <Accordion type="single" collapsible defaultValue="item-1">
-                <AccordionItem value="item-1" className="border-b-0">
-                    <AccordionTrigger className="text-xl font-semibold p-4 hover:no-underline">{title}</AccordionTrigger>
-                    <AccordionContent className="px-6 pb-4">
-                        <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap dark:prose-invert">
-                           {content.split('\n').map((line, index) => {
-                              const trimmedLine = line.trim();
-                              if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
-                                return <p key={index} className="m-0 ml-4">{trimmedLine}</p>;
-                              }
-                              return <p key={index} className="m-0">{line}</p>;
-                          })}
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </Card>
+        <div className="space-y-2">
+            <h3 className="font-semibold text-lg flex items-center gap-2 text-primary">
+                <Icon className="h-5 w-5"/>
+                {title}
+            </h3>
+            <p className="text-muted-foreground whitespace-pre-wrap pl-7">{content}</p>
+        </div>
     );
 }
 
 export function MonographClient() {
   const [isPending, startTransition] = useTransition();
-  const [state, formAction] = useActionState<DrugMonographLookupOutput | { error: string } | null, FormData>(
+  const [state, formAction] = useActionState<DrugFormularyOutput | { error: string } | null, FormData>(
     async (previousState, formData) => {
       const parsed = formSchema.safeParse(Object.fromEntries(formData));
       if (!parsed.success) {
         return { error: "Invalid input." };
       }
       try {
-        const result = await drugMonographLookup(parsed.data);
+        const result = await drugFormularyLookup(parsed.data);
         return result;
       } catch (e) {
         console.error(e);
-        return { error: "Failed to fetch monograph. Please try again." };
+        return { error: "Failed to fetch formulary data. Please try again." };
       }
     },
     null
   );
   
-  const { mode } = useMode();
   const { toast } = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -115,8 +72,8 @@ export function MonographClient() {
     }
   }, [state, toast]);
   
-  const monographData = useMemo(() => {
-    if (state && 'pharmacology' in state) {
+  const formularyData = useMemo(() => {
+    if (state && 'genericName' in state) {
       return state;
     }
     return null;
@@ -135,7 +92,8 @@ export function MonographClient() {
       <div className="md:col-span-1">
         <Card>
           <CardHeader>
-            <CardTitle>Search</CardTitle>
+            <CardTitle>Search Formulary</CardTitle>
+             <CardDescription>Enter a drug name to get its formulary summary.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -147,7 +105,7 @@ export function MonographClient() {
                     <FormItem>
                       <FormLabel>Drug Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Lisinopril" {...field} />
+                        <Input placeholder="e.g., Metoprolol" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -165,45 +123,83 @@ export function MonographClient() {
 
       <div className="md:col-span-2">
         {isPending && <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}
-        {monographData && (
+        {formularyData ? (
           <Card>
             <CardHeader>
-              <CardTitle className="text-3xl font-bold font-headline">Monograph for {form.getValues("drugName")}</CardTitle>
+              <CardTitle className="text-3xl font-bold font-headline">{formularyData.genericName}</CardTitle>
+              <CardDescription>{formularyData.therapeuticClass}</CardDescription>
             </CardHeader>
-            <CardContent>
-              {mode === 'pharmacist' ? (
-                <Tabs defaultValue="pharmacology" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="pharmacology">Pharmacology</TabsTrigger>
-                    <TabsTrigger value="pharmaceutical">Pharmaceutical</TabsTrigger>
-                    <TabsTrigger value="research">Research</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="pharmacology" className="mt-4 space-y-4">
-                    {Object.entries(pharmacistSections.pharmacology).map(([title, key]) => (
-                        <MonographSection key={key} title={title} content={monographData.pharmacology[key as keyof typeof monographData.pharmacology]} />
-                    ))}
-                  </TabsContent>
-                  <TabsContent value="pharmaceutical" className="mt-4 space-y-4">
-                    {Object.entries(pharmacistSections.pharmaceutical).map(([title, key]) => (
-                         <MonographSection key={key} title={title} content={monographData.pharmaceutical[key as keyof typeof monographData.pharmaceutical]} />
-                    ))}
-                  </TabsContent>
-                  <TabsContent value="research" className="mt-4 space-y-4">
-                     {Object.entries(pharmacistSections.research).map(([title, key]) => (
-                         <MonographSection key={key} title={title} content={monographData.research[key as keyof typeof monographData.research]} />
-                    ))}
-                  </TabsContent>
-                </Tabs>
-              ) : (
-                <div className="space-y-4">
-                  {Object.entries(patientSections).map(([title, key]) => {
-                    const content = monographData.pharmacology[key as keyof typeof monographData.pharmacology] || monographData.pharmaceutical[key as keyof typeof monographData.pharmaceutical];
-                    return <MonographSection key={key} title={title} content={content as string} />
-                  })}
+            <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card className="p-4 bg-muted/50">
+                        <h4 className="font-semibold text-sm mb-2">Brand Names</h4>
+                        <p className="text-sm text-muted-foreground">{formularyData.brandNames}</p>
+                    </Card>
+                    <Card className="p-4 bg-muted/50">
+                        <h4 className="font-semibold text-sm mb-2">Dosage Forms</h4>
+                        <p className="text-sm text-muted-foreground">{formularyData.dosageForms}</p>
+                    </Card>
                 </div>
-              )}
+                
+                <Alert variant="default" className="border-primary/50 bg-primary/10">
+                    <GitCompareArrows className="h-4 w-4 text-primary"/>
+                    <AlertTitle>Formulary Comparison Notes (BNF vs. USP vs. Local)</AlertTitle>
+                    <AlertDescription>
+                       {formularyData.formularyComparisonNotes}
+                    </AlertDescription>
+                </Alert>
+
+                <Accordion type="multiple" className="w-full space-y-4" defaultValue={['dosing', 'indications']}>
+                    <AccordionItem value="dosing" className="border rounded-lg bg-background/50">
+                        <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline"><User className="mr-2"/>Dosing Information</AccordionTrigger>
+                        <AccordionContent className="px-6 pb-4 space-y-4">
+                            <InfoSection title="Adult" content={formularyData.dosing.adult} icon={User}/>
+                            <InfoSection title="Pediatric" content={formularyData.dosing.pediatric} icon={User}/>
+                            <InfoSection title="Renal Impairment" content={formularyData.dosing.renalImpairment} icon={User}/>
+                            <InfoSection title="Hepatic Impairment" content={formularyData.dosing.hepaticImpairment} icon={User}/>
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="indications" className="border rounded-lg bg-background/50">
+                        <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline"><Pill className="mr-2"/>Indications</AccordionTrigger>
+                        <AccordionContent className="px-6 pb-4">
+                           <p className="text-muted-foreground whitespace-pre-wrap">{formularyData.indications}</p>
+                        </AccordionContent>
+                    </AccordionItem>
+                     <AccordionItem value="contraindications" className="border rounded-lg bg-background/50">
+                        <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline"><AlertTriangle className="mr-2 text-destructive"/>Contraindications & Warnings</AccordionTrigger>
+                        <AccordionContent className="px-6 pb-4">
+                           <p className="text-muted-foreground whitespace-pre-wrap">{formularyData.contraindicationsAndWarnings}</p>
+                        </AccordionContent>
+                    </AccordionItem>
+                     <AccordionItem value="adrs" className="border rounded-lg bg-background/50">
+                        <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline"><AlertTriangle className="mr-2 text-yellow-500"/>Adverse Drug Reactions</AccordionTrigger>
+                        <AccordionContent className="px-6 pb-4">
+                           <p className="text-muted-foreground whitespace-pre-wrap">{formularyData.adverseDrugReactions}</p>
+                        </AccordionContent>
+                    </AccordionItem>
+                     <AccordionItem value="interactions" className="border rounded-lg bg-background/50">
+                        <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline"><FlaskConical className="mr-2"/>Drug Interactions</AccordionTrigger>
+                        <AccordionContent className="px-6 pb-4">
+                           <p className="text-muted-foreground whitespace-pre-wrap">{formularyData.drugInteractions}</p>
+                        </AccordionContent>
+                    </AccordionItem>
+                     <AccordionItem value="alternatives" className="border rounded-lg bg-background/50">
+                        <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline"><GitCompareArrows className="mr-2"/>Therapeutic Alternatives</AccordionTrigger>
+                        <AccordionContent className="px-6 pb-4">
+                           <p className="text-muted-foreground whitespace-pre-wrap">{formularyData.therapeuticAlternatives}</p>
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
             </CardContent>
           </Card>
+        ) : (
+            !isPending && (
+                <Card className="flex flex-col items-center justify-center h-full min-h-[300px] text-center p-6 bg-muted/50">
+                    <BookText className="h-16 w-16 text-muted-foreground/50 mb-4" />
+                    <h3 className="text-xl font-semibold text-muted-foreground">Digital Formulary</h3>
+                    <p className="text-muted-foreground/80 mt-2">Enter a drug name to view its detailed formulary information.</p>
+                </Card>
+          )
         )}
       </div>
     </div>
