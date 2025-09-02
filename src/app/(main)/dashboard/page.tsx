@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
@@ -197,6 +197,13 @@ const studentTools = [
         description: "Watch short, engaging animations of drug mechanisms of action.",
         href: "/moa-animations",
         color: "text-rose-500",
+    },
+    {
+        icon: Network,
+        title: "Drug Classification Tree",
+        description: "Visually explore drug classes with an interactive tree.",
+        href: "/drug-classification-tree",
+        color: "text-blue-500",
     },
     {
         icon: GraduationCap,
