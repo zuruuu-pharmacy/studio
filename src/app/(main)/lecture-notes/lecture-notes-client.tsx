@@ -38,7 +38,13 @@ export function LectureNotesClient() {
   const [accessCode, setAccessCode] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const form = useForm<FormValues>({ resolver: zodResolver(formSchema) });
+  const form = useForm<FormValues>({ 
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      topicName: "",
+      noteFile: undefined,
+    }
+  });
 
   useEffect(() => {
     if (state && 'error' in state && state.error) {
