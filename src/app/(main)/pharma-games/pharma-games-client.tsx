@@ -40,7 +40,8 @@ const games = [
     icon: Zap,
     title: "Rapid Fire Quiz",
     description: "Answer as many questions as you can in a 30-second streak challenge.",
-    status: "Coming Soon",
+    status: "Play Now",
+    href: "/pharma-games/rapid-fire-quiz"
   },
 ];
 
