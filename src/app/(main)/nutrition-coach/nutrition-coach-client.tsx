@@ -97,19 +97,41 @@ export function NutritionCoachClient() {
     resolver: zodResolver(fullSchema),
     defaultValues: {
       profile: {
-        age: activePatientRecord?.history.age ? parseInt(activePatientRecord.history.age) : undefined,
+        age: activePatientRecord?.history.age ? parseInt(activePatientRecord.history.age) : 0,
         gender: activePatientRecord?.history.gender || "",
+        height: "",
+        weight: "",
+        occupation: "",
+        activity_level: "",
+        sleep_pattern: "",
+        stress_level: "",
       },
       medical_history: {
         chronic_diseases: activePatientRecord?.history.pastMedicalHistory?.split(',').map(s => s.trim()) || [],
         medications: activePatientRecord?.history.medicationHistory?.split(',').map(s => s.trim()) || [],
         allergies: activePatientRecord?.history.allergyHistory?.split(',').map(s => s.trim()) || [],
+        recent_surgeries: "",
         family_history: activePatientRecord?.history.familyHistory?.split(',').map(s => s.trim()) || [],
       },
       current_diet: {
+        meal_pattern: "",
         skips_meals: false,
+        water_intake: "",
+        other_drinks: [],
+        processed_food_intake: "",
+        cooking_habit: "",
+      },
+      preferences: {
+        diet_type: [],
+        favorite_foods: "",
+        disliked_foods: "",
+        fasting_practices: "",
       },
       goals: {
+        primary_goal: "",
+        timeline: "",
+        motivation_level: "",
+        budget: "",
         open_to_lifestyle_changes: true,
       }
     },
@@ -278,3 +300,5 @@ export function NutritionCoachClient() {
     </Card>
   );
 }
+
+    
