@@ -124,24 +124,29 @@ export function FlashcardGeneratorClient() {
                   <FormItem><FormLabel>Note Topic</FormLabel><FormControl><Input placeholder="e.g., Beta-blockers in Pharmacology" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField name="noteFile" control={form.control} render={({ field: { onChange, ...fieldProps} }) => (
-                  <FormItem><FormLabel>Note File (PDF, DOCX, etc.)</FormLabel><FormControl>
-                    <Input 
-                        type="file" 
-                        {...fieldProps}
-                        value={undefined} // Prevent controlled/uncontrolled error
-                        onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                                if (file.size > MAX_FILE_SIZE) {
-                                    toast({ variant: "destructive", title: "Error", description: "File size exceeds 10MB limit." });
-                                    form.setValue('noteFile', null);
-                                } else {
-                                    onChange(file);
+                  <FormItem>
+                    <FormLabel>Note File (PDF, JPG, PNG)</FormLabel>
+                    <FormControl>
+                        <Input 
+                            type="file"
+                            accept="application/pdf, image/*"
+                            {...fieldProps}
+                            value={undefined} // Prevent controlled/uncontrolled error
+                            onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                    if (file.size > MAX_FILE_SIZE) {
+                                        toast({ variant: "destructive", title: "Error", description: "File size exceeds 10MB limit." });
+                                        form.setValue('noteFile', null);
+                                    } else {
+                                        onChange(file);
+                                    }
                                 }
-                            }
-                        }} 
-                    />
-                  </FormControl><FormMessage /></FormItem>
+                            }} 
+                        />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )} />
               <Button type="submit" disabled={isPending} className="w-full">
                 {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
