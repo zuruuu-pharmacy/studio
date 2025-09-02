@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
@@ -162,6 +162,13 @@ const studentTools = [
         description: "View all patient records entered into the system for learning.",
         href: "/patients",
         color: "text-cyan-500",
+    },
+     {
+        icon: CaseSensitive,
+        title: "Clinical Case Simulator",
+        description: "Tackle realistic patient cases and get AI-driven feedback.",
+        href: "/clinical-case-simulator",
+        color: "text-teal-500",
     },
     {
         icon: BookOpen,

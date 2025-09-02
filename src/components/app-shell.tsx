@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -54,6 +54,7 @@ const studentMenuItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/patient-history", label: "My Health History", icon: User },
     { href: "/patients", label: "View Patient Cases", icon: Users },
+    { href: "/clinical-case-simulator", label: "Clinical Case Simulator", icon: CaseSensitive },
     { href: "/lecture-notes", label: "Lecture Notes Library", icon: BookOpen },
     { href: "/e-library", label: "AI E-Library", icon: Library },
     { href: "/study-material-generator", label: "Study Material Generator", icon: GraduationCap },

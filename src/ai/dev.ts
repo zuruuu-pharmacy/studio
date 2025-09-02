@@ -22,3 +22,4 @@ import '@/ai/flows/e-library-search.ts';
 import '@/ai/flows/herbal-knowledge-hub.ts';
 import '@/ai/flows/study-material-generator.ts';
 import '@/ai/flows/flashcard-generator.ts';
+import '@/ai/flows/clinical-case-simulator.ts';
