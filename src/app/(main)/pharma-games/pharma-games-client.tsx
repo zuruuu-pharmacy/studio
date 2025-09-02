@@ -19,7 +19,8 @@ const games = [
     icon: Pilcrow,
     title: "Pharma Crossword",
     description: "Solve puzzles with clues based on drug names, MOAs, and pharmacognosy.",
-    status: "Coming Soon",
+    status: "Play Now",
+    href: "/pharma-games/crossword"
   },
   {
     icon: Search,
