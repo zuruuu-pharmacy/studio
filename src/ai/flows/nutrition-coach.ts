@@ -118,7 +118,7 @@ const prompt = ai.definePrompt({
   name: 'nutritionCoachPrompt',
   input: {schema: z.object({jsonData: z.string()})},
   output: {schema: NutritionCoachOutputSchema},
-  model: 'googleai/gemini-1.5-pro',
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are an expert AI Nutritionist and Dietitian. Your task is to act as a virtual diet coach.
 You have been provided with detailed, structured information from a patient questionnaire.
 Analyze all the data and generate a comprehensive, personalized diet plan.
