@@ -32,21 +32,27 @@ type FormValues = z.infer<typeof formSchema>;
 
 function Flashcard({ card, isFlipped, onClick }: { card: z.infer<typeof FlashcardSchema>, isFlipped: boolean, onClick: () => void }) {
   return (
-    <div className="w-full h-64 [perspective:1000px]" onClick={onClick}>
-        <motion.div
-            className="relative w-full h-full [transform-style:preserve-3d] transition-transform duration-500"
-            initial={false}
-            animate={{ rotateY: isFlipped ? 180 : 0 }}
-        >
-            {/* Front */}
-            <div className="absolute w-full h-full [backface-visibility:hidden] bg-card border rounded-lg flex items-center justify-center p-6 text-center">
-                <p className="text-xl font-semibold">{card.front}</p>
-            </div>
-            {/* Back */}
-            <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-primary text-primary-foreground border rounded-lg flex items-center justify-center p-6 text-center">
-                <p className="text-lg">{card.back}</p>
-            </div>
-        </motion.div>
+    <div
+      className="w-full h-64 [perspective:1000px] cursor-pointer group"
+      onClick={onClick}
+    >
+      <motion.div
+        className="relative w-full h-full [transform-style:preserve-3d] transition-transform duration-500"
+        initial={false}
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+      >
+        {/* Front */}
+        <div className="absolute w-full h-full [backface-visibility:hidden] bg-card border rounded-lg flex items-center justify-center p-6 text-center shadow-md hover:shadow-xl transition-shadow">
+          <p className="text-xl font-semibold">{card.front}</p>
+          <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+            <RefreshCcw className="h-5 w-5 text-muted-foreground" />
+          </div>
+        </div>
+        {/* Back */}
+        <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-primary text-primary-foreground border rounded-lg flex items-center justify-center p-6 text-center shadow-md hover:shadow-xl transition-shadow">
+          <p className="text-lg">{card.back}</p>
+        </div>
+      </motion.div>
     </div>
   );
 }
@@ -137,7 +143,7 @@ export function FlashcardGeneratorClient() {
                                 if (file) {
                                     if (file.size > MAX_FILE_SIZE) {
                                         toast({ variant: "destructive", title: "Error", description: "File size exceeds 10MB limit." });
-                                        form.setValue('noteFile', null);
+                                        form.setValue('noteFile', null as any);
                                     } else {
                                         onChange(file);
                                     }
