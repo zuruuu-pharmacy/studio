@@ -16,7 +16,7 @@ export type StudyMaterialGeneratorInput = z.infer<typeof StudyMaterialGeneratorI
 
 const MCQSchema = z.object({
     question: z.string().describe("A clear, exam-style multiple-choice question."),
-    options: z.array(z.string()).describe("An array of 4-5 potential answers."),
+    options: z.array(z.string()).describe("An array of 4 plausible answers."),
     correct_answer: z.string().describe("The letter and text of the correct answer (e.g., 'B. Atenolol')."),
     explanation: z.string().describe("A detailed explanation of why the correct answer is right and the others are wrong."),
     reference: z.string().optional().describe("A textbook or guideline reference."),
@@ -62,7 +62,7 @@ const prompt = ai.definePrompt({
 1.  **Introduction:** Start with a concise introduction that defines the topic and its importance in pharmacy.
 2.  **Key Concepts:** Identify and explain 3-5 core concepts. For each concept, provide a detailed explanation with relevant examples (e.g., for a drug class, this would include MOA, therapeutic uses, key drugs, and side effects).
 3.  **Clinical Case Study:** Create a realistic, short clinical case study that requires the student to apply the topic's knowledge. Include a brief discussion of the case.
-4.  **Quiz (MCQs):** Generate 30 high-quality, exam-style multiple-choice questions. For each MCQ, you MUST provide:
+4.  **Quiz (MCQs):** Generate exactly 30 high-quality, exam-style multiple-choice questions. For each MCQ, you MUST provide:
     -   A clear question (stem).
     -   An array of 4 plausible options.
     -   The correct answer (e.g., "B. Option text").
