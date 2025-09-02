@@ -1,11 +1,11 @@
 
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { generateFlashcards, type FlashcardGeneratorOutput, type FlashcardSchema } from "@/ai/flows/flashcard-generator";
+import { generateFlashcards, type FlashcardGeneratorOutput } from "@/ai/flows/flashcard-generator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -16,6 +16,12 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AnimatePresence, motion } from "framer-motion";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+// This needs to be defined here since the server file cannot export it
+const FlashcardSchema = z.object({
+    front: z.string().describe("The front of the flashcard (a question, term, or concept)."),
+    back: z.string().describe("The back of the flashcard (the answer or definition)."),
+});
 
 const formSchema = z.object({
   topic: z.string().min(3, "Please provide a topic name."),
@@ -66,7 +72,7 @@ export function FlashcardGeneratorClient() {
             reader.onerror = reject;
             reader.readAsDataURL(file);
         });
-        const result = await generateFlashcards({ noteDataUri, topic: parsed.data.topic });
+        const result = await generateFlashcards({ noteDataUri, topic: parsed.data.topic, cardCount: 10 });
         return result;
       } catch (e) {
         console.error(e);
