@@ -5,8 +5,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { Puzzle, Pilcrow, Search, Shuffle, Zap } from "lucide-react";
+import Link from "next/link";
 
 const games = [
+   {
+    icon: Shuffle,
+    title: "Anagram Solver",
+    description: "Unscramble jumbled letters to reveal the names of common and complex drugs.",
+    status: "Play Now",
+    href: "/pharma-games/anagram-solver"
+  },
   {
     icon: Pilcrow,
     title: "Pharma Crossword",
@@ -29,12 +37,6 @@ const games = [
     icon: Zap,
     title: "Rapid Fire Quiz",
     description: "Answer as many questions as you can in a 30-second streak challenge.",
-    status: "Coming Soon",
-  },
-  {
-    icon: Shuffle,
-    title: "Anagram Solver",
-    description: "Unscramble jumbled letters to reveal the names of common and complex drugs.",
     status: "Coming Soon",
   },
 ];
@@ -63,13 +65,19 @@ export function PharmaGamesClient() {
             <CardDescription>{game.description}</CardDescription>
           </CardHeader>
           <CardContent className="flex-grow flex items-end">
-            <Button
-              className="w-full"
-              variant={game.status === "Coming Soon" ? "secondary" : "default"}
-              onClick={() => handleGameClick(game.status)}
-            >
-              {game.status === "Coming Soon" ? "Coming Soon" : "Play Now"}
-            </Button>
+             {game.status === 'Play Now' && game.href ? (
+                <Link href={game.href} className="w-full">
+                    <Button className="w-full">{game.status}</Button>
+                </Link>
+             ) : (
+                <Button
+                className="w-full"
+                variant="secondary"
+                onClick={() => handleGameClick(game.status)}
+                >
+                {game.status}
+                </Button>
+             )}
           </CardContent>
         </Card>
       ))}
