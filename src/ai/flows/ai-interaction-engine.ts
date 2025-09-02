@@ -50,7 +50,7 @@ const prompt = ai.definePrompt({
   name: 'checkDrugInteractionsPrompt',
   input: {schema: CheckDrugInteractionsInputSchema},
   output: {schema: CheckDrugInteractionsOutputSchema},
-  model: 'googleai/gemini-1.5-pro',
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are a clinical pharmacist expert in drug interactions, acting as a Drug Interaction Simulator for students.
 
 You will analyze the provided list of medications and lab results (if any) to identify potential drug-drug and drug-food interactions.
