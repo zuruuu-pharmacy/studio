@@ -19,3 +19,5 @@ import '@/ai/flows/lifestyle-suggester.ts';
 import '@/ai/flows/nutrition-coach.ts';
 import '@/ai/flows/lecture-notes-analyzer.ts';
 import '@/ai/flows/e-library-search.ts';
+import '@/ai/flows/herbal-knowledge-hub.ts';
+import '@/ai/flows/study-material-generator.ts';
