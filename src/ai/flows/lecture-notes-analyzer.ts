@@ -10,13 +10,13 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const LectureNotesAnalyzerInputSchema = z.object({
+const LectureNotesAnalyzerInputSchema = z.object({
   topicName: z.string().describe('The primary topic or title of the lecture notes provided by the student.'),
   noteDataUri: z.string().describe("The lecture note file (e.g., image of handwritten notes, PDF, DOCX), as a data URI that must include a MIME type and use Base64 encoding."),
 });
-export type LectureNotesAnalyzerInput = z.infer<typeof LectureNotesAnalyzerInputSchema>;
+type LectureNotesAnalyzerInput = z.infer<typeof LectureNotesAnalyzerInputSchema>;
 
-export const LectureNotesAnalyzerOutputSchema = z.object({
+const LectureNotesAnalyzerOutputSchema = z.object({
   subject: z.string().describe('The academic subject (e.g., "Pharmacology", "Pharmaceutics").'),
   topic: z.string().describe('The specific topic of the notes, refined by the AI.'),
   semester: z.string().describe('The suggested academic semester or year (e.g., "3rd Year B.Pharm").'),
