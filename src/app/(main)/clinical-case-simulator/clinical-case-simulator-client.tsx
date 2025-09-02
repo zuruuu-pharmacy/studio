@@ -78,8 +78,17 @@ export function ClinicalCaseSimulatorClient() {
   const { toast } = useToast();
   const [step, setStep] = useState<'topic' | 'case' | 'feedback'>('topic');
 
-  const topicForm = useForm<TopicFormValues>({ resolver: zodResolver(topicFormSchema) });
-  const answerForm = useForm<AnswerFormValues>();
+  const topicForm = useForm<TopicFormValues>({ 
+      resolver: zodResolver(topicFormSchema),
+      defaultValues: {
+          topic: ""
+      }
+  });
+  const answerForm = useForm<AnswerFormValues>({
+      defaultValues: {
+          answers: []
+      }
+  });
 
   useEffect(() => {
     if (state) {
