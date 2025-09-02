@@ -33,7 +33,8 @@ const games = [
     icon: Puzzle,
     title: "Flash Puzzle",
     description: "Drag and drop to match drugs to their mechanisms of action or plants to their constituents.",
-    status: "Coming Soon",
+    status: "Play Now",
+    href: "/pharma-games/flash-puzzle"
   },
   {
     icon: Zap,

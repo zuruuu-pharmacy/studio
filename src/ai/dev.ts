@@ -27,3 +27,5 @@ import '@/ai/flows/sop-generator.ts';
 import '@/ai/flows/anagram-generator.ts';
 import '@/ai/flows/crossword-generator.ts';
 import '@/ai/flows/word-search-generator.ts';
+import '@/ai/flows/matching-game-generator.ts';
+
