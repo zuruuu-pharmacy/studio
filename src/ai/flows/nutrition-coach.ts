@@ -147,9 +147,9 @@ Analyze all the data and generate a comprehensive, personalized diet plan.
 
 4.  **Format the Output:**
     *   Populate the output JSON with a summary of the patient's input data for record-keeping.
-    *   Fill in the `diet_plan` with your meal suggestions.
-    *   Fill in the `warnings` array with all identified alerts.
-    *   Fill in the `detailed_notes` with your calculated caloric target, macro split, and a summary of the diet's characteristics.
+    *   Fill in the diet_plan with your meal suggestions.
+    *   Fill in the warnings array with all identified alerts.
+    *   Fill in the detailed_notes with your calculated caloric target, macro split, and a summary of the diet's characteristics.
 
 **Patient Data:**
 \`\`\`json
