@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useTransition, useEffect, useRef, useState } from "react";
+import { useTransition, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,11 +10,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Upload, BookOpen, KeyRound, Folder, File, Download } from "lucide-react";
+import { Loader2, Upload, BookOpen, KeyRound, Folder, File, Download, Trash2 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
-import { useLectureNotes, type LectureNote } from "@/contexts/lecture-notes-context";
+import { useLectureNotes } from "@/contexts/lecture-notes-context";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
@@ -41,7 +42,7 @@ const FOLDERS = [
 export function LectureNotesClient() {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
-  const { notes, addNote } = useLectureNotes();
+  const { notes, addNote, deleteNote } = useLectureNotes();
   
   const [showUpload, setShowUpload] = useState(false);
   const [accessCode, setAccessCode] = useState("");
@@ -60,7 +61,7 @@ export function LectureNotesClient() {
     if (accessCode === TEACHER_CODE) {
       setShowUpload(true);
       setIsModalOpen(false);
-      toast({ title: "Access Granted", description: "You can now upload notes." });
+      toast({ title: "Access Granted", description: "You can now upload and manage notes." });
     } else {
       toast({ variant: "destructive", title: "Incorrect Code" });
     }
@@ -107,17 +108,22 @@ export function LectureNotesClient() {
     });
   });
 
+  const handleDeleteNote = (noteId: string) => {
+    deleteNote(noteId);
+    toast({ title: "Note Deleted", description: "The selected note has been removed." });
+  }
+
   return (
     <div className="space-y-6">
         <div className="flex justify-end">
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                 <DialogTrigger asChild>
-                    <Button><Upload className="mr-2"/> Upload New Notes</Button>
+                    <Button><KeyRound className="mr-2"/> Teacher Access</Button>
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Teacher Access Required</DialogTitle>
-                        <DialogDescription>Please enter the access code to upload new study materials.</DialogDescription>
+                        <DialogDescription>Please enter the access code to upload or delete study materials.</DialogDescription>
                     </DialogHeader>
                     <div className="space-y-2">
                         <Label htmlFor="access-code">Access Code</Label>
@@ -205,9 +211,32 @@ export function LectureNotesClient() {
                                                     <span className="font-medium">{note.topicName}</span>
                                                     <span className="text-xs text-muted-foreground">({note.fileName})</span>
                                                 </div>
-                                                <a href={note.fileDataUri} download={note.fileName}>
-                                                    <Button variant="ghost" size="icon"><Download className="h-5 w-5"/></Button>
-                                                </a>
+                                                <div className="flex items-center gap-2">
+                                                    <a href={note.fileDataUri} download={note.fileName}>
+                                                        <Button variant="ghost" size="icon"><Download className="h-5 w-5"/></Button>
+                                                    </a>
+                                                    {showUpload && (
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger asChild>
+                                                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                                                    <Trash2 className="h-5 w-5"/>
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        This action cannot be undone. This will permanently delete the note titled "{note.topicName}".
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                    <AlertDialogAction onClick={() => handleDeleteNote(note.id)}>Delete</AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
+                                                    )}
+                                                </div>
                                             </li>
                                         ))}
                                    </ul>

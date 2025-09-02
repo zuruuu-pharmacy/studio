@@ -15,6 +15,7 @@ export interface LectureNote {
 interface LectureNotesContextType {
   notes: LectureNote[];
   addNote: (note: Omit<LectureNote, 'id'>) => void;
+  deleteNote: (noteId: string) => void;
 }
 
 const LectureNotesContext = createContext<LectureNotesContextType | undefined>(undefined);
@@ -58,7 +59,11 @@ export function LectureNotesProvider({ children }: { children: ReactNode }) {
     setNotes(prevNotes => [...prevNotes, newNote]);
   };
   
-  const contextValue = useMemo(() => ({ notes, addNote }), [notes]);
+  const deleteNote = (noteId: string) => {
+    setNotes(prevNotes => prevNotes.filter(note => note.id !== noteId));
+  };
+  
+  const contextValue = useMemo(() => ({ notes, addNote, deleteNote }), [notes]);
 
   return (
     <LectureNotesContext.Provider value={contextValue}>
