@@ -5,7 +5,7 @@ import { useActionState, useEffect, useTransition } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { searchELibrary, type SearchResult } from "@/ai/flows/e-library-search";
+import { searchELibrary, type SearchResult, type ESearchParams } from "@/ai/flows/e-library-search";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";

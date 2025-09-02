@@ -11,12 +11,12 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const ESearchParamsSchema = z.object({
+const ESearchParamsSchema = z.object({
   query: z.string().describe('The search term, e.g., a drug name, medical concept, or formula.'),
 });
 export type ESearchParams = z.infer<typeof ESearchParamsSchema>;
 
-export const SearchResultSchema = z.object({
+const SearchResultSchema = z.object({
   term: z.string().describe('The term that was defined.'),
   definition: z.string().describe('A clear, concise definition of the term.'),
   formula: z.string().optional().describe('A relevant formula, if applicable (e.g., for bioavailability or clearance).'),
@@ -64,3 +64,4 @@ const eLibrarySearchFlow = ai.defineFlow(
     return output!;
   }
 );
+
