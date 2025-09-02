@@ -91,7 +91,7 @@ export function FlashcardGeneratorClient() {
   const { toast } = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { topic: "" },
+    defaultValues: { topic: "", noteFile: undefined },
   });
   const [flippedCard, setFlippedCard] = useState<number | null>(null);
 
@@ -128,6 +128,7 @@ export function FlashcardGeneratorClient() {
                     <Input 
                         type="file" 
                         {...fieldProps}
+                        value={undefined} // Prevent controlled/uncontrolled error
                         onChange={(e) => {
                             const file = e.target.files?.[0];
                             if (file) {
