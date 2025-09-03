@@ -21,7 +21,7 @@ const PatientCaseSchema = z.object({
 });
 
 const ClinicalQuestionSchema = z.object({
-    question: z.string().describe('A clinical question related to the case.'),
+    question: z.string().describe('A clinical question related to the case or topic.'),
     type: z.enum(['text', 'multiple_choice']).default('text').describe('The type of answer expected.'),
     options: z.array(z.string()).optional().describe('Options for multiple-choice questions.'),
 });
@@ -96,9 +96,10 @@ const caseGenerationPrompt = ai.definePrompt({
   **Topic/Domain:** {{{topic}}}
 
   **Instructions:**
-  1.  Create a detailed patient case with all the required sections: Demographics, Chief Complaint, HPI, PMH, Medications, Examination, and Labs. The case should be tailored to the OSCE topic.
-  2.  Generate 4-5 relevant clinical questions that test diagnosis, drug selection, patient counseling, calculations, or other relevant skills based on the topic. Make at least one question multiple-choice.
-  3.  The case should be classic but have a nuance that requires critical thinking and aligns with OSCE testing principles.
+  1.  If the topic starts with "Drill questions for:", generate a series of 8-10 short, distinct questions on that topic instead of a full case study. For the 'caseDetails' object, you MUST populate its fields with placeholder text like "N/A for Drill Mode" or similar.
+  2.  Otherwise, create a detailed patient case with all the required sections: Demographics, Chief Complaint, HPI, PMH, Medications, Examination, and Labs. The case should be tailored to the OSCE topic.
+  3.  Generate 4-5 relevant clinical questions that test diagnosis, drug selection, patient counseling, calculations, or other relevant skills based on the topic. Make at least one question multiple-choice.
+  4.  The case should be classic but have a nuance that requires critical thinking and aligns with OSCE testing principles.
 
   Respond ONLY with the structured JSON output.
   `,
@@ -142,7 +143,7 @@ const examFeedbackGenerationPrompt = ai.definePrompt({
 });
 
 
-// Prompt for Step 3: Instant Feedback (Practice Mode)
+// Prompt for Step 3: Instant Feedback (Practice / Drill Mode)
 const practiceFeedbackPrompt = ai.definePrompt({
   name: 'oscePracticeFeedbackPrompt',
   input: {schema: OsceStationGeneratorInputSchema},
@@ -180,7 +181,7 @@ const osceStationGeneratorFlow = ai.defineFlow(
     outputSchema: OsceStationGeneratorOutputSchema,
   },
   async (input) => {
-    // Mode 3: Practice Mode (Instant Feedback)
+    // Mode 3: Practice or Drill Mode (Instant Feedback)
     if (input.practiceAnswer) {
         const { output } = await practiceFeedbackPrompt(input);
         return output!;

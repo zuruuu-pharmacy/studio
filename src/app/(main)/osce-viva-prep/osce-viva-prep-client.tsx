@@ -93,6 +93,7 @@ export function OsceVivaPrepClient() {
     async (previousState, formData) => {
       const topic = formData.get("topic") as string;
       const caseDetails = formData.get("caseDetails") ? JSON.parse(formData.get("caseDetails") as string) : undefined;
+      const mode = formData.get("mode") as Mode;
       
       // Check for exam mode answers
       const examAnswers: { question: string, answer: string }[] = [];
@@ -112,7 +113,7 @@ export function OsceVivaPrepClient() {
 
       try {
         const result = await generateOsceStation({
-          topic,
+          topic: mode === 'drill' ? `Drill questions for: ${topic}` : topic,
           studentAnswers: examAnswers.length > 0 ? examAnswers : undefined,
           practiceAnswer: practiceAnswer,
           caseDetails: caseDetails
@@ -130,7 +131,7 @@ export function OsceVivaPrepClient() {
   const [appStep, setAppStep] = useState<AppStep>('mode');
   const [selectedMode, setSelectedMode] = useState<Mode | null>(null);
   
-  // State for practice mode
+  // State for practice/drill modes
   const [practiceStep, setPracticeStep] = useState(0);
   const [practiceFeedback, setPracticeFeedback] = useState<OsceStationGeneratorOutput['instantFeedback'] | null>(null);
 
@@ -149,14 +150,14 @@ export function OsceVivaPrepClient() {
         setAppStep('case');
       } else if (state.feedback) { // Exam mode feedback
         setAppStep('feedback');
-      } else if (state.instantFeedback) { // Practice mode feedback
+      } else if (state.instantFeedback) { // Practice/Drill mode feedback
         setPracticeFeedback(state.instantFeedback);
       }
     }
   }, [state, toast, examAnswerForm]);
 
   const handleModeSelect = (mode: Mode) => {
-    if (mode === 'exam' || mode === 'practice') {
+    if (mode === 'exam' || mode === 'practice' || mode === 'drill') {
         setSelectedMode(mode);
         setAppStep('topic');
     } else if (mode === 'review') {
@@ -170,12 +171,14 @@ export function OsceVivaPrepClient() {
   const handleTopicSubmit = topicForm.handleSubmit((data) => {
     const formData = new FormData();
     formData.append("topic", data.topic);
+    if(selectedMode) formData.append("mode", selectedMode);
     startTransition(() => formAction(formData));
   });
 
   const handleExamAnswerSubmit = examAnswerForm.handleSubmit((data) => {
     const formData = new FormData();
     formData.append("topic", topicForm.getValues("topic"));
+    if(selectedMode) formData.append("mode", selectedMode);
     formData.append("caseDetails", JSON.stringify(state?.caseDetails));
     data.answers.forEach((ans, i) => {
       formData.append(`answers[${i}].question`, ans.question);
@@ -190,6 +193,7 @@ export function OsceVivaPrepClient() {
 
       const formData = new FormData();
       formData.append("topic", topicForm.getValues("topic"));
+      if(selectedMode) formData.append("mode", selectedMode);
       formData.append("caseDetails", JSON.stringify(state.caseDetails));
       formData.append("practiceAnswer[question]", currentQuestion.question);
       formData.append("practiceAnswer[answer]", data.answer);
@@ -240,7 +244,7 @@ export function OsceVivaPrepClient() {
     return (
         <div className="flex flex-col justify-center items-center h-64 gap-4">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="text-muted-foreground">Generating your OSCE Station...</p>
+            <p className="text-muted-foreground">Generating your {selectedMode} session...</p>
         </div>
     )
   }
@@ -262,21 +266,21 @@ export function OsceVivaPrepClient() {
     )
   }
   
-  // Main Case View
+  // Main Case/Drill View
   if (appStep === 'case' && state?.caseDetails && state?.questions) {
     const { caseDetails, questions } = state;
-    const isPracticeFinished = selectedMode === 'practice' && practiceStep >= questions.length;
+    const isPracticeOrDrill = selectedMode === 'practice' || selectedMode === 'drill';
+    const isFinished = isPracticeOrDrill && practiceStep >= questions.length;
     
-    // Practice mode finished summary
-    if (isPracticeFinished) {
+    if (isFinished) {
         return (
             <Card className="text-center">
                 <CardHeader>
                     <CardTitle>Station Complete!</CardTitle>
-                    <CardDescription>You have completed all questions for this practice station on "{topicForm.getValues("topic")}".</CardDescription>
+                    <CardDescription>You have completed all questions for this {selectedMode} session on "{topicForm.getValues("topic")}".</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Button onClick={resetAll}>Start a New Station</Button>
+                    <Button onClick={resetAll}>Start a New Session</Button>
                 </CardContent>
             </Card>
         )
@@ -286,9 +290,11 @@ export function OsceVivaPrepClient() {
         <div className="space-y-6">
             <Card>
                 <CardHeader><CardTitle className="text-2xl">OSCE Station: {topicForm.getValues("topic")}</CardTitle><CardDescription>Mode: {selectedMode} | Read the case and answer the questions.</CardDescription></CardHeader>
-                <CardContent className="p-6 bg-muted/50 space-y-4 rounded-b-lg">
-                    <CaseSection title="Patient Demographics" content={caseDetails.demographics} icon={User}/><CaseSection title="Chief Complaint" content={caseDetails.chiefComplaint} icon={FileText}/><CaseSection title="History of Present Illness" content={caseDetails.hpi} icon={Activity}/><CaseSection title="Past Medical & Family History" content={caseDetails.pmh} icon={ShieldPlus}/><CaseSection title="Current Medications & Allergies" content={caseDetails.medications} icon={FlaskConical}/><CaseSection title="Physical Examination" content={caseDetails.examination} icon={HeartPulse}/><CaseSection title="Lab & Diagnostics" content={caseDetails.labs} icon={Microscope}/>
-                </CardContent>
+                 {selectedMode !== 'drill' && (
+                    <CardContent className="p-6 bg-muted/50 space-y-4 rounded-b-lg">
+                        <CaseSection title="Patient Demographics" content={caseDetails.demographics} icon={User}/><CaseSection title="Chief Complaint" content={caseDetails.chiefComplaint} icon={FileText}/><CaseSection title="History of Present Illness" content={caseDetails.hpi} icon={Activity}/><CaseSection title="Past Medical & Family History" content={caseDetails.pmh} icon={ShieldPlus}/><CaseSection title="Current Medications & Allergies" content={caseDetails.medications} icon={FlaskConical}/><CaseSection title="Physical Examination" content={caseDetails.examination} icon={HeartPulse}/><CaseSection title="Lab & Diagnostics" content={caseDetails.labs} icon={Microscope}/>
+                    </CardContent>
+                 )}
             </Card>
             
             {/* EXAM MODE RENDER */}
@@ -306,8 +312,8 @@ export function OsceVivaPrepClient() {
                  </Card>
             )}
 
-            {/* PRACTICE MODE RENDER */}
-            {selectedMode === 'practice' && (
+            {/* PRACTICE & DRILL MODE RENDER */}
+            {isPracticeOrDrill && (
                 <Card>
                     <CardHeader><CardTitle>Question {practiceStep + 1} of {questions.length}</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
@@ -336,9 +342,18 @@ export function OsceVivaPrepClient() {
 
   // Topic Selection Step
   if (appStep === 'topic') {
+    const modeDetails = {
+        exam: { title: 'Exam Topic', description: 'Enter a topic for your exam simulation.' },
+        practice: { title: 'Practice Topic', description: 'Enter a topic to practice with instant feedback.' },
+        drill: { title: 'Drill Topic', description: 'Enter a competency to drill (e.g., Dosage Calculations, Inhaler Counseling).' },
+        review: { title: '', description: ''},
+        adaptive: { title: '', description: ''},
+    }
+    const details = modeDetails[selectedMode!];
+
     return (
         <Card className="max-w-xl mx-auto">
-        <CardHeader><CardTitle>Generate OSCE Station</CardTitle><CardDescription>Enter a topic, domain, or scenario for your {selectedMode} session.</CardDescription></CardHeader>
+        <CardHeader><CardTitle>{details.title}</CardTitle><CardDescription>{details.description}</CardDescription></CardHeader>
         <CardContent>
             <Form {...topicForm}><form onSubmit={handleTopicSubmit} className="space-y-4"><FormField name="topic" control={topicForm.control} render={({ field }) => (<FormItem><FormLabel>Station Topic</FormLabel><FormControl><Input placeholder="e.g., Patient Counseling for Inhalers" {...field}/></FormControl><FormMessage/></FormItem>)} /><Button type="submit" className="w-full" disabled={isPending}>{isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}Generate Station</Button><Button variant="link" onClick={() => setAppStep('mode')} className="w-full">Back to Mode Selection</Button></form></Form>
         </CardContent>
@@ -353,8 +368,8 @@ export function OsceVivaPrepClient() {
         <CardContent className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             <button onClick={() => handleModeSelect('exam')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><CaseSensitive className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Exam Mode</h3><p className="text-sm text-muted-foreground">Full station with locked hints and feedback at the end. Simulates the real exam.</p></div></button>
             <button onClick={() => handleModeSelect('practice')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><Lightbulb className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Practice Mode</h3><p className="text-sm text-muted-foreground">Get instant feedback after each question and access hints.</p></div></button>
+            <button onClick={() => handleModeSelect('drill')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><Zap className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Drill Mode</h3><p className="text-sm text-muted-foreground">Rapid-fire short items on a single competency.</p></div></button>
             <button onClick={() => handleModeSelect('review')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><BookCopy className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Review Mode</h3><p className="text-sm text-muted-foreground">Analyze your past performance with transcripts and model answers.</p></div></button>
-            <button onClick={() => handleModeSelect('drill')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4 disabled:opacity-50 disabled:cursor-not-allowed" disabled><Zap className="h-8 w-8 text-muted-foreground mt-1"/><div><h3 className="font-semibold text-lg text-muted-foreground">Drill Mode</h3><p className="text-sm text-muted-foreground">Rapid-fire short items on a single competency. (Coming Soon)</p></div></button>
             <button onClick={() => handleModeSelect('adaptive')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4 disabled:opacity-50 disabled:cursor-not-allowed" disabled><Repeat className="h-8 w-8 text-muted-foreground mt-1"/><div><h3 className="font-semibold text-lg text-muted-foreground">Adaptive Mode</h3><p className="text-sm text-muted-foreground">Difficulty increases or decreases based on performance. (Coming Soon)</p></div></button>
         </CardContent>
     </Card>
