@@ -287,7 +287,7 @@ export function OsceVivaPrepClient() {
   }
   
   const handleSaveSession = () => {
-    if (!state || !state.feedback || !state.caseDetails) {
+    if (!state || !state.feedback) {
         toast({
             variant: "destructive",
             title: "Save Failed",
@@ -296,11 +296,17 @@ export function OsceVivaPrepClient() {
         return;
     }
     
-    // Construct the input object that was sent to the AI to get this feedback
+    const { feedback, ...caseData } = state;
+
+    const sessionToSave: OsceStationGeneratorOutput = {
+        ...caseData, // Includes caseDetails, questions from the final state
+        feedback: feedback,
+    };
+
     const originalInput: OsceStationGeneratorInput = {
         topic: `${topicForm.getValues("topic")} (Difficulty: ${topicForm.getValues("difficulty")})`,
         studentAnswers: examAnswerForm.getValues("answers"),
-        caseDetails: state.caseDetails,
+        caseDetails: state.caseDetails, // We need caseDetails here too for resubmission if needed.
     };
 
     addSession({
@@ -308,7 +314,7 @@ export function OsceVivaPrepClient() {
         topic: originalInput.topic,
         date: new Date().toISOString(),
         input: originalInput,
-        output: state, // This state contains the feedback
+        output: sessionToSave,
     });
 
     toast({ title: "Session Saved!", description: "You can review this session in Review Mode." });
