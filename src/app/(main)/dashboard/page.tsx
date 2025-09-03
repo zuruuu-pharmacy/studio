@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, ClipboardCheck as OsceIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
@@ -169,6 +169,13 @@ const studentTools = [
         description: "Tackle realistic patient cases and get AI-driven feedback.",
         href: "/clinical-case-simulator",
         color: "text-teal-500",
+    },
+    {
+        icon: OsceIcon,
+        title: "OSCE and Viva Preparation",
+        description: "Practice for your exams with AI-driven OSCE and viva scenarios.",
+        href: "/osce-viva-prep",
+        color: "text-cyan-600",
     },
     {
         icon: FlaskConical,
