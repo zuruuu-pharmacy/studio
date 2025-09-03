@@ -100,7 +100,9 @@ export function RapidFireQuizClient() {
         answerStatus: isCorrect ? 'correct' : 'incorrect',
     }));
 
-    setTimeout(handleNextQuestion, 1000); // Automatically move to next question after 1 second
+    setTimeout(() => {
+        handleNextQuestion();
+    }, 1000);
   };
 
   const handleRestart = () => {
@@ -147,23 +149,28 @@ export function RapidFireQuizClient() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {currentQuestion.options.map((option, i) => {
-                        const isSelected = gameState.answerStatus !== 'none' && currentQuestion.correct_answer.startsWith(option.charAt(0));
                         const isCorrect = currentQuestion.correct_answer.startsWith(option.charAt(0));
-
+                        let selectedStatusClass = '';
+                        if (gameState.answerStatus === 'correct' && isCorrect) {
+                            selectedStatusClass = "bg-green-100 border-green-500 text-green-800";
+                        } else if (gameState.answerStatus === 'incorrect' && isCorrect) {
+                            // When incorrect, show the correct answer
+                             selectedStatusClass = "bg-green-100 border-green-500 text-green-800";
+                        }
+                        
                         return (
                              <Button
                                 key={i}
                                 variant="outline"
                                 className={cn(
                                     "h-auto py-4 text-wrap justify-start",
-                                    gameState.answerStatus === 'correct' && isCorrect && "bg-green-100 border-green-500 text-green-800",
-                                    gameState.answerStatus === 'incorrect' && isSelected && "bg-red-100 border-red-500 text-red-800"
+                                    selectedStatusClass
                                 )}
                                 onClick={() => handleAnswerClick(option)}
                                 disabled={gameState.answerStatus !== 'none'}
                              >
                                  {gameState.answerStatus === 'correct' && isCorrect && <Check className="mr-2"/>}
-                                 {gameState.answerStatus === 'incorrect' && isSelected && <X className="mr-2"/>}
+                                 {gameState.answerStatus === 'incorrect' && isCorrect && <Check className="mr-2"/>}
                                  {option}
                              </Button>
                         )

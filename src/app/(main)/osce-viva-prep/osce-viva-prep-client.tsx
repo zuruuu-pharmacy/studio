@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useActionState, useEffect, useState, useTransition } from "react";
+import { useActionState, useEffect, useState, useTransition, useCallback } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -283,10 +283,15 @@ export function OsceVivaPrepClient() {
       startTransition(() => formAction(formData));
   });
 
-  const handleNextPracticeQuestion = () => {
-    practiceAnswerForm.reset({ answer: ""});
-    setPracticeStep(prev => prev + 1);
-  }
+  const handleNextPracticeQuestion = useCallback(() => {
+    if (!state?.questions) return;
+    practiceAnswerForm.reset({ answer: "" });
+    if (practiceStep < state.questions.length - 1) {
+      setPracticeStep(prev => prev + 1);
+    } else {
+      setAppStep('feedback'); // Or a 'finished' screen
+    }
+  }, [practiceAnswerForm, practiceStep, state?.questions]);
   
   const handleSaveSession = () => {
     if (!state || !state.caseDetails || !state.feedback) {
