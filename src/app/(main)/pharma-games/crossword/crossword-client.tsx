@@ -136,6 +136,17 @@ export function CrosswordClient() {
     );
   }
 
+  // Guard clause to prevent rendering before state is ready
+  if (checkState.length !== state.grid.length) {
+    return (
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <p className="text-muted-foreground">Initializing game board...</p>
+        </div>
+    );
+  }
+
+
   return (
     <div className="space-y-6">
         <div className="grid lg:grid-cols-3 gap-6">
@@ -160,8 +171,8 @@ export function CrosswordClient() {
                             onChange={(e) => handleInputChange(e, rIdx, cIdx)}
                             className={cn(
                                 "w-full h-full p-0 text-center text-lg font-bold uppercase",
-                                checkState[rIdx][cIdx] === 'correct' && 'bg-green-200 dark:bg-green-800',
-                                checkState[rIdx][cIdx] === 'incorrect' && 'bg-red-200 dark:bg-red-800'
+                                checkState[rIdx]?.[cIdx] === 'correct' && 'bg-green-200 dark:bg-green-800',
+                                checkState[rIdx]?.[cIdx] === 'incorrect' && 'bg-red-200 dark:bg-red-800'
                             )}
                             />
                         </>
