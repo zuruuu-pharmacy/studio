@@ -74,7 +74,8 @@ const caseGenerationPrompt = ai.definePrompt({
   input: {schema: z.object({ topic: z.string() })},
   output: {schema: CaseGenerationOutputSchema},
   model: 'googleai/gemini-1.5-flash',
-  prompt: `You are an expert OSCE Station creator for pharmacy students. Generate a realistic, challenging case study based on the provided topic or domain.
+  prompt: `You are an OSCE/Viva Examiner Simulator for pharmacy students.
+  Your role is to create a station that assesses communication, clinical judgment, calculation accuracy, and prescription safety.
 
   **Topic/Domain:** {{{topic}}}
 
@@ -93,7 +94,10 @@ const feedbackGenerationPrompt = ai.definePrompt({
   input: {schema: OsceStationGeneratorInputSchema},
   output: {schema: z.object({ feedback: FeedbackSchema })},
   model: 'googleai/gemini-1.5-flash',
-  prompt: `You are an expert OSCE/Viva Examiner Simulator. A pharmacy student has submitted their answers for a station. Your task is to provide a detailed, constructive critique based on OSCE evaluation criteria.
+  prompt: `You are an OSCE/Viva Examiner Simulator for pharmacy students.
+  A pharmacy student has submitted their answers for a station.
+  Your behavior should be professional and neutral, providing structured feedback.
+  Your primary outcomes for assessment are: communication, clinical judgment, calculation accuracy, and prescription safety.
 
   **Case Details:**
   -   **Demographics:** {{caseDetails.demographics}}
