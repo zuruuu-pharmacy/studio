@@ -183,10 +183,10 @@ const examFeedbackGenerationPrompt = ai.definePrompt({
   {{/each}}
 
   **Your Task (as an Examiner):**
-  1.  **Check for Empty Submission:** First, check if all 'answer' fields from the student are empty or contain only whitespace.
-      - If true, you MUST assign a score of 0 for all scoring domains. For all qualitative feedback fields, you MUST state "No answer provided." or "Station left blank.". Do not generate any other feedback.
-      - If at least one answer has content, proceed with the full evaluation below.
-  2.  **Analyze & Score (Rule of Evidence):** Critically evaluate the student's answers against the case. For each scoring domain below, you must find positive evidence in the answers to award points. **If you cannot find any evidence for a domain, you MUST assign a score of 0 for that domain.** A score of null is only for non-applicable domains (e.g., no calculations in the case).
+  1.  **CRITICAL RULE: Check for Empty Submission:** First, check if all 'answer' fields from the student are empty or contain only whitespace.
+      - **If true:** You MUST assign a score of 0 for all scoring domains where a score is possible (clinicalReasoning, safetyAndInteractions, structureAndTimeManagement). Communication cannot be assessed, so its score MUST be null. Calculation accuracy MUST be null unless a calculation was explicitly asked for and left blank, in which case it is 0. For all qualitative feedback fields ('overallFeedback', 'diagnosisConfirmation', etc.), you MUST state "No answer provided." or "Station left blank.". Do not generate any other feedback.
+      - **If at least one answer has content:** Proceed with the full evaluation below.
+  2.  **Analyze & Score (Rule of Evidence):** Critically evaluate the student's answers against the case. For each scoring domain below, you must find positive evidence in the answers to award points. **If you cannot find any evidence for a specific domain, you MUST assign a score of 0 for that domain.** A score of null is only for non-applicable domains (e.g., no calculations in the case).
       -   **communication:** How well did they communicate? (Clarity, empathy, structure)
       -   **clinicalReasoning:** How sound was their clinical judgment?
       -   **calculationAccuracy:** If applicable, was their calculation correct?
