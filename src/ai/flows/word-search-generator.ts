@@ -16,6 +16,13 @@ const WordSearchGeneratorInputSchema = z.object({
 });
 export type WordSearchGeneratorInput = z.infer<typeof WordSearchGeneratorInputSchema>;
 
+const WordSchema = z.object({
+  word: z.string().describe("A word hidden in the grid, in uppercase."),
+  // As a future enhancement, we could ask for coordinates, but that makes the prompt much harder.
+  // For now, we'll just get the words. If we need a "reveal" feature, we'll need to enhance this.
+});
+
+
 const WordSearchGeneratorOutputSchema = z.object({
   grid: z.array(z.array(z.string())).describe("The 2D grid of letters."),
   words: z.array(z.string()).describe("The list of words hidden in the grid, in uppercase."),

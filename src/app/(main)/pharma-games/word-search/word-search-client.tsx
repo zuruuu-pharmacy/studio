@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useActionState, useEffect, useState, useTransition, useRef } from "react";
+import { useActionState, useEffect, useState, useTransition, useRef, useMemo } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -45,7 +45,9 @@ export function WordSearchClient() {
   const [foundWords, setFoundWords] = useState<Set<string>>(new Set());
   const [selection, setSelection] = useState<Cell[]>([]);
   const [isSelecting, setIsSelecting] = useState(false);
-  const gridRef = useRef<HTMLDivElement>(null);
+  
+  // New state to track if answers are revealed
+  const [isRevealed, setIsRevealed] = useState(false);
 
   useEffect(() => {
     if (state?.error) {
@@ -53,6 +55,7 @@ export function WordSearchClient() {
     } else if (state?.grid) {
       setFoundWords(new Set());
       setSelection([]);
+      setIsRevealed(false); // Reset reveal state on new game
     }
   }, [state, toast]);
 
@@ -76,26 +79,24 @@ export function WordSearchClient() {
   };
 
   const handleMouseDown = (row: number, col: number) => {
+    if(isRevealed) return;
     setIsSelecting(true);
     setSelection([{ row, col }]);
   };
 
   const handleMouseEnter = (row: number, col: number) => {
-    if (!isSelecting) return;
-    // Basic straight line check
-    if (selection.length >= 1) {
-       const first = selection[0];
-       const isHorizontal = first.row === row;
-       const isVertical = first.col === col;
-       const isDiagonal = Math.abs(first.row - row) === Math.abs(first.col - col);
+    if (!isSelecting || isRevealed) return;
+    
+    // Prevent adding the same cell multiple times
+    if (selection.some(cell => cell.row === row && cell.col === col)) return;
 
-       if(isHorizontal || isVertical || isDiagonal){
-            setSelection(prev => [...prev, { row, col }]);
-       }
-    }
+    // This is a simplified selection logic. A robust implementation would
+    // strictly enforce straight lines (horizontal, vertical, diagonal).
+    setSelection(prev => [...prev, { row, col }]);
   };
 
   const handleMouseUp = () => {
+    if(isRevealed) return;
     setIsSelecting(false);
     checkSelection(selection);
     setSelection([]);
@@ -107,8 +108,13 @@ export function WordSearchClient() {
   
   const handleNewGame = () => {
     topicForm.reset({ topic: ""});
-    // This will effectively clear the grid from state, showing the initial topic form
     startTransition(() => formAction(new FormData()));
+  }
+
+  const handleGiveUp = () => {
+    if (!state?.words) return;
+    setIsRevealed(true);
+    setFoundWords(new Set(state.words)); // Mark all words as found
   }
 
   const isGameOver = state?.words && foundWords.size === state.words.length;
@@ -151,7 +157,7 @@ export function WordSearchClient() {
             <CardTitle>Word Search: {state.topic}</CardTitle>
             <CardDescription>Click and drag to find the words from the list.</CardDescription>
           </CardHeader>
-          <CardContent onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} ref={gridRef}>
+          <CardContent onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
             <div className="grid gap-1 select-none" style={{ gridTemplateColumns: `repeat(${state.grid.length}, minmax(0, 1fr))` }}>
               {state.grid.map((row, rIdx) =>
                 row.map((letter, cIdx) => (
@@ -160,7 +166,8 @@ export function WordSearchClient() {
                     onMouseDown={() => handleMouseDown(rIdx, cIdx)}
                     onMouseEnter={() => handleMouseEnter(rIdx, cIdx)}
                     className={cn(
-                      "flex items-center justify-center aspect-square text-lg font-bold border rounded-md cursor-pointer transition-colors",
+                      "flex items-center justify-center aspect-square text-lg font-bold border rounded-md transition-colors",
+                      isRevealed ? "" : "cursor-pointer",
                       isCellSelected(rIdx, cIdx) ? "bg-primary text-primary-foreground" : "bg-muted/50"
                     )}
                   >
@@ -184,11 +191,16 @@ export function WordSearchClient() {
                 </li>
               ))}
             </ul>
-            {isGameOver && (
+            
+            {!isGameOver && !isRevealed && (
+                 <Button onClick={handleGiveUp} variant="secondary" className="w-full mt-6">Give Up</Button>
+            )}
+
+            {(isGameOver || isRevealed) && (
                 <div className="mt-6 text-center space-y-4">
                     <Trophy className="mx-auto h-12 w-12 text-yellow-400"/>
-                    <h3 className="text-xl font-bold">Congratulations!</h3>
-                    <p className="text-muted-foreground">You found all the words.</p>
+                    <h3 className="text-xl font-bold">{isRevealed ? "Here's the Solution!" : "Congratulations!"}</h3>
+                    <p className="text-muted-foreground">{isRevealed ? "All words have been revealed." : "You found all the words!"}</p>
                     <Button onClick={handleNewGame}>Play a New Game</Button>
                 </div>
             )}
