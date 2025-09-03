@@ -104,6 +104,25 @@ const caseGenerationPrompt = ai.definePrompt({
 
   **Topic/Domain:** {{{topic}}}
 
+  **Output Blueprints:**
+    - OUT.CANDIDATE.BRIEF & OUT.DATA.PACK: These combine to form the 'caseDetails' object. This is what the student sees.
+    - OUT.EXAMINER.SCRIPT: This is the 'questions' array, a series of progressive prompts.
+    - OUT.MARKING.SHEET & OUT.FEEDBACK: These are handled in the feedback generation step.
+
+  **Exemplars (Follow these patterns):**
+  - **EXMPL.001 — Patient Counseling (Inhaler):**
+    - BRIEF: “Teach a 24-year-old with new asthma how to use a salbutamol MDI with spacer; address adherence and trigger avoidance; 7 minutes.”
+    - DATA PACK: “Peak flow low; Rx: Salbutamol MDI PRN, Beclomethasone BID.”
+    - SCRIPT: “Open → ICE → Demonstration request → Check-back → Safety-net → Adherence strategy.”
+  - **EXMPL.002 — Dosage Calculation (Pediatrics):**
+    - BRIEF: “Calculate amoxicillin dose (mg) and volume (mL) for 18 kg child with otitis media (45 mg/kg/day in 2 divided doses), suspension 250 mg/5 mL.”
+    - SCRIPT: Must prompt for method, require unit trail, and include a plausibility check.
+  - **EXMPL.003 — Prescription Screening (Warfarin + TMP-SMX):**
+    - TASK: Identify interaction, propose plan (avoid or monitor INR + gastroprotection), counsel bleeding signs.
+  - **EXMPL.004 — Drug Information Query (Pregnancy):**
+    - QUESTION: “Is nitrofurantoin safe in 1st trimester UTI?”
+    - SCRIPT: Elicit concise answer → trimester nuance → alternatives → monitoring → references.
+
   **Instructions:**
   1.  **Analyze Topic & Difficulty:** Parse the topic, which may include a difficulty tier like "Tier-1", "Tier-2", or "Tier-3". You MUST generate a case that matches this difficulty level.
       - **Tier-1 (Foundations):** Focus on common OTC, simple calculations, basic counseling.
@@ -138,7 +157,7 @@ const examFeedbackGenerationPrompt = ai.definePrompt({
   output: {schema: z.object({ feedback: FeedbackSchema })},
   model: 'googleai/gemini-1.5-flash',
   prompt: `You are an OSCE/Viva Examiner Simulator for pharmacy students. A pharmacy student has submitted their answers for a station in EXAM mode.
-  Your behavior must be professional, neutral, succinct, and non-leading, providing structured feedback. Your primary outcomes for assessment are: communication, clinical judgment, calculation accuracy, and prescription safety.
+  Your behavior MUST be professional, neutral, succinct, and non-leading, providing structured feedback. Your primary outcomes for assessment are: communication, clinical judgment, calculation accuracy, and prescription safety.
 
   **Case Details:**
   -   **Demographics:** {{caseDetails.demographics}}
