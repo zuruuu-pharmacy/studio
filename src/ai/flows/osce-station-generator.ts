@@ -134,9 +134,10 @@ const caseGenerationPrompt = ai.definePrompt({
       - **VAR.002 (Setting):** Rotate the clinical setting (community pharmacy, hospital ward, discharge counseling, telehealth).
       - **VAR.003 (Data Noise):** Include some non-critical or distracting information in the data pack to test the student's ability to prioritize.
       - **VAR.004 (Curveball):** Occasionally (not always), introduce a mid-station complication or new piece of information into the examiner script (e.g., a question like "The patient now mentions they are allergic to... how does that change your plan?").
-  3.  **Create Case Materials (Candidate Brief & Data Pack):** Generate a detailed Candidate Brief (what the student sees) and a Data Pack (vitals, labs, Rx, devices, leaflets). This information should be comprehensive and form the basis of the 'caseDetails' object.
-  4.  **Handle Drill Mode:** If the topic is "Drill questions for:...", generate a series of 8-10 short, distinct questions on that topic instead of a full case study. For the 'caseDetails' object, you MUST populate its fields with placeholder text like "N/A for Drill Mode".
-  5.  **Generate Examiner Script (Progressive & Structured Prompts):** Create 4-5 relevant clinical questions. These questions must be structured as progressive prompts that follow a logical flow where each question logically follows the previous one, probing deeper into the student's understanding.
+  3.  **Embed Cultural Competence:** When generating scenarios, you MUST consider cultural competence. This includes sensitivity to language choices, patient beliefs, and socioeconomic factors that may arise from the rotated demographics and settings.
+  4.  **Create Case Materials (Candidate Brief & Data Pack):** Generate a detailed Candidate Brief (what the student sees) and a Data Pack (vitals, labs, Rx, devices, leaflets). This information should be comprehensive and form the basis of the 'caseDetails' object.
+  5.  **Handle Drill Mode:** If the topic is "Drill questions for:...", generate a series of 8-10 short, distinct questions on that topic instead of a full case study. For the 'caseDetails' object, you MUST populate its fields with placeholder text like "N/A for Drill Mode".
+  6.  **Generate Examiner Script (Progressive & Structured Prompts):** Create 4-5 relevant clinical questions. These questions must be structured as progressive prompts that follow a logical flow where each question logically follows the previous one, probing deeper into the student's understanding.
       - **Start with Openers (QLG.001):** Begin with open-ended questions (e.g., "What are your initial thoughts?", "What are the key issues here?").
       - **Narrow with Focused Questions (QLG.002):** Follow up with focused questions about safety, red flags, or specific details.
       - **For counseling stations (QLG.004):** you MUST include a question that prompts a "teach-back" to check for understanding.
@@ -144,8 +145,8 @@ const caseGenerationPrompt = ai.definePrompt({
       - **For prescription screening stations (RX SAFETY GRID):** you MUST include questions covering the RX SAFETY GRID: patient identifiers (RX.001), drug clarity (RX.002), indication (RX.003), contraindications (RX.004), interactions (RX.005), and monitoring plans (RX.006).
       - **For Drug Information Query stations (DI RESPONSE MAP):** you MUST structure questions to first elicit a concise one-liner answer (DI.001), then expand on details like MOA/PK (DI.002), then ask how to handle uncertainty (DI.003), and finally, safety-netting (DI.004).
       - **End with a summary or safety-netting question (QLG.003)** (e.g., "What would you do next?", "What are the most important things to tell the patient?").
-  6.  **Generate Hints:** For each question, provide a subtle, one-sentence hint that aligns with the HINT categories (Concept, Process, Safety, Calculation). The hint should nudge the student without giving away the answer (e.g., "Consider the patient's renal function," or "How would you explain this to the patient?").
-  7.  **Align with OSCE Principles:** The case should be classic but have a nuance that requires critical thinking and aligns with OSCE testing principles.
+  7.  **Generate Hints:** For each question, provide a subtle, one-sentence hint that aligns with the HINT categories (Concept, Process, Safety, Calculation). The hint should nudge the student without giving away the answer (e.g., "Consider the patient's renal function," or "How would you explain this to the patient?").
+  8.  **Align with OSCE Principles:** The case should be classic but have a nuance that requires critical thinking and aligns with OSCE testing principles.
 
   Respond ONLY with the structured JSON output.
   `,
