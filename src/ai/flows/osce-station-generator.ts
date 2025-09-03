@@ -24,6 +24,7 @@ const ClinicalQuestionSchema = z.object({
     question: z.string().describe('A clinical question related to the case or topic.'),
     type: z.enum(['text', 'multiple_choice']).default('text').describe('The type of answer expected.'),
     options: z.array(z.string()).optional().describe('Options for multiple-choice questions.'),
+    hint: z.string().optional().describe("A subtle hint for the student if they get stuck in practice mode."),
 });
 
 const CaseGenerationOutputSchema = z.object({
@@ -98,7 +99,7 @@ const caseGenerationPrompt = ai.definePrompt({
   input: {schema: z.object({ topic: z.string() })},
   output: {schema: CaseGenerationOutputSchema},
   model: 'googleai/gemini-1.5-flash',
-  prompt: `You are an OSCE/Viva Examiner Simulator for pharmacy students.
+  prompt: `You are an OSCE/Viva Examiner Simulator for pharmacy students. Your behavior MUST be neutral, succinct, and non-leading.
   Your role is to create a station that assesses communication, clinical judgment, calculation accuracy, and prescription safety. The station structure must follow professional standards.
 
   **Topic/Domain:** {{{topic}}}
@@ -106,7 +107,7 @@ const caseGenerationPrompt = ai.definePrompt({
   **Instructions:**
   1.  **Create Case Materials (Candidate Brief & Data Pack):** Generate a detailed Candidate Brief (what the student sees) and a Data Pack (vitals, labs, Rx, devices, leaflets). This information should be comprehensive and form the basis of the 'caseDetails' object.
   2.  **Handle Drill Mode:** If the topic is "Drill questions for:...", generate a series of 8-10 short, distinct questions on that topic instead of a full case study. For the 'caseDetails' object, you MUST populate its fields with placeholder text like "N/A for Drill Mode".
-  3.  **Generate Examiner Script (Progressive Prompts):** Create 4-5 relevant clinical questions. These questions must be structured as progressive prompts that follow a logical flow (SOCS Structure). This means you should not ask all questions at once, but create a script where each question logically follows the previous one, probing deeper into the student's understanding.
+  3.  **Generate Examiner Script (Progressive Prompts):** Create 4-5 relevant clinical questions. These questions must be structured as progressive prompts that follow a logical flow where each question logically follows the previous one, probing deeper into the student's understanding.
       - **Start with Openers (QLG.001):** Begin with open-ended questions (e.g., "What are your initial thoughts?", "What are the key issues here?").
       - **Narrow with Focused Questions (QLG.002):** Follow up with focused questions about safety, red flags, or specific details.
       - **For counseling stations (QLG.004):** you MUST include a question that prompts a "teach-back" to check for understanding.
@@ -114,7 +115,8 @@ const caseGenerationPrompt = ai.definePrompt({
       - **For prescription screening stations (RX SAFETY GRID):** you MUST include questions covering the RX SAFETY GRID: patient identifiers (RX.001), drug clarity (RX.002), indication (RX.003), contraindications (RX.004), interactions (RX.005), and monitoring plans (RX.006).
       - **For Drug Information Query stations (DI RESPONSE MAP):** you MUST structure questions to first elicit a concise one-liner answer (DI.001), then expand on details like MOA/PK (DI.002), then ask how to handle uncertainty (DI.003), and finally, safety-netting (DI.004).
       - **End with a summary or safety-netting question (QLG.003)** (e.g., "What would you do next?", "What are the most important things to tell the patient?").
-  4.  **Align with OSCE Principles:** The case should be classic but have a nuance that requires critical thinking and aligns with OSCE testing principles.
+  4.  **Generate Hints:** For each question, provide a subtle, one-sentence hint. The hint should nudge the student in the right direction without giving away the answer (e.g., "Consider the patient's renal function," or "How would you explain this to the patient?").
+  5.  **Align with OSCE Principles:** The case should be classic but have a nuance that requires critical thinking and aligns with OSCE testing principles.
 
   Respond ONLY with the structured JSON output.
   `,
@@ -126,8 +128,7 @@ const examFeedbackGenerationPrompt = ai.definePrompt({
   input: {schema: OsceStationGeneratorInputSchema},
   output: {schema: z.object({ feedback: FeedbackSchema })},
   model: 'googleai/gemini-1.5-flash',
-  prompt: `You are an OSCE/Viva Examiner Simulator for pharmacy students.
-  A pharmacy student has submitted their answers for a station in EXAM mode.
+  prompt: `You are an OSCE/Viva Examiner Simulator for pharmacy students. A pharmacy student has submitted their answers for a station in EXAM mode.
   Your behavior must be professional, neutral, succinct, and non-leading, providing structured feedback. Your primary outcomes for assessment are: communication, clinical judgment, calculation accuracy, and prescription safety.
 
   **Case Details:**

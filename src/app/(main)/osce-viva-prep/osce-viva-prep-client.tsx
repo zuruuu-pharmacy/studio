@@ -105,7 +105,8 @@ function Timer({ timeLeft, onTimeUp }: { timeLeft: number; onTimeUp: () => void 
         if (timeLeft === 0) {
             onTimeUp();
         }
-    }, [timeLeft, onTimeUp]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [timeLeft]);
 
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
@@ -171,6 +172,7 @@ export function OsceVivaPrepClient() {
   // State for practice/drill modes
   const [practiceStep, setPracticeStep] = useState(0);
   const [practiceFeedback, setPracticeFeedback] = useState<OsceStationGeneratorOutput['instantFeedback'] | null>(null);
+  const [showHint, setShowHint] = useState(false);
   
   // State for Timer
   const [timeLeft, setTimeLeft] = useState(420); // 7 minutes default
@@ -213,6 +215,7 @@ export function OsceVivaPrepClient() {
         setPracticeFeedback(state.instantFeedback);
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, toast, examAnswerForm, selectedMode]);
 
   const handleModeSelect = (mode: Mode) => {
@@ -262,6 +265,7 @@ export function OsceVivaPrepClient() {
   const handleNextPracticeQuestion = () => {
     practiceAnswerForm.reset({ answer: ""});
     setPracticeFeedback(null);
+    setShowHint(false);
     setPracticeStep(prev => prev + 1);
   }
   
@@ -467,7 +471,24 @@ export function OsceVivaPrepClient() {
                 <Card>
                     <CardHeader><CardTitle>Question {practiceStep + 1} of {questions.length}</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
-                        <p className="font-semibold text-lg p-4 bg-muted/50 rounded-lg">{questions[practiceStep].question}</p>
+                        <div className="font-semibold text-lg p-4 bg-muted/50 rounded-lg flex justify-between items-start">
+                            <p>{questions[practiceStep].question}</p>
+                            {questions[practiceStep].hint && (
+                                <Button variant="outline" size="sm" onClick={() => setShowHint(!showHint)}>
+                                    <Lightbulb className="mr-2"/>
+                                    {showHint ? "Hide" : "Show"} Hint
+                                </Button>
+                            )}
+                        </div>
+
+                        {showHint && (
+                            <Alert>
+                                <Lightbulb className="h-4 w-4"/>
+                                <AlertTitle>Hint</AlertTitle>
+                                <AlertDescription>{questions[practiceStep].hint}</AlertDescription>
+                            </Alert>
+                        )}
+                        
                         <Form {...practiceAnswerForm}>
                             <form onSubmit={handlePracticeAnswerSubmit} className="space-y-4">
                                 <FormField name="answer" control={practiceAnswerForm.control} render={({ field }) => (
