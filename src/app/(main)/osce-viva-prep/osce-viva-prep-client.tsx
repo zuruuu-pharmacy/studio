@@ -19,6 +19,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Label } from "@/components/ui/label";
 import { useOsceSessions } from "@/contexts/osce-sessions-context";
 import { useRouter } from "next/navigation";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
 type Mode = "exam" | "practice" | "review" | "drill" | "adaptive";
@@ -43,6 +44,19 @@ const practiceAnswerFormSchema = z.object({
     answer: z.string().min(1, "Please provide an answer."),
 });
 type PracticeAnswerFormValues = z.infer<typeof practiceAnswerFormSchema>;
+
+const DOMAINS = [
+    "Patient Counseling (e.g., inhaler use, insulin pen, anticoagulants)",
+    "Dosage Calculations (pediatric mg/kg, IV rates, dilutions)",
+    "Prescription Screening (legibility, interactions, duplications, allergies)",
+    "Drug Information Queries (on-the-spot DI: MOA, PK, monitoring)",
+    "Clinical Case Triage (red flags, referral criteria, urgency)",
+    "OTC & Minor Ailments (self-care boundaries, when to refer)",
+    "Law/Ethics/Safety (controlled drugs, labeling, documentation)",
+    "Compounding & Extemporaneous Prep (formula logic, stability)",
+    "OSCE Soft Skills (structure, empathy, teach-back)",
+];
+
 
 // Helper components
 function CaseSection({ title, content, icon: Icon }: { title: string, content: string | undefined, icon: React.ElementType }) {
@@ -343,9 +357,9 @@ export function OsceVivaPrepClient() {
   // Topic Selection Step
   if (appStep === 'topic') {
     const modeDetails = {
-        exam: { title: 'Exam Topic', description: 'Enter a topic for your exam simulation.' },
-        practice: { title: 'Practice Topic', description: 'Enter a topic to practice with instant feedback.' },
-        drill: { title: 'Drill Topic', description: 'Enter a competency to drill (e.g., Dosage Calculations, Inhaler Counseling).' },
+        exam: { title: 'Exam Domain', description: 'Select a domain for your exam simulation.' },
+        practice: { title: 'Practice Domain', description: 'Select a domain to practice with instant feedback.' },
+        drill: { title: 'Drill Domain', description: 'Select a competency to drill.' },
         review: { title: '', description: ''},
         adaptive: { title: '', description: ''},
     }
@@ -355,7 +369,35 @@ export function OsceVivaPrepClient() {
         <Card className="max-w-xl mx-auto">
         <CardHeader><CardTitle>{details.title}</CardTitle><CardDescription>{details.description}</CardDescription></CardHeader>
         <CardContent>
-            <Form {...topicForm}><form onSubmit={handleTopicSubmit} className="space-y-4"><FormField name="topic" control={topicForm.control} render={({ field }) => (<FormItem><FormLabel>Station Topic</FormLabel><FormControl><Input placeholder="e.g., Patient Counseling for Inhalers" {...field}/></FormControl><FormMessage/></FormItem>)} /><Button type="submit" className="w-full" disabled={isPending}>{isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}Generate Station</Button><Button variant="link" onClick={() => setAppStep('mode')} className="w-full">Back to Mode Selection</Button></form></Form>
+            <Form {...topicForm}>
+                <form onSubmit={handleTopicSubmit} className="space-y-4">
+                     <FormField
+                        control={topicForm.control}
+                        name="topic"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Station Domain</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a domain to practice..." />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {DOMAINS.map(domain => <SelectItem key={domain} value={domain}>{domain}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                    <Button type="submit" className="w-full" disabled={isPending}>
+                        {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                        Generate Station
+                    </Button>
+                    <Button variant="link" onClick={() => setAppStep('mode')} className="w-full">Back to Mode Selection</Button>
+                </form>
+            </Form>
         </CardContent>
         </Card>
     );
@@ -375,3 +417,5 @@ export function OsceVivaPrepClient() {
     </Card>
   )
 }
+
+    
