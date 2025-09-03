@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Sparkles, User, FileText, FlaskConical, Microscope, HeartPulse, ShieldPlus, Activity, Lightbulb, ClipboardCheck, Zap, CaseSensitive, BookCopy, Repeat, Check, X, Forward, Save } from "lucide-react";
+import { Loader2, Sparkles, User, FileText, FlaskConical, Microscope, HeartPulse, ShieldPlus, Activity, Lightbulb, ClipboardCheck, Zap, CaseSensitive, BookCopy, Repeat, Check, X, Forward, Save, TimerIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Label } from "@/components/ui/label";
@@ -98,6 +98,27 @@ function InstantFeedbackCard({ feedback }: { feedback: NonNullable<OsceStationGe
     )
 }
 
+function Timer({ timeLeft, onTimeUp }: { timeLeft: number; onTimeUp: () => void }) {
+    useEffect(() => {
+        if (timeLeft === 0) {
+            onTimeUp();
+        }
+    }, [timeLeft, onTimeUp]);
+
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    const isWarning = timeLeft <= 120 && timeLeft > 30;
+    const isCritical = timeLeft <= 30;
+
+    return (
+        <div className={`flex items-center gap-2 font-mono font-bold text-lg p-2 rounded-md ${isCritical ? 'text-destructive animate-pulse' : isWarning ? 'text-amber-500' : ''}`}>
+            <TimerIcon className="h-6 w-6"/>
+            <span>{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}</span>
+        </div>
+    );
+}
+
+
 export function OsceVivaPrepClient() {
   const [isPending, startTransition] = useTransition();
   const { addSession } = useOsceSessions();
@@ -148,11 +169,28 @@ export function OsceVivaPrepClient() {
   // State for practice/drill modes
   const [practiceStep, setPracticeStep] = useState(0);
   const [practiceFeedback, setPracticeFeedback] = useState<OsceStationGeneratorOutput['instantFeedback'] | null>(null);
+  
+  // State for Timer
+  const [timeLeft, setTimeLeft] = useState(420); // 7 minutes default
+  const [timerActive, setTimerActive] = useState(false);
 
 
   const topicForm = useForm<TopicFormValues>({ resolver: zodResolver(topicFormSchema), defaultValues: { topic: "" } });
   const examAnswerForm = useForm<ExamAnswerFormValues>({ defaultValues: { answers: [] } });
   const practiceAnswerForm = useForm<PracticeAnswerFormValues>({ resolver: zodResolver(practiceAnswerFormSchema), defaultValues: { answer: "" }});
+
+  // Timer Effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout | undefined;
+    if (timerActive && timeLeft > 0) {
+        interval = setInterval(() => {
+            setTimeLeft(prev => prev - 1);
+        }, 1000);
+    } else if (timeLeft === 0) {
+        setTimerActive(false);
+    }
+    return () => clearInterval(interval);
+  }, [timerActive, timeLeft]);
 
 
   useEffect(() => {
@@ -162,13 +200,18 @@ export function OsceVivaPrepClient() {
       } else if (state.caseDetails && state.questions) {
         examAnswerForm.reset({ answers: state.questions.map(q => ({ question: q.question, answer: '' })) });
         setAppStep('case');
+        if (selectedMode === 'exam' || selectedMode === 'practice') {
+            setTimeLeft(420);
+            setTimerActive(true);
+        }
       } else if (state.feedback) { // Exam mode feedback
         setAppStep('feedback');
+        setTimerActive(false);
       } else if (state.instantFeedback) { // Practice/Drill mode feedback
         setPracticeFeedback(state.instantFeedback);
       }
     }
-  }, [state, toast, examAnswerForm]);
+  }, [state, toast, examAnswerForm, selectedMode]);
 
   const handleModeSelect = (mode: Mode) => {
     if (mode === 'exam' || mode === 'practice' || mode === 'drill') {
@@ -246,10 +289,23 @@ export function OsceVivaPrepClient() {
     setSelectedMode(null);
     setPracticeStep(0);
     setPracticeFeedback(null);
+    setTimerActive(false);
+    setTimeLeft(420);
     // Important: Clear the AI state to avoid re-rendering old data
     const formData = new FormData();
     formData.append("topic", "reset"); // A dummy value to trigger a state clear
     startTransition(() => formAction(formData));
+  }
+
+  const handleTimeUp = () => {
+      toast({
+          variant: "destructive",
+          title: "Time's Up!",
+          description: "The time for this station has elapsed.",
+      });
+      if (selectedMode === 'exam') {
+        handleExamAnswerSubmit();
+      }
   }
 
   // ==== RENDER LOGIC ====
@@ -303,7 +359,13 @@ export function OsceVivaPrepClient() {
     return (
         <div className="space-y-6">
             <Card>
-                <CardHeader><CardTitle className="text-2xl">OSCE Station: {topicForm.getValues("topic")}</CardTitle><CardDescription>Mode: {selectedMode} | Read the case and answer the questions.</CardDescription></CardHeader>
+                <CardHeader>
+                    <div className="flex justify-between items-center">
+                         <CardTitle className="text-2xl">OSCE Station: {topicForm.getValues("topic")}</CardTitle>
+                         {timerActive && <Timer timeLeft={timeLeft} onTimeUp={handleTimeUp} />}
+                    </div>
+                    <CardDescription>Mode: {selectedMode} | Read the case and answer the questions.</CardDescription>
+                </CardHeader>
                  {selectedMode !== 'drill' && (
                     <CardContent className="p-6 bg-muted/50 space-y-4 rounded-b-lg">
                         <CaseSection title="Patient Demographics" content={caseDetails.demographics} icon={User}/><CaseSection title="Chief Complaint" content={caseDetails.chiefComplaint} icon={FileText}/><CaseSection title="History of Present Illness" content={caseDetails.hpi} icon={Activity}/><CaseSection title="Past Medical & Family History" content={caseDetails.pmh} icon={ShieldPlus}/><CaseSection title="Current Medications & Allergies" content={caseDetails.medications} icon={FlaskConical}/><CaseSection title="Physical Examination" content={caseDetails.examination} icon={HeartPulse}/><CaseSection title="Lab & Diagnostics" content={caseDetails.labs} icon={Microscope}/>
@@ -319,7 +381,7 @@ export function OsceVivaPrepClient() {
                         <Form {...examAnswerForm}>
                             <form onSubmit={handleExamAnswerSubmit} className="space-y-6">
                                {questions.map((q, index) => (<FormField key={index} name={`answers.${index}.answer`} control={examAnswerForm.control} render={({ field }) => (<FormItem className="p-4 border rounded-lg"><FormLabel className="font-semibold text-base">{q.question}</FormLabel><FormControl>{q.type === 'multiple_choice' && q.options ? (<RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="pt-2 space-y-1">{q.options.map((opt, i) => (<FormItem key={i} className="flex items-center space-x-3"><FormControl><RadioGroupItem value={opt}/></FormControl><Label className="font-normal">{opt}</Label></FormItem>))}</RadioGroup>) : (<Textarea placeholder="Your detailed answer..." {...field}/>)}</FormControl><FormMessage/><FormField name={`answers.${index}.question`} control={examAnswerForm.control} defaultValue={q.question} render={({ field }) => <input type="hidden" {...field} />}/></FormItem>)}/>))}
-                               <Button type="submit" disabled={isPending}>Submit for Feedback</Button>
+                               <Button type="submit" disabled={isPending || timeLeft === 0}>Submit for Feedback</Button>
                             </form>
                         </Form>
                     </CardContent>
@@ -337,7 +399,7 @@ export function OsceVivaPrepClient() {
                                 <FormField name="answer" control={practiceAnswerForm.control} render={({ field }) => (
                                     <FormItem><FormControl>{questions[practiceStep].type === 'multiple_choice' && questions[practiceStep].options ? (<RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="pt-2 space-y-1">{questions[practiceStep].options?.map((opt, i) => (<FormItem key={i} className="flex items-center space-x-3"><FormControl><RadioGroupItem value={opt}/></FormControl><Label className="font-normal">{opt}</Label></FormItem>))}</RadioGroup>) : (<Textarea placeholder="Your answer..." {...field}/>)}</FormControl><FormMessage/></FormItem>
                                 )} />
-                                <Button type="submit" disabled={isPending || !!practiceFeedback}>Check Answer</Button>
+                                <Button type="submit" disabled={isPending || !!practiceFeedback || timeLeft === 0}>Check Answer</Button>
                             </form>
                         </Form>
 
@@ -417,5 +479,3 @@ export function OsceVivaPrepClient() {
     </Card>
   )
 }
-
-    
