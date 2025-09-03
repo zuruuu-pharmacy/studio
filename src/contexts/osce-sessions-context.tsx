@@ -3,13 +3,12 @@
 
 import type { ReactNode } from 'react';
 import { createContext, useContext, useState, useMemo, useEffect } from 'react';
-import type { OsceStationGeneratorInput, OsceStationGeneratorOutput } from '@/ai/flows/osce-station-generator';
+import type { OsceStationGeneratorOutput } from '@/ai/flows/osce-station-generator';
 
 export interface OsceSession {
   id: string;
   topic: string;
   date: string;
-  input: OsceStationGeneratorInput;
   output: OsceStationGeneratorOutput;
 }
 

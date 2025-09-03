@@ -295,27 +295,18 @@ export function OsceVivaPrepClient() {
         });
         return;
     }
+
+    // The complete output from the AI's final step is what needs to be saved.
+    const sessionOutput: OsceStationGeneratorOutput = { ...state };
     
-    const { feedback, ...caseData } = state;
-
-    const sessionToSave: OsceStationGeneratorOutput = {
-        ...caseData, // Includes caseDetails, questions from the final state
-        feedback: feedback,
-    };
-
-    const originalInput: OsceStationGeneratorInput = {
-        topic: `${topicForm.getValues("topic")} (Difficulty: ${topicForm.getValues("difficulty")})`,
-        studentAnswers: examAnswerForm.getValues("answers"),
-        caseDetails: state.caseDetails, // We need caseDetails here too for resubmission if needed.
-    };
-
-    addSession({
+    const sessionToSave: OsceSession = {
         id: `session_${Date.now()}`,
-        topic: originalInput.topic,
+        topic: `${topicForm.getValues("topic")} (Difficulty: ${topicForm.getValues("difficulty")})`,
         date: new Date().toISOString(),
-        input: originalInput,
-        output: sessionToSave,
-    });
+        output: sessionOutput,
+    };
+
+    addSession(sessionToSave);
 
     toast({ title: "Session Saved!", description: "You can review this session in Review Mode." });
     resetAll();
