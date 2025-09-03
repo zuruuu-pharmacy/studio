@@ -34,8 +34,8 @@ export function ReviewModeClient() {
              return (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Error</CardTitle>
-                        <CardDescription>This session does not contain valid feedback to review.</CardDescription>
+                        <CardTitle>Error Loading Session</CardTitle>
+                        <CardDescription>This session data is incomplete or corrupted.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Button onClick={() => setSelectedSessionId(null)}><ArrowLeft className="mr-2"/>Back to List</Button>

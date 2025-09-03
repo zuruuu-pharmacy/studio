@@ -17,7 +17,7 @@ import { Loader2, Sparkles, User, FileText, FlaskConical, Microscope, HeartPulse
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Label } from "@/components/ui/label";
-import { useOsceSessions } from "@/contexts/osce-sessions-context";
+import { useOsceSessions, type OsceSession } from "@/contexts/osce-sessions-context";
 import { useRouter } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -287,16 +287,15 @@ export function OsceVivaPrepClient() {
   }
   
   const handleSaveSession = () => {
-    if (!state || !state.feedback) {
+    if (!state || !state.feedback || !state.caseDetails) {
         toast({
             variant: "destructive",
             title: "Save Failed",
-            description: "Could not save the session because feedback data is missing.",
+            description: "Could not save the session because critical data is missing.",
         });
         return;
     }
 
-    // The complete output from the AI's final step is what needs to be saved.
     const sessionOutput: OsceStationGeneratorOutput = { ...state };
     
     const sessionToSave: OsceSession = {
@@ -307,7 +306,6 @@ export function OsceVivaPrepClient() {
     };
 
     addSession(sessionToSave);
-
     toast({ title: "Session Saved!", description: "You can review this session in Review Mode." });
     resetAll();
 };
