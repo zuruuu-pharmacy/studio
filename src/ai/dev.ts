@@ -24,6 +24,7 @@ import '@/ai/flows/study-material-generator.ts';
 import '@/ai/flows/flashcard-generator.ts';
 import '@/ai/flows/clinical-case-simulator.ts';
 import '@/ai/flows/sop-generator.ts';
+import '@/ai_flows/osce-station-generator.ts';
 import '@/ai/flows/anagram-generator.ts';
 import '@/ai/flows/crossword-generator.ts';
 import '@/ai/flows/word-search-generator.ts';
