@@ -100,7 +100,7 @@ const caseGenerationPrompt = ai.definePrompt({
   name: 'osceStationGenerationPrompt',
   input: {schema: z.object({ topic: z.string() })},
   output: {schema: CaseGenerationOutputSchema},
-  model: 'googleai/gemini-1.5-pro',
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are an OSCE/Viva Examiner Simulator for pharmacy students. Your behavior MUST be neutral, succinct, and non-leading. Your primary role is to create a station that assesses communication, clinical judgment, calculation accuracy, and prescription safety, structured according to professional standards.
 
   **Topic/Domain:** {{{topic}}}
@@ -163,8 +163,8 @@ const caseGenerationPrompt = ai.definePrompt({
 const examFeedbackGenerationPrompt = ai.definePrompt({
   name: 'osceExamFeedbackGenerationPrompt',
   input: {schema: OsceStationGeneratorInputSchema},
-  output: {schema: z.object({ feedback: FeedbackSchema })},
-  model: 'googleai/gemini-1.5-pro',
+  output: {schema: OsceStationGeneratorOutputSchema},
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are an OSCE/Viva Examiner Simulator for pharmacy students. A pharmacy student has submitted their answers for a station in EXAM mode.
   Your behavior MUST be professional, neutral, succinct, and non-leading, providing structured feedback. Your primary outcomes for assessment are: communication, clinical judgment, calculation accuracy, and prescription safety.
 
@@ -205,6 +205,7 @@ const examFeedbackGenerationPrompt = ai.definePrompt({
       -   **Counseling Points:** Provide key counseling points.
       -   **Overall Feedback:** Give a summary of performance, linking back to the scoring domains.
   5.  **Generate Model Answer:** Provide a concise, bullet-pointed model answer that outlines how an expert or ideal candidate would have responded to the core tasks of the station. This should be a guide for the student to compare their performance against.
+  6.  **Return All Data:** Your final output MUST be a single JSON object containing the 'feedback', the original 'caseDetails', and the original 'questions'.
 
   Be professional, specific, action-oriented, and exam-aligned. Respond ONLY with the structured JSON output.
   `,
@@ -263,12 +264,7 @@ const osceStationGeneratorFlow = ai.defineFlow(
     // Mode 2: Exam Mode (Full Feedback)
     else if (input.studentAnswers && input.studentAnswers.length > 0) {
       const { output } = await examFeedbackGenerationPrompt(input);
-      // Combine the feedback with the original case details and questions for a complete output
-      return { 
-          feedback: output!.feedback,
-          caseDetails: input.caseDetails,
-          questions: input.questions,
-      };
+      return output!;
     } 
     // Mode 1: Case Generation
     else {
@@ -278,4 +274,3 @@ const osceStationGeneratorFlow = ai.defineFlow(
   }
 );
 
-    

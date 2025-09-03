@@ -51,7 +51,7 @@ const prompt = ai.definePrompt({
   name: 'sopGeneratorPrompt',
   input: {schema: SopGeneratorInputSchema},
   output: {schema: SopGeneratorOutputSchema},
-  model: 'googleai/gemini-1.5-pro',
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are a Pharmacy Laboratory Knowledge Generator AI. Your task is to create a complete, academically accurate, and exam-ready Standard Operating Procedure (SOP) for the given experiment title.
 
 **Experiment Title:** {{{experimentTitle}}}
@@ -75,7 +75,7 @@ Generate a comprehensive SOP adhering to the following structure. Be detailed, p
 10. **Viva-Voce Questions:** Generate at least 5 relevant viva questions covering theory, procedure, and interpretation, along with their correct, concise answers.
 11. **Common Errors/Troubleshooting:** List typical mistakes and how to avoid them.
 12. **Virtual Lab Simulation:** Write a short, step-by-step narrative describing the expected observations as if the student were performing the experiment in a virtual lab.
-13. **Lab Report Template:** Outline a simple structure for the submission.
+13. **Lab Report Template:** Outline a simple structure for the student's lab report.
 14. **Regulatory & Compliance Notes:** Mention any connections to GLP, GMP, CPCSEA, or biosafety guidelines.
 
 Respond ONLY with the structured JSON output as defined by the schema.
