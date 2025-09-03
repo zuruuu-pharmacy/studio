@@ -289,7 +289,7 @@ export function OsceVivaPrepClient() {
   }
   
   const handleSaveSession = () => {
-    if (!state || !state.feedback) {
+    if (!state || !state.caseDetails || !state.feedback) {
         toast({
             variant: "destructive",
             title: "Save Failed",
@@ -607,3 +607,5 @@ export function OsceVivaPrepClient() {
     </Card>
   )
 }
+
+    
