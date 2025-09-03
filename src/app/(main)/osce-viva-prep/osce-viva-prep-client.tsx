@@ -417,11 +417,12 @@ export function OsceVivaPrepClient() {
                     </CardContent>
                 </Card>
 
-                <Accordion type="multiple" className="w-full space-y-4" defaultValue={['diagnosis', 'drugs']}>
+                <Accordion type="multiple" className="w-full space-y-4" defaultValue={['diagnosis', 'drugs', 'model']}>
                     <AccordionItem value="diagnosis"><AccordionTrigger className="font-semibold text-lg">Diagnosis Confirmation</AccordionTrigger><AccordionContent className="p-4">{feedback.diagnosisConfirmation}</AccordionContent></AccordionItem>
                     <AccordionItem value="drugs"><AccordionTrigger className="font-semibold text-lg">Drug Choice Rationale</AccordionTrigger><AccordionContent className="p-4">{feedback.drugChoiceRationale}</AccordionContent></AccordionItem>
                     <AccordionItem value="monitoring"><AccordionTrigger className="font-semibold text-lg">Monitoring Plan</AccordionTrigger><AccordionContent className="p-4">{feedback.monitoringPlan}</AccordionContent></AccordionItem>
                     <AccordionItem value="counseling"><AccordionTrigger className="font-semibold text-lg">Lifestyle Counseling</AccordionTrigger><AccordionContent className="p-4">{feedback.lifestyleCounseling}</AccordionContent></AccordionItem>
+                    <AccordionItem value="model"><AccordionTrigger className="font-semibold text-lg">Model Answer</AccordionTrigger><AccordionContent className="p-4 whitespace-pre-wrap">{feedback.modelAnswer}</AccordionContent></AccordionItem>
                 </Accordion>
                 <div className="flex gap-4">
                     <Button onClick={handleSaveSession}><Save className="mr-2"/>Save Session for Review</Button>

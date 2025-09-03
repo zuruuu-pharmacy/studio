@@ -44,12 +44,13 @@ const FeedbackSchema = z.object({
     monitoringPlan: z.string().describe("Suggested monitoring parameters."),
     lifestyleCounseling: z.string().describe("Key lifestyle modification counseling points."),
     overallFeedback: z.string().describe("A summary of the student's performance and key learning points based on OSCE criteria like communication, clinical judgment, and safety."),
+    modelAnswer: z.string().describe("An exemplar, bullet-point model answer showing how an expert would have handled the station's core tasks."),
     scoring: z.object({
-        communication: z.number().optional().describe("Score for Communication (out of 5). Set to null if not applicable."),
-        clinicalReasoning: z.number().optional().describe("Score for Clinical Reasoning (out of 5). Set to null if not applicable."),
-        calculationAccuracy: z.number().optional().describe("Score for Calculation Accuracy (out of 5). Set to null if not applicable."),
-        safetyAndInteractions: z.number().optional().describe("Score for Safety & Interactions (out of 5). Set to null if not applicable."),
-        structureAndTimeManagement: z.number().optional().describe("Score for Structure & Time Management (out of 5). Set to null if not applicable."),
+        communication: z.number().nullable().describe("Score for Communication (out of 5). Set to null if not applicable."),
+        clinicalReasoning: z.number().nullable().describe("Score for Clinical Reasoning (out of 5). Set to null if not applicable."),
+        calculationAccuracy: z.number().nullable().describe("Score for Calculation Accuracy (out of 5). Set to null if not applicable."),
+        safetyAndInteractions: z.number().nullable().describe("Score for Safety & Interactions (out of 5). Set to null if not applicable."),
+        structureAndTimeManagement: z.number().nullable().describe("Score for Structure & Time Management (out of 5). Set to null if not applicable."),
         criticalErrors: z.array(z.string()).optional().describe("A list of any critical errors made by the student."),
     }).describe("A detailed scoring rubric based on performance."),
 });
@@ -191,6 +192,7 @@ const examFeedbackGenerationPrompt = ai.definePrompt({
       -   **Monitoring Plan:** Outline essential monitoring parameters.
       -   **Counseling Points:** Provide key counseling points.
       -   **Overall Feedback:** Give a summary of performance, linking back to the scoring domains.
+  4.  **Generate Model Answer:** Provide a concise, bullet-pointed model answer that outlines how an expert or ideal candidate would have responded to the core tasks of the station. This should be a guide for the student to compare their performance against.
 
   Be professional, specific, action-oriented, and exam-aligned. Respond ONLY with the structured JSON output.
   `,
