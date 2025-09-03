@@ -183,24 +183,27 @@ const examFeedbackGenerationPrompt = ai.definePrompt({
   {{/each}}
 
   **Your Task (as an Examiner):**
-  1.  **Analyze & Score:** Critically evaluate the student's answers against the case. Based on this, provide a score from 0-5 for each of the following domains. If a domain is not applicable (e.g., no calculations), set its score to null.
+  1.  **Check for Empty Submission:** First, check if all 'answer' fields from the student are empty or contain only whitespace. 
+      - If the submission is empty, you MUST assign a score of 0 for all scoring domains. For all qualitative feedback fields, you MUST state "No answer provided." or "Station left blank.". Do not generate any other feedback.
+      - If the submission is not empty, proceed with the full evaluation below.
+  2.  **Analyze & Score:** Critically evaluate the student's answers against the case. Based on this, provide a score from 0-5 for each of the following domains. If a domain is not applicable (e.g., no calculations), set its score to null.
       -   **communication:** How well did they communicate? (Clarity, empathy, structure)
       -   **clinicalReasoning:** How sound was their clinical judgment?
       -   **calculationAccuracy:** If applicable, was their calculation correct?
       -   **safetyAndInteractions:** Did they identify and manage safety risks?
       -   **structureAndTimeManagement:** Was their approach logical and efficient?
-  2.  **Identify Critical Errors:** Check for any of the following critical errors. If found, add a description to the 'criticalErrors' array.
+  3.  **Identify Critical Errors:** Check for any of the following critical errors. If found, add a description to the 'criticalErrors' array.
       -   “Unsafe advice causing potential harm”
       -   “Missed life-threatening red flag”
       -   “Calculation error >10%”
       -   “Failed to identify a major contraindication or interaction.”
-  3.  **Provide Qualitative Feedback:**
+  4.  **Provide Qualitative Feedback:**
       -   **Diagnosis:** Confirm the most likely diagnosis.
       -   **Drug Choice & Rationale:** Evaluate the student's drug choice and explain the best options.
       -   **Monitoring Plan:** Outline essential monitoring parameters.
       -   **Counseling Points:** Provide key counseling points.
       -   **Overall Feedback:** Give a summary of performance, linking back to the scoring domains.
-  4.  **Generate Model Answer:** Provide a concise, bullet-pointed model answer that outlines how an expert or ideal candidate would have responded to the core tasks of the station. This should be a guide for the student to compare their performance against.
+  5.  **Generate Model Answer:** Provide a concise, bullet-pointed model answer that outlines how an expert or ideal candidate would have responded to the core tasks of the station. This should be a guide for the student to compare their performance against.
 
   Be professional, specific, action-oriented, and exam-aligned. Respond ONLY with the structured JSON output.
   `,
