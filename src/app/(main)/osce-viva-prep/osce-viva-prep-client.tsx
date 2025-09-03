@@ -5,7 +5,7 @@ import { useActionState, useEffect, useState, useTransition } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { generateOsceStation, type OsceStationGeneratorOutput } from "@/ai/flows/osce-station-generator";
+import { generateOsceStation, type OsceStationGeneratorOutput, type OsceStationGeneratorInput } from "@/ai/flows/osce-station-generator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -13,10 +13,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Sparkles, User, FileText, FlaskConical, Microscope, HeartPulse, ShieldPlus, Activity, Lightbulb, ClipboardCheck, Zap, CaseSensitive, BookCopy, Repeat, Check, X, Forward } from "lucide-react";
+import { Loader2, Sparkles, User, FileText, FlaskConical, Microscope, HeartPulse, ShieldPlus, Activity, Lightbulb, ClipboardCheck, Zap, CaseSensitive, BookCopy, Repeat, Check, X, Forward, Save } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Label } from "@/components/ui/label";
+import { useOsceSessions } from "@/contexts/osce-sessions-context";
+import { useRouter } from "next/navigation";
+
 
 type Mode = "exam" | "practice" | "review" | "drill" | "adaptive";
 
@@ -83,6 +86,9 @@ function InstantFeedbackCard({ feedback }: { feedback: NonNullable<OsceStationGe
 
 export function OsceVivaPrepClient() {
   const [isPending, startTransition] = useTransition();
+  const { addSession } = useOsceSessions();
+  const router = useRouter();
+  
   const [state, formAction] = useActionState<OsceStationGeneratorOutput | { error: string } | null, FormData>(
     async (previousState, formData) => {
       const topic = formData.get("topic") as string;
@@ -153,7 +159,10 @@ export function OsceVivaPrepClient() {
     if (mode === 'exam' || mode === 'practice') {
         setSelectedMode(mode);
         setAppStep('topic');
-    } else {
+    } else if (mode === 'review') {
+        router.push('/osce-viva-prep?mode=review');
+    }
+    else {
         toast({ title: "Coming Soon", description: "This mode is currently under development."});
     }
   }
@@ -193,12 +202,36 @@ export function OsceVivaPrepClient() {
     setPracticeStep(prev => prev + 1);
   }
   
+  const handleSaveSession = () => {
+    if (!state || !state.feedback || !state.caseDetails) return;
+    
+    const sessionData: OsceStationGeneratorInput = {
+        topic: topicForm.getValues("topic"),
+        studentAnswers: examAnswerForm.getValues("answers"),
+        caseDetails: state.caseDetails,
+    }
+
+    addSession({
+        id: `session_${Date.now()}`,
+        topic: topicForm.getValues("topic"),
+        date: new Date().toISOString(),
+        input: sessionData,
+        output: state,
+    });
+    toast({ title: "Session Saved!", description: "You can review this session in Review Mode." });
+    resetAll();
+  }
+
   const resetAll = () => {
     topicForm.reset({ topic: ""});
     setAppStep('mode');
     setSelectedMode(null);
     setPracticeStep(0);
     setPracticeFeedback(null);
+    // Important: Clear the AI state to avoid re-rendering old data
+    const formData = new FormData();
+    formData.append("topic", "reset"); // A dummy value to trigger a state clear
+    startTransition(() => formAction(formData));
   }
 
   // ==== RENDER LOGIC ====
@@ -220,7 +253,10 @@ export function OsceVivaPrepClient() {
             <CardContent className="space-y-6">
                  <Alert variant="default" className="bg-primary/10 border-primary/50"><ClipboardCheck className="h-4 w-4 text-primary" /><AlertTitle>Overall Feedback</AlertTitle><AlertDescription>{state.feedback.overallFeedback}</AlertDescription></Alert>
                 <Accordion type="multiple" className="w-full space-y-4" defaultValue={['diagnosis', 'drugs', 'monitoring', 'counseling']}><AccordionItem value="diagnosis"><AccordionTrigger className="font-semibold text-lg">Diagnosis Confirmation</AccordionTrigger><AccordionContent className="p-4">{state.feedback.diagnosisConfirmation}</AccordionContent></AccordionItem><AccordionItem value="drugs"><AccordionTrigger className="font-semibold text-lg">Drug Choice Rationale</AccordionTrigger><AccordionContent className="p-4">{state.feedback.drugChoiceRationale}</AccordionContent></AccordionItem><AccordionItem value="monitoring"><AccordionTrigger className="font-semibold text-lg">Monitoring Plan</AccordionTrigger><AccordionContent className="p-4">{state.feedback.monitoringPlan}</AccordionContent></AccordionItem><AccordionItem value="counseling"><AccordionTrigger className="font-semibold text-lg">Lifestyle Counseling</AccordionTrigger><AccordionContent className="p-4">{state.feedback.lifestyleCounseling}</AccordionContent></AccordionItem></Accordion>
-                <Button onClick={resetAll}>Start a New Station</Button>
+                <div className="flex gap-4">
+                    <Button onClick={handleSaveSession}><Save className="mr-2"/>Save Session for Review</Button>
+                    <Button onClick={resetAll} variant="outline">Start a New Station</Button>
+                </div>
             </CardContent>
         </Card>
     )
@@ -317,9 +353,9 @@ export function OsceVivaPrepClient() {
         <CardContent className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             <button onClick={() => handleModeSelect('exam')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><CaseSensitive className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Exam Mode</h3><p className="text-sm text-muted-foreground">Full station with locked hints and feedback at the end. Simulates the real exam.</p></div></button>
             <button onClick={() => handleModeSelect('practice')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><Lightbulb className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Practice Mode</h3><p className="text-sm text-muted-foreground">Get instant feedback after each question and access hints.</p></div></button>
-            <button onClick={() => handleModeSelect('review')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4 disabled:opacity-50 disabled:cursor-not-allowed" disabled><BookCopy className="h-8 w-8 text-muted-foreground mt-1"/><div><h3 className="font-semibold text-lg text-muted-foreground">Review Mode</h3><p className="text-sm text-muted-foreground">Analyze your past performance with transcripts and model answers. (Coming Soon)</p></div></button>
-            <button onClick={() => handleModeSelect('drill')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4 disabled:opacity-50 disabled:cursor-not-allowed" disabled><Zap className="h-8 w-8 text-muted-foreground mt-1"/><div><h3 className="font-semibold text-lg text-muted-foreground">Drill Mode</h3><p className="text-sm text-muted-foreground">Rapid-fire questions on a single competency to build speed. (Coming Soon)</p></div></button>
-            <button onClick={() => handleModeSelect('adaptive')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4 disabled:opacity-50 disabled:cursor-not-allowed" disabled><Repeat className="h-8 w-8 text-muted-foreground mt-1"/><div><h3 className="font-semibold text-lg text-muted-foreground">Adaptive Mode</h3><p className="text-sm text-muted-foreground">Difficulty increases or decreases based on your performance. (Coming Soon)</p></div></button>
+            <button onClick={() => handleModeSelect('review')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><BookCopy className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Review Mode</h3><p className="text-sm text-muted-foreground">Analyze your past performance with transcripts and model answers.</p></div></button>
+            <button onClick={() => handleModeSelect('drill')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4 disabled:opacity-50 disabled:cursor-not-allowed" disabled><Zap className="h-8 w-8 text-muted-foreground mt-1"/><div><h3 className="font-semibold text-lg text-muted-foreground">Drill Mode</h3><p className="text-sm text-muted-foreground">Rapid-fire short items on a single competency. (Coming Soon)</p></div></button>
+            <button onClick={() => handleModeSelect('adaptive')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4 disabled:opacity-50 disabled:cursor-not-allowed" disabled><Repeat className="h-8 w-8 text-muted-foreground mt-1"/><div><h3 className="font-semibold text-lg text-muted-foreground">Adaptive Mode</h3><p className="text-sm text-muted-foreground">Difficulty increases or decreases based on performance. (Coming Soon)</p></div></button>
         </CardContent>
     </Card>
   )
