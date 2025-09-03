@@ -13,13 +13,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Sparkles, User, FileText, FlaskConical, Microscope, HeartPulse, ShieldPlus, Activity, Lightbulb, ClipboardCheck, Zap, CaseSensitive, BookCopy, Repeat, Check, X, Forward, Save, TimerIcon } from "lucide-react";
+import { Loader2, Sparkles, User, FileText, FlaskConical, Microscope, HeartPulse, ShieldPlus, Activity, Lightbulb, ClipboardCheck, Zap, CaseSensitive, BookCopy, Repeat, Check, X, Forward, Save, TimerIcon, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Label } from "@/components/ui/label";
 import { useOsceSessions } from "@/contexts/osce-sessions-context";
 import { useRouter } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 
 type Mode = "exam" | "practice" | "review" | "drill" | "adaptive";
@@ -321,12 +323,84 @@ export function OsceVivaPrepClient() {
 
   // Final Feedback View (Exam Mode)
   if (appStep === 'feedback' && state?.feedback) {
+    const { scoring, ...feedback } = state.feedback;
+
+    const rubricRows = [
+        { domain: 'Communication', score: scoring.communication },
+        { domain: 'Clinical Reasoning', score: scoring.clinicalReasoning },
+        { domain: 'Calculation Accuracy', score: scoring.calculationAccuracy },
+        { domain: 'Safety & Interactions', score: scoring.safetyAndInteractions },
+        { domain: 'Structure & Time Management', score: scoring.structureAndTimeManagement },
+    ];
+    
+    const validScores = rubricRows.filter(r => r.score !== null && r.score !== undefined);
+    const totalPossibleScore = validScores.length * 5;
+    const totalAchievedScore = validScores.reduce((acc, row) => acc + (row.score || 0), 0);
+    const percentage = totalPossibleScore > 0 ? Math.round((totalAchievedScore / totalPossibleScore) * 100) : 0;
+
+    const getGrade = (percent: number) => {
+        if (scoring.criticalErrors && scoring.criticalErrors.length > 0) return { band: 'Fail', color: 'text-destructive' };
+        if (percent >= 85) return { band: 'Distinction', color: 'text-green-500' };
+        if (percent >= 70) return { band: 'Merit', color: 'text-blue-500' };
+        if (percent >= 60) return { band: 'Pass', color: 'text-primary' };
+        return { band: 'Borderline/Fail', color: 'text-amber-600' };
+    }
+    const grade = getGrade(percentage);
+
     return (
         <Card>
-            <CardHeader><CardTitle className="text-2xl">Case Feedback & Analysis</CardTitle><CardDescription>Review the AI-powered evaluation of your answers for the {selectedMode} mode.</CardDescription></CardHeader>
+            <CardHeader>
+                <CardTitle className="text-2xl">Case Feedback & Analysis</CardTitle>
+                <CardDescription>Review the AI-powered evaluation of your answers for the {selectedMode} mode.</CardDescription>
+            </CardHeader>
             <CardContent className="space-y-6">
-                 <Alert variant="default" className="bg-primary/10 border-primary/50"><ClipboardCheck className="h-4 w-4 text-primary" /><AlertTitle>Overall Feedback</AlertTitle><AlertDescription>{state.feedback.overallFeedback}</AlertDescription></Alert>
-                <Accordion type="multiple" className="w-full space-y-4" defaultValue={['diagnosis', 'drugs', 'monitoring', 'counseling']}><AccordionItem value="diagnosis"><AccordionTrigger className="font-semibold text-lg">Diagnosis Confirmation</AccordionTrigger><AccordionContent className="p-4">{state.feedback.diagnosisConfirmation}</AccordionContent></AccordionItem><AccordionItem value="drugs"><AccordionTrigger className="font-semibold text-lg">Drug Choice Rationale</AccordionTrigger><AccordionContent className="p-4">{state.feedback.drugChoiceRationale}</AccordionContent></AccordionItem><AccordionItem value="monitoring"><AccordionTrigger className="font-semibold text-lg">Monitoring Plan</AccordionTrigger><AccordionContent className="p-4">{state.feedback.monitoringPlan}</AccordionContent></AccordionItem><AccordionItem value="counseling"><AccordionTrigger className="font-semibold text-lg">Lifestyle Counseling</AccordionTrigger><AccordionContent className="p-4">{state.feedback.lifestyleCounseling}</AccordionContent></AccordionItem></Accordion>
+                 <Alert variant="default" className="bg-primary/10 border-primary/50"><ClipboardCheck className="h-4 w-4 text-primary" /><AlertTitle>Overall Feedback</AlertTitle><AlertDescription>{feedback.overallFeedback}</AlertDescription></Alert>
+                
+                <Card className="bg-muted/50">
+                    <CardHeader>
+                        <CardTitle>Scoring & Rubric</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <Table>
+                                    <TableHeader><TableRow><TableHead>Domain</TableHead><TableHead className="text-right">Score</TableHead></TableRow></TableHeader>
+                                    <TableBody>
+                                        {rubricRows.map(row => (
+                                            <TableRow key={row.domain}>
+                                                <TableCell>{row.domain}</TableCell>
+                                                <TableCell className="text-right font-bold">{row.score !== null ? `${row.score} / 5` : 'N/A'}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                            <div className="flex flex-col items-center justify-center text-center p-4">
+                                <p className="text-sm text-muted-foreground">Final Grade</p>
+                                <p className={`text-6xl font-bold ${grade.color}`}>{percentage}%</p>
+                                <p className={`text-xl font-semibold ${grade.color}`}>{grade.band}</p>
+                            </div>
+                        </div>
+                        {scoring.criticalErrors && scoring.criticalErrors.length > 0 && (
+                            <Alert variant="destructive" className="mt-4">
+                                <AlertTriangle className="h-4 w-4" />
+                                <AlertTitle>Critical Errors Detected</AlertTitle>
+                                <AlertDescription>
+                                    <ul className="list-disc list-inside">
+                                        {scoring.criticalErrors.map((err, i) => <li key={i}>{err}</li>)}
+                                    </ul>
+                                </AlertDescription>
+                            </Alert>
+                        )}
+                    </CardContent>
+                </Card>
+
+                <Accordion type="multiple" className="w-full space-y-4" defaultValue={['diagnosis', 'drugs']}>
+                    <AccordionItem value="diagnosis"><AccordionTrigger className="font-semibold text-lg">Diagnosis Confirmation</AccordionTrigger><AccordionContent className="p-4">{feedback.diagnosisConfirmation}</AccordionContent></AccordionItem>
+                    <AccordionItem value="drugs"><AccordionTrigger className="font-semibold text-lg">Drug Choice Rationale</AccordionTrigger><AccordionContent className="p-4">{feedback.drugChoiceRationale}</AccordionContent></AccordionItem>
+                    <AccordionItem value="monitoring"><AccordionTrigger className="font-semibold text-lg">Monitoring Plan</AccordionTrigger><AccordionContent className="p-4">{feedback.monitoringPlan}</AccordionContent></AccordionItem>
+                    <AccordionItem value="counseling"><AccordionTrigger className="font-semibold text-lg">Lifestyle Counseling</AccordionTrigger><AccordionContent className="p-4">{feedback.lifestyleCounseling}</AccordionContent></AccordionItem>
+                </Accordion>
                 <div className="flex gap-4">
                     <Button onClick={handleSaveSession}><Save className="mr-2"/>Save Session for Review</Button>
                     <Button onClick={resetAll} variant="outline">Start a New Station</Button>

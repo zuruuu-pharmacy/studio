@@ -43,6 +43,14 @@ const FeedbackSchema = z.object({
     monitoringPlan: z.string().describe("Suggested monitoring parameters."),
     lifestyleCounseling: z.string().describe("Key lifestyle modification counseling points."),
     overallFeedback: z.string().describe("A summary of the student's performance and key learning points based on OSCE criteria like communication, clinical judgment, and safety."),
+    scoring: z.object({
+        communication: z.number().optional().describe("Score for Communication (out of 5). Set to null if not applicable."),
+        clinicalReasoning: z.number().optional().describe("Score for Clinical Reasoning (out of 5). Set to null if not applicable."),
+        calculationAccuracy: z.number().optional().describe("Score for Calculation Accuracy (out of 5). Set to null if not applicable."),
+        safetyAndInteractions: z.number().optional().describe("Score for Safety & Interactions (out of 5). Set to null if not applicable."),
+        structureAndTimeManagement: z.number().optional().describe("Score for Structure & Time Management (out of 5). Set to null if not applicable."),
+        criticalErrors: z.array(z.string()).optional().describe("A list of any critical errors made by the student."),
+    }).describe("A detailed scoring rubric based on performance."),
 });
 
 // STEP 3: Practice (Instant) Feedback
@@ -96,9 +104,9 @@ const caseGenerationPrompt = ai.definePrompt({
   **Topic/Domain:** {{{topic}}}
 
   **Instructions:**
-  1.  If the topic starts with "Drill questions for:", generate a series of 8-10 short, distinct questions on that topic instead of a full case study. For the 'caseDetails' object, you MUST populate its fields with placeholder text like "N/A for Drill Mode" or similar.
-  2.  Otherwise, create a detailed **Candidate Brief** and **Data Pack** (vitals, labs, etc.) and populate the 'caseDetails' object with this information.
-  3.  Generate 4-5 relevant clinical questions that represent the **Examiner Script**. These should test diagnosis, drug selection, patient counseling, calculations, or other relevant skills based on the topic. Make at least one question multiple-choice.
+  1.  Create a detailed Candidate Brief (what the student sees) and a Data Pack (vitals, labs, etc.). This information should be comprehensive and form the basis of the 'caseDetails' object.
+  2.  If the topic is "Drill questions for:...", generate a series of 8-10 short, distinct questions on that topic instead of a full case study. For the 'caseDetails' object, you MUST populate its fields with placeholder text like "N/A for Drill Mode" or similar.
+  3.  Generate 4-5 relevant clinical questions that represent the Examiner Script. These should test diagnosis, drug selection, patient counseling, calculations, or other relevant skills based on the topic. Make at least one question multiple-choice.
   4.  The case should be classic but have a nuance that requires critical thinking and aligns with OSCE testing principles.
 
   Respond ONLY with the structured JSON output.
@@ -132,11 +140,22 @@ const examFeedbackGenerationPrompt = ai.definePrompt({
   {{/each}}
 
   **Your Task (as an Examiner):**
-  1.  **Diagnosis:** Confirm the most likely diagnosis and any differential diagnoses.
-  2.  **Drug Choice & Rationale:** Evaluate the student's drug choice. Explain the best evidence-based options, why they are suitable, and why other choices are unsafe or less effective.
-  3.  **Monitoring Plan:** Outline essential monitoring parameters (e.g., BP, glucose, electrolytes).
-  4.  **Counseling Points:** Provide key lifestyle, adherence, and device counseling points if applicable.
-  5.  **Overall Feedback:** Give a summary of what the student did well and what they missed, focusing on clinical judgment, communication, safety, and accuracy.
+  1.  **Analyze & Score:** Critically evaluate the student's answers against the case. Based on this, provide a score from 0-5 for each of the following domains. If a domain is not applicable (e.g., no calculations), set its score to null.
+      -   **communication:** How well did they communicate? (Clarity, empathy, structure)
+      -   **clinicalReasoning:** How sound was their clinical judgment?
+      -   **calculationAccuracy:** If applicable, was their calculation correct?
+      -   **safetyAndInteractions:** Did they identify and manage safety risks?
+      -   **structureAndTimeManagement:** Was their approach logical and efficient?
+  2.  **Identify Critical Errors:** Check for any of the following critical errors. If found, add a description to the 'criticalErrors' array.
+      -   “Unsafe advice causing potential harm”
+      -   “Missed life-threatening red flag”
+      -   “Calculation error >10%”
+  3.  **Provide Qualitative Feedback:**
+      -   **Diagnosis:** Confirm the most likely diagnosis.
+      -   **Drug Choice & Rationale:** Evaluate the student's drug choice and explain the best options.
+      -   **Monitoring Plan:** Outline essential monitoring parameters.
+      -   **Counseling Points:** Provide key counseling points.
+      -   **Overall Feedback:** Give a summary of performance, linking back to the scoring domains.
 
   Be encouraging but professional. Focus on clinical reasoning. Respond ONLY with the structured JSON output.
   `,
