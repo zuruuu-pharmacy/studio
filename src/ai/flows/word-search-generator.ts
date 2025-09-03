@@ -47,16 +47,15 @@ Your task is to generate a complete, valid word search puzzle based on a given t
 **Grid Size:** {{{size}}}x{{{size}}}
 **Word Count:** Approximately {{{wordCount}}} words
 
-**Instructions:**
-1.  **Word Selection:** Choose around {{{wordCount}}} important and relevant drug names or terms related to the topic '{{{topic}}}'. The words must be in ALL UPPERCASE.
-2.  **Grid Generation:** Create a valid {{{size}}}x{{{size}}} word search grid.
-    *   Place the selected words within the grid. Words can be placed horizontally, vertically, or diagonally, and can be spelled forwards or backwards.
-    *   Fill any remaining empty spaces in the grid with random uppercase letters.
-3.  **Word List:** Provide a list of the exact words that are hidden in the grid.
-4.  **Validation:** Ensure that all words from the 'words' list are actually present in the 'grid'.
-5.  **Topic Echo:** Return the original topic in the output.
+**CRITICAL Instructions:**
+1.  **Word Selection FIRST:** First, you MUST choose exactly {{{wordCount}}} important and relevant drug names or terms related to the topic '{{{topic}}}'. The words must be in ALL UPPERCASE. This list is the source of truth.
+2.  **Grid Generation SECOND:** Next, create a valid {{{size}}}x{{{size}}} word search grid. You MUST place all the words you selected in step 1 into this grid. Words can be placed horizontally, vertically, or diagonally, and can be spelled forwards or backwards.
+3.  **Fill Remaining Spaces:** Fill any remaining empty spaces in the grid with random uppercase letters.
+4.  **Word List:** The 'words' array in your output MUST be the exact same list of words you selected in step 1.
+5.  **Validation:** It is absolutely critical that every word from the 'words' list is actually present and correctly spelled in the 'grid'.
+6.  **Topic Echo:** Return the original topic in the output.
 
-The final JSON output must be perfectly structured according to the schema.
+The final JSON output must be perfectly structured according to the schema. The puzzle must be solvable.
 `,
 });
 
