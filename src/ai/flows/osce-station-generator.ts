@@ -3,7 +3,7 @@
 /**
  * @fileOverview AI-powered virtual OSCE station generator and evaluator.
  *
- * - generateOsceStation - A two-step flow to generate a case and evaluate student answers.
+ * - generateOsceStation - A multi-step flow to generate a case, evaluate answers, and provide practice feedback.
  */
 
 import {ai} from '@/ai/genkit';
@@ -31,7 +31,7 @@ const CaseGenerationOutputSchema = z.object({
     questions: z.array(ClinicalQuestionSchema),
 });
 
-// STEP 2: Feedback Generation
+// STEP 2: Exam Feedback Generation
 const StudentAnswerSchema = z.object({
     question: z.string(),
     answer: z.string(),
@@ -45,11 +45,25 @@ const FeedbackSchema = z.object({
     overallFeedback: z.string().describe("A summary of the student's performance and key learning points based on OSCE criteria like communication, clinical judgment, and safety."),
 });
 
+// STEP 3: Practice (Instant) Feedback
+const InstantFeedbackSchema = z.object({
+    strengths: z.string().describe("Positive feedback on what the student did well in their answer."),
+    priorityFix: z.string().describe("The single most important correction or improvement for the student's answer."),
+    safeAlternative: z.string().optional().describe("A suggestion for a safer or more effective alternative phrasing or action."),
+});
+
+
 // Main Flow Input/Output
 const OsceStationGeneratorInputSchema = z.object({
   topic: z.string().describe('The medical topic or OSCE domain for the station (e.g., "Patient Counseling for Inhalers", "Pediatric Dosage Calculation").'),
-  studentAnswers: z.array(StudentAnswerSchema).optional().describe("The student's answers to the questions."),
-  caseDetails: PatientCaseSchema.optional().describe('The original case details (for step 2).'),
+  
+  // For exam mode (all answers at once)
+  studentAnswers: z.array(StudentAnswerSchema).optional().describe("The student's answers to the questions for final exam-style feedback."),
+
+  // For practice mode (one answer at a time)
+  practiceAnswer: StudentAnswerSchema.optional().describe("A single answer for instant practice feedback."),
+  
+  caseDetails: PatientCaseSchema.optional().describe('The original case details (for step 2 & 3).'),
 });
 export type OsceStationGeneratorInput = z.infer<typeof OsceStationGeneratorInputSchema>;
 
@@ -57,8 +71,10 @@ const OsceStationGeneratorOutputSchema = z.object({
     // Step 1 Output
     caseDetails: PatientCaseSchema.optional(),
     questions: z.array(ClinicalQuestionSchema).optional(),
-    // Step 2 Output
+    // Step 2 (Exam) Output
     feedback: FeedbackSchema.optional(),
+    // Step 3 (Practice) Output
+    instantFeedback: InstantFeedbackSchema.optional(),
 });
 export type OsceStationGeneratorOutput = z.infer<typeof OsceStationGeneratorOutputSchema>;
 
@@ -88,14 +104,14 @@ const caseGenerationPrompt = ai.definePrompt({
   `,
 });
 
-// Prompt for Step 2: Feedback Generation
-const feedbackGenerationPrompt = ai.definePrompt({
-  name: 'osceFeedbackGenerationPrompt',
+// Prompt for Step 2: Feedback Generation (Exam Mode)
+const examFeedbackGenerationPrompt = ai.definePrompt({
+  name: 'osceExamFeedbackGenerationPrompt',
   input: {schema: OsceStationGeneratorInputSchema},
   output: {schema: z.object({ feedback: FeedbackSchema })},
   model: 'googleai/gemini-1.5-flash',
   prompt: `You are an OSCE/Viva Examiner Simulator for pharmacy students.
-  A pharmacy student has submitted their answers for a station.
+  A pharmacy student has submitted their answers for a station in EXAM mode.
   Your behavior should be professional and neutral, providing structured feedback.
   Your primary outcomes for assessment are: communication, clinical judgment, calculation accuracy, and prescription safety.
 
@@ -126,6 +142,37 @@ const feedbackGenerationPrompt = ai.definePrompt({
 });
 
 
+// Prompt for Step 3: Instant Feedback (Practice Mode)
+const practiceFeedbackPrompt = ai.definePrompt({
+  name: 'oscePracticeFeedbackPrompt',
+  input: {schema: OsceStationGeneratorInputSchema},
+  output: {schema: z.object({ instantFeedback: InstantFeedbackSchema })},
+  model: 'googleai/gemini-1.5-flash',
+  prompt: `You are an OSCE/Viva Examiner Simulator in PRACTICE mode. A student has just submitted their answer for a single question. Provide immediate, targeted feedback.
+
+  **Case Context:**
+  -   **Complaint:** {{caseDetails.chiefComplaint}}
+  -   **HPI:** {{caseDetails.hpi}}
+  -   **PMH:** {{caseDetails.pmh}}
+  -   **Medications:** {{caseDetails.medications}}
+
+  **The Question:**
+  "{{practiceAnswer.question}}"
+
+  **The Student's Answer:**
+  "{{practiceAnswer.answer}}"
+
+  **Your Task:**
+  Provide concise, instant feedback based on the "FBK.INSTANT.001" template:
+  1.  **Strengths:** In one sentence, what did the student do well? (e.g., "You correctly identified the need to check for allergies.")
+  2.  **Priority Fix:** What is the single most important thing they should correct or add? Be specific. (e.g., "You should also ask about the type of reaction the patient had to Penicillin.")
+  3.  **Safe Alternative:** If applicable, suggest a better way to phrase their response or a safer action. (e.g., "A better way to ask would be, 'Can you describe what happened when you took Penicillin?'")
+
+  Be encouraging and focus on helping the student improve for the next question. Respond ONLY with the structured JSON output.
+  `,
+});
+
+
 const osceStationGeneratorFlow = ai.defineFlow(
   {
     name: 'osceStationGeneratorFlow',
@@ -133,12 +180,18 @@ const osceStationGeneratorFlow = ai.defineFlow(
     outputSchema: OsceStationGeneratorOutputSchema,
   },
   async (input) => {
-    // If we have answers, this is the second step (Feedback).
-    if (input.studentAnswers && input.studentAnswers.length > 0) {
-      const { output } = await feedbackGenerationPrompt(input);
+    // Mode 3: Practice Mode (Instant Feedback)
+    if (input.practiceAnswer) {
+        const { output } = await practiceFeedbackPrompt(input);
+        return output!;
+    }
+    // Mode 2: Exam Mode (Full Feedback)
+    else if (input.studentAnswers && input.studentAnswers.length > 0) {
+      const { output } = await examFeedbackGenerationPrompt(input);
       return output!;
-    } else {
-      // Otherwise, this is the first step (Case Generation).
+    } 
+    // Mode 1: Case Generation
+    else {
       const { output } = await caseGenerationPrompt({ topic: input.topic });
       return output!;
     }
