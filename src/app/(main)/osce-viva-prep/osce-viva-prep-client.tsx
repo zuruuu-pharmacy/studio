@@ -13,18 +13,18 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Sparkles, User, FileText, FlaskConical, Microscope, HeartPulse, ShieldPlus, Activity, Lightbulb, ClipboardCheck } from "lucide-react";
+import { Loader2, Sparkles, User, FileText, FlaskConical, Microscope, HeartPulse, ShieldPlus, Activity, Lightbulb, ClipboardCheck, Zap, CaseSensitive, BookCopy, Repeat } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Label } from "@/components/ui/label";
 
-// Step 1 Form: Topic Selection
+type Mode = "exam" | "practice" | "review" | "drill" | "adaptive";
+
 const topicFormSchema = z.object({
   topic: z.string().min(3, "Please enter a topic."),
 });
 type TopicFormValues = z.infer<typeof topicFormSchema>;
 
-// Step 2 Form: Answering Questions
 const answerFormSchema = z.object({
   answers: z.array(z.object({
     question: z.string(),
@@ -76,7 +76,8 @@ export function OsceVivaPrepClient() {
   );
 
   const { toast } = useToast();
-  const [step, setStep] = useState<'topic' | 'case' | 'feedback'>('topic');
+  const [step, setStep] = useState<'mode' | 'topic' | 'case' | 'feedback'>('mode');
+  const [selectedMode, setSelectedMode] = useState<Mode | null>(null);
 
   const topicForm = useForm<TopicFormValues>({ 
       resolver: zodResolver(topicFormSchema),
@@ -103,6 +104,15 @@ export function OsceVivaPrepClient() {
     }
   }, [state, toast, answerForm]);
 
+  const handleModeSelect = (mode: Mode) => {
+    if (mode !== 'exam') {
+        toast({ title: "Coming Soon", description: "This mode is currently under development."});
+        return;
+    }
+    setSelectedMode(mode);
+    setStep('topic');
+  }
+
   const handleTopicSubmit = topicForm.handleSubmit((data) => {
     const formData = new FormData();
     formData.append("topic", data.topic);
@@ -122,10 +132,10 @@ export function OsceVivaPrepClient() {
   
   const resetAll = () => {
     topicForm.reset({ topic: ""});
-    setStep('topic');
+    setStep('mode');
+    setSelectedMode(null);
   }
 
-  // Loading spinner
   if (isPending) {
     return (
         <div className="flex flex-col justify-center items-center h-64 gap-4">
@@ -135,13 +145,12 @@ export function OsceVivaPrepClient() {
     )
   }
 
-  // Step 3: Feedback View
   if (step === 'feedback' && state?.feedback) {
     return (
         <Card>
             <CardHeader>
                 <CardTitle className="text-2xl">Case Feedback & Analysis</CardTitle>
-                <CardDescription>Review the AI-powered evaluation of your answers.</CardDescription>
+                <CardDescription>Review the AI-powered evaluation of your answers for the {selectedMode} mode.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                  <Alert variant="default" className="bg-primary/10 border-primary/50">
@@ -162,7 +171,6 @@ export function OsceVivaPrepClient() {
     )
   }
 
-  // Step 2: Case View
   if (step === 'case' && state?.caseDetails && state?.questions) {
     const { caseDetails, questions } = state;
     return (
@@ -214,30 +222,79 @@ export function OsceVivaPrepClient() {
     );
   }
 
-  // Step 1: Topic Selection
+  if (step === 'topic') {
+    return (
+        <Card className="max-w-xl mx-auto">
+        <CardHeader>
+            <CardTitle>Generate OSCE Station</CardTitle>
+            <CardDescription>Enter a topic, domain, or scenario for your {selectedMode} session.</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <Form {...topicForm}>
+            <form onSubmit={handleTopicSubmit} className="space-y-4">
+                <FormField name="topic" control={topicForm.control} render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Station Topic</FormLabel>
+                    <FormControl><Input placeholder="e.g., Patient Counseling for Inhalers" {...field}/></FormControl>
+                    <FormMessage/>
+                </FormItem>
+                )} />
+                <Button type="submit" className="w-full" disabled={isPending}>
+                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                Generate Station
+                </Button>
+                 <Button variant="link" onClick={() => setStep('mode')} className="w-full">Back to Mode Selection</Button>
+            </form>
+            </Form>
+        </CardContent>
+        </Card>
+    );
+  }
+  
+  // Default step: Mode selection
   return (
-    <Card className="max-w-xl mx-auto">
-      <CardHeader>
-        <CardTitle>Generate OSCE Station</CardTitle>
-        <CardDescription>Enter a topic, domain, or scenario to generate a new station.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...topicForm}>
-          <form onSubmit={handleTopicSubmit} className="space-y-4">
-            <FormField name="topic" control={topicForm.control} render={({ field }) => (
-              <FormItem>
-                <FormLabel>Station Topic</FormLabel>
-                <FormControl><Input placeholder="e.g., Patient Counseling for Inhalers" {...field}/></FormControl>
-                <FormMessage/>
-              </FormItem>
-            )} />
-            <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
-              Generate Station
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
+    <Card>
+        <CardHeader>
+            <CardTitle>Select a Practice Mode</CardTitle>
+            <CardDescription>Choose how you want to prepare for your OSCE or Viva.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <button onClick={() => handleModeSelect('exam')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4">
+                <CaseSensitive className="h-8 w-8 text-primary mt-1"/>
+                <div>
+                    <h3 className="font-semibold text-lg">Exam Mode</h3>
+                    <p className="text-sm text-muted-foreground">Full station with locked hints and feedback at the end. Simulates the real exam.</p>
+                </div>
+            </button>
+             <button onClick={() => handleModeSelect('practice')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                <Lightbulb className="h-8 w-8 text-muted-foreground mt-1"/>
+                <div>
+                    <h3 className="font-semibold text-lg text-muted-foreground">Practice Mode</h3>
+                    <p className="text-sm text-muted-foreground">Get instant feedback after each question and access hints. (Coming Soon)</p>
+                </div>
+            </button>
+             <button onClick={() => handleModeSelect('review')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                <BookCopy className="h-8 w-8 text-muted-foreground mt-1"/>
+                <div>
+                    <h3 className="font-semibold text-lg text-muted-foreground">Review Mode</h3>
+                    <p className="text-sm text-muted-foreground">Analyze your past performance with transcripts and model answers. (Coming Soon)</p>
+                </div>
+            </button>
+            <button onClick={() => handleModeSelect('drill')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                <Zap className="h-8 w-8 text-muted-foreground mt-1"/>
+                <div>
+                    <h3 className="font-semibold text-lg text-muted-foreground">Drill Mode</h3>
+                    <p className="text-sm text-muted-foreground">Rapid-fire questions on a single competency to build speed. (Coming Soon)</p>
+                </div>
+            </button>
+             <button onClick={() => handleModeSelect('adaptive')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                <Repeat className="h-8 w-8 text-muted-foreground mt-1"/>
+                <div>
+                    <h3 className="font-semibold text-lg text-muted-foreground">Adaptive Mode</h3>
+                    <p className="text-sm text-muted-foreground">Difficulty increases or decreases based on your performance. (Coming Soon)</p>
+                </div>
+            </button>
+        </CardContent>
     </Card>
-  );
+  )
 }
