@@ -106,7 +106,12 @@ const caseGenerationPrompt = ai.definePrompt({
   **Instructions:**
   1.  **Create Case Materials:** Generate a detailed Candidate Brief (what the student sees) and a Data Pack (vitals, labs, etc.). This information should be comprehensive and form the basis of the 'caseDetails' object.
   2.  **Handle Drill Mode:** If the topic is "Drill questions for:...", generate a series of 8-10 short, distinct questions on that topic instead of a full case study. For the 'caseDetails' object, you MUST populate its fields with placeholder text like "N/A for Drill Mode".
-  3.  **Generate Examiner Script:** Create 4-5 relevant clinical questions that represent the Examiner Script. **These questions must be structured as progressive prompts.** The first question should be open-ended. Subsequent questions should probe deeper based on a likely student answer, simulating a real conversation. For example: Q1: "What are your initial thoughts?" -> Q2: "You mentioned X, why is that significant?" -> Q3: "What would you do next?".
+  3.  **Generate Examiner Script (Questions):** Create 4-5 relevant clinical questions. **These questions must be structured as progressive prompts** that follow a logical flow, like the SOCS structure:
+      - Start with open-ended questions (e.g., "What are your initial thoughts?", "What are the key issues here?").
+      - Narrow down with focused questions about safety, red flags, or specific details.
+      - For counseling stations, include a question that prompts a "teach-back" to check for understanding.
+      - For calculation stations, include a question that prompts the student to show their work or explain their method.
+      - End with a safety-netting or summary question (e.g., "What would you do next?").
   4.  **Align with OSCE Principles:** The case should be classic but have a nuance that requires critical thinking and aligns with OSCE testing principles.
 
   Respond ONLY with the structured JSON output.
