@@ -287,24 +287,33 @@ export function OsceVivaPrepClient() {
   }
   
   const handleSaveSession = () => {
-    if (!state || !state.feedback || !state.caseDetails) return;
+    if (!state || !state.feedback || !state.caseDetails) {
+        toast({
+            variant: "destructive",
+            title: "Save Failed",
+            description: "Could not save the session because feedback data is missing.",
+        });
+        return;
+    }
     
-    const sessionData: OsceStationGeneratorInput = {
+    // Construct the input object that was sent to the AI to get this feedback
+    const originalInput: OsceStationGeneratorInput = {
         topic: `${topicForm.getValues("topic")} (Difficulty: ${topicForm.getValues("difficulty")})`,
         studentAnswers: examAnswerForm.getValues("answers"),
         caseDetails: state.caseDetails,
-    }
+    };
 
     addSession({
         id: `session_${Date.now()}`,
-        topic: sessionData.topic,
+        topic: originalInput.topic,
         date: new Date().toISOString(),
-        input: sessionData,
-        output: state,
+        input: originalInput,
+        output: state, // This state contains the feedback
     });
+
     toast({ title: "Session Saved!", description: "You can review this session in Review Mode." });
     resetAll();
-  }
+};
 
   const resetAll = () => {
     topicForm.reset({ topic: "", difficulty: ""});
@@ -613,5 +622,3 @@ export function OsceVivaPrepClient() {
     </Card>
   )
 }
-
-    
