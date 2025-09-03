@@ -157,7 +157,7 @@ const examFeedbackGenerationPrompt = ai.definePrompt({
       -   **Counseling Points:** Provide key counseling points.
       -   **Overall Feedback:** Give a summary of performance, linking back to the scoring domains.
 
-  Be encouraging but professional. Focus on clinical reasoning. Respond ONLY with the structured JSON output.
+  Be professional, specific, action-oriented, and exam-aligned. Respond ONLY with the structured JSON output.
   `,
 });
 
@@ -168,7 +168,7 @@ const practiceFeedbackPrompt = ai.definePrompt({
   input: {schema: OsceStationGeneratorInputSchema},
   output: {schema: z.object({ instantFeedback: InstantFeedbackSchema })},
   model: 'googleai/gemini-1.5-flash',
-  prompt: `You are an OSCE/Viva Examiner Simulator in PRACTICE mode. A student has just submitted their answer for a single question. Provide immediate, targeted feedback.
+  prompt: `You are an OSCE/Viva Examiner Simulator in PRACTICE mode. A student has just submitted their answer for a single question. Provide immediate, targeted feedback. Your feedback must be professional, specific, and action-oriented.
 
   **Case Context:**
   -   **Complaint:** {{caseDetails.chiefComplaint}}
@@ -183,7 +183,7 @@ const practiceFeedbackPrompt = ai.definePrompt({
   "{{practiceAnswer.answer}}"
 
   **Your Task:**
-  Provide concise, instant feedback based on the "FBK.INSTANT.001" template:
+  Provide concise, instant feedback using the "FBK.INSTANT.001" template:
   1.  **Strengths:** In one sentence, what did the student do well? (e.g., "You correctly identified the need to check for allergies.")
   2.  **Priority Fix:** What is the single most important thing they should correct or add? Be specific. (e.g., "You should also ask about the type of reaction the patient had to Penicillin.")
   3.  **Safe Alternative:** If applicable, suggest a better way to phrase their response or a safer action. (e.g., "A better way to ask would be, 'Can you describe what happened when you took Penicillin?'")
