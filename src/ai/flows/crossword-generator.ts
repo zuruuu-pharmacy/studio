@@ -45,7 +45,7 @@ const prompt = ai.definePrompt({
   name: 'crosswordGeneratorPrompt',
   input: {schema: CrosswordGeneratorInputSchema},
   output: {schema: CrosswordGeneratorOutputSchema},
-  model: 'googleai/gemini-1.5-pro',
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are an expert puzzle maker specializing in pharmacology and medical sciences.
 Your task is to generate a complete, valid, and challenging crossword puzzle based on a given topic.
 

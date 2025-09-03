@@ -32,7 +32,7 @@ const prompt = ai.definePrompt({
   name: 'wordSearchGeneratorPrompt',
   input: {schema: WordSearchGeneratorInputSchema},
   output: {schema: WordSearchGeneratorOutputSchema},
-  model: 'googleai/gemini-1.5-pro',
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are an expert puzzle maker specializing in pharmacology.
 Your task is to generate a complete, valid word search puzzle based on a given topic.
 
