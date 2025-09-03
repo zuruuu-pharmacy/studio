@@ -107,12 +107,13 @@ const caseGenerationPrompt = ai.definePrompt({
   1.  **Create Case Materials:** Generate a detailed Candidate Brief (what the student sees) and a Data Pack (vitals, labs, Rx, devices, leaflets). This information should be comprehensive and form the basis of the 'caseDetails' object.
   2.  **Handle Drill Mode:** If the topic is "Drill questions for:...", generate a series of 8-10 short, distinct questions on that topic instead of a full case study. For the 'caseDetails' object, you MUST populate its fields with placeholder text like "N/A for Drill Mode".
   3.  **Generate Examiner Script (Questions):** Create 4-5 relevant clinical questions. **These questions must be structured as progressive prompts** that follow a logical flow, like the SOCS structure:
-      - Start with open-ended questions (e.g., "What are your initial thoughts?", "What are the key issues here?").
-      - Narrow down with focused questions about safety, red flags, or specific details.
-      - For counseling stations, include a question that prompts a "teach-back" to check for understanding.
-      - **For calculation stations, you MUST include questions that act as safety guardrails: prompt the student to show their work or explain their method, state the final units, and confirm the final dose and route.**
-      - **For prescription screening stations, you MUST include questions covering the RX SAFETY GRID: patient identifiers, drug clarity, indication, contraindications, interactions, and monitoring plans.**
-      - End with a safety-netting or summary question (e.g., "What would you do next?").
+      - **Start with Openers (QLG.001):** Begin with open-ended questions (e.g., "What are your initial thoughts?", "What are the key issues here?").
+      - **Narrow with Focused Questions (QLG.002):** Follow up with focused questions about safety, red flags, or specific details.
+      - **For counseling stations (QLG.004):** you MUST include a question that prompts a "teach-back" to check for understanding.
+      - **For calculation stations (CALC Guardrails):** you MUST include questions that act as safety guardrails: prompt the student to show their work or explain their method (CALC.002), state the final units (CALC.001), and confirm the final dose and route (CALC.004).
+      - **For prescription screening stations (RX SAFETY GRID):** you MUST include questions covering the RX SAFETY GRID: patient identifiers (RX.001), drug clarity (RX.002), indication (RX.003), contraindications (RX.004), interactions (RX.005), and monitoring plans (RX.006).
+      - **For Drug Information Query stations (DI RESPONSE MAP):** you MUST structure questions to first elicit a concise one-liner answer (DI.001), then expand on details like MOA/PK (DI.002), then ask how to handle uncertainty (DI.003), and finally, safety-netting (DI.004).
+      - **End with a summary or safety-netting question (QLG.003)** (e.g., "What would you do next?", "What are the most important things to tell the patient?").
   4.  **Align with OSCE Principles:** The case should be classic but have a nuance that requires critical thinking and aligns with OSCE testing principles.
 
   Respond ONLY with the structured JSON output.
