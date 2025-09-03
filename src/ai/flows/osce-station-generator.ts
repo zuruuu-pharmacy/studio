@@ -216,7 +216,7 @@ const practiceFeedbackPrompt = ai.definePrompt({
   name: 'oscePracticeFeedbackPrompt',
   input: {schema: OsceStationGeneratorInputSchema},
   output: {schema: z.object({ instantFeedback: InstantFeedbackSchema })},
-  model: 'googleai/gemini-1.5-pro',
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are an OSCE/Viva Examiner Simulator in PRACTICE mode. A student has just submitted their answer for a single question. Provide immediate, targeted feedback. Your feedback must be professional, specific, action-oriented, neutral, and non-leading.
 
   **Case Context:**
@@ -277,3 +277,5 @@ const osceStationGeneratorFlow = ai.defineFlow(
     }
   }
 );
+
+    
