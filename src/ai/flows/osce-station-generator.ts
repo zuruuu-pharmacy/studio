@@ -97,8 +97,8 @@ const caseGenerationPrompt = ai.definePrompt({
 
   **Instructions:**
   1.  If the topic starts with "Drill questions for:", generate a series of 8-10 short, distinct questions on that topic instead of a full case study. For the 'caseDetails' object, you MUST populate its fields with placeholder text like "N/A for Drill Mode" or similar.
-  2.  Otherwise, create a detailed patient case with all the required sections: Demographics, Chief Complaint, HPI, PMH, Medications, Examination, and Labs. The case should be tailored to the OSCE topic.
-  3.  Generate 4-5 relevant clinical questions that test diagnosis, drug selection, patient counseling, calculations, or other relevant skills based on the topic. Make at least one question multiple-choice.
+  2.  Otherwise, create a detailed **Candidate Brief** and **Data Pack** (vitals, labs, etc.) and populate the 'caseDetails' object with this information.
+  3.  Generate 4-5 relevant clinical questions that represent the **Examiner Script**. These should test diagnosis, drug selection, patient counseling, calculations, or other relevant skills based on the topic. Make at least one question multiple-choice.
   4.  The case should be classic but have a nuance that requires critical thinking and aligns with OSCE testing principles.
 
   Respond ONLY with the structured JSON output.
