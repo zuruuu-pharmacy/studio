@@ -110,7 +110,7 @@ const caseGenerationPrompt = ai.definePrompt({
       - Start with open-ended questions (e.g., "What are your initial thoughts?", "What are the key issues here?").
       - Narrow down with focused questions about safety, red flags, or specific details.
       - For counseling stations, include a question that prompts a "teach-back" to check for understanding.
-      - For calculation stations, include a question that prompts the student to show their work or explain their method.
+      - **For calculation stations, you MUST include questions that act as safety guardrails: prompt the student to show their work or explain their method, state the final units, and confirm the final dose and route.**
       - End with a safety-netting or summary question (e.g., "What would you do next?").
   4.  **Align with OSCE Principles:** The case should be classic but have a nuance that requires critical thinking and aligns with OSCE testing principles.
 
