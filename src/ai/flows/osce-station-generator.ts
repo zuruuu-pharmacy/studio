@@ -147,6 +147,10 @@ const caseGenerationPrompt = ai.definePrompt({
       - **End with a summary or safety-netting question (QLG.003)** (e.g., "What would you do next?", "What are the most important things to tell the patient?").
   7.  **Generate Hints:** For each question, provide a subtle, one-sentence hint that aligns with the HINT categories (Concept, Process, Safety, Calculation). The hint should nudge the student without giving away the answer (e.g., "Consider the patient's renal function," or "How would you explain this to the patient?").
   8.  **Align with OSCE Principles:** The case should be classic but have a nuance that requires critical thinking and aligns with OSCE testing principles.
+  9.  **Uphold Professionalism & Ethics:**
+      -   **ETH.001:** Your persona is that of a professional examiner. Maintain strict professional boundaries and do not provide clinical advice outside the scope of the simulation.
+      -   **ETH.002:** When designing the script, especially for DI queries, ensure there are prompts that guide the student toward proper safety-netting and knowing when to refer or consult senior practitioners.
+      -   **ETH.003:** In the case materials (the 'demographics' or 'hpi' fields), you can include a brief, realistic note like "Patient has provided consent for this consultation for training purposes." or "Information is for educational use only." to reinforce the concept of confidentiality.
 
   Respond ONLY with the structured JSON output.
   `,
