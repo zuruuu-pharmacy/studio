@@ -495,7 +495,7 @@ export function OsceVivaPrepClient() {
                         <div className="font-semibold text-lg p-4 bg-muted/50 rounded-lg flex justify-between items-start">
                             <p>{questions[practiceStep].question}</p>
                             {questions[practiceStep].hint && (
-                                <Button variant="outline" size="sm" onClick={() => practiceAnswerForm.setValue('answer', practiceAnswerForm.getValues('answer') + ' ' + questions[practiceStep].hint!)}>
+                                <Button variant="outline" size="sm" onClick={() => toast({ title: "Hint", description: questions[practiceStep].hint! })}>
                                     <Lightbulb className="mr-2"/>
                                     Show Hint
                                 </Button>
@@ -536,7 +536,7 @@ export function OsceVivaPrepClient() {
     const details = modeDetails[selectedMode!];
 
     return (
-        <Card className="max-w-xl mx-auto">
+      <Card className="max-w-xl mx-auto">
         <CardHeader><CardTitle>{details.title}</CardTitle><CardDescription>{details.description}</CardDescription></CardHeader>
         <CardContent>
             <Form {...topicForm}>
@@ -571,7 +571,7 @@ export function OsceVivaPrepClient() {
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select a difficulty level..." />
-                                        </Trigger>
+                                        </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
                                         {Object.keys(DIFFICULTY_TIERS).map(tier => <SelectItem key={tier} value={tier}>{tier}</SelectItem>)}
@@ -607,5 +607,3 @@ export function OsceVivaPrepClient() {
     </Card>
   )
 }
-
-    

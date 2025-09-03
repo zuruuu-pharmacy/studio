@@ -136,7 +136,7 @@ const caseGenerationPrompt = ai.definePrompt({
       - **VAR.004 (Curveball):** Occasionally (not always), introduce a mid-station complication or new piece of information into the examiner script (e.g., a question like "The patient now mentions they are allergic to... how does that change your plan?").
   3.  **Embed Cultural Competence:** When generating scenarios, you MUST consider cultural competence. This includes sensitivity to language choices, patient beliefs, and socioeconomic factors that may arise from the rotated demographics and settings.
   4.  **Create Case Materials (Candidate Brief & Data Pack):** Generate a detailed Candidate Brief (what the student sees) and a Data Pack (vitals, labs, Rx, devices, leaflets). This information should be comprehensive and form the basis of the 'caseDetails' object.
-  5.  **Handle Drill Mode:** If the topic is "Drill questions for:...", generate a series of 8-10 short, distinct questions on that topic instead of a full case study. For the 'caseDetails' object, you MUST populate its fields with placeholder text like "N/A for Drill Mode".
+  5.  **Handle Drill Mode:** If the topic starts with "Drill questions for:", you MUST generate a series of 8-10 short, distinct questions on that topic instead of a full case study. For the 'caseDetails' object, you MUST populate its fields with the text "N/A for Drill Mode".
   6.  **Generate Examiner Script (Progressive & Structured Prompts):** Create 4-5 relevant clinical questions. These questions must be structured as progressive prompts that follow a logical flow where each question logically follows the previous one, probing deeper into the student's understanding.
       - **Start with Openers (QLG.001):** Begin with open-ended questions (e.g., "What are your initial thoughts?", "What are the key issues here?").
       - **Narrow with Focused Questions (QLG.002):** Follow up with focused questions about safety, red flags, or specific details.
@@ -185,7 +185,7 @@ const examFeedbackGenerationPrompt = ai.definePrompt({
 
   **Your Task (as an Examiner):**
   1.  **CRITICAL RULE: Check for Empty Submission:** First, check if all 'answer' fields from the student are empty or contain only whitespace.
-      - **If true:** You MUST assign a score of 0 for all scoring domains where a score is possible (clinicalReasoning, safetyAndInteractions, structureAndTimeManagement). Communication cannot be assessed, so its score MUST be null. Calculation accuracy MUST be null unless a calculation was explicitly asked for and left blank, in which case it is 0. For all qualitative feedback fields ('overallFeedback', 'diagnosisConfirmation', etc.), you MUST state "No answer provided." or "Station left blank.". Do not generate any other feedback.
+      - **If true:** You MUST assign a score of 0 for all scoring domains where a score is possible (clinicalReasoning, safetyAndInteractions, structureAndTimeManagement). Communication MUST be null. Calculation accuracy MUST be null unless a calculation was explicitly asked for and left blank, in which case it is 0. For all qualitative feedback fields ('overallFeedback', 'diagnosisConfirmation', etc.), you MUST state "No answer provided." or "Station left blank.". Do not generate any other feedback.
       - **If at least one answer has content:** Proceed with the full evaluation below.
   2.  **Analyze & Score (Rule of Evidence):** Critically evaluate the student's answers against the case. For each scoring domain below, you must find positive evidence in the answers to award points. **If you cannot find any evidence for a specific domain, you MUST assign a score of 0 for that domain.** A score of null is only for non-applicable domains (e.g., no calculations in the case).
       -   **communication:** How well did they communicate? (Clarity, empathy, structure)
@@ -265,7 +265,7 @@ const osceStationGeneratorFlow = ai.defineFlow(
       const { output } = await examFeedbackGenerationPrompt(input);
       // Combine the feedback with the original case details and questions for a complete output
       return { 
-          ...output,
+          feedback: output!.feedback,
           caseDetails: input.caseDetails,
           questions: input.questions,
       };
@@ -277,3 +277,5 @@ const osceStationGeneratorFlow = ai.defineFlow(
     }
   }
 );
+
+    
