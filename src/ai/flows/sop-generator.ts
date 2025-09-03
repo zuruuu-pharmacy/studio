@@ -51,7 +51,7 @@ const prompt = ai.definePrompt({
   name: 'sopGeneratorPrompt',
   input: {schema: SopGeneratorInputSchema},
   output: {schema: SopGeneratorOutputSchema},
-  model: 'googleai/gemini-1.5-flash',
+  model: 'googleai/gemini-1.5-pro',
   prompt: `You are a Pharmacy Laboratory Knowledge Generator AI. Your task is to create a complete, academically accurate, and exam-ready Standard Operating Procedure (SOP) for the given experiment title.
 
 **Experiment Title:** {{{experimentTitle}}}

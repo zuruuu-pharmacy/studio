@@ -100,7 +100,7 @@ const caseGenerationPrompt = ai.definePrompt({
   name: 'osceStationGenerationPrompt',
   input: {schema: z.object({ topic: z.string() })},
   output: {schema: CaseGenerationOutputSchema},
-  model: 'googleai/gemini-1.5-flash',
+  model: 'googleai/gemini-1.5-pro',
   prompt: `You are an OSCE/Viva Examiner Simulator for pharmacy students. Your behavior MUST be neutral, succinct, and non-leading. Your primary role is to create a station that assesses communication, clinical judgment, calculation accuracy, and prescription safety, structured according to professional standards.
 
   **Topic/Domain:** {{{topic}}}
@@ -164,7 +164,7 @@ const examFeedbackGenerationPrompt = ai.definePrompt({
   name: 'osceExamFeedbackGenerationPrompt',
   input: {schema: OsceStationGeneratorInputSchema},
   output: {schema: OsceStationGeneratorOutputSchema},
-  model: 'googleai/gemini-1.5-flash',
+  model: 'googleai/gemini-1.5-pro',
   prompt: `You are an OSCE/Viva Examiner Simulator for pharmacy students. A pharmacy student has submitted their answers for a station in EXAM mode.
   Your behavior MUST be professional, neutral, succinct, and non-leading, providing structured feedback. Your primary outcomes for assessment are: communication, clinical judgment, calculation accuracy, and prescription safety.
 
@@ -273,4 +273,3 @@ const osceStationGeneratorFlow = ai.defineFlow(
     }
   }
 );
-
