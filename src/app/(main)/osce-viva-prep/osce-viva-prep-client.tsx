@@ -31,6 +31,7 @@ type AppStep = 'mode' | 'topic' | 'case' | 'feedback';
 // Schemas
 const topicFormSchema = z.object({
   topic: z.string().min(3, "Please enter a topic."),
+  difficulty: z.string().min(1, "Please select a difficulty tier."),
 });
 type TopicFormValues = z.infer<typeof topicFormSchema>;
 
@@ -58,6 +59,13 @@ const DOMAINS = [
     "Compounding & Extemporaneous Prep (formula logic, stability)",
     "OSCE Soft Skills (structure, empathy, teach-back)",
 ];
+
+const DIFFICULTY_TIERS = {
+    "Tier-1 (Foundations)": "common OTC, simple calculations, basic counseling",
+    "Tier-2 (Core)": "antibiotic stewardship, insulin titration, inhaler technique + spacer",
+    "Tier-3 (Advanced)": "anticoagulation bridging, renal dosing, polypharmacy/interactions, oncology safe handling",
+};
+
 
 
 // Helper components
@@ -130,6 +138,7 @@ export function OsceVivaPrepClient() {
   const [state, formAction] = useActionState<OsceStationGeneratorOutput | { error: string } | null, FormData>(
     async (previousState, formData) => {
       const topic = formData.get("topic") as string;
+      const difficulty = formData.get("difficulty") as string;
       const caseDetails = formData.get("caseDetails") ? JSON.parse(formData.get("caseDetails") as string) : undefined;
       const mode = formData.get("mode") as Mode;
       
@@ -150,8 +159,14 @@ export function OsceVivaPrepClient() {
       const practiceAnswer = practiceAnswerQuestion && practiceAnswerAnswer ? { question: practiceAnswerQuestion.toString(), answer: practiceAnswerAnswer.toString() } : undefined;
 
       try {
+        let fullTopic = topic;
+        if (mode === 'drill') {
+            fullTopic = `Drill questions for: ${topic}`;
+        }
+        fullTopic += ` (Difficulty: ${difficulty})`
+
         const result = await generateOsceStation({
-          topic: mode === 'drill' ? `Drill questions for: ${topic}` : topic,
+          topic: fullTopic,
           studentAnswers: examAnswers.length > 0 ? examAnswers : undefined,
           practiceAnswer: practiceAnswer,
           caseDetails: caseDetails
@@ -179,7 +194,7 @@ export function OsceVivaPrepClient() {
   const [timerActive, setTimerActive] = useState(false);
 
 
-  const topicForm = useForm<TopicFormValues>({ resolver: zodResolver(topicFormSchema), defaultValues: { topic: "" } });
+  const topicForm = useForm<TopicFormValues>({ resolver: zodResolver(topicFormSchema), defaultValues: { topic: "", difficulty: "" } });
   const examAnswerForm = useForm<ExamAnswerFormValues>({ defaultValues: { answers: [] } });
   const practiceAnswerForm = useForm<PracticeAnswerFormValues>({ resolver: zodResolver(practiceAnswerFormSchema), defaultValues: { answer: "" }});
 
@@ -224,8 +239,7 @@ export function OsceVivaPrepClient() {
         setAppStep('topic');
     } else if (mode === 'review') {
         router.push('/osce-viva-prep?mode=review');
-    }
-    else {
+    } else {
         toast({ title: "Coming Soon", description: "This mode is currently under development."});
     }
   }
@@ -233,6 +247,7 @@ export function OsceVivaPrepClient() {
   const handleTopicSubmit = topicForm.handleSubmit((data) => {
     const formData = new FormData();
     formData.append("topic", data.topic);
+    formData.append("difficulty", data.difficulty);
     if(selectedMode) formData.append("mode", selectedMode);
     startTransition(() => formAction(formData));
   });
@@ -240,6 +255,7 @@ export function OsceVivaPrepClient() {
   const handleExamAnswerSubmit = examAnswerForm.handleSubmit((data) => {
     const formData = new FormData();
     formData.append("topic", topicForm.getValues("topic"));
+    formData.append("difficulty", topicForm.getValues("difficulty"));
     if(selectedMode) formData.append("mode", selectedMode);
     formData.append("caseDetails", JSON.stringify(state?.caseDetails));
     data.answers.forEach((ans, i) => {
@@ -255,6 +271,7 @@ export function OsceVivaPrepClient() {
 
       const formData = new FormData();
       formData.append("topic", topicForm.getValues("topic"));
+      formData.append("difficulty", topicForm.getValues("difficulty"));
       if(selectedMode) formData.append("mode", selectedMode);
       formData.append("caseDetails", JSON.stringify(state.caseDetails));
       formData.append("practiceAnswer[question]", currentQuestion.question);
@@ -273,14 +290,14 @@ export function OsceVivaPrepClient() {
     if (!state || !state.feedback || !state.caseDetails) return;
     
     const sessionData: OsceStationGeneratorInput = {
-        topic: topicForm.getValues("topic"),
+        topic: `${topicForm.getValues("topic")} (Difficulty: ${topicForm.getValues("difficulty")})`,
         studentAnswers: examAnswerForm.getValues("answers"),
         caseDetails: state.caseDetails,
     }
 
     addSession({
         id: `session_${Date.now()}`,
-        topic: topicForm.getValues("topic"),
+        topic: sessionData.topic,
         date: new Date().toISOString(),
         input: sessionData,
         output: state,
@@ -290,7 +307,7 @@ export function OsceVivaPrepClient() {
   }
 
   const resetAll = () => {
-    topicForm.reset({ topic: ""});
+    topicForm.reset({ topic: "", difficulty: ""});
     setAppStep('mode');
     setSelectedMode(null);
     setPracticeStep(0);
@@ -300,6 +317,7 @@ export function OsceVivaPrepClient() {
     // Important: Clear the AI state to avoid re-rendering old data
     const formData = new FormData();
     formData.append("topic", "reset"); // A dummy value to trigger a state clear
+    formData.append("difficulty", "reset");
     startTransition(() => formAction(formData));
   }
 
@@ -442,7 +460,7 @@ export function OsceVivaPrepClient() {
                          <CardTitle className="text-2xl">OSCE Station: {topicForm.getValues("topic")}</CardTitle>
                          {timerActive && <Timer timeLeft={timeLeft} onTimeUp={handleTimeUp} />}
                     </div>
-                    <CardDescription>Mode: {selectedMode} | Read the case and answer the questions.</CardDescription>
+                    <CardDescription>Mode: {selectedMode} | Difficulty: {topicForm.getValues("difficulty")} | Read the case and answer the questions.</CardDescription>
                 </CardHeader>
                  {selectedMode !== 'drill' && (
                     <CardContent className="p-6 bg-muted/50 space-y-4 rounded-b-lg">
@@ -548,6 +566,26 @@ export function OsceVivaPrepClient() {
                             </FormItem>
                         )}
                         />
+                     <FormField
+                        control={topicForm.control}
+                        name="difficulty"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Difficulty Tier</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a difficulty level..." />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {Object.keys(DIFFICULTY_TIERS).map(tier => <SelectItem key={tier} value={tier}>{tier}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                        />
                     <Button type="submit" className="w-full" disabled={isPending}>
                         {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
                         Generate Station
@@ -574,3 +612,5 @@ export function OsceVivaPrepClient() {
     </Card>
   )
 }
+
+    
