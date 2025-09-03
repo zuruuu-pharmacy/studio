@@ -201,11 +201,11 @@ export function CrosswordClient() {
                     <Lightbulb className="h-4 w-4"/>
                     <AlertTitle>Actions</AlertTitle>
                     <AlertDescription>
-                        Finished or stuck? Check your answers or reveal the solution.
+                        Finished or stuck? Check your answers or give up to see the solution.
                     </AlertDescription>
                     <div className="flex gap-4 mt-4">
                         <Button onClick={handleCheckAnswers} variant="default"><Check className="mr-2"/>Check Answers</Button>
-                        <Button onClick={handleRevealAnswers} variant="secondary">Reveal</Button>
+                        <Button onClick={handleRevealAnswers} variant="secondary">Give Up</Button>
                     </div>
                 </Alert>
             </div>
