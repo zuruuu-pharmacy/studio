@@ -104,10 +104,10 @@ const caseGenerationPrompt = ai.definePrompt({
   **Topic/Domain:** {{{topic}}}
 
   **Instructions:**
-  1.  Create a detailed Candidate Brief (what the student sees) and a Data Pack (vitals, labs, etc.). This information should be comprehensive and form the basis of the 'caseDetails' object.
-  2.  If the topic is "Drill questions for:...", generate a series of 8-10 short, distinct questions on that topic instead of a full case study. For the 'caseDetails' object, you MUST populate its fields with placeholder text like "N/A for Drill Mode" or similar.
-  3.  Generate 4-5 relevant clinical questions that represent the Examiner Script. These should test diagnosis, drug selection, patient counseling, calculations, or other relevant skills based on the topic. Make at least one question multiple-choice.
-  4.  The case should be classic but have a nuance that requires critical thinking and aligns with OSCE testing principles.
+  1.  **Create Case Materials:** Generate a detailed Candidate Brief (what the student sees) and a Data Pack (vitals, labs, etc.). This information should be comprehensive and form the basis of the 'caseDetails' object.
+  2.  **Handle Drill Mode:** If the topic is "Drill questions for:...", generate a series of 8-10 short, distinct questions on that topic instead of a full case study. For the 'caseDetails' object, you MUST populate its fields with placeholder text like "N/A for Drill Mode".
+  3.  **Generate Examiner Script:** Create 4-5 relevant clinical questions that represent the Examiner Script. **These questions must be structured as progressive prompts.** The first question should be open-ended. Subsequent questions should probe deeper based on a likely student answer, simulating a real conversation. For example: Q1: "What are your initial thoughts?" -> Q2: "You mentioned X, why is that significant?" -> Q3: "What would you do next?".
+  4.  **Align with OSCE Principles:** The case should be classic but have a nuance that requires critical thinking and aligns with OSCE testing principles.
 
   Respond ONLY with the structured JSON output.
   `,
