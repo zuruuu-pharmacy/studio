@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Sparkles, Pilcrow, Check, Lightbulb } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 
 const topicFormSchema = z.object({
@@ -46,6 +47,7 @@ export function CrosswordClient() {
   
   const [gridState, setGridState] = useState<GridState>([]);
   const [checkState, setCheckState] = useState<CheckState>([]);
+  const [showAnswers, setShowAnswers] = useState(false);
 
   useEffect(() => {
     if (state?.error) {
@@ -54,6 +56,7 @@ export function CrosswordClient() {
       const size = state.grid.length;
       setGridState(Array(size).fill(null).map(() => Array(size).fill('')));
       setCheckState(Array(size).fill(null).map(() => Array(size).fill('unchecked')));
+      setShowAnswers(false);
     }
   }, [state, toast]);
 
@@ -93,6 +96,7 @@ export function CrosswordClient() {
      setGridState(newGridState);
      const newCheckState = state.grid.map(row => row.map(cell => cell.letter ? 'correct' : 'unchecked'));
      setCheckState(newCheckState);
+     setShowAnswers(true);
   }
 
   if (isPending) {
@@ -133,78 +137,115 @@ export function CrosswordClient() {
   }
 
   return (
-    <div className="grid lg:grid-cols-3 gap-6">
-      <div className="lg:col-span-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Crossword: {state.topic}</CardTitle>
-            <CardDescription>Fill in the grid based on the clues. Good luck!</CardDescription>
-          </CardHeader>
-          <CardContent className="overflow-x-auto">
-            <div className="grid gap-0.5" style={{ gridTemplateColumns: `repeat(${state.grid.length}, minmax(0, 1fr))` }}>
-              {state.grid.map((row, rIdx) =>
-                row.map((cell, cIdx) => (
-                  <div key={`${rIdx}-${cIdx}`} className="relative aspect-square">
-                    {cell.letter ? (
-                      <>
-                        {cell.number && <span className="absolute top-0 left-0.5 text-xs font-bold text-muted-foreground">{cell.number}</span>}
-                        <Input
-                          type="text"
-                          maxLength={1}
-                          value={gridState[rIdx]?.[cIdx] || ''}
-                          onChange={(e) => handleInputChange(e, rIdx, cIdx)}
-                          className={cn(
-                            "w-full h-full p-0 text-center text-lg font-bold uppercase",
-                            checkState[rIdx][cIdx] === 'correct' && 'bg-green-200 dark:bg-green-800',
-                            checkState[rIdx][cIdx] === 'incorrect' && 'bg-red-200 dark:bg-red-800'
-                          )}
-                        />
-                      </>
-                    ) : (
-                      <div className="w-full h-full bg-foreground" />
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      <div>
-        <div className="space-y-4">
+    <div className="space-y-6">
+        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
             <Card>
-                <CardHeader>
-                    <CardTitle>Across</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <ul className="space-y-2 text-sm">
-                        {state.clues.across.map(c => <li key={`a-${c.number}`}><strong>{c.number}.</strong> {c.clue}</li>)}
-                    </ul>
-                </CardContent>
-            </Card>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Down</CardTitle>
-                </CardHeader>
-                <CardContent>
-                     <ul className="space-y-2 text-sm">
-                        {state.clues.down.map(c => <li key={`d-${c.number}`}><strong>{c.number}.</strong> {c.clue}</li>)}
-                    </ul>
-                </CardContent>
-            </Card>
-             <Alert>
-                <Lightbulb className="h-4 w-4"/>
-                <AlertTitle>Actions</AlertTitle>
-                <AlertDescription>
-                    Finished or stuck? Check your answers or reveal the solution.
-                </AlertDescription>
-                <div className="flex gap-4 mt-4">
-                    <Button onClick={handleCheckAnswers} variant="default"><Check className="mr-2"/>Check Answers</Button>
-                    <Button onClick={handleRevealAnswers} variant="secondary">Reveal</Button>
+            <CardHeader>
+                <CardTitle>Crossword: {state.topic}</CardTitle>
+                <CardDescription>Fill in the grid based on the clues. Good luck!</CardDescription>
+            </CardHeader>
+            <CardContent className="overflow-x-auto">
+                <div className="grid gap-0.5" style={{ gridTemplateColumns: `repeat(${state.grid.length}, minmax(0, 1fr))` }}>
+                {state.grid.map((row, rIdx) =>
+                    row.map((cell, cIdx) => (
+                    <div key={`${rIdx}-${cIdx}`} className="relative aspect-square">
+                        {cell.letter ? (
+                        <>
+                            {cell.number && <span className="absolute top-0 left-0.5 text-xs font-bold text-muted-foreground">{cell.number}</span>}
+                            <Input
+                            type="text"
+                            maxLength={1}
+                            value={gridState[rIdx]?.[cIdx] || ''}
+                            onChange={(e) => handleInputChange(e, rIdx, cIdx)}
+                            className={cn(
+                                "w-full h-full p-0 text-center text-lg font-bold uppercase",
+                                checkState[rIdx][cIdx] === 'correct' && 'bg-green-200 dark:bg-green-800',
+                                checkState[rIdx][cIdx] === 'incorrect' && 'bg-red-200 dark:bg-red-800'
+                            )}
+                            />
+                        </>
+                        ) : (
+                        <div className="w-full h-full bg-foreground" />
+                        )}
+                    </div>
+                    ))
+                )}
                 </div>
-            </Alert>
+            </CardContent>
+            </Card>
         </div>
-      </div>
+        <div>
+            <div className="space-y-4">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Across</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ul className="space-y-2 text-sm">
+                            {state.clues.across.map(c => <li key={`a-${c.number}`}><strong>{c.number}.</strong> {c.clue}</li>)}
+                        </ul>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Down</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ul className="space-y-2 text-sm">
+                            {state.clues.down.map(c => <li key={`d-${c.number}`}><strong>{c.number}.</strong> {c.clue}</li>)}
+                        </ul>
+                    </CardContent>
+                </Card>
+                <Alert>
+                    <Lightbulb className="h-4 w-4"/>
+                    <AlertTitle>Actions</AlertTitle>
+                    <AlertDescription>
+                        Finished or stuck? Check your answers or reveal the solution.
+                    </AlertDescription>
+                    <div className="flex gap-4 mt-4">
+                        <Button onClick={handleCheckAnswers} variant="default"><Check className="mr-2"/>Check Answers</Button>
+                        <Button onClick={handleRevealAnswers} variant="secondary">Reveal</Button>
+                    </div>
+                </Alert>
+            </div>
+        </div>
+        </div>
+        {showAnswers && (
+             <Card>
+                <CardHeader><CardTitle>Answers</CardTitle></CardHeader>
+                <CardContent className="grid md:grid-cols-2 gap-x-8 gap-y-4">
+                    <div>
+                        <h3 className="font-semibold text-lg mb-2">Across</h3>
+                        <Table>
+                            <TableHeader><TableRow><TableHead>#</TableHead><TableHead>Answer</TableHead></TableRow></TableHeader>
+                            <TableBody>
+                                {state.clues.across.map(c => (
+                                    <TableRow key={`ans-a-${c.number}`}>
+                                        <TableCell className="font-bold">{c.number}</TableCell>
+                                        <TableCell>{c.answer}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                     <div>
+                        <h3 className="font-semibold text-lg mb-2">Down</h3>
+                         <Table>
+                            <TableHeader><TableRow><TableHead>#</TableHead><TableHead>Answer</TableHead></TableRow></TableHeader>
+                            <TableBody>
+                                {state.clues.down.map(c => (
+                                    <TableRow key={`ans-d-${c.number}`}>
+                                        <TableCell className="font-bold">{c.number}</TableCell>
+                                        <TableCell>{c.answer}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </CardContent>
+             </Card>
+        )}
     </div>
   );
 }
