@@ -74,6 +74,7 @@ const OsceStationGeneratorInputSchema = z.object({
   practiceAnswer: StudentAnswerSchema.optional().describe("A single answer for instant practice feedback."),
   
   caseDetails: PatientCaseSchema.optional().describe('The original case details (for step 2 & 3).'),
+  questions: z.array(ClinicalQuestionSchema).optional().describe('The original questions (for step 2 & 3).'),
 });
 export type OsceStationGeneratorInput = z.infer<typeof OsceStationGeneratorInputSchema>;
 
@@ -252,12 +253,22 @@ const osceStationGeneratorFlow = ai.defineFlow(
     // Mode 3: Practice or Drill Mode (Instant Feedback)
     if (input.practiceAnswer) {
         const { output } = await practiceFeedbackPrompt(input);
-        return output!;
+        // We also need to return the original case details and questions to maintain state on the client
+        return { 
+            ...output,
+            caseDetails: input.caseDetails,
+            questions: input.questions,
+        };
     }
     // Mode 2: Exam Mode (Full Feedback)
     else if (input.studentAnswers && input.studentAnswers.length > 0) {
       const { output } = await examFeedbackGenerationPrompt(input);
-      return output!;
+      // Combine the feedback with the original case details and questions for a complete output
+      return { 
+          ...output,
+          caseDetails: input.caseDetails,
+          questions: input.questions,
+      };
     } 
     // Mode 1: Case Generation
     else {
