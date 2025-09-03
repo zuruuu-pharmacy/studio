@@ -53,7 +53,7 @@ const prompt = ai.definePrompt({
   name: 'studyMaterialGeneratorPrompt',
   input: {schema: StudyMaterialGeneratorInputSchema},
   output: {schema: StudyMaterialGeneratorOutputSchema},
-  model: 'googleai/gemini-1.5-pro',
+  model: 'googleai/gemini-1.5-flash',
   prompt: `You are an expert Pharmacy Professor AI. Your task is to generate a complete, high-quality study guide for a student on the given topic.
 
 **Topic:** {{{topic}}}
