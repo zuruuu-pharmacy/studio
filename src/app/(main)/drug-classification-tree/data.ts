@@ -81,6 +81,34 @@ export const drugTreeData: DrugClass[] = [
                     specialNotes: "Induces hepatic enzymes (CYP450), leading to many drug interactions. Narrow therapeutic index.",
                 }
             ]
+          },
+          {
+            name: "Z-drugs",
+            drugs: [
+              {
+                name: "Zolpidem",
+                classification: "Non-benzodiazepine hypnotic (Z-drug)",
+                moa: "Acts as a sedative and hypnotic by selectively binding to the omega-1 subtype of the GABAA receptor, enhancing GABA-mediated neuronal inhibition.",
+                therapeuticUses: "Short-term treatment of insomnia.",
+                adrs: "Drowsiness, dizziness, headache, complex sleep-related behaviors (e.g., sleep-driving).",
+                contraindications: "Known hypersensitivity, severe hepatic impairment.",
+                pharmaApplications: {
+                  dosageForms: "Tablets (immediate-release, extended-release), sublingual tablets, oral spray.",
+                  formulations: "Ambien (Brand), Edluar, Zolpimist.",
+                  storage: "Store at controlled room temperature, protected from light.",
+                },
+                analyticalMethods: {
+                  qualitative: "LC-MS/MS for identification in biological samples.",
+                  quantitative: "HPLC, LC-MS/MS.",
+                  pharmacopoeial: "USP, BP.",
+                },
+                specialNotes: "Should be taken immediately before bedtime. Can cause amnesia for events that occur after taking the drug.",
+              }
+            ]
+          },
+          {
+            name: "Melatonin receptor agonists",
+            drugs: []
           }
         ],
       },
