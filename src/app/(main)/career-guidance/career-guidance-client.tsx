@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { usePatient } from "@/contexts/patient-context";
 import { useMode } from "@/contexts/mode-context";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
 
 
 const quickStatusItems = [
@@ -80,11 +81,13 @@ export function CareerGuidanceClient() {
                 Personalized roadmaps, certifications, salary insights, and alumni stories.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-4">
-                <Button size="lg" disabled>Take Career Quiz (Coming Soon)</Button>
+                 <Link href="/career-guidance/skills-lab">
+                    <Button size="lg">Take Career Quiz</Button>
+                </Link>
                  <Link href="/career-guidance/explore-paths">
                     <Button size="lg" variant="secondary">Explore Paths</Button>
                 </Link>
-                <Button size="lg" variant="outline" disabled>Book Mentor Session (Coming Soon)</Button>
+                <Button size="lg" variant="outline" onClick={() => toast({title: "Coming Soon!", description: "Mentor booking will be available shortly."})} disabled>Book Mentor Session (Coming Soon)</Button>
             </div>
         </section>
 

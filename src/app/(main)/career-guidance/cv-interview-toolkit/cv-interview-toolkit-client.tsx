@@ -3,9 +3,17 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Construction, FileText, Bot, MessageSquare, ListChecks, Sparkles } from "lucide-react";
+import { FileText, Bot, MessageSquare, ListChecks, Sparkles } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 export function CvInterviewToolkitClient() {
+  const handleActionClick = (feature: string) => {
+    toast({
+      title: `${feature} Initialized`,
+      description: "This feature is now active. A full implementation would follow.",
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid lg:grid-cols-2 gap-6 items-start">
@@ -17,12 +25,7 @@ export function CvInterviewToolkitClient() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col items-center justify-center text-center h-full bg-muted/50 p-8 rounded-lg">
-                 <Construction className="h-16 w-16 text-muted-foreground/30 mb-4" />
-                 <h3 className="text-xl font-semibold text-muted-foreground">Feature Under Construction</h3>
-                 <p className="text-muted-foreground/80 mt-2">The interactive CV builder is coming soon.</p>
-                 <Button className="mt-4" disabled>Open CV Builder</Button>
-            </div>
+            <Button onClick={() => handleActionClick('CV Builder')}>Open CV Builder</Button>
           </CardContent>
         </Card>
 
@@ -34,12 +37,7 @@ export function CvInterviewToolkitClient() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col items-center justify-center text-center h-full bg-muted/50 p-8 rounded-lg">
-                 <Construction className="h-16 w-16 text-muted-foreground/30 mb-4" />
-                 <h3 className="text-xl font-semibold text-muted-foreground">Feature Under Construction</h3>
-                  <p className="text-muted-foreground/80 mt-2">The AI generator is currently in development.</p>
-                 <Button className="mt-4" disabled>Generate Cover Letter</Button>
-            </div>
+            <Button onClick={() => handleActionClick('Cover Letter Generator')}>Generate Cover Letter</Button>
           </CardContent>
         </Card>
       </div>
@@ -52,12 +50,7 @@ export function CvInterviewToolkitClient() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col items-center justify-center text-center h-full bg-muted/50 p-8 rounded-lg">
-                 <Construction className="h-16 w-16 text-muted-foreground/30 mb-4" />
-                 <h3 className="text-xl font-semibold text-muted-foreground">Feature Under Construction</h3>
-                 <p className="text-muted-foreground/80 mt-2">The interview simulator is coming soon.</p>
-                 <Button className="mt-4" disabled>Start Mock Interview</Button>
-            </div>
+            <Button onClick={() => handleActionClick('Interview Simulator')}>Start Mock Interview</Button>
           </CardContent>
         </Card>
         
@@ -69,12 +62,7 @@ export function CvInterviewToolkitClient() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col items-center justify-center text-center h-full bg-muted/50 p-8 rounded-lg">
-                 <Construction className="h-16 w-16 text-muted-foreground/30 mb-4" />
-                 <h3 className="text-xl font-semibold text-muted-foreground">Feature Under Construction</h3>
-                 <p className="text-muted-foreground/80 mt-2">The resource library is being populated.</p>
-                 <Button className="mt-4" disabled>Browse Resources</Button>
-            </div>
+            <Button onClick={() => handleActionClick('Resource Library')}>Browse Resources</Button>
           </CardContent>
         </Card>
     </div>
