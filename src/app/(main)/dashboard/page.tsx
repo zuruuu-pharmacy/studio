@@ -277,7 +277,7 @@ const studentTools = [
     },
     {
         icon: Puzzle,
-        title: "Pharma Games & Puzzles",
+        title: "Pharma Games &amp; Puzzles",
         description: "Learn pharmacology concepts through interactive games and puzzles.",
         href: "/pharma-games",
         color: "text-pink-500",

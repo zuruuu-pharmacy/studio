@@ -55,7 +55,7 @@ const studentMenuItems = [
     { href: "/patient-history", label: "My Health History", icon: User },
     { href: "/patients", label: "View Patient Cases", icon: Users },
     { href: "/clinical-case-simulator", label: "Clinical Case Simulator", icon: CaseSensitive },
-    { href: "/osce-viva-prep", label: "OSCE & Viva Preparation", icon: FileHeart },
+    { href: "/osce-viva-prep", label: "OSCE &amp; Viva Preparation", icon: FileHeart },
     { href: "/interaction-checker", label: "Interaction Simulator", icon: FlaskConical },
     { href: "/dose-calculator", label: "Drug Calculation Tool", icon: Calculator },
     { href: "/lecture-notes", label: "Lecture Notes Library", icon: BookOpen },
@@ -88,7 +88,7 @@ const studentMenuItems = [
         icon: Beaker,
     },
     {
-        label: "Pharma Games & Puzzles",
+        label: "Pharma Games &amp; Puzzles",
         href: "/pharma-games",
         icon: Puzzle,
     },

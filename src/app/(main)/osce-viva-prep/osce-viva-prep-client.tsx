@@ -58,9 +58,9 @@ const DOMAINS = [
     "Prescription Screening (legibility, interactions, duplications, allergies)",
     "Drug Information Queries (on-the-spot DI: MOA, PK, monitoring)",
     "Clinical Case Triage (red flags, referral criteria, urgency)",
-    "OTC & Minor Ailments (self-care boundaries, when to refer)",
+    "OTC &amp; Minor Ailments (self-care boundaries, when to refer)",
     "Law/Ethics/Safety (controlled drugs, labeling, documentation)",
-    "Compounding & Extemporaneous Prep (formula logic, stability)",
+    "Compounding &amp; Extemporaneous Prep (formula logic, stability)",
     "OSCE Soft Skills (structure, empathy, teach-back)",
 ];
 
@@ -445,12 +445,12 @@ export function OsceVivaPrepClient() {
         if (percent >= 60) return { band: 'Pass', color: 'text-primary' };
         return { band: 'Borderline/Fail', color: 'text-amber-600' };
     }
-    const grade = getGrade(percentage);
+    const grade = getGrade((percentage));
 
     return (
         <Card>
             <CardHeader>
-                <CardTitle className="text-2xl">Case Feedback & Analysis</CardTitle>
+                <CardTitle className="text-2xl">Case Feedback &amp; Analysis</CardTitle>
                 <CardDescription>Review the AI-powered evaluation of your answers for the {selectedMode} mode.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -458,7 +458,7 @@ export function OsceVivaPrepClient() {
                 
                 <Card className="bg-muted/50">
                     <CardHeader>
-                        <CardTitle>Scoring & Rubric</CardTitle>
+                        <CardTitle>Scoring &amp; Rubric</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="grid md:grid-cols-2 gap-6">
@@ -543,7 +543,7 @@ export function OsceVivaPrepClient() {
                 </CardHeader>
                  {selectedMode !== 'drill' && (
                     <CardContent className="p-6 bg-muted/50 space-y-4 rounded-b-lg">
-                        <CaseSection title="Patient Demographics" content={caseDetails.demographics} icon={User}/><CaseSection title="Chief Complaint" content={caseDetails.chiefComplaint} icon={FileText}/><CaseSection title="History of Present Illness" content={caseDetails.hpi} icon={Activity}/><CaseSection title="Past Medical & Family History" content={caseDetails.pmh} icon={ShieldPlus}/><CaseSection title="Current Medications & Allergies" content={caseDetails.medications} icon={FlaskConical}/><CaseSection title="Physical Examination" content={caseDetails.examination} icon={HeartPulse}/><CaseSection title="Lab & Diagnostics" content={caseDetails.labs} icon={Microscope}/>
+                        <CaseSection title="Patient Demographics" content={caseDetails.demographics} icon={User}/><CaseSection title="Chief Complaint" content={caseDetails.chiefComplaint} icon={FileText}/><CaseSection title="History of Present Illness" content={caseDetails.hpi} icon={Activity}/><CaseSection title="Past Medical &amp; Family History" content={caseDetails.pmh} icon={ShieldPlus}/><CaseSection title="Current Medications &amp; Allergies" content={caseDetails.medications} icon={FlaskConical}/><CaseSection title="Physical Examination" content={caseDetails.examination} icon={HeartPulse}/><CaseSection title="Lab &amp; Diagnostics" content={caseDetails.labs} icon={Microscope}/>
                     </CardContent>
                  )}
             </Card>
