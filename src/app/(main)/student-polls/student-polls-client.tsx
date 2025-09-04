@@ -11,8 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription as DialogDescriptionComponent, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { Plus, ListChecks, Check, BarChart3, Users, Percent, ShieldQuestion, BarChartHorizontal, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -116,7 +116,7 @@ export function StudentPollsClient() {
             <Dialog open={isNewPollModalOpen} onOpenChange={setIsNewPollModalOpen}>
                 <DialogTrigger asChild><Button><Plus className="mr-2"/> Create New Poll</Button></DialogTrigger>
                 <DialogContent>
-                    <DialogHeader><DialogTitle>Create a New Poll</DialogTitle><DialogDescription>Ask a question and gather opinions from your peers.</DialogDescription></DialogHeader>
+                    <DialogHeader><DialogTitle>Create a New Poll</DialogTitle><DialogDescriptionComponent>Ask a question and gather opinions from your peers.</DialogDescriptionComponent></DialogHeader>
                     <Form {...newPollForm}>
                         <form onSubmit={handleCreatePoll} className="space-y-4">
                         <FormField name="title" control={newPollForm.control} render={({ field }) => (
