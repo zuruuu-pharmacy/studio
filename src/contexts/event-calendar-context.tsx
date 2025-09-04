@@ -5,21 +5,20 @@ import type { ReactNode } from 'react';
 import { createContext, useContext, useState, useMemo, useEffect } from 'react';
 
 export type EventCategory = 
-    | "Exam"
-    | "Quiz"
-    | "Assignment"
-    | "Presentation"
-    | "Lab"
-    | "Lecture"
-    | "Tutorial"
-    | "Study Session"
-    | "Campus Life"
-    | "Personal"
+    | "Academic"
+    | "Professional"
+    | "Skill-based"
+    | "Career"
+    | "Community"
     | "Other";
 
 export const EVENT_CATEGORIES: EventCategory[] = [
-    "Exam", "Quiz", "Assignment", "Presentation", "Lab", "Lecture", "Tutorial",
-    "Study Session", "Campus Life", "Personal", "Other"
+    "Academic",
+    "Professional",
+    "Skill-based",
+    "Career",
+    "Community",
+    "Other"
 ];
 
 export interface CalendarEvent {

@@ -9,7 +9,7 @@ import { useEventCalendar, EVENT_CATEGORIES, type EventCategory, CalendarEvent }
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -31,16 +31,11 @@ const eventSchema = z.object({
 type EventFormValues = z.infer<typeof eventSchema>;
 
 const categoryColors: { [key in EventCategory]: string } = {
-  Exam: "bg-red-500/80 text-white",
-  Quiz: "bg-red-400/80 text-white",
-  Assignment: "bg-yellow-500/80 text-white",
-  Presentation: "bg-yellow-400/80 text-white",
-  Lab: "bg-orange-500/80 text-white",
-  Lecture: "bg-blue-500/80 text-white",
-  Tutorial: "bg-blue-400/80 text-white",
-  "Study Session": "bg-purple-500/80 text-white",
-  "Campus Life": "bg-green-500/80 text-white",
-  Personal: "bg-indigo-500/80 text-white",
+  Academic: "bg-blue-500/80 text-white",
+  Professional: "bg-purple-500/80 text-white",
+  "Skill-based": "bg-green-500/80 text-white",
+  Career: "bg-orange-500/80 text-white",
+  Community: "bg-teal-500/80 text-white",
   Other: "bg-gray-500/80 text-white",
 };
 
@@ -178,12 +173,13 @@ export function EventCalendarClient() {
           {totalEventsForDay > 0 ? (
             <div className="space-y-4">
               {EVENT_CATEGORIES.map(category => {
-                if (!groupedEvents[category]) return null;
+                const eventsInCategory = groupedEvents[category as EventCategory];
+                if (!eventsInCategory) return null;
                 return (
                   <div key={category}>
                     <h3 className="font-semibold text-lg mb-2">{category}</h3>
                     <ul className="space-y-3">
-                      {groupedEvents[category].map(event => (
+                      {eventsInCategory.map(event => (
                          <li key={event.id} className="p-3 rounded-lg border bg-muted/50 flex justify-between items-start">
                           <div>
                             <Badge className={categoryColors[event.category]}>{event.category}</Badge>
