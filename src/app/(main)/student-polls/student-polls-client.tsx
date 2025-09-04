@@ -14,13 +14,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { Plus, ListChecks, Check, BarChart3, Users, Percent, ShieldQuestion, BarChartHorizontal } from "lucide-react";
+import { Plus, ListChecks, Check, BarChart3, Users, Percent, ShieldQuestion, BarChartHorizontal, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { useMode } from "@/contexts/mode-context";
 
 
 const newPollSchema = z.object({
@@ -38,6 +39,7 @@ export function StudentPollsClient() {
   const { polls, addPoll, vote } = usePolls();
   const { patientState, addVotedPoll } = usePatient();
   const currentUser = patientState.activeUser;
+  const { mode } = useMode();
   
   const [isNewPollModalOpen, setIsNewPollModalOpen] = useState(false);
 
@@ -74,7 +76,6 @@ export function StudentPollsClient() {
   });
   
   const handleVote = (pollId: string, optionIndex: number) => {
-    // This check is now primarily for anonymous polls, handled client-side
     if (currentUser.votedPollIds?.includes(pollId)) {
         toast({
             variant: "destructive",
@@ -84,7 +85,29 @@ export function StudentPollsClient() {
         return;
     }
     vote(pollId, currentUser.id, optionIndex);
-    addVotedPoll(pollId); // Track vote for anonymous polls
+    if(polls.find(p => p.id === pollId)?.isAnonymous) {
+      addVotedPoll(pollId);
+    }
+  }
+  
+  const handleExport = (poll: typeof polls[0]) => {
+    const headers = ["Option", "Votes"];
+    const rows = poll.options.map((option, index) => {
+      const voteCount = poll.votes.filter(v => v.optionIndex === index).length;
+      return [option.text, voteCount];
+    });
+
+    let csvContent = "data:text/csv;charset=utf-8," 
+      + headers.join(",") + "\n" 
+      + rows.map(e => e.join(",")).join("\n");
+      
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${poll.title.replace(/ /g,"_")}_results.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   return (
@@ -164,12 +187,9 @@ export function StudentPollsClient() {
         ) : (
             <div className="grid md:grid-cols-2 gap-6">
                 {polls.map(poll => {
-                    // For anonymous polls, we check the local user profile. For public polls, we check the votes array.
                     const hasVoted = poll.isAnonymous 
                         ? currentUser.votedPollIds?.includes(poll.id)
                         : poll.votes.some(v => v.userId === currentUser.id);
-
-                    const userVoteIndex = hasVoted ? poll.votes.find(v => v.userId === currentUser.id)?.optionIndex : undefined;
 
                     const totalVotes = poll.votes.length;
                     
@@ -192,6 +212,7 @@ export function StudentPollsClient() {
                             <CardContent>
                                 <div className="space-y-3">
                                     {hasVoted ? (
+                                      <div className='space-y-4'>
                                         <ChartContainer config={{
                                             votes: {
                                                 label: "Votes",
@@ -221,6 +242,10 @@ export function StudentPollsClient() {
                                                 <Bar dataKey="votes" layout="vertical" radius={5} />
                                             </BarChart>
                                         </ChartContainer>
+                                        {mode === 'pharmacist' && (
+                                            <Button variant="secondary" onClick={() => handleExport(poll)}><Download className="mr-2"/>Export Results</Button>
+                                        )}
+                                      </div>
                                     ) : (
                                         poll.options.map((option, index) => (
                                             <Button 
