@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, Combine, CalendarDays, FolderOpen } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, Combine, CalendarDays, FolderOpen, Replace } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -58,6 +58,7 @@ const studentMenuItems = [
     { href: "/osce-viva-prep", label: "OSCE &amp; Viva Preparation", icon: FileHeart },
     { href: "/interaction-checker", label: "Interaction Simulator", icon: FlaskConical },
     { href: "/dose-calculator", label: "Drug Calculation Tool", icon: Calculator },
+    { href: "/unit-converter", label: "Unit Converter", icon: Replace },
     { href: "/lecture-notes", label: "Lecture Notes Library", icon: BookOpen },
     { href: "/notes-organizer", label: "Notes Organizer", icon: FolderOpen },
     { href: "/e-library", label: "AI E-Library", icon: Library },
