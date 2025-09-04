@@ -6,9 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { drugTreeData, type DrugClass, type Drug } from "./data";
-import { Search, Pill, ChevronsRight, FlaskConical, Stethoscope, AlertTriangle, ShieldCheck, Beaker, FileText, Star, BrainCircuit, Package, Archive } from "lucide-react";
+import { Search, Pill, ChevronsRight, FlaskConical, Stethoscope, AlertTriangle, ShieldCheck, Beaker, FileText, Star, BrainCircuit, Package, Archive, FolderOpen, FileHeart, HelpCircle, CaseSensitive } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 // Section component for displaying details in the drug card
 function DetailSection({ title, content, icon: Icon, isList = false }: { title: string, content?: string | string[], icon: React.ElementType, isList?: boolean }) {
@@ -34,6 +36,13 @@ function DetailSection({ title, content, icon: Icon, isList = false }: { title: 
 
 // DrugCard component to display full details of a drug
 function DrugCard({ drug }: { drug: Drug }) {
+  const handleLearningToolClick = () => {
+    toast({
+      title: "Feature Coming Soon",
+      description: "AI-powered generation of study materials is under development.",
+    });
+  }
+
   return (
     <Card className="my-2 bg-muted/30">
       <CardHeader>
@@ -46,7 +55,7 @@ function DrugCard({ drug }: { drug: Drug }) {
         <DetailSection title="Adverse Effects (ADRs)" content={drug.adrs} icon={AlertTriangle} />
         <DetailSection title="Contraindications" content={drug.contraindications} icon={ShieldCheck} />
         
-        <Accordion type="multiple" className="w-full space-y-2">
+        <Accordion type="multiple" className="w-full space-y-2" defaultValue={['learning']}>
             <AccordionItem value="pharma" className="border rounded-md px-4 bg-background">
                  <AccordionTrigger className="hover:no-underline font-semibold">
                     <div className="flex items-center gap-2"><FlaskConical/>Pharmaceutical Details</div>
@@ -65,6 +74,22 @@ function DrugCard({ drug }: { drug: Drug }) {
                     <DetailSection title="Qualitative Analysis" content={drug.analyticalMethods.qualitative} icon={FileText} />
                     <DetailSection title="Quantitative Analysis" content={drug.analyticalMethods.quantitative} icon={FileText} />
                     <DetailSection title="Pharmacopoeial Standards" content={drug.analyticalMethods.pharmacopoeial} icon={FileText} />
+                </AccordionContent>
+            </AccordionItem>
+             <AccordionItem value="learning" className="border rounded-md px-4 bg-background">
+                <AccordionTrigger className="hover:no-underline font-semibold">
+                    <div className="flex items-center gap-2"><FolderOpen/>Integration with Learning</div>
+                </AccordionTrigger>
+                <AccordionContent className="pt-4 space-y-3">
+                    <Button onClick={handleLearningToolClick} className="w-full justify-start" variant="outline" disabled>
+                        <FileHeart className="mr-2"/> Generate Flashcards (MOA + Brands)
+                    </Button>
+                     <Button onClick={handleLearningToolClick} className="w-full justify-start" variant="outline" disabled>
+                        <HelpCircle className="mr-2"/> Generate Quiz (Clinical Use & ADRs)
+                    </Button>
+                     <Button onClick={handleLearningToolClick} className="w-full justify-start" variant="outline" disabled>
+                        <CaseSensitive className="mr-2"/> Generate a Case-based MCQ
+                    </Button>
                 </AccordionContent>
             </AccordionItem>
         </Accordion>
