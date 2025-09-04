@@ -57,6 +57,7 @@ export interface UserProfile {
   };
   studentId?: string; // Specific to students
   patientHistoryId?: string; // Link to a patient history record
+  bookmarkedPostIds?: string[]; // For discussion forum bookmarks
 }
 
 export interface PatientRecord {
@@ -75,6 +76,7 @@ interface PatientContextType {
   deletePatientRecord: (recordId: string) => void;
   setLastPrescription: (prescription: ReadPrescriptionOutput) => void;
   clearLastPrescription: () => void;
+  toggleBookmark: (postId: string) => void;
 }
 
 interface PatientState {
@@ -223,6 +225,30 @@ export function PatientProvider({ children }: { children: ReactNode }) {
     setPatientState(s => ({ ...s, lastPrescription: null }));
   };
 
+  const toggleBookmark = (postId: string) => {
+    setPatientState(prevState => {
+        if (!prevState.activeUser) return prevState;
+
+        const bookmarkedIds = new Set(prevState.activeUser.bookmarkedPostIds || []);
+        if (bookmarkedIds.has(postId)) {
+            bookmarkedIds.delete(postId);
+        } else {
+            bookmarkedIds.add(postId);
+        }
+
+        const updatedUser = {
+            ...prevState.activeUser,
+            bookmarkedPostIds: Array.from(bookmarkedIds),
+        };
+
+        return {
+            ...prevState,
+            activeUser: updatedUser,
+            users: prevState.users.map(u => u.id === updatedUser.id ? updatedUser : u),
+        };
+    });
+};
+
 
   const contextValue = useMemo(() => ({ 
       patientState, 
@@ -233,7 +259,8 @@ export function PatientProvider({ children }: { children: ReactNode }) {
       getActivePatientRecord,
       deletePatientRecord,
       setLastPrescription,
-      clearLastPrescription
+      clearLastPrescription,
+      toggleBookmark,
     }), [patientState]);
 
   return (
