@@ -3,82 +3,99 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Briefcase, Building, Hospital, FlaskConical, Book, UserTie, BrainCircuit, Rocket } from "lucide-react";
+import { Briefcase, Building, Hospital, FlaskConical, Book, UserTie, BrainCircuit, Rocket, Activity, CheckCircle, GraduationCap, Star, BarChart, HardHat, Link } from "lucide-react";
 import { BackButton } from "@/components/back-button";
+import { Button } from "@/components/ui/button";
 
 
 const careerPaths = [
     {
         title: "Clinical Pharmacy",
         icon: Hospital,
-        description: "Work directly with physicians and patients to optimize medication use, typically in a hospital or clinic setting.",
-        details: {
-            "Key Responsibilities": "Patient medication reviews, therapeutic drug monitoring, patient counseling, participating in ward rounds.",
-            "Required Skills": "Strong clinical knowledge, communication skills, problem-solving, patient assessment.",
-            "Potential Job Titles": "Clinical Pharmacist, Hospital Pharmacist, Ambulatory Care Pharmacist, Critical Care Pharmacist."
-        }
+        shortDescription: "Work directly with physicians and patients on ward rounds to optimize medication use, review prescriptions, and monitor outcomes.",
+        dayToDay: "A sample day might include: Morning ward rounds with the medical team, reviewing patient charts, therapeutic drug monitoring (TDM), providing drug information to doctors/nurses, patient counseling on new medications, and attending clinical meetings.",
+        entryRequirements: "Pharm.D is the standard. A hospital residency or extensive clinical internship is highly recommended. For research-focused roles, an M.Sc. or Ph.D. is often required. Registration with the national pharmacy council is mandatory.",
+        typicalFirstJobs: "Hospital Ward Pharmacist, Junior Clinical Pharmacist, Ambulatory Care Pharmacist.",
+        skills: {
+            technical: ["Therapeutic decision-making", "INR/anticoagulation management", "TDM", "Guideline interpretation"],
+            soft: ["Communication with healthcare team", "Patient counseling", "Empathy", "Problem-solving"],
+            tools: ["Electronic Health Records (EHR)", "Medication Management Software", "Clinical Decision Support Systems"],
+        },
+        certifications: "Post-graduate diplomas in clinical pharmacy, Board Certified Pharmacotherapy Specialist (BCPS - US), local clinical pharmacy diplomas.",
+        timeline: "Year 0–1: Ward internships and rotations. Year 1–3: Residency or entry-level clinical role. Year 3+: Specialist role (e.g., cardiology, oncology) or lead clinical pharmacist.",
+        salaryBand: "Varies significantly by country and experience. Entry-level roles in Pakistan may start around PKR 60-90k/month, while US-based roles can be upwards of $110,000/year.",
+        demand: "High (Local), Very High (International)",
+        alumni: [
+            { name: "Dr. Aisha Baig", role: "Cardiology Pharmacist, National Hospital" },
+            { name: "Dr. Usman Ali", role: "Oncology Clinical Specialist, SKMCH" },
+        ]
     },
     {
-        title: "Industrial Pharmacy",
+        title: "Industrial Pharmacy & R&D",
         icon: Building,
-        description: "Focus on the discovery, development, and manufacturing of pharmaceutical drugs.",
-        details: {
-            "Key Responsibilities": "Research & Development (R&D), Quality Assurance (QA), Quality Control (QC), Production, Formulation Development.",
-            "Required Skills": "Scientific research, analytical skills, understanding of GMP (Good Manufacturing Practices), project management.",
-            "Potential Job Titles": "Formulation Scientist, QA Officer, Production Pharmacist, R&D Scientist."
-        }
+        shortDescription: "Focus on the discovery, development, and manufacturing of pharmaceutical drugs in a laboratory or plant setting.",
+        dayToDay: "Tasks vary widely: Formulation scientists may spend the day developing and testing new dosage forms. QA/QC officers ensure products meet specifications through testing and documentation. Production pharmacists oversee manufacturing lines.",
+        entryRequirements: "Pharm.D or B.Pharm. For R&D, an M.Sc. or Ph.D. in a relevant field (e.g., Pharmaceutics, Chemistry) is often required.",
+        typicalFirstJobs: "QA/QC Officer, Junior Formulation Scientist, Production Pharmacist.",
+        skills: {
+            technical: ["Formulation development", "Analytical chemistry (HPLC, GC)", "Good Manufacturing Practices (GMP)", "Statistical analysis"],
+            soft: ["Attention to detail", "Project management", "Teamwork"],
+            tools: ["Laboratory Information Management Systems (LIMS)", "Statistical software (SPSS/R)", "ERP systems"],
+        },
+        certifications: "GMP certification, Six Sigma, Quality Management certifications.",
+        timeline: "Year 0–1: Internship/trainee role. Year 1–3: Officer/Executive level in QA, Production, or R&D. Year 3+: Managerial or senior scientist roles.",
+        salaryBand: "Entry-level roles in Pakistan range from PKR 50-80k/month, with significant growth potential.",
+        demand: "High (Local), High (International)",
+        alumni: [
+            { name: "Mr. Bilal Khan", role: "Head of Production, Zuruu Pharma" },
+        ]
     },
      {
         title: "Community & Hospital Pharmacy",
         icon: Briefcase,
-        description: "Serve as the most accessible healthcare professionals, dispensing medications and providing public health advice.",
-        details: {
-            "Key Responsibilities": "Dispensing prescriptions, patient counseling, managing inventory, providing OTC advice, health screenings.",
-            "Required Skills": "Accuracy, patient communication, retail management, knowledge of common ailments.",
-            "Potential Job Titles": "Community Pharmacist, Retail Pharmacist, Pharmacy Manager, Hospital Staff Pharmacist."
-        }
+        shortDescription: "Serve as accessible healthcare professionals, dispensing medications and providing public health advice in retail or hospital settings.",
+        dayToDay: "Dispensing prescriptions, counseling patients on proper medication use and OTC products, managing inventory, conducting health screenings (e.g., blood pressure), and collaborating with local doctors.",
+        entryRequirements: "Pharm.D or B.Pharm with relevant license to practice. Strong retail and customer service skills are crucial.",
+        typicalFirstJobs: "Community Pharmacist, Retail Pharmacist, Staff Hospital Pharmacist.",
+        skills: {
+            technical: ["Dispensing accuracy", "Knowledge of common ailments and OTC drugs", "Inventory management"],
+            soft: ["Patient communication", "Empathy", "Multitasking", "Commercial awareness"],
+            tools: ["Pharmacy Management Software", "Dispensing robotics (in some settings)"],
+        },
+        certifications: "Immunization certification, MTM (Medication Therapy Management) certification.",
+        timeline: "Year 0–1: Entry-level pharmacist. Year 1–3: Pharmacy Manager or senior pharmacist. Year 3+: Multi-store management or ownership.",
+        salaryBand: "Varies based on location and ownership model. Can range from PKR 40k to over 150k/month for managers/owners in Pakistan.",
+        demand: "Very High (Local), Medium (International)",
+        alumni: []
     },
     {
-        title: "Regulatory Affairs & Research",
+        title: "Regulatory Affairs",
         icon: FlaskConical,
-        description: "Ensure that drugs meet government regulations and oversee clinical trials and research.",
-        details: {
-            "Key Responsibilities": "Preparing drug registration dossiers (e.g., CTD), liaising with health authorities, ensuring compliance, managing clinical trial protocols.",
-            "Required Skills": "Attention to detail, understanding of drug laws, scientific writing, data analysis.",
-            "Potential Job Titles": "Regulatory Affairs Officer, Clinical Research Associate (CRA), Medical Science Liaison (MSL)."
-        }
+        shortDescription: "Act as the bridge between the pharmaceutical company and regulatory agencies, ensuring drugs meet legal requirements.",
+        dayToDay: "Preparing and compiling drug registration dossiers (like the CTD), communicating with health authorities (e.g., DRAP), reviewing marketing materials for compliance, and staying updated on changing regulations.",
+        entryRequirements: "Pharm.D. Attention to detail and strong writing skills are paramount. Internships in regulatory departments are highly beneficial.",
+        typicalFirstJobs: "Regulatory Affairs Intern, Junior Regulatory Affairs Officer.",
+        skills: {
+            technical: ["Understanding of drug laws and guidelines (e.g., DRAP, ICH)", "Scientific/Technical writing", "Dossier preparation (CTD/eCTD)"],
+            soft: ["Meticulous attention to detail", "Negotiation skills", "Organizational skills"],
+            tools: ["Regulatory submission portals", "Document management systems (e.g., Veeva)"],
+        },
+        certifications: "Regulatory Affairs Certification (RAC) is a globally recognized standard.",
+        timeline: "Year 0–2: Junior Officer. Year 2–5: Senior Officer/Assistant Manager. Year 5+: Manager/Head of Regulatory Affairs.",
+        salaryBand: "Starts around PKR 60-90k/month in Pakistan, with high growth potential due to its specialized nature.",
+        demand: "Medium (Local), High (International)",
+        alumni: []
     },
-     {
-        title: "Academia & Education",
-        icon: Book,
-        description: "Educate the next generation of pharmacists and conduct academic research.",
-        details: {
-            "Key Responsibilities": "Teaching, curriculum development, conducting research, publishing papers, mentoring students.",
-            "Required Skills": "Deep subject matter expertise, teaching and presentation skills, research methodology, grant writing.",
-            "Potential Job Titles": "Lecturer, Assistant Professor, Professor, Dean of Pharmacy."
-        }
-    },
-    {
-        title: "Entrepreneurship & Management",
-        icon: Rocket,
-        description: "Start your own pharmacy, consulting firm, or tech startup in the health sector.",
-        details: {
-            "Key Responsibilities": "Business planning, financial management, marketing, staff management, innovation.",
-            "Required Skills": "Business acumen, leadership, risk-taking, networking, financial literacy.",
-            "Potential Job Titles": "Pharmacy Owner, Healthcare Consultant, CEO of Health-Tech Startup."
-        }
-    },
-     {
-        title: "AI & Pharmacoinformatics",
-        icon: BrainCircuit,
-        description: "Leverage data and technology to improve drug discovery, patient care, and health systems.",
-        details: {
-            "Key Responsibilities": "Analyzing health data, developing clinical decision support systems, using AI for drug discovery, managing electronic health records (EHR).",
-            "Required Skills": "Data analysis, programming (e.g., Python), understanding of AI/ML models, knowledge of health IT systems.",
-            "Potential Job Titles": "Pharmacoinformatics Specialist, Clinical Data Analyst, AI in Medicine Researcher, Health IT Consultant."
-        }
-    }
 ];
+
+function DetailSection({ title, children, icon: Icon }: { title: string; children: React.ReactNode; icon: React.ElementType }) {
+    return (
+        <div>
+            <h4 className="font-semibold text-base mb-2 flex items-center gap-2"><Icon className="h-5 w-5 text-primary"/>{title}</h4>
+            <div className="pl-7 text-muted-foreground text-sm space-y-2">{children}</div>
+        </div>
+    )
+}
 
 export default function ExplorePathsPage() {
   return (
@@ -98,17 +115,48 @@ export default function ExplorePathsPage() {
                                  <path.icon className="h-8 w-8 text-primary"/>
                                  <div>
                                     <p>{path.title}</p>
-                                    <p className="text-sm text-muted-foreground font-normal text-left">{path.description}</p>
+                                    <p className="text-sm text-muted-foreground font-normal text-left">{path.shortDescription}</p>
                                  </div>
                                </div>
                             </AccordionTrigger>
-                            <AccordionContent className="px-6 pb-4 space-y-4">
-                                {Object.entries(path.details).map(([key, value]) => (
-                                    <div key={key}>
-                                        <h4 className="font-semibold text-base">{key}</h4>
-                                        <p className="text-muted-foreground">{value}</p>
-                                    </div>
-                                ))}
+                            <AccordionContent className="px-6 pb-4 space-y-6">
+                                <DetailSection title="A Day in the Life" icon={Activity}><p>{path.dayToDay}</p></DetailSection>
+                                
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <DetailSection title="Entry Requirements" icon={GraduationCap}><p>{path.entryRequirements}</p></DetailSection>
+                                    <DetailSection title="Typical First Jobs" icon={HardHat}><p>{path.typicalFirstJobs}</p></DetailSection>
+                                </div>
+                                
+                                <DetailSection title="Skills Matrix" icon={CheckCircle}>
+                                    <p><strong>Technical Skills:</strong> {path.skills.technical.join(', ')}</p>
+                                    <p><strong>Soft Skills:</strong> {path.skills.soft.join(', ')}</p>
+                                    <p><strong>Tools Familiarity:</strong> {path.skills.tools.join(', ')}</p>
+                                </DetailSection>
+
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <DetailSection title="Recommended Certifications" icon={Star}><p>{path.certifications}</p></DetailSection>
+                                     <DetailSection title="Career Timeline" icon={BarChart}><p>{path.timeline}</p></DetailSection>
+                                </div>
+
+                                <div className="grid md:grid-cols-2 gap-6">
+                                     <DetailSection title="Salary & Demand" icon={BarChart}>
+                                        <p><strong>Salary Band:</strong> {path.salaryBand}</p>
+                                        <p><strong>Job Market Demand:</strong> {path.demand}</p>
+                                    </DetailSection>
+                                     <DetailSection title="Alumni Network" icon={Link}>
+                                        {path.alumni.length > 0 ? (
+                                            <ul className="space-y-1">
+                                                {path.alumni.map(alum => <li key={alum.name}>{alum.name} ({alum.role})</li>)}
+                                            </ul>
+                                        ) : <p>No alumni profiles for this path yet.</p>}
+                                        <Button size="sm" variant="link" className="p-0 h-auto" disabled={path.alumni.length === 0}>Ask an Alum (Coming Soon)</Button>
+                                    </DetailSection>
+                                </div>
+                                
+                               <div className="pt-4">
+                                  <Button disabled>Start Roadmap for this Path (Coming Soon)</Button>
+                               </div>
+
                             </AccordionContent>
                         </AccordionItem>
                     ))}
