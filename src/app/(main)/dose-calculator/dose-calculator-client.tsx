@@ -15,12 +15,14 @@ import { Loader2, Beaker, FileText, CheckCircle, AlertTriangle } from "lucide-re
 import { useMode } from "@/contexts/mode-context";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
 const formSchema = z.object({
   drugName: z.string().min(2, "Required"),
   indication: z.string().min(3, "Indication is required"),
-  patientWeightKg: z.coerce.number().positive("Must be positive"),
+  patientWeight: z.coerce.number().positive("Must be positive"),
+  patientWeightUnit: z.enum(['kg', 'lb']),
   patientAgeYears: z.coerce.number().int().positive("Must be a positive integer"),
   renalFunction: z.string().optional(),
   hepaticFunction: z.string().optional(),
@@ -33,12 +35,40 @@ export function DoseCalculatorClient() {
   const [isPending, startTransition] = useTransition();
   const [state, formAction] = useActionState<CalculateDosageOutput | { error: string } | null, FormData>(
     async (previousState, formData) => {
-      const parsed = formSchema.safeParse(Object.fromEntries(formData));
+        
+       const data = {
+        drugName: formData.get('drugName'),
+        indication: formData.get('indication'),
+        patientWeight: formData.get('patientWeight'),
+        patientWeightUnit: formData.get('patientWeightUnit'),
+        patientAgeYears: formData.get('patientAgeYears'),
+        renalFunction: formData.get('renalFunction'),
+        hepaticFunction: formData.get('hepaticFunction'),
+        availableFormulations: formData.get('availableFormulations'),
+      };
+      
+      const parsed = formSchema.safeParse(data);
+
       if (!parsed.success) {
+        console.error(parsed.error);
         return { error: "Invalid input. Check the form fields." };
       }
+      
+      let weightInKg = parsed.data.patientWeight;
+      if (parsed.data.patientWeightUnit === 'lb') {
+        weightInKg = weightInKg / 2.20462;
+      }
+
       try {
-        const result = await calculateDosage(parsed.data);
+        const result = await calculateDosage({
+            drugName: parsed.data.drugName,
+            indication: parsed.data.indication,
+            patientWeightKg: weightInKg,
+            patientAgeYears: parsed.data.patientAgeYears,
+            renalFunction: parsed.data.renalFunction,
+            hepaticFunction: parsed.data.hepaticFunction,
+            availableFormulations: parsed.data.availableFormulations
+        });
         return result;
       } catch (e) {
         console.error(e);
@@ -55,7 +85,8 @@ export function DoseCalculatorClient() {
     defaultValues: {
       drugName: "",
       indication: "",
-      patientWeightKg: "" as any,
+      patientWeight: "" as any,
+      patientWeightUnit: "kg",
       patientAgeYears: "" as any,
       renalFunction: "",
       hepaticFunction: "",
@@ -72,6 +103,10 @@ export function DoseCalculatorClient() {
       });
     }
   }, [state, toast]);
+  
+  const weight = form.watch('patientWeight');
+  const unit = form.watch('patientWeightUnit');
+  const convertedWeight = unit === 'lb' && weight > 0 ? (weight / 2.20462).toFixed(2) + ' kg' : null;
 
   const handleFormSubmit = form.handleSubmit((data) => {
      startTransition(() => {
@@ -101,9 +136,31 @@ export function DoseCalculatorClient() {
                  <FormField name="indication" control={form.control} render={({ field }) => (
                   <FormItem><FormLabel>Indication for Use</FormLabel><FormControl><Input placeholder="e.g., Pneumonia" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
-                <FormField name="patientWeightKg" control={form.control} render={({ field }) => (
-                  <FormItem><FormLabel>Patient Weight (kg)</FormLabel><FormControl><Input type="number" placeholder="e.g., 70" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
+                
+                <FormItem>
+                  <FormLabel>Patient Weight</FormLabel>
+                  <div className="flex gap-2">
+                    <FormField name="patientWeight" control={form.control} render={({ field }) => (
+                      <FormControl><Input type="number" placeholder="e.g., 70" {...field} className="flex-grow"/></FormControl>
+                    )} />
+                     <FormField name="patientWeightUnit" control={form.control} render={({ field }) => (
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="w-[80px]">
+                            <SelectValue/>
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="kg">kg</SelectItem>
+                          <SelectItem value="lb">lb</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )} />
+                  </div>
+                  <FormMessage>{form.formState.errors.patientWeight?.message}</FormMessage>
+                  {convertedWeight && <p className="text-xs text-muted-foreground pt-1">Converted: {convertedWeight}</p>}
+                </FormItem>
+
                 <FormField name="patientAgeYears" control={form.control} render={({ field }) => (
                   <FormItem><FormLabel>Patient Age (years)</FormLabel><FormControl><Input type="number" placeholder="e.g., 45" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
