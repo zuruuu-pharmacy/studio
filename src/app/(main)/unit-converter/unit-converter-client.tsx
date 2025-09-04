@@ -25,8 +25,10 @@ const conversionFactors: { [key: string]: { [key: string]: number } } = {
     mL: 1000,
   },
   concentration: {
-    'percent_w_v': 1,
-    'mg_ml': 10,
+    'percent_w_v': 1, // Base unit is %w/v
+    'mg_ml': 10,       // 1% w/v = 1g/100mL = 1000mg/100mL = 10mg/mL
+    'percent_v_v': 1, // Base unit is %v/v
+    'ml_ml': 100,      // 1% v/v = 1mL/100mL = 0.01mL/mL
   }
 };
 
@@ -52,6 +54,8 @@ const unitLabels: { [key: string]: { [key: string]: string } } = {
   concentration: {
     'percent_w_v': '% w/v',
     'mg_ml': 'mg/mL',
+    'percent_v_v': '% v/v',
+    'ml_ml': 'mL/mL',
   }
 };
 
@@ -70,7 +74,11 @@ export function UnitConverterClient() {
   useEffect(() => {
     const newUnits = Object.keys(unitLabels[category]);
     setFromUnit(newUnits[0]);
-    setToUnit(newUnits[1]);
+    if (newUnits.length > 1) {
+      setToUnit(newUnits[1]);
+    } else {
+      setToUnit(newUnits[0]);
+    }
   }, [category]);
 
   const handleSwap = () => {
@@ -98,12 +106,42 @@ export function UnitConverterClient() {
         if (toUnit === 'K') return Number((celsiusValue + 273.15).toPrecision(10)).toString();
         return '';
     } else {
-        if (!conversionFactors[category]) return '';
+        if (!conversionFactors[category] || fromUnit === toUnit) return inputValue;
+        
+        let baseValue: number;
+
+        // Handle special cases for concentration
+        if (category === 'concentration') {
+            if (fromUnit === 'percent_w_v' && toUnit === 'mg_ml') {
+                return (value * 10).toString();
+            }
+            if (fromUnit === 'mg_ml' && toUnit === 'percent_w_v') {
+                return (value / 10).toString();
+            }
+            if (fromUnit === 'percent_v_v' && toUnit === 'ml_ml') {
+                return (value / 100).toString();
+            }
+            if (fromUnit === 'ml_ml' && toUnit === 'percent_v_v') {
+                return (value * 100).toString();
+            }
+            // Block incompatible concentration conversions
+            if ((fromUnit.startsWith('percent_w') && toUnit.startsWith('percent_v')) ||
+                (fromUnit.startsWith('percent_v') && toUnit.startsWith('percent_w')) ||
+                (fromUnit.startsWith('percent_w') && toUnit === 'ml_ml') ||
+                (toUnit.startsWith('percent_w') && fromUnit === 'ml_ml') ||
+                (fromUnit.startsWith('percent_v') && toUnit === 'mg_ml') ||
+                (toUnit.startsWith('percent_v') && fromUnit === 'mg_ml') 
+            ) {
+                 return 'N/A';
+            }
+        }
+        
         const fromFactor = conversionFactors[category][fromUnit];
         const toFactor = conversionFactors[category][toUnit];
+
         if (!fromFactor || !toFactor) return '';
 
-        const baseValue = value / fromFactor;
+        baseValue = value / fromFactor;
         const result = baseValue * toFactor;
         return Number(result.toPrecision(10)).toString();
     }
@@ -112,14 +150,21 @@ export function UnitConverterClient() {
   const calculationExplanation = useMemo(() => {
     const value = parseFloat(inputValue);
     if (isNaN(value)) return 'Invalid input value.';
+    if (convertedValue === 'N/A') return 'This conversion is not directly supported as it mixes weight-based and volume-based concentrations.';
     
     if (category === 'temperature') {
         if (fromUnit === 'F' && toUnit === 'C') return `Formula: (°F - 32) × 5/9 = °C\nCalculation: (${value} - 32) × 5/9 = ${convertedValue} °C`;
         if (fromUnit === 'C' && toUnit === 'F') return `Formula: (°C × 9/5) + 32 = °F\nCalculation: (${value} × 9/5) + 32 = ${convertedValue} °F`;
         if (fromUnit === 'C' && toUnit === 'K') return `Formula: °C + 273.15 = K\nCalculation: ${value} + 273.15 = ${convertedValue} K`;
         if (fromUnit === 'K' && toUnit === 'C') return `Formula: K - 273.15 = °C\nCalculation: ${value} - 273.15 = ${convertedValue} °C`;
-        // Other temperature conversions can be added here
         return 'Select different temperature units to see the calculation.';
+    }
+
+    if (category === 'concentration') {
+        if (fromUnit === 'percent_w_v' && toUnit === 'mg_ml') return `Definition: % w/v = g / 100 mL\nCalculation: ${value} g/100mL = ${value*1000} mg/100mL = ${convertedValue} mg/mL`;
+        if (fromUnit === 'mg_ml' && toUnit === 'percent_w_v') return `Definition: % w/v = g / 100 mL\nCalculation: ${value} mg/mL = ${value/1000} g/mL = ${value/10} g/100mL = ${convertedValue} % w/v`;
+        if (fromUnit === 'percent_v_v' && toUnit === 'ml_ml') return `Definition: % v/v = mL / 100 mL\nCalculation: ${value} mL/100mL = ${convertedValue} mL/mL`;
+        if (fromUnit === 'ml_ml' && toUnit === 'percent_v_v') return `Definition: % v/v = mL / 100 mL\nCalculation: ${value} mL/mL = ${value*100} mL/100mL = ${convertedValue} % v/v`;
     }
 
     const factors = conversionFactors[category];
@@ -127,9 +172,7 @@ export function UnitConverterClient() {
 
     const fromFactor = factors[fromUnit];
     const toFactor = factors[toUnit];
-    const fromLabel = unitLabels[category][fromUnit].split(' ')[1];
-    const toLabel = unitLabels[category][toUnit].split(' ')[1];
-
+    
     if (fromFactor > toFactor) { // e.g. g to mg
       const factor = fromFactor / toFactor;
       return `Formula: 1 ${fromUnit} = ${factor} ${toUnit}\nCalculation: ${value} ${fromUnit} × ${factor} = ${convertedValue} ${toUnit}`;
