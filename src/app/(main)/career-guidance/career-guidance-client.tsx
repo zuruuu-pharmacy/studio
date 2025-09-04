@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { usePatient } from "@/contexts/patient-context";
 import { useMode } from "@/contexts/mode-context";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import ExplorePathsPage from "./explore-paths/page";
 
 
 const quickStatusItems = [
@@ -134,7 +133,9 @@ export function CareerGuidanceClient() {
                             <li className="font-semibold text-primary">
                                 <Link href="/career-guidance/explore-paths">Explore Paths</Link>
                             </li>
-                           <li>Roadmap Builder</li>
+                           <li className="font-semibold text-primary">
+                                <Link href="/career-guidance/roadmap-builder">Roadmap Builder</Link>
+                            </li>
                            <li>Skills Lab</li>
                            <li>Jobs & Internships</li>
                            <li>Mentors & Alumni</li>
