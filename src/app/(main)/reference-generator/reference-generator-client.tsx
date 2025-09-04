@@ -17,7 +17,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 
 const formSchema = z.object({
-  sourceIdentifier: z.string().min(10, "Please provide a valid DOI, PMID, or URL."),
+  sourceIdentifier: z.string().min(3, "Please provide a valid reference string, DOI, PMID, or URL."),
   style: z.enum(['Vancouver', 'APA', 'Harvard', 'MLA']),
 });
 type FormValues = z.infer<typeof formSchema>;
@@ -85,9 +85,9 @@ export function ReferenceGeneratorClient() {
               <form onSubmit={handleFormSubmit} className="space-y-4">
                 <FormField control={form.control} name="sourceIdentifier" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Source (DOI, PMID, or URL)</FormLabel>
+                    <FormLabel>Source Identifier</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., 10.1056/NEJMoa2033700" {...field} />
+                      <Input placeholder="Paste a DOI, PMID, URL, or citation" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

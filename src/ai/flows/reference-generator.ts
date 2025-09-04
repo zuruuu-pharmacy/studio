@@ -10,7 +10,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const ReferenceGeneratorInputSchema = z.object({
-  sourceIdentifier: z.string().min(10, "Please provide a valid DOI, PMID, or URL.").describe("The DOI, PMID, or URL of the article to cite."),
+  sourceIdentifier: z.string().min(3, "Please provide a valid reference string, DOI, PMID, or URL.").describe("A full or partial reference string, DOI, PMID, or URL of the article to cite."),
   style: z.enum(['Vancouver', 'APA', 'Harvard', 'MLA']).describe("The desired citation style."),
 });
 export type ReferenceGeneratorInput = z.infer<typeof ReferenceGeneratorInputSchema>;
@@ -31,17 +31,21 @@ const prompt = ai.definePrompt({
   input: {schema: ReferenceGeneratorInputSchema},
   output: {schema: ReferenceGeneratorOutputSchema},
   model: 'googleai/gemini-1.5-flash',
-  prompt: `You are an expert academic librarian and citation specialist. Your task is to find the full citation details for a given source identifier (DOI, PMID, or URL) and format it correctly in the specified citation style.
+  prompt: `You are an expert academic librarian and citation specialist. Your task is to find the full citation details for a given source identifier and format it correctly in the specified citation style.
 
-**Source Identifier (DOI, PMID, or URL):**
+The user's input might be a clean DOI/PMID/URL, or it might be a messy, incomplete, or unformatted reference string.
+
+**Source Identifier (DOI, PMID, URL, or messy text):**
 "{{{sourceIdentifier}}}"
 
 **Citation Style:**
 {{{style}}}
 
 **Instructions:**
-1.  **Identify the Source:** Analyze the "sourceIdentifier" to find the specific academic article, book, or webpage.
-2.  **Find Full Details:** Based on your knowledge and access to information, retrieve all necessary citation details (authors, title, journal, year, volume, pages, etc.).
+1.  **Analyze the Source:** Intelligently analyze the "sourceIdentifier".
+    - First, check if it's a DOI, PMID, or URL.
+    - If not, treat it as a search query or a messy citation. Extract key information like author, year, and title keywords.
+2.  **Find Full Details:** Based on your analysis, retrieve all necessary citation details (authors, title, journal, year, volume, pages, etc.). You must find the definitive source.
 3.  **Format Citation:** Format the full reference perfectly according to the rules of the selected '{{{style}}}' style.
 4.  **Explain Your Choice:** In the 'explanation' field, briefly confirm the source you found (e.g., "This citation is for the article 'The Efficacy of...' published in The Lancet.").
 
