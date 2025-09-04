@@ -29,6 +29,9 @@ export function StudyPlannerClient() {
   const [isPending, startTransition] = useTransition();
   const [state, formAction] = useActionState<StudyPlannerOutput | { error: string } | null, FormData>(
     async (previousState, formData) => {
+      // Allow a reset command to clear the UI
+      if (formData.get('reset')) return null;
+
       const subjects = formData.getAll("subjects").map(s => s.toString()).filter(s => s.length > 1);
       
       const parsed = formSchema.safeParse({ 
@@ -71,7 +74,7 @@ export function StudyPlannerClient() {
       studyDuration: "the next 4 weeks",
       hoursPerDay: 4,
       personalConstraints: "Sleep from 11 PM to 7 AM daily.",
-      studyPreferences: "I study best in the morning. I prefer using the Pomodoro technique (25 min study, 5 min break).",
+      studyPreferences: "I study best in the morning. I prefer using the Pomodoro technique (25 min study, 5 min break). Pharmacology is a weak area for me.",
       learningObjective: "deep understanding and exam preparation",
     },
   });
@@ -100,7 +103,6 @@ export function StudyPlannerClient() {
   
   const handleReset = () => {
     const formData = new FormData();
-    // This is a bit of a hack to signal a reset to the action state
     formData.append('reset', 'true');
     formAction(formData);
   }
@@ -214,13 +216,14 @@ export function StudyPlannerClient() {
                 <FormItem><FormLabel>Personal Constraints (Optional)</FormLabel><FormControl><Textarea placeholder="e.g., Work 5-9 PM weekdays, sleep by 11 PM..." {...field} /></FormControl><FormMessage /></FormItem>
              )}/>
              <FormField control={form.control} name="studyPreferences" render={({ field }) => (
-                <FormItem><FormLabel>Study Preferences (Optional)</FormLabel><FormControl><Textarea placeholder="e.g., I study best in the morning, prefer Pomodoro..." {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Study Preferences (Optional)</FormLabel><FormControl><Textarea placeholder="e.g., I study best in the morning, prefer Pomodoro, Pharmacology is a weak subject..." {...field} /></FormControl><FormMessage /></FormItem>
              )}/>
             <FormField control={form.control} name="learningObjective" render={({ field }) => (
                 <FormItem><FormLabel>Primary Learning Goal (Optional)</FormLabel><FormControl><Textarea placeholder="e.g., focus on difficult topics, prepare for final exams..." {...field} /></FormControl><FormMessage /></FormItem>
              )}/>
-            <Button type="submit" className="w-full" size="lg">
-              <Sparkles className="mr-2" /> Generate AI Study Plan
+            <Button type="submit" className="w-full" size="lg" disabled={isPending}>
+              {isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Sparkles className="mr-2" />}
+              Generate AI Study Plan
             </Button>
           </form>
         </Form>
