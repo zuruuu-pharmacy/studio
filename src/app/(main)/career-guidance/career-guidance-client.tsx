@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Rocket, Map, FlaskConical, Stethoscope, Briefcase, BookOpen, User, Search, Globe, Building, Users, Calendar, BarChart, FileText, Lightbulb, ShieldEllipsis } from "lucide-react";
+import { Rocket, Map, FlaskConical, Stethoscope, Briefcase, BookOpen, User, Search, Globe, Building, Users, Calendar, BarChart, FileText, Lightbulb, ShieldEllipsis, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { usePatient } from "@/contexts/patient-context";
@@ -53,6 +53,15 @@ const recommendedTracks = [
     }
 ];
 
+const practicalTips = [
+    "Complete the baseline quiz in the Skills Lab honestly to get the best recommendations.",
+    "Start with one career roadmap; don't over-commit. You can always build another later.",
+    "Use the Skills Lab to do gap-filling tasks weekly (aim for 30-60 minutes).",
+    "Book one mentor session per semester and come prepared with specific questions.",
+    "Add every certification and exam deadline to your Study Planner and treat them like exams.",
+    "Keep your CV and one-page roadmap up to date so they are ready for applications."
+];
+
 
 export function CareerGuidanceClient() {
   const { patientState } = usePatient();
@@ -77,6 +86,26 @@ export function CareerGuidanceClient() {
                 </Link>
                 <Button size="lg" variant="outline" disabled>Book Mentor Session (Coming Soon)</Button>
             </div>
+        </section>
+
+        {/* Practical Tips Checklist */}
+        <section>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Getting Started: A Quick Checklist</CardTitle>
+                    <CardDescription>Follow these steps to make the most of the Career Hub.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ul className="space-y-3">
+                        {practicalTips.map((tip, index) => (
+                            <li key={index} className="flex items-start gap-3">
+                                <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 shrink-0"/>
+                                <span className="text-muted-foreground">{tip}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </CardContent>
+            </Card>
         </section>
 
         {/* Quick Status Row */}
