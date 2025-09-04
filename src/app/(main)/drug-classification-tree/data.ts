@@ -273,4 +273,30 @@ export const drugTreeData: DrugClass[] = [
       },
     ],
   },
+  {
+    name: "Non-Steroidal Anti-Inflammatory Drugs (NSAIDs)",
+    pharmaFocus: "titrimetric assay (Aspirin), impurity profile, HPLC methods.",
+    subclasses: [
+        {
+            name: "Non-opioid analgesics (Paracetamol, Aspirin)",
+            drugs: [],
+        },
+        {
+            name: "Traditional NSAIDs (Ibuprofen, Diclofenac)",
+            drugs: [],
+        },
+        {
+            name: "COX-2 inhibitors (Celecoxib)",
+            drugs: [],
+        },
+        {
+            name: "Disease-modifying antirheumatic drugs (DMARDs)",
+            drugs: [],
+        },
+        {
+            name: "Anti-gout drugs (Allopurinol, Febuxostat, Colchicine)",
+            drugs: [],
+        },
+    ],
+  },
 ];
