@@ -10,7 +10,7 @@ import '@/ai/flows/prescription-reader.ts';
 import '@/ai/flows/drug-food-interaction.ts';
 import '@/ai/flows/lab-report-analyzer.ts';
 import '@/ai/flows/adherence-reporter.ts';
-import '@/ai/flows/symptom-checker.ts';
+import '@/ai/flows/symptom-checker.ts'
 import '@/ai/flows/refill-manager.ts';
 import '@/ai/tools/healthcare-finder.ts';
 import '@/ai/tools/pharmacy-finder.ts';
@@ -32,6 +32,7 @@ import '@/ai/flows/word-search-generator.ts';
 import '@/ai/flows/matching-game-generator.ts';
 import '@/ai/flows/mnemonic-generator.ts';
 import '@/ai/flows/study-planner.ts';
+
 
 
 
