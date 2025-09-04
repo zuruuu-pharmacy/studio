@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { BarChart, Briefcase, CheckCircle, Construction, Lightbulb, Target, Star } from "lucide-react";
+import { BarChart, Briefcase, CheckCircle, Lightbulb, Target, Star } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -14,7 +14,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 
+const satisfactionChartData = [
+  { item: "Mentor Sessions", rating: 4.5 },
+  { item: "CV Workshop", rating: 4.2 },
+  { item: "Industry Talk", rating: 4.8 },
+  { item: "Licensing Seminar", rating: 4.1 },
+];
+
+const cohortChartData = [
+    { path: "Clinical", students: 45, color: "hsl(var(--chart-1))" },
+    { path: "Industry", students: 25, color: "hsl(var(--chart-2))"  },
+    { path: "Community", students: 20, color: "hsl(var(--chart-3))"  },
+    { path: "Regulatory", students: 10, color: "hsl(var(--chart-4))"  },
+];
+
+const chartConfig = {
+  students: {
+    label: "Students",
+  },
+} satisfies ChartConfig
 
 export function AnalyticsDashboardClient() {
   return (
@@ -87,34 +108,69 @@ export function AnalyticsDashboardClient() {
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2"><Star/>Satisfaction Scores</CardTitle>
-                    <CardDescription>Feedback on mentorship and events.</CardDescription>
+                    <CardDescription>Average student feedback on career events.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex flex-col items-center justify-center text-center h-full bg-muted/50 p-8 rounded-lg">
-                        <Construction className="h-16 w-16 text-muted-foreground/30 mb-4" />
-                        <h3 className="text-xl font-semibold text-muted-foreground">Feature Under Construction</h3>
-                        <p className="text-muted-foreground/80 mt-2">
-                            Feedback collection and reporting tools are coming soon.
-                        </p>
-                    </div>
+                    <ChartContainer config={{
+                        rating: {
+                            label: "Avg. Rating",
+                            color: "hsl(var(--chart-2))",
+                        }
+                    }} className="h-[250px] w-full">
+                        <BarChart
+                            data={satisfactionChartData}
+                            layout="vertical"
+                            margin={{ left: 10, right: 10, top: 10, bottom: 10 }}
+                        >
+                            <YAxis
+                                dataKey="item"
+                                type="category"
+                                tickLine={false}
+                                axisLine={false}
+                                tickMargin={10}
+                                width={110}
+                                className="text-xs"
+                            />
+                            <XAxis dataKey="rating" type="number" hide />
+                             <ChartTooltip
+                                cursor={false}
+                                content={<ChartTooltipContent hideLabel />}
+                            />
+                            <Bar dataKey="rating" layout="vertical" radius={5} fill="var(--color-rating)">
+                            </Bar>
+                        </BarChart>
+                    </ChartContainer>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><BarChart/> Cohort Analytics</CardTitle>
-                    <CardDescription>Anonymized outcomes for your graduating class.</CardDescription>
+                    <CardTitle className="flex items-center gap-2"><BarChart/> Cohort Placement Analytics</CardTitle>
+                    <CardDescription>Anonymized job placement outcomes for your graduating class.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex flex-col items-center justify-center text-center h-full bg-muted/50 p-8 rounded-lg">
-                        <Construction className="h-16 w-16 text-muted-foreground/30 mb-4" />
-                        <h3 className="text-xl font-semibold text-muted-foreground">Feature Under Construction</h3>
-                        <p className="text-muted-foreground/80 mt-2 max-w-xs">
-                            Track metrics like job placement by pathway, internship rates, and top certifications for your cohort.
-                        </p>
-                    </div>
+                   <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                        <BarChart data={cohortChartData} margin={{ top: 20 }}>
+                            <CartesianGrid vertical={false} />
+                            <XAxis
+                                dataKey="path"
+                                tickLine={false}
+                                axisLine={false}
+                                tickMargin={8}
+                                className="text-xs"
+                            />
+                             <ChartTooltip
+                                cursor={false}
+                                content={<ChartTooltipContent hideLabel />}
+                            />
+                            <Bar dataKey="students" radius={8}>
+                            </Bar>
+                        </BarChart>
+                    </ChartContainer>
                 </CardContent>
             </Card>
        </div>
     </div>
   );
 }
+
+    
