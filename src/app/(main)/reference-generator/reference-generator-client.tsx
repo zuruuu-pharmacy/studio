@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { generateReference, type ReferenceGeneratorOutput } from "@/ai/flows/reference-generator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +21,14 @@ const formSchema = z.object({
   style: z.enum(['Vancouver', 'APA', 'Harvard', 'MLA']),
 });
 type FormValues = z.infer<typeof formSchema>;
+
+const styleDescriptions: Record<FormValues['style'], string> = {
+    Vancouver: "A numbered style common in medical and scientific journals.",
+    APA: "An author-date style widely used in social sciences and psychology.",
+    Harvard: "A simple author-date style used across many disciplines.",
+    MLA: "A style commonly used in the humanities.",
+};
+
 
 function CitationCard({ citation, onCopy }: { citation: ReferenceGeneratorOutput, onCopy: (text: string) => void }) {
     const [hasCopied, setHasCopied] = useState(false);
@@ -64,6 +72,8 @@ export function ReferenceGeneratorClient() {
       style: "Vancouver",
     },
   });
+
+  const selectedStyle = form.watch('style');
 
   const formAction = async (formData: FormData) => {
     const parsed = formSchema.safeParse(Object.fromEntries(formData));
@@ -128,6 +138,9 @@ export function ReferenceGeneratorClient() {
                         <SelectItem value="MLA">MLA</SelectItem>
                       </SelectContent>
                     </Select>
+                    <FormDescription>
+                        {styleDescriptions[selectedStyle]}
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )} />
