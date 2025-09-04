@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { User, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School, Siren } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const PHARMACIST_CODE = "239773";
 
@@ -26,6 +27,8 @@ export default function RoleSelectionPage() {
   const [patientPhone, setPatientPhone] = useState("");
   const [studentName, setStudentName] = useState("");
   const [studentId, setStudentId] = useState("");
+  const [yearOfStudy, setYearOfStudy] = useState("");
+
 
   const { setMode } = useMode();
   const { patientState, setActiveUser, addOrUpdateUser, clearActiveUser } = usePatient();
@@ -84,8 +87,8 @@ export default function RoleSelectionPage() {
   }
 
   const handleStudentLogin = () => {
-    if (!studentName || !studentId) {
-        toast({ variant: "destructive", title: "Missing Information", description: "Please enter your name and Student ID." });
+    if (!studentName || !studentId || !yearOfStudy) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please fill out all fields." });
         return;
     }
     if (!studentId.toLowerCase().includes('edu')) {
@@ -108,7 +111,7 @@ export default function RoleSelectionPage() {
     } else {
         const newUser: Omit<UserProfile, 'id'> = {
             role: 'student',
-            demographics: { name: studentName },
+            demographics: { name: studentName, yearOfStudy: yearOfStudy },
             studentId: studentId,
         };
         addOrUpdateUser(newUser);
@@ -265,6 +268,22 @@ export default function RoleSelectionPage() {
             <div className="space-y-2">
                 <Label htmlFor="student-id">Student ID</Label>
                 <Input id="student-id" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g., user@university.edu"/>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="year-of-study">Year of Study</Label>
+                <Select value={yearOfStudy} onValueChange={setYearOfStudy}>
+                    <SelectTrigger id="year-of-study">
+                        <SelectValue placeholder="Select your year..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="1st Year">1st Year</SelectItem>
+                        <SelectItem value="2nd Year">2nd Year</SelectItem>
+                        <SelectItem value="3rd Year">3rd Year</SelectItem>
+                        <SelectItem value="4th Year">4th Year</SelectItem>
+                        <SelectItem value="5th Year">5th Year</SelectItem>
+                        <SelectItem value="Graduate">Graduate</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
           </div>
           <DialogFooter>

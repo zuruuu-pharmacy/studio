@@ -54,6 +54,7 @@ export interface UserProfile {
   demographics?: {
     name?: string;
     phoneNumber?: string;
+    yearOfStudy?: string;
   };
   studentId?: string; // Specific to students
   patientHistoryId?: string; // Link to a patient history record
