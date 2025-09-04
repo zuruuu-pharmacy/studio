@@ -251,6 +251,26 @@ export const drugTreeData: DrugClass[] = [
           },
         ]
       },
+      {
+        name: "Anesthetics",
+        pharmaFocus: "lipid solubility studies, partition coefficient analysis, quality control.",
+        subclasses: [
+            {
+                name: "General anesthetics",
+                subclasses: [
+                    { name: "IV (Propofol, Thiopental)", drugs: [] },
+                    { name: "Inhalational (Isoflurane, Sevoflurane)", drugs: [] },
+                ]
+            },
+            {
+                name: "Local anesthetics",
+                subclasses: [
+                    { name: "Ester type (Procaine)", drugs: [] },
+                    { name: "Amide type (Lidocaine, Bupivacaine)", drugs: [] },
+                ]
+            }
+        ]
+      },
     ],
   },
 ];
