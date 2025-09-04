@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, ClipboardCheck as OsceIcon, Combine, CalendarDays } from "lucide-react";
+import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, HeartPulse, Brain, Utensils, Zap, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, ClipboardCheck as OsceIcon, Combine, CalendarDays, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
@@ -190,6 +190,13 @@ const studentTools = [
         description: "Upload and browse study materials for your class.",
         href: "/lecture-notes",
         color: "text-amber-500",
+    },
+    {
+        icon: FolderOpen,
+        title: "Notes Organizer",
+        description: "Organize your personal study notes and materials.",
+        href: "/notes-organizer",
+        color: "text-sky-600",
     },
     {
         icon: Library,
