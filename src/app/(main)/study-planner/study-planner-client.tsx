@@ -70,12 +70,12 @@ export function StudyPlannerClient() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      subjects: [{ value: "" }],
-      studyDuration: "the next 4 weeks",
+      subjects: [{ value: "Pharmacology" }, {value: "Pharmaceutics"}, {value: "Pathology"}],
+      studyDuration: "the next 4 weeks for final exams",
       hoursPerDay: 4,
-      personalConstraints: "Sleep from 11 PM to 7 AM daily.",
-      studyPreferences: "I study best in the morning. I prefer using the Pomodoro technique (25 min study, 5 min break). Pharmacology is a weak area for me.",
-      learningObjective: "deep understanding and exam preparation",
+      personalConstraints: "Work 5-9 PM on weekdays. Sleep from 11 PM to 7 AM daily. Prayer times at 1 PM and 4 PM.",
+      studyPreferences: "I study best in the morning. I prefer using the Pomodoro technique (50 min study, 10 min break). Pharmacology is a weak area for me.",
+      learningObjective: "Gain a deep understanding of all subjects with a special focus on my weak areas to pass the final exams with a good grade.",
     },
   });
 
@@ -104,7 +104,7 @@ export function StudyPlannerClient() {
   const handleReset = () => {
     const formData = new FormData();
     formData.append('reset', 'true');
-    formAction(formData);
+    startTransition(() => formAction(formData));
   }
 
   if (isPending) {

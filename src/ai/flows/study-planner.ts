@@ -75,7 +75,7 @@ const prompt = ai.definePrompt({
     -   "Read Chapter 3 on Beta-blockers, focusing on the mechanism of action."
     -   "Solve 20 practice problems for Pharmaceutics from the textbook."
     -   "Active Recall Session: Write down everything you remember about Pharmacognosy topics from a blank sheet of paper."
-    -   "Pomodoro Block (25 min study / 5 min break) on drug interactions."
+    -   "Pomodoro Block (50 min study / 10 min break) on drug interactions."
     -   "Watch the online lecture on pharmacokinetics and take notes."
 
 6.  **Generate Summary & Strategy Notes:** Provide a brief, encouraging summary of the overall strategy. Offer actionable tips for effective studying, like the importance of consistency, quality sleep, staying hydrated, and using active learning techniques. Explain *why* the plan is structured the way it is (e.g., "I've allocated more time to Pharmacology as you mentioned it's a weak area. The plan also includes breaks to help you stay focused and varies activities to keep you engaged, respecting your preference for morning study.").
