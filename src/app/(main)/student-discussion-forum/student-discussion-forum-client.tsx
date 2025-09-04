@@ -99,8 +99,22 @@ export function StudentDiscussionForumClient() {
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
 
 
-  const newPostForm = useForm<NewPostValues>({ resolver: zodResolver(newPostSchema) });
-  const newReplyForm = useForm<NewReplyValues>({ resolver: zodResolver(newReplySchema) });
+  const newPostForm = useForm<NewPostValues>({ 
+    resolver: zodResolver(newPostSchema),
+    defaultValues: {
+        title: "",
+        content: "",
+        category: "",
+        attachment: null,
+    }
+  });
+  const newReplyForm = useForm<NewReplyValues>({ 
+    resolver: zodResolver(newReplySchema),
+    defaultValues: {
+        reply: "",
+        attachment: null,
+    }
+  });
 
   const currentUser = patientState.activeUser;
   const authorName = currentUser?.demographics?.name || 'Anonymous Student';
@@ -145,7 +159,7 @@ export function StudentDiscussionForumClient() {
     }
     addPost({ ...data, author: authorName, category: data.category as ForumCategory, attachments: newAttachments });
     toast({ title: "Post Created!", description: "Your new discussion topic is live." });
-    newPostForm.reset({ title: "", content: "", category: "", attachment: null });
+    newPostForm.reset();
     setIsNewPostModalOpen(false);
   });
 
@@ -161,7 +175,7 @@ export function StudentDiscussionForumClient() {
         }
     }
     addReply(selectedPostId, { content: data.reply, author: authorName, attachments: newAttachments });
-    newReplyForm.reset({ reply: "", attachment: null });
+    newReplyForm.reset();
   });
   
   const handleDeletePost = (postId: string) => {
