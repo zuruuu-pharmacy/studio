@@ -68,6 +68,7 @@ export function ReferenceGeneratorClient() {
   const formAction = async (formData: FormData) => {
     const parsed = formSchema.safeParse(Object.fromEntries(formData));
     if (!parsed.success) {
+      // The form's own validation will show messages, but we can have a fallback toast.
       toast({ variant: "destructive", title: "Error", description: "Invalid input. Please check the form."});
       return;
     }
