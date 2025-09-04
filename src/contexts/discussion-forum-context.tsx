@@ -23,6 +23,11 @@ export const FORUM_CATEGORIES: ForumCategory[] = [
     "Computer"
 ];
 
+export interface Attachment {
+  name: string;
+  type: 'image' | 'pdf' | 'other';
+  dataUri: string;
+}
 
 export interface ForumReply {
   id: string;
@@ -31,6 +36,7 @@ export interface ForumReply {
   date: string;
   upvotes: number;
   isBestAnswer: boolean;
+  attachments?: Attachment[];
 }
 
 export interface ForumPost {
@@ -41,6 +47,7 @@ export interface ForumPost {
   category: ForumCategory;
   date: string;
   replies: ForumReply[];
+  attachments?: Attachment[];
 }
 
 interface DiscussionForumContextType {
@@ -131,11 +138,15 @@ export function DiscussionForumProvider({ children }: { children: ReactNode }) {
             return {
                 ...post,
                 replies: post.replies.map(reply => {
+                    // If the clicked reply is already the best, untag it.
                     if (reply.id === replyId) {
-                        return { ...reply, isBestAnswer: !isAlreadyBest };
+                         return { ...reply, isBestAnswer: !isAlreadyBest };
                     }
-                    // Only one best answer is allowed, so untag others
-                    return { ...reply, isBestAnswer: false };
+                    // If we are setting a new best answer, ensure all others are not best.
+                    if (!isAlreadyBest) {
+                        return { ...reply, isBestAnswer: false };
+                    }
+                    return reply;
                 })
             };
         }

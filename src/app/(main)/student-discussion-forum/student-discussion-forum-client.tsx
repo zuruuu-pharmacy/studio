@@ -2,10 +2,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useDiscussionForum, FORUM_CATEGORIES, type ForumCategory } from "@/contexts/discussion-forum-context";
+import { useDiscussionForum, FORUM_CATEGORIES, type ForumCategory, type Attachment } from "@/contexts/discussion-forum-context";
 import { usePatient } from "@/contexts/patient-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -14,24 +15,69 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { MessageSquare, Plus, Send, ArrowLeft, UserCircle, Folder, ThumbsUp, Star } from "lucide-react";
+import { MessageSquare, Plus, Send, ArrowLeft, UserCircle, Folder, ThumbsUp, Star, Paperclip, Download } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
 const newPostSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters."),
   content: z.string().min(10, "Content must be at least 10 characters."),
   category: z.string().min(1, "Please select a category."),
+  attachment: z.any().optional(),
 });
 type NewPostValues = z.infer<typeof newPostSchema>;
 
 const newReplySchema = z.object({
   reply: z.string().min(1, "Reply cannot be empty."),
+  attachment: z.any().optional(),
 });
 type NewReplyValues = z.infer<typeof newReplySchema>;
+
+const getFileType = (fileName: string): 'image' | 'pdf' | 'other' => {
+  if (/\.(jpg|jpeg|png|gif|webp)$/i.test(fileName)) return 'image';
+  if (/\.pdf$/i.test(fileName)) return 'pdf';
+  return 'other';
+};
+
+const handleFileUpload = (file: File): Promise<Attachment> => {
+    return new Promise((resolve, reject) => {
+        if (file.size > MAX_FILE_SIZE) {
+            return reject(new Error('File size exceeds 5MB limit.'));
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+            resolve({
+                name: file.name,
+                type: getFileType(file.name),
+                dataUri: reader.result as string,
+            });
+        };
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+    });
+};
+
+function AttachmentDisplay({ attachments }: { attachments?: Attachment[] }) {
+    if (!attachments || attachments.length === 0) return null;
+    return (
+        <div className="mt-4 space-y-2">
+            {attachments.map((att, i) => (
+                att.type === 'image' ? (
+                    <Image key={i} src={att.dataUri} alt={att.name} width={300} height={300} className="rounded-md border max-w-sm" />
+                ) : (
+                    <a key={i} href={att.dataUri} download={att.name} className="block">
+                        <Button variant="outline"><Download className="mr-2"/>Download {att.name}</Button>
+                    </a>
+                )
+            ))}
+        </div>
+    )
+}
 
 export function StudentDiscussionForumClient() {
   const { posts, addPost, addReply, upvoteReply, toggleBestAnswer } = useDiscussionForum();
@@ -64,17 +110,35 @@ export function StudentDiscussionForumClient() {
     )
   }
 
-  const handleCreatePost = newPostForm.handleSubmit((data) => {
-    addPost({ ...data, author: authorName, category: data.category as ForumCategory });
+  const handleCreatePost = newPostForm.handleSubmit(async (data) => {
+    let newAttachments: Attachment[] | undefined;
+    if (data.attachment && data.attachment[0]) {
+        try {
+            newAttachments = [await handleFileUpload(data.attachment[0])];
+        } catch (e) {
+            toast({ variant: 'destructive', title: 'Upload Failed', description: (e as Error).message });
+            return;
+        }
+    }
+    addPost({ ...data, author: authorName, category: data.category as ForumCategory, attachments: newAttachments });
     toast({ title: "Post Created!", description: "Your new discussion topic is live." });
-    newPostForm.reset({ title: "", content: "", category: "" });
+    newPostForm.reset({ title: "", content: "", category: "", attachment: null });
     setIsNewPostModalOpen(false);
   });
 
-  const handleCreateReply = newReplyForm.handleSubmit((data) => {
+  const handleCreateReply = newReplyForm.handleSubmit(async (data) => {
     if (!selectedPostId) return;
-    addReply(selectedPostId, { content: data.reply, author: authorName });
-    newReplyForm.reset({ reply: "" });
+    let newAttachments: Attachment[] | undefined;
+     if (data.attachment && data.attachment[0]) {
+        try {
+            newAttachments = [await handleFileUpload(data.attachment[0])];
+        } catch (e) {
+            toast({ variant: 'destructive', title: 'Upload Failed', description: (e as Error).message });
+            return;
+        }
+    }
+    addReply(selectedPostId, { content: data.reply, author: authorName, attachments: newAttachments });
+    newReplyForm.reset({ reply: "", attachment: null });
   });
 
   const selectedPost = posts.find(p => p.id === selectedPostId);
@@ -103,6 +167,7 @@ export function StudentDiscussionForumClient() {
           </CardHeader>
           <CardContent className="space-y-6">
             <p className="whitespace-pre-wrap">{selectedPost.content}</p>
+            <AttachmentDisplay attachments={selectedPost.attachments} />
             <hr />
             <h3 className="font-semibold text-lg">Replies ({selectedPost.replies.length})</h3>
             <div className="space-y-4">
@@ -115,13 +180,14 @@ export function StudentDiscussionForumClient() {
                         {reply.isBestAnswer && <div className="flex items-center gap-1 text-sm font-bold text-green-600"><Star className="h-4 w-4 fill-current" /> BEST ANSWER</div>}
                     </div>
                     <p className="text-sm text-muted-foreground py-2">{reply.content}</p>
+                    <AttachmentDisplay attachments={reply.attachments} />
                     <div className="flex items-center gap-4 mt-2">
                         <Button variant="outline" size="sm" onClick={() => upvoteReply(selectedPost.id, reply.id)}>
                            <ThumbsUp className="mr-2 h-4 w-4"/> {reply.upvotes}
                         </Button>
                          {isOriginalPoster && (
                             <Button variant="ghost" size="sm" onClick={() => toggleBestAnswer(selectedPost.id, reply.id)}>
-                                <Star className="mr-2 h-4 w-4"/> Mark as Best
+                                <Star className="mr-2 h-4 w-4"/> {reply.isBestAnswer ? 'Unmark as Best' : 'Mark as Best'}
                             </Button>
                          )}
                     </div>
@@ -130,11 +196,20 @@ export function StudentDiscussionForumClient() {
               ))}
             </div>
             <Form {...newReplyForm}>
-              <form onSubmit={handleCreateReply} className="flex gap-2">
-                <FormField name="reply" control={newReplyForm.control} render={({ field }) => (
-                  <FormItem className="flex-grow"><FormControl><Input {...field} placeholder="Write a reply..." /></FormControl><FormMessage /></FormItem>
+              <form onSubmit={handleCreateReply} className="space-y-4">
+                 <FormField name="reply" control={newReplyForm.control} render={({ field }) => (
+                  <FormItem><FormLabel>Your Reply</FormLabel><FormControl><Textarea {...field} placeholder="Write a reply..." /></FormControl><FormMessage /></FormItem>
                 )} />
-                <Button type="submit"><Send className="h-4 w-4"/></Button>
+                <div className="flex gap-4 items-end">
+                    <FormField name="attachment" control={newReplyForm.control} render={({ field: { onChange, ...fieldProps} }) => (
+                      <FormItem>
+                          <FormLabel>Attach File (Optional)</FormLabel>
+                          <FormControl><Input {...fieldProps} type="file" onChange={(e) => onChange(e.target.files)} /></FormControl>
+                          <FormMessage />
+                      </FormItem>
+                    )} />
+                    <Button type="submit"><Send className="h-4 w-4"/></Button>
+                </div>
               </form>
             </Form>
           </CardContent>
@@ -171,6 +246,13 @@ export function StudentDiscussionForumClient() {
                   )} />
                   <FormField name="content" control={newPostForm.control} render={({ field }) => (
                     <FormItem><FormLabel>Your Question or Comment</FormLabel><FormControl><Textarea {...field} rows={6} /></FormControl><FormMessage /></FormItem>
+                  )} />
+                  <FormField name="attachment" control={newPostForm.control} render={({ field: { onChange, ...fieldProps} }) => (
+                    <FormItem>
+                        <FormLabel>Attach File (Optional)</FormLabel>
+                        <FormControl><Input {...fieldProps} type="file" onChange={(e) => onChange(e.target.files)} /></FormControl>
+                        <FormMessage />
+                    </FormItem>
                   )} />
                   <DialogFooter><Button type="submit">Create Post</Button></DialogFooter>
                 </form>
