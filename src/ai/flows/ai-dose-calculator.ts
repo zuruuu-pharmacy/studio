@@ -63,8 +63,12 @@ const prompt = ai.definePrompt({
   - For all other cases, even if the indication is an off-label use, assume it is a valid clinical decision. Set 'isIndicationMismatch' to false and proceed with the dosage calculation.
 
   When calculating, use standard clinical formulas (e.g., mg/kg/day). Show all calculation steps and references. The dosage is highly dependent on the reason the patient is taking the medication.
-  If available formulations are provided, and if appropriate, consider recommending a rounded dosage.
+  If available formulations are provided, and if appropriate, consider recommending a rounded dosage in the 'roundedDosageSuggestion' field.
   If renal or hepatic function are not provided, calculate a general dose and add a note that the dose may need adjustment in patients with kidney or liver disease.
+  
+  Adhere to safe presentation rules:
+  - Use leading zeros for decimals (e.g., 0.5 mg).
+  - Avoid trailing zeros (e.g., 1 mg, not 1.0 mg).
 
   Drug Name: {{{drugName}}}
   Indication: {{{indication}}}
