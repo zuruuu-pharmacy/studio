@@ -109,6 +109,16 @@ export function StudentDiscussionForumClient() {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   }
 
+  const reputationScores = useMemo(() => {
+    const scores = new Map<string, number>();
+    posts.forEach(post => {
+        post.replies.forEach(reply => {
+            scores.set(reply.author, (scores.get(reply.author) || 0) + reply.upvotes);
+        });
+    });
+    return scores;
+  }, [posts]);
+
   if (!currentUser || currentUser.role !== 'student') {
     return (
         <Card className="text-center">
@@ -210,6 +220,8 @@ export function StudentDiscussionForumClient() {
   if (selectedPost) {
     const isOriginalPoster = selectedPost.author === authorName;
     const isBookmarked = currentUser.bookmarkedPostIds?.includes(selectedPost.id) ?? false;
+    const authorReputation = reputationScores.get(selectedPost.author) || 0;
+
     return (
       <div className="space-y-4">
         <div className="flex justify-between items-center">
@@ -233,8 +245,9 @@ export function StudentDiscussionForumClient() {
         <Card>
           <CardHeader>
             <CardTitle>{selectedPost.title}</CardTitle>
-            <CardDescription>
-                Category: {selectedPost.category} | Posted by {selectedPost.author} on {new Date(selectedPost.date).toLocaleDateString()}
+            <CardDescription className="flex items-center gap-2">
+                <span>Category: {selectedPost.category} | Posted by {selectedPost.author} on {new Date(selectedPost.date).toLocaleDateString()}</span>
+                <span className="flex items-center gap-1 text-amber-500"><Star className="h-4 w-4"/> {authorReputation}</span>
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -243,40 +256,45 @@ export function StudentDiscussionForumClient() {
             <hr />
             <h3 className="font-semibold text-lg">Replies ({selectedPost.replies.length})</h3>
             <div className="space-y-4">
-              {sortedReplies.map(reply => (
-                <div key={reply.id} className={cn("flex gap-4 p-4 rounded-lg", reply.isBestAnswer && "bg-green-100 dark:bg-green-900/30 border-2 border-green-500")}>
-                  <Avatar><AvatarFallback>{getInitials(reply.author)}</AvatarFallback></Avatar>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-center">
-                        <p className="font-semibold">{reply.author}</p>
-                        <div className="flex items-center gap-2">
-                          {reply.isBestAnswer && <div className="flex items-center gap-1 text-sm font-bold text-green-600"><Star className="h-4 w-4 fill-current" /> BEST ANSWER</div>}
-                          {isTeacher && (
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="h-6 w-6"><Trash2 className="h-4 w-4 text-destructive"/></Button></AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader><AlertDialogTitle>Delete this reply?</AlertDialogTitle></AlertDialogHeader>
-                                    <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDeleteReply(selectedPost.id, reply.id)}>Delete</AlertDialogAction></AlertDialogFooter>
-                                </AlertDialogContent>
-                             </AlertDialog>
-                          )}
+              {sortedReplies.map(reply => {
+                 const replyAuthorReputation = reputationScores.get(reply.author) || 0;
+                 return (
+                    <div key={reply.id} className={cn("flex gap-4 p-4 rounded-lg", reply.isBestAnswer && "bg-green-100 dark:bg-green-900/30 border-2 border-green-500")}>
+                        <Avatar><AvatarFallback>{getInitials(reply.author)}</AvatarFallback></Avatar>
+                        <div className="flex-1">
+                            <div className="flex justify-between items-center">
+                                <div className="flex items-center gap-2">
+                                    <p className="font-semibold">{reply.author}</p>
+                                    <span className="flex items-center gap-1 text-xs text-amber-500"><Star className="h-3 w-3"/> {replyAuthorReputation}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                {reply.isBestAnswer && <div className="flex items-center gap-1 text-sm font-bold text-green-600"><Star className="h-4 w-4 fill-current" /> BEST ANSWER</div>}
+                                {isTeacher && (
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="h-6 w-6"><Trash2 className="h-4 w-4 text-destructive"/></Button></AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader><AlertDialogTitle>Delete this reply?</AlertDialogTitle></AlertDialogHeader>
+                                            <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDeleteReply(selectedPost.id, reply.id)}>Delete</AlertDialogAction></AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                )}
+                                </div>
+                            </div>
+                            <p className="text-sm text-muted-foreground py-2">{reply.content}</p>
+                            <AttachmentDisplay attachments={reply.attachments} />
+                            <div className="flex items-center gap-4 mt-2">
+                                <Button variant="outline" size="sm" onClick={() => upvoteReply(selectedPost.id, reply.id)}>
+                                <ThumbsUp className="mr-2 h-4 w-4"/> {reply.upvotes}
+                                </Button>
+                                {(isOriginalPoster || isTeacher) && (
+                                    <Button variant="ghost" size="sm" onClick={() => toggleBestAnswer(selectedPost.id, reply.id)}>
+                                        <Star className="mr-2 h-4 w-4"/> {reply.isBestAnswer ? 'Unmark as Best' : 'Mark as Best'}
+                                    </Button>
+                                )}
+                            </div>
                         </div>
                     </div>
-                    <p className="text-sm text-muted-foreground py-2">{reply.content}</p>
-                    <AttachmentDisplay attachments={reply.attachments} />
-                    <div className="flex items-center gap-4 mt-2">
-                        <Button variant="outline" size="sm" onClick={() => upvoteReply(selectedPost.id, reply.id)}>
-                           <ThumbsUp className="mr-2 h-4 w-4"/> {reply.upvotes}
-                        </Button>
-                         {(isOriginalPoster || isTeacher) && (
-                            <Button variant="ghost" size="sm" onClick={() => toggleBestAnswer(selectedPost.id, reply.id)}>
-                                <Star className="mr-2 h-4 w-4"/> {reply.isBestAnswer ? 'Unmark as Best' : 'Mark as Best'}
-                            </Button>
-                         )}
-                    </div>
-                  </div>
-                </div>
-              ))}
+                )})}
             </div>
             <Form {...newReplyForm}>
               <form onSubmit={handleCreateReply} className="space-y-4">
@@ -402,7 +420,7 @@ export function StudentDiscussionForumClient() {
                                     <li key={post.id} className="flex justify-between items-center group">
                                         <button onClick={() => setSelectedPostId(post.id)} className="flex-1 text-left p-2 rounded-md hover:bg-muted">
                                             <p className="font-semibold">{post.title}</p>
-                                            <p className="text-sm text-muted-foreground">by {post.author} on {new Date(post.date).toLocaleDateString()} | {post.replies.length} replies</p>
+                                            <p className="text-sm text-muted-foreground">by {post.author} | {post.replies.length} replies</p>
                                         </button>
                                         <Button variant="ghost" size="icon" onClick={() => toggleBookmark(post.id)} className="opacity-0 group-hover:opacity-100 transition-opacity">
                                             <Bookmark className={cn("h-5 w-5", isBookmarked && "fill-current text-primary")}/>
