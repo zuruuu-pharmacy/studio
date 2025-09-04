@@ -210,6 +210,24 @@ export const drugTreeData: DrugClass[] = [
             }
         ]
       },
+      {
+        name: "Opioid Analgesics",
+        pharmaFocus: "dissolution testing of tablets, abuse-deterrent formulations, chromatography analysis.",
+        subclasses: [
+          {
+            name: "Natural (Morphine, Codeine)",
+            drugs: [],
+          },
+          {
+            name: "Semi-synthetic (Oxycodone, Hydromorphone)",
+            drugs: [],
+          },
+          {
+            name: "Synthetic (Fentanyl, Tramadol)",
+            drugs: [],
+          },
+        ]
+      },
     ],
   },
 ];
