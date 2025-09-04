@@ -64,13 +64,56 @@ const studentMenuItems = [
     { href: "/drug-classification-tree", label: "Drug Classification Tree", icon: Network },
     { href: "/study-material-generator", label: "Study Material Generator", icon: GraduationCap },
     { href: "/study-planner", label: "AI Study Planner", icon: CalendarDays },
-    { href: "/herbal-hub", label: "Herbal Hub", icon: Leaf },
-    { href: "/flashcard-generator", label: "Flashcard Generator", icon: FileHeart },
-    { href: "/mcq-bank", label: "MCQ Bank", icon: HelpCircle },
-    { href: "/sop-repository", label: "SOP Repository", icon: FileJson },
-    { href: "/virtual-lab-simulator", label: "Virtual Lab Simulator", icon: Beaker },
-    { href: "/pharma-games", label: "Pharma Games", icon: Puzzle },
-    { href: "/mnemonic-generator", label: "Mnemonic Generator", icon: Combine },
+     { href: "/lab-analyzer", label: "Lab Report Analyzer", icon: TestTube },
+     {
+        icon: Leaf,
+        title: "Herbal Knowledge Hub",
+        description: "Explore a detailed AI-powered pharmaco-botanical encyclopedia.",
+        href: "/herbal-hub",
+        color: "text-green-600",
+    },
+    {
+        icon: FileHeart,
+        title: "Flashcard Generator",
+        description: "Automatically create study flashcards from your lecture notes.",
+        href: "/flashcard-generator",
+        color: "text-rose-500",
+    },
+    {
+        icon: HelpCircle,
+        title: "MCQ Bank",
+        description: "Practice exam-style questions with AI-generated quizzes on any topic.",
+        href: "/mcq-bank",
+        color: "text-indigo-500",
+    },
+    {
+        icon: FileJson,
+        title: "SOP Repository",
+        description: "Generate and review Standard Operating Procedures for lab practicals.",
+        href: "/sop-repository",
+        color: "text-orange-600",
+    },
+    {
+        icon: Beaker,
+        title: "Virtual Lab Simulator",
+        description: "Run narrative-based lab simulations with AI-guided steps and feedback.",
+        href: "/virtual-lab-simulator",
+        color: "text-fuchsia-500",
+    },
+    {
+        icon: Puzzle,
+        title: "Pharma Games & Puzzles",
+        description: "Learn pharmacology concepts through interactive games and puzzles.",
+        href: "/pharma-games",
+        color: "text-pink-500",
+    },
+    {
+        icon: Combine,
+        title: "Mnemonic Generator",
+        description: "Create memorable Roman Urdu mnemonics for any medical topic.",
+        href: "/mnemonic-generator",
+        color: "text-teal-500",
+    }
 ];
 
 
