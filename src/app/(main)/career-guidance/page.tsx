@@ -3,10 +3,6 @@ import { BackButton } from "@/components/back-button";
 import { CareerGuidanceClient } from "./career-guidance-client";
 import { Suspense } from "react";
 
-function CareerGuidanceContent() {
-    return <CareerGuidanceClient />;
-}
-
 export default function CareerGuidancePage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -16,7 +12,7 @@ export default function CareerGuidancePage() {
             <p className="text-muted-foreground mb-6">
                 Your personalized guide to a successful career in pharmacy.
             </p>
-            <CareerGuidanceContent />
+            <CareerGuidanceClient />
         </div>
     </Suspense>
   );

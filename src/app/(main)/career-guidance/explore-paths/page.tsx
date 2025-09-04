@@ -83,6 +83,7 @@ const careerPaths = [
 export default function ExplorePathsPage() {
   return (
     <>
+        <BackButton />
         <h1 className="text-3xl font-bold mb-2 font-headline">Explore Career Paths</h1>
         <p className="text-muted-foreground mb-6">
             Explore the diverse roles a degree in pharmacy can lead to. Click on any path to see more details.

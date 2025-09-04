@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { usePatient } from "@/contexts/patient-context";
 import { useMode } from "@/contexts/mode-context";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import ExplorePathsPage from "./explore-paths";
+import ExplorePathsPage from "./explore-paths/page";
 
 
 const quickStatusItems = [
@@ -63,13 +63,6 @@ export function CareerGuidanceClient() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const explore = searchParams.get('explore');
-
-  if (explore === 'paths') {
-    return <ExplorePathsPage />;
-  }
-
-
   return (
     <div className="space-y-8">
         {/* Hero Panel */}
@@ -80,7 +73,7 @@ export function CareerGuidanceClient() {
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-4">
                 <Button size="lg" disabled>Take Career Quiz (Coming Soon)</Button>
-                 <Link href={`${pathname}?explore=paths`}>
+                 <Link href="/career-guidance/explore-paths">
                     <Button size="lg" variant="secondary">Explore Paths</Button>
                 </Link>
                 <Button size="lg" variant="outline" disabled>Book Mentor Session (Coming Soon)</Button>
@@ -139,7 +132,7 @@ export function CareerGuidanceClient() {
                     <CardContent>
                         <ul className="space-y-2 text-muted-foreground">
                             <li className="font-semibold text-primary">
-                                <Link href={`${pathname}?explore=paths`}>Explore Paths</Link>
+                                <Link href="/career-guidance/explore-paths">Explore Paths</Link>
                             </li>
                            <li>Roadmap Builder</li>
                            <li>Skills Lab</li>
