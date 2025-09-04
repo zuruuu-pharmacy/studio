@@ -88,6 +88,7 @@ function AttachmentDisplay({ attachments }: { attachments?: Attachment[] }) {
 export function StudentDiscussionForumClient() {
   const { posts, addPost, addReply, upvoteReply, toggleBestAnswer, deletePost, deleteReply } = useDiscussionForum();
   const { patientState, toggleBookmark } = usePatient();
+  const currentUser = patientState.activeUser;
   
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [isNewPostModalOpen, setIsNewPostModalOpen] = useState(false);
@@ -98,9 +99,6 @@ export function StudentDiscussionForumClient() {
   const [isTeacher, setIsTeacher] = useState(false);
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
 
-  // All hooks must be called at the top level
-  const currentUser = patientState.activeUser;
-  
   const newPostForm = useForm<NewPostValues>({ 
     resolver: zodResolver(newPostSchema),
     defaultValues: {
