@@ -13,6 +13,8 @@ const StudyPlannerInputSchema = z.object({
   subjects: z.array(z.string()).min(1, "At least one subject is required.").describe("List of subjects or topics to study."),
   studyDuration: z.string().min(3, "Please specify the study duration.").describe("The total duration for the study plan (e.g., '4 weeks until final exams', 'the next 2 weeks')."),
   hoursPerDay: z.coerce.number().min(1, "Please specify daily study hours.").max(12, "Daily study hours cannot exceed 12.").describe("The average number of hours available for study each day."),
+  personalConstraints: z.string().optional().describe("A description of personal fixed commitments (e.g., 'Work 5-9 PM on weekdays', 'Sleep from 11 PM to 7 AM', 'Prayer times')."),
+  studyPreferences: z.string().optional().describe("A description of study preferences (e.g., 'I study best in the morning', 'I prefer 50-minute blocks with 10-minute breaks', 'I like to use the Pomodoro technique')."),
   learningObjective: z.string().optional().describe("The primary learning objective (e.g., 'deep understanding', 'quick revision', 'pass the exam')."),
 });
 export type StudyPlannerInput = z.infer<typeof StudyPlannerInputSchema>;
@@ -53,27 +55,30 @@ const prompt = ai.definePrompt({
 -   **Study Duration:** {{{studyDuration}}}
 -   **Average Hours Per Day:** {{{hoursPerDay}}}
 -   **Learning Objective:** {{{learningObjective}}}
+-   **Personal Constraints (Fixed Times):** {{{personalConstraints}}}
+-   **Study Preferences:** {{{studyPreferences}}}
+
 
 **Your Instructions as a Learning Strategist:**
 
 1.  **Structure the Week:** Create a 7-day timetable from Monday to Sunday.
 
-2.  **Allocate Time Intelligently:** Based on the 'hoursPerDay', schedule study blocks for each day.
+2.  **Allocate Time Intelligently:** Based on the 'hoursPerDay' and constraints, schedule study blocks for each day.
+    -   **Respect Constraints:** You MUST block out time for personal constraints like sleep, work, or prayer times mentioned.
     -   **Distribute Subjects:** Spread subjects throughout the week to avoid burnout and leverage spaced repetition. Don't cram one subject into a single day.
-    -   **Prioritization:** If possible, try to place more cognitively demanding subjects earlier in the day when the student might be fresher.
+    -   **Prioritization:** If preferences are mentioned (e.g., "freshest in the morning"), place more cognitively demanding subjects during those times.
     -   **Weekend Balance:** Make the weekend schedule slightly lighter if possible, to allow for rest and consolidation of the week's learning.
 
-3.  **Incorporate Essential Breaks:** You MUST schedule short breaks (e.g., 15-30 minutes, using activities like 'Short walk', 'Stretch break') between study sessions and a longer break for lunch/dinner. Mark these slots with 'isBreak: true'. A good pattern is 1-2 hours of study followed by a break.
+3.  **Incorporate Essential Breaks:** You MUST schedule short breaks (e.g., 15-30 minutes, using activities like 'Short walk', 'Stretch break', 'Mindfulness break') between study sessions and a longer break for lunch/dinner. Mark these slots with 'isBreak: true'. A good pattern is 1-2 hours of study followed by a break. If the user mentions a preference like Pomodoro, incorporate that pattern.
 
 4.  **Suggest Varied, Actionable Activities:** For each study block, suggest a specific and effective learning 'activity'. Go beyond simple "reading". Use a mix of techniques to promote deeper learning. Examples:
     -   "Read Chapter 3 on Beta-blockers, focusing on the mechanism of action."
     -   "Solve 20 practice problems for Pharmaceutics from the textbook."
-    -   "Create flashcards for the top 10 drug classifications in Pharmacology."
     -   "Active Recall Session: Write down everything you remember about Pharmacognosy topics from a blank sheet of paper."
-    -   "Review last week's notes on diuretics and summarize them in your own words."
+    -   "Pomodoro Block (25 min study / 5 min break) on drug interactions."
     -   "Watch the online lecture on pharmacokinetics and take notes."
 
-5.  **Generate Summary & Strategy Notes:** Provide a brief, encouraging summary of the overall strategy. Offer actionable tips for effective studying, like the importance of consistency, quality sleep, staying hydrated, and using active learning techniques. Explain *why* the plan is structured the way it is (e.g., "I've included breaks to help you stay focused and varied the activities to keep you engaged.").
+5.  **Generate Summary & Strategy Notes:** Provide a brief, encouraging summary of the overall strategy. Offer actionable tips for effective studying, like the importance of consistency, quality sleep, staying hydrated, and using active learning techniques. Explain *why* the plan is structured the way it is (e.g., "I've included breaks to help you stay focused and varied the activities to keep you engaged, respecting your preference for morning study.").
 
 Respond ONLY with the structured JSON output as defined by the schema.
 `,

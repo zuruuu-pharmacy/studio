@@ -19,6 +19,8 @@ const formSchema = z.object({
   subjects: z.array(z.object({ value: z.string().min(2, "Required") })).min(1, "At least one subject is required."),
   studyDuration: z.string().min(3, "Required."),
   hoursPerDay: z.coerce.number().min(1).max(12),
+  personalConstraints: z.string().optional(),
+  studyPreferences: z.string().optional(),
   learningObjective: z.string().optional(),
 });
 type FormValues = z.infer<typeof formSchema>;
@@ -28,18 +30,19 @@ export function StudyPlannerClient() {
   const [state, formAction] = useActionState<StudyPlannerOutput | { error: string } | null, FormData>(
     async (previousState, formData) => {
       const subjects = formData.getAll("subjects").map(s => s.toString()).filter(s => s.length > 1);
-      const studyDuration = formData.get("studyDuration") as string;
-      const hoursPerDay = formData.get("hoursPerDay") as string;
-      const learningObjective = formData.get("learningObjective") as string;
-
+      
       const parsed = formSchema.safeParse({ 
           subjects: subjects.map(s => ({ value: s })),
-          studyDuration,
-          hoursPerDay,
-          learningObjective,
+          studyDuration: formData.get("studyDuration"),
+          hoursPerDay: formData.get("hoursPerDay"),
+          personalConstraints: formData.get("personalConstraints"),
+          studyPreferences: formData.get("studyPreferences"),
+          learningObjective: formData.get("learningObjective"),
       });
 
       if (!parsed.success) {
+        // Log the detailed error for debugging
+        console.error("Form validation failed:", parsed.error.flatten());
         return { error: "Invalid input. Please check all fields." };
       }
       try {
@@ -47,6 +50,8 @@ export function StudyPlannerClient() {
             subjects: parsed.data.subjects.map(s => s.value),
             studyDuration: parsed.data.studyDuration,
             hoursPerDay: parsed.data.hoursPerDay,
+            personalConstraints: parsed.data.personalConstraints,
+            studyPreferences: parsed.data.studyPreferences,
             learningObjective: parsed.data.learningObjective,
         });
         return result;
@@ -65,6 +70,8 @@ export function StudyPlannerClient() {
       subjects: [{ value: "" }],
       studyDuration: "the next 4 weeks",
       hoursPerDay: 4,
+      personalConstraints: "Sleep from 11 PM to 7 AM daily.",
+      studyPreferences: "I study best in the morning. I prefer using the Pomodoro technique (25 min study, 5 min break).",
       learningObjective: "deep understanding and exam preparation",
     },
   });
@@ -85,12 +92,19 @@ export function StudyPlannerClient() {
     data.subjects.forEach(s => formData.append("subjects", s.value));
     formData.append("studyDuration", data.studyDuration);
     formData.append("hoursPerDay", data.hoursPerDay.toString());
-    if (data.learningObjective) {
-        formData.append("learningObjective", data.learningObjective);
-    }
+    if (data.personalConstraints) formData.append("personalConstraints", data.personalConstraints);
+    if (data.studyPreferences) formData.append("studyPreferences", data.studyPreferences);
+    if (data.learningObjective) formData.append("learningObjective", data.learningObjective);
     startTransition(() => formAction(formData));
   });
   
+  const handleReset = () => {
+    const formData = new FormData();
+    // This is a bit of a hack to signal a reset to the action state
+    formData.append('reset', 'true');
+    formAction(formData);
+  }
+
   if (isPending) {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-4">
@@ -149,7 +163,7 @@ export function StudyPlannerClient() {
                     <p className="text-muted-foreground whitespace-pre-wrap">{state.summaryNotes}</p>
                  </CardContent>
             </Card>
-             <Button onClick={() => formAction(new FormData())} variant="outline">Generate New Plan</Button>
+             <Button onClick={handleReset} variant="outline">Generate New Plan</Button>
         </div>
     )
   }
@@ -196,6 +210,12 @@ export function StudyPlannerClient() {
                     <FormItem><FormLabel>Hours Per Day</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
                  )}/>
             </div>
+            <FormField control={form.control} name="personalConstraints" render={({ field }) => (
+                <FormItem><FormLabel>Personal Constraints (Optional)</FormLabel><FormControl><Textarea placeholder="e.g., Work 5-9 PM weekdays, sleep by 11 PM..." {...field} /></FormControl><FormMessage /></FormItem>
+             )}/>
+             <FormField control={form.control} name="studyPreferences" render={({ field }) => (
+                <FormItem><FormLabel>Study Preferences (Optional)</FormLabel><FormControl><Textarea placeholder="e.g., I study best in the morning, prefer Pomodoro..." {...field} /></FormControl><FormMessage /></FormItem>
+             )}/>
             <FormField control={form.control} name="learningObjective" render={({ field }) => (
                 <FormItem><FormLabel>Primary Learning Goal (Optional)</FormLabel><FormControl><Textarea placeholder="e.g., focus on difficult topics, prepare for final exams..." {...field} /></FormControl><FormMessage /></FormItem>
              )}/>
