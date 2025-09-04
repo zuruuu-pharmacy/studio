@@ -25,10 +25,10 @@ const conversionFactors: { [key: string]: { [key: string]: number } } = {
     mL: 1000,
   },
   concentration: {
-    'percent_w_v': 1, // Base unit is %w/v
+    'percent_w_v': 1, // Base unit is %w/v (g/100mL)
     'mg_ml': 10,       // 1% w/v = 1g/100mL = 1000mg/100mL = 10mg/mL
-    'percent_v_v': 1, // Base unit is %v/v
-    'ml_ml': 100,      // 1% v/v = 1mL/100mL = 0.01mL/mL
+    'percent_v_v': 1, // Base unit is %v/v (mL/100mL)
+    'ml_ml': 0.01,     // 1% v/v = 1mL/100mL = 0.01mL/mL
   }
 };
 
@@ -95,6 +95,8 @@ export function UnitConverterClient() {
     const value = parseFloat(inputValue);
     if (isNaN(value)) return '';
 
+    if (fromUnit === toUnit) return inputValue;
+
     if (category === 'temperature') {
         let celsiusValue: number;
         if (fromUnit === 'C') celsiusValue = value;
@@ -105,52 +107,38 @@ export function UnitConverterClient() {
         if (toUnit === 'F') return Number(((celsiusValue * 9/5) + 32).toPrecision(10)).toString();
         if (toUnit === 'K') return Number((celsiusValue + 273.15).toPrecision(10)).toString();
         return '';
-    } else {
-        if (!conversionFactors[category] || fromUnit === toUnit) return inputValue;
-        
-        let baseValue: number;
+    } 
+    
+    const factors = conversionFactors[category];
+    if (!factors) return '';
 
-        // Handle special cases for concentration
-        if (category === 'concentration') {
-            if (fromUnit === 'percent_w_v' && toUnit === 'mg_ml') {
-                return (value * 10).toString();
-            }
-            if (fromUnit === 'mg_ml' && toUnit === 'percent_w_v') {
-                return (value / 10).toString();
-            }
-            if (fromUnit === 'percent_v_v' && toUnit === 'ml_ml') {
-                return (value / 100).toString();
-            }
-            if (fromUnit === 'ml_ml' && toUnit === 'percent_v_v') {
-                return (value * 100).toString();
-            }
-            // Block incompatible concentration conversions
-            if ((fromUnit.startsWith('percent_w') && toUnit.startsWith('percent_v')) ||
-                (fromUnit.startsWith('percent_v') && toUnit.startsWith('percent_w')) ||
-                (fromUnit.startsWith('percent_w') && toUnit === 'ml_ml') ||
-                (toUnit.startsWith('percent_w') && fromUnit === 'ml_ml') ||
-                (fromUnit.startsWith('percent_v') && toUnit === 'mg_ml') ||
-                (toUnit.startsWith('percent_v') && fromUnit === 'mg_ml') 
-            ) {
-                 return 'N/A';
-            }
+    // Handle special cases for concentration to prevent invalid conversions
+    if (category === 'concentration') {
+        const fromIsWeightBased = fromUnit === 'percent_w_v' || fromUnit === 'mg_ml';
+        const toIsWeightBased = toUnit === 'percent_w_v' || toUnit === 'mg_ml';
+        const fromIsVolumeBased = fromUnit === 'percent_v_v' || fromUnit === 'ml_ml';
+        const toIsVolumeBased = toUnit === 'percent_v_v' || toUnit === 'ml_ml';
+
+        if ((fromIsWeightBased && toIsVolumeBased) || (fromIsVolumeBased && toIsWeightBased)) {
+            return 'N/A';
         }
-        
-        const fromFactor = conversionFactors[category][fromUnit];
-        const toFactor = conversionFactors[category][toUnit];
-
-        if (!fromFactor || !toFactor) return '';
-
-        baseValue = value / fromFactor;
-        const result = baseValue * toFactor;
-        return Number(result.toPrecision(10)).toString();
     }
+    
+    const fromFactor = factors[fromUnit];
+    const toFactor = factors[toUnit];
+
+    if (!fromFactor || !toFactor) return '';
+
+    const baseValue = value / fromFactor;
+    const result = baseValue * toFactor;
+    return Number(result.toPrecision(10)).toString();
+
   }, [inputValue, fromUnit, toUnit, category]);
 
   const calculationExplanation = useMemo(() => {
     const value = parseFloat(inputValue);
     if (isNaN(value)) return 'Invalid input value.';
-    if (convertedValue === 'N/A') return 'This conversion is not directly supported as it mixes weight-based and volume-based concentrations.';
+    if (convertedValue === 'N/A') return 'This conversion is not directly supported as it mixes weight-based and volume-based concentrations without knowing the density of the solution.';
     
     if (category === 'temperature') {
         if (fromUnit === 'F' && toUnit === 'C') return `Formula: (°F - 32) × 5/9 = °C\nCalculation: (${value} - 32) × 5/9 = ${convertedValue} °C`;
