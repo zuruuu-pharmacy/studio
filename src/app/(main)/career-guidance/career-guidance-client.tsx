@@ -2,117 +2,155 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Briefcase, Building, Hospital, FlaskConical, Book, UserTie, BrainCircuit, Rocket } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Rocket, Map, FlaskConical, Stethoscope, Briefcase, BookOpen, User, Search } from "lucide-react";
+import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { usePatient } from "@/contexts/patient-context";
+import { useMode } from "@/contexts/mode-context";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import ExplorePathsPage from "./explore-paths";
 
 
-const careerPaths = [
+const quickStatusItems = [
     {
-        title: "Clinical Pharmacy",
-        icon: Hospital,
-        description: "Work directly with physicians and patients to optimize medication use, typically in a hospital or clinic setting.",
-        details: {
-            "Key Responsibilities": "Patient medication reviews, therapeutic drug monitoring, patient counseling, participating in ward rounds.",
-            "Required Skills": "Strong clinical knowledge, communication skills, problem-solving, patient assessment.",
-            "Potential Job Titles": "Clinical Pharmacist, Hospital Pharmacist, Ambulatory Care Pharmacist, Critical Care Pharmacist."
-        }
+        title: "Current Program",
+        value: "Pharm.D",
+        icon: BookOpen,
     },
     {
-        title: "Industrial Pharmacy",
-        icon: Building,
-        description: "Focus on the discovery, development, and manufacturing of pharmaceutical drugs.",
-        details: {
-            "Key Responsibilities": "Research & Development (R&D), Quality Assurance (QA), Quality Control (QC), Production, Formulation Development.",
-            "Required Skills": "Scientific research, analytical skills, understanding of GMP (Good Manufacturing Practices), project management.",
-            "Potential Job Titles": "Formulation Scientist, QA Officer, Production Pharmacist, R&D Scientist."
-        }
+        title: "Saved Roadmaps",
+        value: "1 (Clinical Focus)",
+        icon: Map,
     },
-     {
-        title: "Community & Hospital Pharmacy",
+    {
+        title: "Applications",
+        value: "0 in progress",
         icon: Briefcase,
-        description: "Serve as the most accessible healthcare professionals, dispensing medications and providing public health advice.",
-        details: {
-            "Key Responsibilities": "Dispensing prescriptions, patient counseling, managing inventory, providing OTC advice, health screenings.",
-            "Required Skills": "Accuracy, patient communication, retail management, knowledge of common ailments.",
-            "Potential Job Titles": "Community Pharmacist, Retail Pharmacist, Pharmacy Manager, Hospital Staff Pharmacist."
-        }
     },
     {
-        title: "Regulatory Affairs & Research",
-        icon: FlaskConical,
-        description: "Ensure that drugs meet government regulations and oversee clinical trials and research.",
-        details: {
-            "Key Responsibilities": "Preparing drug registration dossiers (e.g., CTD), liaising with health authorities, ensuring compliance, managing clinical trial protocols.",
-            "Required Skills": "Attention to detail, understanding of drug laws, scientific writing, data analysis.",
-            "Potential Job Titles": "Regulatory Affairs Officer, Clinical Research Associate (CRA), Medical Science Liaison (MSL)."
-        }
+        title: "Upcoming Events",
+        value: "2 this week",
+        icon: Stethoscope,
     },
-     {
-        title: "Academia & Education",
-        icon: Book,
-        description: "Educate the next generation of pharmacists and conduct academic research.",
-        details: {
-            "Key Responsibilities": "Teaching, curriculum development, conducting research, publishing papers, mentoring students.",
-            "Required Skills": "Deep subject matter expertise, teaching and presentation skills, research methodology, grant writing.",
-            "Potential Job Titles": "Lecturer, Assistant Professor, Professor, Dean of Pharmacy."
-        }
-    },
+];
+
+
+const recommendedTracks = [
     {
-        title: "Entrepreneurship & Management",
+        title: "AI in Drug Discovery",
+        description: "Learn how machine learning is revolutionizing pharmaceutical research.",
         icon: Rocket,
-        description: "Start your own pharmacy, consulting firm, or tech startup in the health sector.",
-        details: {
-            "Key Responsibilities": "Business planning, financial management, marketing, staff management, innovation.",
-            "Required Skills": "Business acumen, leadership, risk-taking, networking, financial literacy.",
-            "Potential Job Titles": "Pharmacy Owner, Healthcare Consultant, CEO of Health-Tech Startup."
-        }
     },
-     {
-        title: "AI & Pharmacoinformatics",
-        icon: BrainCircuit,
-        description: "Leverage data and technology to improve drug discovery, patient care, and health systems.",
-        details: {
-            "Key Responsibilities": "Analyzing health data, developing clinical decision support systems, using AI for drug discovery, managing electronic health records (EHR).",
-            "Required Skills": "Data analysis, programming (e.g., Python), understanding of AI/ML models, knowledge of health IT systems.",
-            "Potential Job Titles": "Pharmacoinformatics Specialist, Clinical Data Analyst, AI in Medicine Researcher, Health IT Consultant."
-        }
+    {
+        title: "Advanced Compounding",
+        description: "Master complex formulations and personalized medicine.",
+        icon: FlaskConical,
+    },
+    {
+        title: "Telepharmacy Operations",
+        description: "Explore the technology and regulations behind remote pharmacy services.",
+        icon: Stethoscope,
     }
 ];
 
+
 export function CareerGuidanceClient() {
+  const { patientState } = usePatient();
+  const { mode } = useMode();
+  const studentName = patientState.activeUser?.demographics?.name?.split(' ')[0] || "Student";
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const explore = searchParams.get('explore');
+
+  if (explore === 'paths') {
+    return <ExplorePathsPage />;
+  }
+
+
   return (
-    <Card>
-        <CardHeader>
-            <CardTitle>Pharmacy Career Pathways</CardTitle>
-            <CardDescription>
-                Explore the diverse roles a degree in pharmacy can lead to. Click on any path to see more details.
-            </CardDescription>
-        </CardHeader>
-        <CardContent>
-            <Accordion type="single" collapsible className="w-full space-y-4">
-                {careerPaths.map((path) => (
-                     <AccordionItem key={path.title} value={path.title} className="border rounded-lg bg-background/50">
-                        <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline">
-                           <div className="flex items-center gap-4">
-                             <path.icon className="h-8 w-8 text-primary"/>
-                             <div>
-                                <p>{path.title}</p>
-                                <p className="text-sm text-muted-foreground font-normal text-left">{path.description}</p>
-                             </div>
+    <div className="space-y-8">
+        {/* Hero Panel */}
+        <section className="text-center bg-primary/10 py-12 px-6 rounded-lg">
+            <h1 className="text-4xl font-bold font-headline text-primary">Find your career path — clinical, industry, research, or start something new.</h1>
+            <p className="mt-2 text-lg text-muted-foreground max-w-2xl mx-auto">
+                Personalized roadmaps, certifications, salary insights, and alumni stories.
+            </p>
+            <div className="mt-6 flex flex-wrap justify-center gap-4">
+                <Button size="lg" disabled>Take Career Quiz (Coming Soon)</Button>
+                 <Link href={`${pathname}?explore=paths`}>
+                    <Button size="lg" variant="secondary">Explore Paths</Button>
+                </Link>
+                <Button size="lg" variant="outline" disabled>Book Mentor Session (Coming Soon)</Button>
+            </div>
+        </section>
+
+        {/* Quick Status Row */}
+        <section>
+            <Card>
+                <CardHeader>
+                    <CardTitle>{studentName}'s Snapshot</CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                     {quickStatusItems.map((item) => (
+                        <div key={item.title} className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+                           <item.icon className="h-8 w-8 text-primary"/>
+                           <div>
+                                <p className="text-sm text-muted-foreground">{item.title}</p>
+                                <p className="font-bold text-lg">{item.value}</p>
                            </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="px-6 pb-4 space-y-4">
-                            {Object.entries(path.details).map(([key, value]) => (
-                                <div key={key}>
-                                    <h4 className="font-semibold text-base">{key}</h4>
-                                    <p className="text-muted-foreground">{value}</p>
+                        </div>
+                    ))}
+                </CardContent>
+            </Card>
+        </section>
+        
+        {/* AI Recommendations & Search */}
+        <section className="grid lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-4">
+                <h2 className="text-2xl font-semibold">Recommended For You</h2>
+                <div className="grid md:grid-cols-2 gap-4">
+                    {recommendedTracks.map(track => (
+                        <Card key={track.title} className="hover:shadow-lg transition-shadow">
+                            <CardHeader className="flex flex-row items-start gap-4">
+                                <track.icon className="h-8 w-8 text-primary mt-1"/>
+                                <div>
+                                    <CardTitle className="text-lg">{track.title}</CardTitle>
+                                    <CardDescription>{track.description}</CardDescription>
                                 </div>
-                            ))}
-                        </AccordionContent>
-                    </AccordionItem>
-                ))}
-            </Accordion>
-        </CardContent>
-    </Card>
+                            </CardHeader>
+                            <CardContent>
+                                <Button variant="link" className="p-0">Learn More</Button>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            </div>
+            <div className="space-y-4">
+                 <h2 className="text-2xl font-semibold">Search</h2>
+                 <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input placeholder="Search jobs, skills, certifications..." className="pl-10" />
+                </div>
+                <Card>
+                    <CardHeader><CardTitle className="text-lg">Career Modules</CardTitle></CardHeader>
+                    <CardContent>
+                        <ul className="space-y-2 text-muted-foreground">
+                            <li className="font-semibold text-primary">
+                                <Link href={`${pathname}?explore=paths`}>Explore Paths</Link>
+                            </li>
+                           <li>Roadmap Builder</li>
+                           <li>Skills Lab</li>
+                           <li>Jobs & Internships</li>
+                           <li>Mentors & Alumni</li>
+                        </ul>
+                    </CardContent>
+                </Card>
+            </div>
+        </section>
+
+    </div>
   );
 }
