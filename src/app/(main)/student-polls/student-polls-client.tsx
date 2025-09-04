@@ -14,9 +14,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { Plus, ListChecks, Check, BarChart3, Users, Percent } from "lucide-react";
+import { Plus, ListChecks, Check, BarChart3, Users, Percent, ShieldQuestion } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+
 
 const newPollSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters."),
@@ -24,13 +27,14 @@ const newPollSchema = z.object({
   options: z.array(z.object({
     value: z.string().min(1, "Option cannot be empty."),
   })).min(2, "Must have at least two options."),
+  isAnonymous: z.boolean().default(false),
 });
 type NewPollValues = z.infer<typeof newPollSchema>;
 
 
 export function StudentPollsClient() {
   const { polls, addPoll, vote } = usePolls();
-  const { patientState } = usePatient();
+  const { patientState, addVotedPoll } = usePatient();
   const currentUser = patientState.activeUser;
   
   const [isNewPollModalOpen, setIsNewPollModalOpen] = useState(false);
@@ -41,6 +45,7 @@ export function StudentPollsClient() {
         title: "",
         description: "",
         options: [{ value: "" }, { value: "" }],
+        isAnonymous: false,
     }
   });
 
@@ -59,6 +64,7 @@ export function StudentPollsClient() {
       description: data.description || "",
       options: data.options.map(o => ({ text: o.value })),
       author: currentUser.demographics?.name || "Anonymous",
+      isAnonymous: data.isAnonymous,
     });
     toast({ title: "Poll Created!", description: "Your new poll is now live." });
     newPollForm.reset();
@@ -66,7 +72,17 @@ export function StudentPollsClient() {
   });
   
   const handleVote = (pollId: string, optionIndex: number) => {
+    // This check is now primarily for anonymous polls, handled client-side
+    if (currentUser.votedPollIds?.includes(pollId)) {
+        toast({
+            variant: "destructive",
+            title: "Already Voted",
+            description: "You have already voted in this anonymous poll.",
+        });
+        return;
+    }
     vote(pollId, currentUser.id, optionIndex);
+    addVotedPoll(pollId); // Track vote for anonymous polls
   }
 
   return (
@@ -108,6 +124,26 @@ export function StudentPollsClient() {
                             </div>
                             <Button type="button" variant="outline" size="sm" onClick={() => append({ value: "" })} className="mt-2">Add Option</Button>
                         </div>
+                         <FormField
+                            control={newPollForm.control}
+                            name="isAnonymous"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                <div className="space-y-0.5">
+                                    <FormLabel>Anonymous Poll</FormLabel>
+                                    <FormDescription>
+                                    If checked, voter identities will not be tracked.
+                                    </FormDescription>
+                                </div>
+                                <FormControl>
+                                    <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                                </FormItem>
+                            )}
+                            />
                         <DialogFooter><Button type="submit">Create Poll</Button></DialogFooter>
                         </form>
                     </Form>
@@ -126,7 +162,13 @@ export function StudentPollsClient() {
         ) : (
             <div className="grid md:grid-cols-2 gap-6">
                 {polls.map(poll => {
-                    const userVote = poll.votes.find(v => v.userId === currentUser.id);
+                    // For anonymous polls, we check the local user profile. For public polls, we check the votes array.
+                    const hasVoted = poll.isAnonymous 
+                        ? currentUser.votedPollIds?.includes(poll.id)
+                        : poll.votes.some(v => v.userId === currentUser.id);
+
+                    const userVoteIndex = hasVoted ? poll.votes.find(v => v.userId === currentUser.id)?.optionIndex : undefined;
+
                     const totalVotes = poll.votes.length;
                     
                     return (
@@ -137,20 +179,21 @@ export function StudentPollsClient() {
                                 <div className="text-xs text-muted-foreground pt-2 flex items-center gap-4">
                                     <span>By {poll.author}</span>
                                     <span className="flex items-center gap-1"><Users className="h-3 w-3"/> {totalVotes} Votes</span>
+                                    {poll.isAnonymous && <span className="flex items-center gap-1"><ShieldQuestion className="h-3 w-3"/> Anonymous</span>}
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-3">
                                     {poll.options.map((option, index) => {
-                                        if (userVote !== undefined) {
+                                        if (hasVoted) {
                                             const optionVotes = poll.votes.filter(v => v.optionIndex === index).length;
                                             const percentage = totalVotes > 0 ? (optionVotes / totalVotes) * 100 : 0;
                                             return (
                                                 <div key={index} className="space-y-1">
                                                     <div className="flex justify-between items-center text-sm">
                                                         <div className="flex items-center gap-2">
-                                                            {userVote.optionIndex === index && <Check className="h-4 w-4 text-primary" />}
-                                                            <span className={cn(userVote.optionIndex === index && "font-bold")}>{option.text}</span>
+                                                            {userVoteIndex === index && <Check className="h-4 w-4 text-primary" />}
+                                                            <span className={cn(userVoteIndex === index && "font-bold")}>{option.text}</span>
                                                         </div>
                                                         <span className="font-semibold text-muted-foreground">{percentage.toFixed(0)}%</span>
                                                     </div>

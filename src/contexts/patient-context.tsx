@@ -59,6 +59,7 @@ export interface UserProfile {
   studentId?: string; // Specific to students
   patientHistoryId?: string; // Link to a patient history record
   bookmarkedPostIds?: string[]; // For discussion forum bookmarks
+  votedPollIds?: string[]; // For anonymous polls to prevent double voting
 }
 
 export interface PatientRecord {
@@ -78,6 +79,7 @@ interface PatientContextType {
   setLastPrescription: (prescription: ReadPrescriptionOutput) => void;
   clearLastPrescription: () => void;
   toggleBookmark: (postId: string) => void;
+  addVotedPoll: (pollId: string) => void;
 }
 
 interface PatientState {
@@ -89,7 +91,7 @@ interface PatientState {
 
 const PatientContext = createContext<PatientContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'pharmacy_data_v2';
+const LOCAL_STORAGE_KEY = 'pharmacy_data_v3'; // Bumped version for new poll tracking
 
 export function PatientProvider({ children }: { children: ReactNode }) {
   const [patientState, setPatientState] = useState<PatientState>({ activeUser: null, users: [], patientRecords: [], lastPrescription: null });
@@ -248,7 +250,30 @@ export function PatientProvider({ children }: { children: ReactNode }) {
             users: prevState.users.map(u => u.id === updatedUser.id ? updatedUser : u),
         };
     });
-};
+  };
+
+  const addVotedPoll = (pollId: string) => {
+    setPatientState(prevState => {
+        if (!prevState.activeUser) return prevState;
+
+        const votedPollIds = new Set(prevState.activeUser.votedPollIds || []);
+        if (votedPollIds.has(pollId)) {
+            return prevState; // Already voted, no change
+        }
+        votedPollIds.add(pollId);
+
+         const updatedUser = {
+            ...prevState.activeUser,
+            votedPollIds: Array.from(votedPollIds),
+        };
+
+        return {
+            ...prevState,
+            activeUser: updatedUser,
+            users: prevState.users.map(u => u.id === updatedUser.id ? updatedUser : u),
+        };
+    });
+  }
 
 
   const contextValue = useMemo(() => ({ 
@@ -262,6 +287,7 @@ export function PatientProvider({ children }: { children: ReactNode }) {
       setLastPrescription,
       clearLastPrescription,
       toggleBookmark,
+      addVotedPoll,
     }), [patientState]);
 
   return (

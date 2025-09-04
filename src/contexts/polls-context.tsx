@@ -10,7 +10,7 @@ export interface PollOption {
 }
 
 export interface PollVote {
-  userId: string; // To track who voted
+  userId: string | null; // Null for anonymous polls
   optionIndex: number;
 }
 
@@ -22,6 +22,7 @@ export interface Poll {
   options: PollOption[];
   votes: PollVote[];
   date: string;
+  isAnonymous: boolean;
 }
 
 // Context Type
@@ -33,7 +34,7 @@ interface PollsContextType {
 
 const PollsContext = createContext<PollsContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'student_polls_v1';
+const LOCAL_STORAGE_KEY = 'student_polls_v2'; // Bump version for new data structure
 
 export function PollsProvider({ children }: { children: ReactNode }) {
   const [polls, setPolls] = useState<Poll[]>([]);
@@ -76,11 +77,13 @@ export function PollsProvider({ children }: { children: ReactNode }) {
   const vote = (pollId: string, userId: string, optionIndex: number) => {
     setPolls(prevPolls => prevPolls.map(poll => {
       if (poll.id === pollId) {
-        // Prevent user from voting twice
-        if (poll.votes.some(v => v.userId === userId)) {
+        // For non-anonymous polls, check if user has already voted by checking the vote array
+        if (!poll.isAnonymous && poll.votes.some(v => v.userId === userId)) {
           return poll;
         }
-        const newVote: PollVote = { userId, optionIndex };
+
+        // For all polls, the vote is added. For anonymous polls, userId is null.
+        const newVote: PollVote = { userId: poll.isAnonymous ? null : userId, optionIndex };
         return { ...poll, votes: [...poll.votes, newVote] };
       }
       return poll;
