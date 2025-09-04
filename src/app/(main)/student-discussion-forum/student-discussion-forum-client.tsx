@@ -15,14 +15,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { MessageSquare, Plus, Send, ArrowLeft, UserCircle, Folder, ThumbsUp, Star, Paperclip, Download, Search, Flame } from "lucide-react";
+import { MessageSquare, Plus, Send, ArrowLeft, UserCircle, Folder, ThumbsUp, Star, Paperclip, Download, Search, Flame, KeyRound, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Label } from "@/components/ui/label";
+
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const TEACHER_CODE = "239774";
+
 
 const newPostSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters."),
@@ -80,13 +85,16 @@ function AttachmentDisplay({ attachments }: { attachments?: Attachment[] }) {
 }
 
 export function StudentDiscussionForumClient() {
-  const { posts, addPost, addReply, upvoteReply, toggleBestAnswer } = useDiscussionForum();
+  const { posts, addPost, addReply, upvoteReply, toggleBestAnswer, deletePost, deleteReply } = useDiscussionForum();
   const { patientState } = usePatient();
   
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [isNewPostModalOpen, setIsNewPostModalOpen] = useState(false);
+  const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
+  const [accessCode, setAccessCode] = useState("");
+  const [isTeacher, setIsTeacher] = useState(false);
 
 
   const newPostForm = useForm<NewPostValues>({ resolver: zodResolver(newPostSchema) });
@@ -143,6 +151,28 @@ export function StudentDiscussionForumClient() {
     addReply(selectedPostId, { content: data.reply, author: authorName, attachments: newAttachments });
     newReplyForm.reset({ reply: "", attachment: null });
   });
+  
+  const handleDeletePost = (postId: string) => {
+    deletePost(postId);
+    toast({ title: "Post Deleted" });
+    setSelectedPostId(null);
+  };
+
+  const handleDeleteReply = (postId: string, replyId: string) => {
+    deleteReply(postId, replyId);
+    toast({ title: "Reply Deleted" });
+  };
+  
+  const handleAccessCodeCheck = () => {
+    if (accessCode === TEACHER_CODE) {
+      setIsTeacher(true);
+      setIsTeacherModalOpen(false);
+      toast({ title: "Moderator Access Granted" });
+    } else {
+      toast({ variant: "destructive", title: "Incorrect Code" });
+    }
+  }
+
 
   const selectedPost = posts.find(p => p.id === selectedPostId);
 
@@ -174,7 +204,18 @@ export function StudentDiscussionForumClient() {
     const isOriginalPoster = selectedPost.author === authorName;
     return (
       <div className="space-y-4">
-        <Button onClick={() => setSelectedPostId(null)} variant="outline"><ArrowLeft className="mr-2"/> Back to All Posts</Button>
+        <div className="flex justify-between items-center">
+            <Button onClick={() => setSelectedPostId(null)} variant="outline"><ArrowLeft className="mr-2"/> Back to All Posts</Button>
+            {isTeacher && (
+                 <AlertDialog>
+                    <AlertDialogTrigger asChild><Button variant="destructive"><Trash2 className="mr-2"/>Delete Post</Button></AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete this post and all its replies.</AlertDialogDescription></AlertDialogHeader>
+                        <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDeletePost(selectedPost.id)}>Delete</AlertDialogAction></AlertDialogFooter>
+                    </AlertDialogContent>
+                 </AlertDialog>
+            )}
+        </div>
         <Card>
           <CardHeader>
             <CardTitle>{selectedPost.title}</CardTitle>
@@ -194,7 +235,18 @@ export function StudentDiscussionForumClient() {
                   <div className="flex-1">
                     <div className="flex justify-between items-center">
                         <p className="font-semibold">{reply.author}</p>
-                        {reply.isBestAnswer && <div className="flex items-center gap-1 text-sm font-bold text-green-600"><Star className="h-4 w-4 fill-current" /> BEST ANSWER</div>}
+                        <div className="flex items-center gap-2">
+                          {reply.isBestAnswer && <div className="flex items-center gap-1 text-sm font-bold text-green-600"><Star className="h-4 w-4 fill-current" /> BEST ANSWER</div>}
+                          {isTeacher && (
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="h-6 w-6"><Trash2 className="h-4 w-4 text-destructive"/></Button></AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader><AlertDialogTitle>Delete this reply?</AlertDialogTitle></AlertDialogHeader>
+                                    <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDeleteReply(selectedPost.id, reply.id)}>Delete</AlertDialogAction></AlertDialogFooter>
+                                </AlertDialogContent>
+                             </AlertDialog>
+                          )}
+                        </div>
                     </div>
                     <p className="text-sm text-muted-foreground py-2">{reply.content}</p>
                     <AttachmentDisplay attachments={reply.attachments} />
@@ -202,7 +254,7 @@ export function StudentDiscussionForumClient() {
                         <Button variant="outline" size="sm" onClick={() => upvoteReply(selectedPost.id, reply.id)}>
                            <ThumbsUp className="mr-2 h-4 w-4"/> {reply.upvotes}
                         </Button>
-                         {isOriginalPoster && (
+                         {(isOriginalPoster || isTeacher) && (
                             <Button variant="ghost" size="sm" onClick={() => toggleBestAnswer(selectedPost.id, reply.id)}>
                                 <Star className="mr-2 h-4 w-4"/> {reply.isBestAnswer ? 'Unmark as Best' : 'Mark as Best'}
                             </Button>
@@ -241,66 +293,65 @@ export function StudentDiscussionForumClient() {
             <Card>
                 <CardHeader>
                     <div className="flex justify-between items-center flex-wrap gap-4">
-                    <div>
                         <CardTitle>Discussion Threads</CardTitle>
-                        <CardDescription>Browse discussions by category or start a new thread.</CardDescription>
+                        <div className="flex gap-2">
+                             <Dialog open={isTeacherModalOpen} onOpenChange={setIsTeacherModalOpen}>
+                                <DialogTrigger asChild><Button variant="outline"><KeyRound className="mr-2"/> Moderator Access</Button></DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader><DialogTitle>Moderator Access</DialogTitle><DialogDescription>Enter the code to enable moderation tools.</DialogDescription></DialogHeader>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="access-code">Access Code</Label>
+                                        <Input id="access-code" type="password" value={accessCode} onChange={(e) => setAccessCode(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAccessCodeCheck()} />
+                                    </div>
+                                    <DialogFooter><Button onClick={handleAccessCodeCheck}>Verify</Button></DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+                            <Dialog open={isNewPostModalOpen} onOpenChange={setIsNewPostModalOpen}>
+                                <DialogTrigger asChild><Button><Plus className="mr-2"/> New Post</Button></DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader><DialogTitle>Start a New Discussion</DialogTitle></DialogHeader>
+                                    <Form {...newPostForm}>
+                                        <form onSubmit={handleCreatePost} className="space-y-4">
+                                        <FormField name="category" control={newPostForm.control} render={({ field }) => (
+                                            <FormItem>
+                                            <FormLabel>Category</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl><SelectTrigger><SelectValue placeholder="Select a subject category..." /></SelectTrigger></FormControl>
+                                                <SelectContent>{FORUM_CATEGORIES.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}</SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                        <FormField name="title" control={newPostForm.control} render={({ field }) => (
+                                            <FormItem><FormLabel>Topic Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                                        )} />
+                                        <FormField name="content" control={newPostForm.control} render={({ field }) => (
+                                            <FormItem><FormLabel>Your Question or Comment</FormLabel><FormControl><Textarea {...field} rows={6} /></FormControl><FormMessage /></FormItem>
+                                        )} />
+                                        <FormField name="attachment" control={newPostForm.control} render={({ field: { onChange, ...fieldProps} }) => (
+                                            <FormItem>
+                                                <FormLabel>Attach File (Optional)</FormLabel>
+                                                <FormControl><Input {...fieldProps} type="file" onChange={(e) => onChange(e.target.files)} /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                        <DialogFooter><Button type="submit">Create Post</Button></DialogFooter>
+                                        </form>
+                                    </Form>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
                     </div>
-                    <Dialog open={isNewPostModalOpen} onOpenChange={setIsNewPostModalOpen}>
-                        <DialogTrigger asChild><Button><Plus className="mr-2"/> New Post</Button></DialogTrigger>
-                        <DialogContent>
-                        <DialogHeader><DialogTitle>Start a New Discussion</DialogTitle></DialogHeader>
-                        <Form {...newPostForm}>
-                            <form onSubmit={handleCreatePost} className="space-y-4">
-                            <FormField name="category" control={newPostForm.control} render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Category</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl><SelectTrigger><SelectValue placeholder="Select a subject category..." /></SelectTrigger></FormControl>
-                                    <SelectContent>
-                                    {FORUM_CATEGORIES.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                                </FormItem>
-                            )} />
-                            <FormField name="title" control={newPostForm.control} render={({ field }) => (
-                                <FormItem><FormLabel>Topic Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                            )} />
-                            <FormField name="content" control={newPostForm.control} render={({ field }) => (
-                                <FormItem><FormLabel>Your Question or Comment</FormLabel><FormControl><Textarea {...field} rows={6} /></FormControl><FormMessage /></FormItem>
-                            )} />
-                            <FormField name="attachment" control={newPostForm.control} render={({ field: { onChange, ...fieldProps} }) => (
-                                <FormItem>
-                                    <FormLabel>Attach File (Optional)</FormLabel>
-                                    <FormControl><Input {...fieldProps} type="file" onChange={(e) => onChange(e.target.files)} /></FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )} />
-                            <DialogFooter><Button type="submit">Create Post</Button></DialogFooter>
-                            </form>
-                        </Form>
-                        </DialogContent>
-                    </Dialog>
-                    </div>
-                    <div className="flex flex-col md:flex-row gap-4 mt-4">
+                    <CardDescription>Browse discussions by category or start a new thread.</CardDescription>
+                    <div className="flex flex-col md:flex-row gap-4 pt-4">
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                            <Input
-                                placeholder="Search all discussions..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10"
-                            />
+                            <Input placeholder="Search all discussions..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
                         </div>
                         <div className="w-full md:w-48">
                             <Select value={sortBy} onValueChange={(v) => setSortBy(v as "newest" | "oldest")}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Sort by..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="newest">Sort by Newest</SelectItem>
-                                    <SelectItem value="oldest">Sort by Oldest</SelectItem>
-                                </SelectContent>
+                                <SelectTrigger><SelectValue placeholder="Sort by..." /></SelectTrigger>
+                                <SelectContent><SelectItem value="newest">Sort by Newest</SelectItem><SelectItem value="oldest">Sort by Oldest</SelectItem></SelectContent>
                             </Select>
                         </div>
                     </div>

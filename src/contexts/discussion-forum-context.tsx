@@ -56,6 +56,8 @@ interface DiscussionForumContextType {
   addReply: (postId: string, reply: Omit<ForumReply, 'id' | 'date' | 'upvotes' | 'isBestAnswer'>) => void;
   upvoteReply: (postId: string, replyId: string) => void;
   toggleBestAnswer: (postId: string, replyId: string) => void;
+  deletePost: (postId: string) => void;
+  deleteReply: (postId: string, replyId: string) => void;
 }
 
 const DiscussionForumContext = createContext<DiscussionForumContextType | undefined>(undefined);
@@ -153,8 +155,24 @@ export function DiscussionForumProvider({ children }: { children: ReactNode }) {
         return post;
     }));
   };
+
+  const deletePost = (postId: string) => {
+    setPosts(prevPosts => prevPosts.filter(p => p.id !== postId));
+  };
   
-  const contextValue = useMemo(() => ({ posts, addPost, addReply, upvoteReply, toggleBestAnswer }), [posts]);
+  const deleteReply = (postId: string, replyId: string) => {
+    setPosts(prevPosts => prevPosts.map(post => {
+        if (post.id === postId) {
+            return {
+                ...post,
+                replies: post.replies.filter(reply => reply.id !== replyId)
+            };
+        }
+        return post;
+    }));
+  };
+  
+  const contextValue = useMemo(() => ({ posts, addPost, addReply, upvoteReply, toggleBestAnswer, deletePost, deleteReply }), [posts]);
 
   return (
     <DiscussionForumContext.Provider value={contextValue}>
