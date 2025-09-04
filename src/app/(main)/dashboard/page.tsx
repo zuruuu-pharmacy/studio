@@ -91,7 +91,7 @@ const pharmacistTools = [
     icon: ShieldEllipsis,
     title: "Admin Panel",
     description: "Manage platform content and view engagement analytics.",
-    href: "/dashboard",
+    href: "/career-guidance/admin-panel",
     color: "text-slate-500",
   },
 ];
