@@ -33,3 +33,4 @@ import '@/ai/flows/matching-game-generator.ts';
 import '@/ai/flows/mnemonic-generator.ts';
 import '@/ai/flows/study-planner.ts';
 import '@/ai/flows/bsa-dose-calculator.ts';
+import '@/ai/flows/iv-rate-calculator.ts';

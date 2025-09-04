@@ -23,7 +23,6 @@ const calculationTypes = [
     description: "Calculate mL/hr, drops/min, and other infusion rates.",
     href: "/dose-calculator/iv-rate",
     icon: Droplets,
-    status: "Coming Soon",
   },
 ];
 
