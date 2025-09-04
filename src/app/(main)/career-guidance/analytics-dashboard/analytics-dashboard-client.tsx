@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
+import { Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart as RechartsBarChart } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 
 const satisfactionChartData = [
@@ -117,7 +117,7 @@ export function AnalyticsDashboardClient() {
                             color: "hsl(var(--chart-2))",
                         }
                     }} className="h-[250px] w-full">
-                        <BarChart
+                        <RechartsBarChart
                             data={satisfactionChartData}
                             layout="vertical"
                             margin={{ left: 10, right: 10, top: 10, bottom: 10 }}
@@ -138,7 +138,7 @@ export function AnalyticsDashboardClient() {
                             />
                             <Bar dataKey="rating" layout="vertical" radius={5} fill="var(--color-rating)">
                             </Bar>
-                        </BarChart>
+                        </RechartsBarChart>
                     </ChartContainer>
                 </CardContent>
             </Card>
@@ -149,7 +149,7 @@ export function AnalyticsDashboardClient() {
                 </CardHeader>
                 <CardContent>
                    <ChartContainer config={chartConfig} className="h-[250px] w-full">
-                        <BarChart data={cohortChartData} margin={{ top: 20 }}>
+                        <RechartsBarChart data={cohortChartData} margin={{ top: 20 }}>
                             <CartesianGrid vertical={false} />
                             <XAxis
                                 dataKey="path"
@@ -164,7 +164,7 @@ export function AnalyticsDashboardClient() {
                             />
                             <Bar dataKey="students" radius={8}>
                             </Bar>
-                        </BarChart>
+                        </RechartsBarChart>
                     </ChartContainer>
                 </CardContent>
             </Card>
