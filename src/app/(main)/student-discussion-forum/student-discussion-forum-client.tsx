@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { MessageSquare, Plus, Send, ArrowLeft, UserCircle, Folder, ThumbsUp, Star, Paperclip, Download } from "lucide-react";
+import { MessageSquare, Plus, Send, ArrowLeft, UserCircle, Folder, ThumbsUp, Star, Paperclip, Download, Search } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -85,6 +85,9 @@ export function StudentDiscussionForumClient() {
   
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [isNewPostModalOpen, setIsNewPostModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
+
 
   const newPostForm = useForm<NewPostValues>({ resolver: zodResolver(newPostSchema) });
   const newReplyForm = useForm<NewReplyValues>({ resolver: zodResolver(newReplySchema) });
@@ -151,6 +154,16 @@ export function StudentDiscussionForumClient() {
         return b.upvotes - a.upvotes;
     });
   }, [selectedPost]);
+  
+  const filteredPosts = useMemo(() => {
+    const lowercasedFilter = searchTerm.toLowerCase();
+    return posts.filter(
+      (post) =>
+        post.title.toLowerCase().includes(lowercasedFilter) ||
+        post.content.toLowerCase().includes(lowercasedFilter) ||
+        post.category.toLowerCase().includes(lowercasedFilter)
+    );
+  }, [searchTerm, posts]);
 
 
   if (selectedPost) {
@@ -221,8 +234,11 @@ export function StudentDiscussionForumClient() {
   return (
     <Card>
       <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle>Discussion Threads</CardTitle>
+        <div className="flex justify-between items-center flex-wrap gap-4">
+          <div>
+            <CardTitle>Discussion Threads</CardTitle>
+            <CardDescription>Browse discussions by category or start a new thread.</CardDescription>
+          </div>
           <Dialog open={isNewPostModalOpen} onOpenChange={setIsNewPostModalOpen}>
             <DialogTrigger asChild><Button><Plus className="mr-2"/> New Post</Button></DialogTrigger>
             <DialogContent>
@@ -260,18 +276,42 @@ export function StudentDiscussionForumClient() {
             </DialogContent>
           </Dialog>
         </div>
-        <CardDescription>Browse discussions by category or start a new thread.</CardDescription>
+        <div className="flex flex-col md:flex-row gap-4 mt-4">
+            <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                    placeholder="Search all discussions..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                />
+            </div>
+            <div className="w-full md:w-48">
+                <Select value={sortBy} onValueChange={(v) => setSortBy(v as "newest" | "oldest")}>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Sort by..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="newest">Sort by Newest</SelectItem>
+                        <SelectItem value="oldest">Sort by Oldest</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+        </div>
       </CardHeader>
       <CardContent>
-        {posts.length === 0 ? (
+        {filteredPosts.length === 0 ? (
           <div className="text-center text-muted-foreground py-12">
             <MessageSquare className="mx-auto h-12 w-12 mb-4" />
-            <p>No discussions yet. Be the first to start one!</p>
+            <p>{searchTerm ? `No results found for "${searchTerm}".` : 'No discussions yet. Be the first to start one!'}</p>
           </div>
         ) : (
-          <Accordion type="multiple" className="w-full space-y-3">
+          <Accordion type="multiple" className="w-full space-y-3" defaultValue={FORUM_CATEGORIES}>
             {FORUM_CATEGORIES.map(category => {
-              const postsInCategory = posts.filter(p => p.category === category);
+              const postsInCategory = filteredPosts
+                .filter(p => p.category === category)
+                .sort((a, b) => sortBy === 'newest' ? new Date(b.date).getTime() - new Date(a.date).getTime() : new Date(a.date).getTime() - new Date(b.date).getTime());
+
               if (postsInCategory.length === 0) return null;
 
               return (
