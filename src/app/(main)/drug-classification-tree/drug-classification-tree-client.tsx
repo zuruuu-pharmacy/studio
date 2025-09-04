@@ -62,8 +62,8 @@ function DrugCard({ drug }: { drug: Drug }) {
                     <div className="flex items-center gap-2"><Beaker/>Analytical Methods</div>
                 </AccordionTrigger>
                 <AccordionContent className="pt-2 space-y-4">
-                    <DetailSection title="Qualitative" content={drug.analyticalMethods.qualitative} icon={FileText} />
-                    <DetailSection title="Quantitative" content={drug.analyticalMethods.quantitative} icon={FileText} />
+                    <DetailSection title="Qualitative Analysis" content={drug.analyticalMethods.qualitative} icon={FileText} />
+                    <DetailSection title="Quantitative Analysis" content={drug.analyticalMethods.quantitative} icon={FileText} />
                     <DetailSection title="Pharmacopoeial Standards" content={drug.analyticalMethods.pharmacopoeial} icon={FileText} />
                 </AccordionContent>
             </AccordionItem>
