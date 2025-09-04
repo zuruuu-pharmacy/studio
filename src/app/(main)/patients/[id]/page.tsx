@@ -6,7 +6,7 @@ import { useMode } from "@/contexts/mode-context";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { notFound, useParams } from 'next/navigation';
-import { User, ShieldAlert } from "lucide-react";
+import { User, ShieldAlert, Briefcase } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { BackButton } from "@/components/back-button";
 
@@ -23,6 +23,13 @@ const formSections = [
         { name: 'hospitalId', label: 'Hospital ID / MRN' },
         { name: 'phoneNumber', label: 'Patient Phone Number', sensitive: true },
         { name: 'caretakerPhoneNumber', label: 'Caretaker Phone Number', sensitive: true },
+    ]},
+     { id: 'careerProfile', title: 'Career & Professional Profile', studentOnly: true, fields: [
+        { name: 'careerInterests', label: 'Career Interests' },
+        { name: 'preferredLocations', label: 'Preferred Work Locations' },
+        { name: 'languages', label: 'Languages Spoken' },
+        { name: 'linkedinProfile', label: 'LinkedIn Profile URL' },
+        { name: 'personalStatement', label: 'Personal Statement / Bio' },
     ]},
     { id: 'presentingComplaint', title: '2. Presenting Complaint (PC)', field: 'presentingComplaint' },
     { id: 'historyOfPresentingIllness', title: '3. History of Presenting Illness (HPI)', field: 'historyOfPresentingIllness' },
@@ -95,48 +102,52 @@ export default function PatientViewPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Accordion type="multiple" className="w-full space-y-4" defaultValue={['demographics']}>
-            {formSections.map(section => (
-              <AccordionItem value={section.id} key={section.id} className="border rounded-lg bg-background/50">
-                <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline">{section.title}</AccordionTrigger>
-                <AccordionContent className="p-6 pt-0 space-y-4">
-                  {section.fields ? (
-                    <div className="grid md:grid-cols-2 gap-x-8 gap-y-4">
-                        {section.fields.map(field => {
-                            if (field.sensitive && mode === 'student') return null;
-                            const value = history[field.name as keyof PatientHistory];
-                            return value ? (
-                               <div key={field.name}>
-                                    <p className="font-semibold">{field.label}</p>
-                                    <p className="text-muted-foreground">{value}</p>
-                               </div>
-                            ) : null
-                        })}
-                    </div>
-                  ) : section.id === 'systemicNotes' ? (
-                     <div className="space-y-4">
-                        {systemicNotesFields.map(systemName => {
-                             const note = history.systemicNotes?.[systemName as keyof typeof history.systemicNotes];
-                             if(!note) return null;
-                             return (
-                                 <div key={systemName}>
-                                    <p className="font-semibold">{systemName}</p>
-                                    <p className="text-muted-foreground whitespace-pre-wrap">{note}</p>
-                                 </div>
-                             )
-                        })}
-                        {(!history.systemicNotes || Object.values(history.systemicNotes).every(v => !v)) && (
-                             <p className="text-muted-foreground">No systemic notes recorded.</p>
-                        )}
-                     </div>
-                  ) : section.field ? (
-                    <p className="text-muted-foreground whitespace-pre-wrap">
-                        {history[section.field as keyof PatientHistory] || 'No information provided.'}
-                    </p>
-                  ) : null}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
+          <Accordion type="multiple" className="w-full space-y-4" defaultValue={['demographics', 'careerProfile']}>
+            {formSections.map(section => {
+                if (section.studentOnly && mode !== 'student') return null;
+
+                return (
+                <AccordionItem value={section.id} key={section.id} className="border rounded-lg bg-background/50">
+                    <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline">{section.title}</AccordionTrigger>
+                    <AccordionContent className="p-6 pt-0 space-y-4">
+                    {section.fields ? (
+                        <div className="grid md:grid-cols-2 gap-x-8 gap-y-4">
+                            {section.fields.map(field => {
+                                if (field.sensitive && mode === 'student') return null;
+                                const value = history[field.name as keyof PatientHistory];
+                                return value ? (
+                                <div key={field.name}>
+                                        <p className="font-semibold">{field.label}</p>
+                                        <p className="text-muted-foreground whitespace-pre-wrap">{value}</p>
+                                </div>
+                                ) : null
+                            })}
+                        </div>
+                    ) : section.id === 'systemicNotes' ? (
+                        <div className="space-y-4">
+                            {systemicNotesFields.map(systemName => {
+                                const note = history.systemicNotes?.[systemName as keyof typeof history.systemicNotes];
+                                if(!note) return null;
+                                return (
+                                    <div key={systemName}>
+                                        <p className="font-semibold">{systemName}</p>
+                                        <p className="text-muted-foreground whitespace-pre-wrap">{note}</p>
+                                    </div>
+                                )
+                            })}
+                            {(!history.systemicNotes || Object.values(history.systemicNotes).every(v => !v)) && (
+                                <p className="text-muted-foreground">No systemic notes recorded.</p>
+                            )}
+                        </div>
+                    ) : section.field ? (
+                        <p className="text-muted-foreground whitespace-pre-wrap">
+                            {history[section.field as keyof PatientHistory] || 'No information provided.'}
+                        </p>
+                    ) : null}
+                    </AccordionContent>
+                </AccordionItem>
+                )
+            })}
           </Accordion>
         </CardContent>
       </Card>

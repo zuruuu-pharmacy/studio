@@ -46,6 +46,12 @@ export interface PatientHistory {
   ideasAndConcerns?: string;
   pharmacistAssessment?: string;
   carePlan?: string;
+  // Student Career Profile
+  careerInterests?: string;
+  preferredLocations?: string;
+  languages?: string;
+  linkedinProfile?: string;
+  personalStatement?: string;
 }
 
 export interface UserProfile {
@@ -91,7 +97,7 @@ interface PatientState {
 
 const PatientContext = createContext<PatientContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'pharmacy_data_v3'; // Bumped version for new poll tracking
+const LOCAL_STORAGE_KEY = 'pharmacy_data_v4'; // Bumped version for new career fields
 
 export function PatientProvider({ children }: { children: ReactNode }) {
   const [patientState, setPatientState] = useState<PatientState>({ activeUser: null, users: [], patientRecords: [], lastPrescription: null });

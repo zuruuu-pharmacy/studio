@@ -42,7 +42,12 @@ const historySchema = z.object({
   ideasAndConcerns: z.string().optional(),
   pharmacistAssessment: z.string().optional(),
   carePlan: z.string().optional(),
-  // Adding systemic notes to the schema
+  // Adding student career and systemic notes to the schema
+  careerInterests: z.string().optional(),
+  preferredLocations: z.string().optional(),
+  languages: z.string().optional(),
+  linkedinProfile: z.string().url().or(z.literal('')).optional(),
+  personalStatement: z.string().optional(),
   systemicNotes: z.object({
     Cardiovascular: z.string().optional(),
     Respiratory: z.string().optional(),
@@ -74,6 +79,13 @@ const formSections = [
         { name: 'hospitalId', label: 'Hospital ID / MRN', placeholder: 'If applicable', type: 'input' },
         { name: 'phoneNumber', label: 'Patient Phone Number', placeholder: '+92 3...', type: 'input' },
         { name: 'caretakerPhoneNumber', label: 'Caretaker Phone Number', placeholder: '+92 3... (for emergencies)', type: 'input' },
+    ]},
+    { id: 'careerProfile', title: 'Career & Professional Profile', studentOnly: true, fields: [
+        { name: 'careerInterests', label: 'Career Interests', placeholder: 'e.g., Clinical Pharmacy, Industry, Research', type: 'textarea' },
+        { name: 'preferredLocations', label: 'Preferred Work Locations', placeholder: 'e.g., Lahore, Karachi; or USA, UK', type: 'textarea' },
+        { name: 'languages', label: 'Languages Spoken', placeholder: 'e.g., English, Urdu, Punjabi', type: 'input' },
+        { name: 'linkedinProfile', label: 'LinkedIn Profile URL', placeholder: 'https://www.linkedin.com/in/...', type: 'input' },
+        { name: 'personalStatement', label: 'Personal Statement / Bio', placeholder: 'A short (50-100 word) statement about your goals and aspirations.', type: 'textarea' },
     ]},
     { id: 'presentingComplaint', title: '2. Presenting Complaint (PC)', description: 'The patient’s main complaint in their own words.', field: { name: 'presentingComplaint', placeholder: 'e.g., "Shortness of breath for 2 days"' } },
     { id: 'historyOfPresentingIllness', title: '3. History of Presenting Illness (HPI)', description: 'A deeper dive into the presenting complaint (onset, duration, progression, etc.)', field: { name: 'historyOfPresentingIllness', placeholder: 'Describe the onset, duration, progression, associated symptoms...' } },
@@ -131,6 +143,11 @@ const defaultFormValues: HistoryFormValues = {
     ideasAndConcerns: '',
     pharmacistAssessment: '',
     carePlan: '',
+    careerInterests: '',
+    preferredLocations: '',
+    languages: '',
+    linkedinProfile: '',
+    personalStatement: '',
 };
 
 export function PatientHistoryClient() {
@@ -189,7 +206,7 @@ export function PatientHistoryClient() {
   const cardDescription = {
      'pharmacist': isEditing ? `Editing record for: ${activePatientRecord?.history.name}` : 'Creating a new patient record.',
      'patient': `Editing your personal health record.`,
-     'student': 'This health record will serve as your patient case study.',
+     'student': 'This health record will serve as your patient case study. Fill in your career profile to get personalized guidance.',
   }[mode];
 
 
@@ -209,76 +226,80 @@ export function PatientHistoryClient() {
       <CardContent>
         <Form {...historyForm}>
           <form onSubmit={handleHistorySubmit} className="space-y-4">
-            <Accordion type="multiple" className="w-full space-y-4" defaultValue={['demographics']}>
-              {formSections.map(section => (
-                <AccordionItem value={section.id} key={section.id} className="border rounded-lg bg-background/50">
-                  <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline">{section.title}</AccordionTrigger>
-                  <AccordionContent className="p-6 pt-0">
-                    {section.description && <p className="text-sm text-muted-foreground mb-4">{section.description}</p>}
-                    <div className={section.id === 'demographics' ? 'grid md:grid-cols-2 gap-4' : 'space-y-4'}>
-                      {section.id === 'demographics' && section.fields ? (
-                        section.fields.map(f => (
-                           <FormField
-                            key={f.name}
-                            control={historyForm.control}
-                            name={f.name as any}
-                            render={({ field }) => (
-                              <FormItem className={f.type === 'textarea' ? 'md:col-span-2' : ''}>
-                                <FormLabel>{f.label}</FormLabel>
-                                {f.type === 'select' ? (
-                                    <Select onValueChange={field.onChange} value={field.value ?? ''}>
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder={f.placeholder} />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {f.options?.map(option => <SelectItem key={option} value={option}>{option}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                ) : f.type === 'textarea' ? (
-                                    <FormControl><Textarea placeholder={f.placeholder} {...field} value={field.value ?? ''} /></FormControl>
-                                ) : (
-                                    <FormControl><Input placeholder={f.placeholder} {...field} value={field.value ?? ''} /></FormControl>
-                                )}
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        ))
-                      ) : section.id === 'systemicNotes' ? (
-                          <div className="space-y-4">
-                            {systemicNotesFields.map(systemName => (
-                                <FormField
-                                    key={systemName}
-                                    control={historyForm.control}
-                                    name={`systemicNotes.${systemName}` as any}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{systemName.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
-                                            <FormControl><Textarea placeholder={`Notes for ${systemName}...`} {...field} value={field.value ?? ''} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+            <Accordion type="multiple" className="w-full space-y-4" defaultValue={['demographics', 'careerProfile']}>
+              {formSections.map(section => {
+                if (section.studentOnly && mode !== 'student') return null;
+
+                return (
+                    <AccordionItem value={section.id} key={section.id} className="border rounded-lg bg-background/50">
+                    <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline">{section.title}</AccordionTrigger>
+                    <AccordionContent className="p-6 pt-0">
+                        {section.description && <p className="text-sm text-muted-foreground mb-4">{section.description}</p>}
+                        <div className={(section.id === 'demographics' || section.id === 'careerProfile') ? 'grid md:grid-cols-2 gap-4' : 'space-y-4'}>
+                        {section.fields ? (
+                            section.fields.map(f => (
+                            <FormField
+                                key={f.name}
+                                control={historyForm.control}
+                                name={f.name as any}
+                                render={({ field }) => (
+                                <FormItem className={f.type === 'textarea' ? 'md:col-span-2' : ''}>
+                                    <FormLabel>{f.label}</FormLabel>
+                                    {f.type === 'select' ? (
+                                        <Select onValueChange={field.onChange} value={field.value ?? ''}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder={f.placeholder} />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {f.options?.map(option => <SelectItem key={option} value={option}>{option}</SelectItem>)}
+                                            </SelectContent>
+                                        </Select>
+                                    ) : f.type === 'textarea' ? (
+                                        <FormControl><Textarea placeholder={f.placeholder} {...field} value={field.value ?? ''} /></FormControl>
+                                    ) : (
+                                        <FormControl><Input placeholder={f.placeholder} {...field} value={field.value ?? ''} /></FormControl>
                                     )}
-                                />
-                            ))}
-                         </div>
-                      ) : section.field ? (
-                          <FormField
-                            control={historyForm.control}
-                            name={section.field.name as any}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl><Textarea placeholder={section.field.placeholder} {...field} value={field.value ?? ''} rows={4} /></FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                      ) : null}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
+                            ))
+                        ) : section.id === 'systemicNotes' ? (
+                            <div className="space-y-4">
+                                {systemicNotesFields.map(systemName => (
+                                    <FormField
+                                        key={systemName}
+                                        control={historyForm.control}
+                                        name={`systemicNotes.${systemName}` as any}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>{systemName.replace(/([A-Z])/g, ' $1').trim()}</FormLabel>
+                                                <FormControl><Textarea placeholder={`Notes for ${systemName}...`} {...field} value={field.value ?? ''} /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                ))}
+                            </div>
+                        ) : section.field ? (
+                            <FormField
+                                control={historyForm.control}
+                                name={section.field.name as any}
+                                render={({ field }) => (
+                                <FormItem>
+                                    <FormControl><Textarea placeholder={section.field.placeholder} {...field} value={field.value ?? ''} rows={4} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
+                        ) : null}
+                        </div>
+                    </AccordionContent>
+                    </AccordionItem>
+                )
+              })}
             </Accordion>
             <div className="flex justify-end pt-4 gap-4">
               {isEditing && mode === 'pharmacist' && (
