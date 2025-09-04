@@ -210,60 +210,6 @@ export const drugTreeData: DrugClass[] = [
             }
         ]
       },
-      {
-        name: "NSAIDs & Anti-gout drugs",
-        pharmaFocus: "Titrimetric assay (Aspirin), impurity profile, HPLC methods.",
-        subclasses: [
-            {
-                name: "Non-opioid analgesics",
-                drugs: [
-                    {
-                        name: "Aspirin",
-                        classification: "Salicylate, NSAID.",
-                        moa: "Irreversibly inhibits COX-1 and COX-2 enzymes, preventing prostaglandin and thromboxane synthesis.",
-                        therapeuticUses: "Analgesic, antipyretic, anti-inflammatory, antiplatelet agent.",
-                        adrs: "GI irritation/bleeding, tinnitus, Reye's syndrome in children.",
-                        contraindications: "Peptic ulcer, bleeding disorders, children with viral illness.",
-                        pharmaApplications: {
-                            dosageForms: "Tablets (plain, enteric-coated, buffered, chewable).",
-                            formulations: "Disprin, Ascard (Brands).",
-                            storage: "Store in a cool, dry place.",
-                        },
-                        analyticalMethods: {
-                            qualitative: "Ferric chloride test for salicylates.",
-                            quantitative: "Acid-base titration (back titration method). HPLC.",
-                            pharmacopoeial: "USP, BP.",
-                        },
-                        specialNotes: "Low dose (75-81mg) is used for cardiovascular protection.",
-                    }
-                ]
-            },
-            {
-                name: "Anti-gout drugs",
-                drugs: [
-                     {
-                        name: "Allopurinol",
-                        classification: "Xanthine oxidase inhibitor.",
-                        moa: "Inhibits xanthine oxidase, the enzyme responsible for the conversion of hypoxanthine to xanthine and xanthine to uric acid. This reduces uric acid production.",
-                        therapeuticUses: "Prophylaxis of gout, management of hyperuricemia.",
-                        adrs: "Skin rash (can be severe, e.g., SJS/TEN), GI upset.",
-                        contraindications: "Known hypersensitivity.",
-                        pharmaApplications: {
-                            dosageForms: "Tablets.",
-                            formulations: "Zyloric (Brand).",
-                            storage: "Store at room temperature.",
-                        },
-                        analyticalMethods: {
-                            qualitative: "TLC, IR spectroscopy.",
-                            quantitative: "HPLC, UV spectrophotometry.",
-                            pharmacopoeial: "USP, BP.",
-                        },
-                        specialNotes: "Start at a low dose to reduce risk of hypersensitivity reactions. Maintain adequate fluid intake.",
-                    }
-                ]
-            }
-        ]
-      },
     ],
   },
 ];
