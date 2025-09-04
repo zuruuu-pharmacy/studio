@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEventCalendar, EVENT_CATEGORIES, type EventCategory, CalendarEvent } from '@/contexts/event-calendar-context';
+import { useDiscussionForum } from "@/contexts/discussion-forum-context";
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -14,12 +15,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, CalendarIcon, Search, ExternalLink, Download } from 'lucide-react';
+import { Plus, Trash2, CalendarIcon, Search, ExternalLink, Download, MessageSquare } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import * as ics from 'ics';
+import { usePatient } from "@/contexts/patient-context";
+import { useRouter } from "next/navigation";
 
 
 const eventSchema = z.object({
@@ -43,9 +46,15 @@ const categoryColors: { [key in EventCategory]: string } = {
 
 export function EventCalendarClient() {
   const { events, addEvent, deleteEvent } = useEventCalendar();
+  const { addPost } = useDiscussionForum();
+  const { patientState } = usePatient();
+  const router = useRouter();
+  
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  const authorName = patientState.activeUser?.demographics?.name || 'Anonymous Student';
 
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventSchema),
@@ -106,12 +115,25 @@ export function EventCalendarClient() {
   }
 
   const handleFormSubmit = form.handleSubmit((data) => {
+    // Create the discussion forum post first to get an ID
+    const forumPostId = `post_event_${Date.now()}`;
+    addPost({
+        id: forumPostId,
+        title: `Event Feedback: ${data.title}`,
+        content: `This is a discussion thread for the event "${data.title}" held on ${format(data.date, 'PPP')}.\n\nDescription: ${data.description || 'N/A'}`,
+        author: 'Event Bot',
+        category: 'Community', // Or a dedicated 'Events' category if added
+        replies: [],
+        date: new Date().toISOString(),
+    });
+
     addEvent({
       title: data.title,
       description: data.description,
       date: data.date,
       category: data.category as EventCategory,
       registrationLink: data.registrationLink,
+      forumThreadId: forumPostId,
     });
     toast({ title: "Event Added", description: `${data.title} has been added to your calendar.` });
     setIsModalOpen(false);
@@ -249,7 +271,7 @@ export function EventCalendarClient() {
                                 <Badge className={categoryColors[event.category]}>{event.category}</Badge>
                                 <p className="font-semibold mt-1">{event.title}</p>
                                 {event.description && <p className="text-sm text-muted-foreground">{event.description}</p>}
-                                <div className='flex gap-2 mt-2'>
+                                <div className='flex flex-wrap gap-2 mt-2'>
                                   {event.registrationLink && (
                                       <a href={event.registrationLink} target="_blank" rel="noopener noreferrer">
                                           <Button variant="secondary" size="sm">
@@ -260,6 +282,11 @@ export function EventCalendarClient() {
                                   <Button variant="outline" size="sm" onClick={() => handleDownloadIcs(event)}>
                                       Add to Calendar <Download className="ml-2 h-4 w-4"/>
                                   </Button>
+                                   {event.forumThreadId && (
+                                    <Button variant="outline" size="sm" onClick={() => router.push(`/student-discussion-forum?postId=${event.forumThreadId}`)}>
+                                        Discuss & Review <MessageSquare className="ml-2 h-4 w-4"/>
+                                    </Button>
+                                  )}
                                 </div>
                             </div>
                             <AlertDialog>

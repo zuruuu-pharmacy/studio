@@ -28,6 +28,7 @@ export interface CalendarEvent {
   date: Date;
   category: EventCategory;
   registrationLink?: string;
+  forumThreadId?: string; // Link to the discussion forum post
 }
 
 interface EventCalendarContextType {

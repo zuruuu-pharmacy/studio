@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { useSearchParams } from "next/navigation";
 
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -89,6 +90,7 @@ export function StudentDiscussionForumClient() {
   const { posts, addPost, addReply, upvoteReply, toggleBestAnswer, deletePost, deleteReply } = useDiscussionForum();
   const { patientState, toggleBookmark } = usePatient();
   const currentUser = patientState.activeUser;
+  const searchParams = useSearchParams();
   
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [isNewPostModalOpen, setIsNewPostModalOpen] = useState(false);
@@ -98,6 +100,13 @@ export function StudentDiscussionForumClient() {
   const [accessCode, setAccessCode] = useState("");
   const [isTeacher, setIsTeacher] = useState(false);
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
+
+  useEffect(() => {
+    const postIdFromUrl = searchParams.get('postId');
+    if (postIdFromUrl) {
+      setSelectedPostId(postIdFromUrl);
+    }
+  }, [searchParams]);
 
   const newPostForm = useForm<NewPostValues>({ 
     resolver: zodResolver(newPostSchema),
@@ -173,7 +182,8 @@ export function StudentDiscussionForumClient() {
             return;
         }
     }
-    addPost({ ...data, author: authorName, category: data.category as ForumCategory, attachments: newAttachments });
+    const newPostId = `post_${Date.now()}`;
+    addPost({ ...data, id: newPostId, author: authorName, category: data.category as ForumCategory, attachments: newAttachments });
     toast({ title: "Post Created!", description: "Your new discussion topic is live." });
     newPostForm.reset();
     setIsNewPostModalOpen(false);

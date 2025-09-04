@@ -11,7 +11,8 @@ export type ForumCategory =
     | "Pharmaceutical Chemistry"
     | "Clinical Pharmacy"
     | "Pathology"
-    | "Computer";
+    | "Computer"
+    | "Community";
 
 export const FORUM_CATEGORIES: ForumCategory[] = [
     "Pharmacology",
@@ -20,7 +21,8 @@ export const FORUM_CATEGORIES: ForumCategory[] = [
     "Pharmaceutical Chemistry",
     "Clinical Pharmacy",
     "Pathology",
-    "Computer"
+    "Computer",
+    "Community"
 ];
 
 export interface Attachment {
@@ -52,7 +54,7 @@ export interface ForumPost {
 
 interface DiscussionForumContextType {
   posts: ForumPost[];
-  addPost: (post: Omit<ForumPost, 'id' | 'date' | 'replies'>) => void;
+  addPost: (post: Omit<ForumPost, 'date' | 'replies'>) => void;
   addReply: (postId: string, reply: Omit<ForumReply, 'id' | 'date' | 'upvotes' | 'isBestAnswer'>) => void;
   upvoteReply: (postId: string, replyId: string) => void;
   toggleBestAnswer: (postId: string, replyId: string) => void;
@@ -93,10 +95,9 @@ export function DiscussionForumProvider({ children }: { children: ReactNode }) {
     }
   }, [posts, isLoaded]);
 
-  const addPost = (post: Omit<ForumPost, 'id' | 'date' | 'replies'>) => {
+  const addPost = (post: Omit<ForumPost, 'date' | 'replies'>) => {
     const newPost: ForumPost = {
       ...post,
-      id: `post_${Date.now().toString()}`,
       date: new Date().toISOString(),
       replies: [],
     };
