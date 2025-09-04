@@ -297,16 +297,26 @@ export function OsceVivaPrepClient() {
   const handleNextPracticeQuestion = useCallback(() => {
     if (!state?.questions) return;
     practiceAnswerForm.reset({ answer: "" });
-    // This is the key fix: clear the instantFeedback from the state before moving on.
-    if (state.instantFeedback) {
-        state.instantFeedback = undefined;
+
+    // Create a new state object without the instantFeedback to clear it
+    const newState = { ...state };
+    if (newState.instantFeedback) {
+        delete newState.instantFeedback;
     }
+    
+    // Use a 'reset' action to clear the state in the hook without calling the AI
+    const resetFormData = new FormData();
+    resetFormData.append('topic','reset');
+    formAction(resetFormData);
+    
+    setAwaitingFeedback(false);
+
     if (practiceStep < state.questions.length - 1) {
       setPracticeStep(prev => prev + 1);
     } else {
-      setAppStep('feedback'); // Or a 'finished' screen
+      setAppStep('feedback'); 
     }
-  }, [practiceAnswerForm, practiceStep, state]);
+  }, [practiceAnswerForm, practiceStep, state, formAction]);
   
   const handleSaveSession = () => {
     if (!state || !state.caseDetails || !state.feedback) {
@@ -338,9 +348,8 @@ export function OsceVivaPrepClient() {
     setTimerActive(false);
     setTimeLeft(420);
     setAwaitingFeedback(false);
-    // Important: Clear the AI state to avoid re-rendering old data
     const formData = new FormData();
-    formData.append("topic", "reset"); // A dummy value to trigger a state clear
+    formData.append("topic", "reset");
     startTransition(() => formAction(formData));
   }
 
@@ -443,7 +452,7 @@ export function OsceVivaPrepClient() {
                 <Accordion type="multiple" className="w-full space-y-4" defaultValue={['diagnosis', 'drugs', 'model']}>
                     <AccordionItem value="diagnosis"><AccordionTrigger className="font-semibold text-lg">Diagnosis Confirmation</AccordionTrigger><AccordionContent className="p-4">{feedback.diagnosisConfirmation}</AccordionContent></AccordionItem>
                     <AccordionItem value="drugs"><AccordionTrigger className="font-semibold text-lg">Drug Choice Rationale</AccordionTrigger><AccordionContent className="p-4">{feedback.drugChoiceRationale}</AccordionContent></AccordionItem>
-                    <AccordionItem value="monitoring"><AccordionTrigger className="font-semibold text-lg">Monitoring Plan</AccordionTrigger><AccordionContent className="p-4">{feedback.monitoringPlan}</AccordionContent></AccordionItem>
+                    <AccordionItem value="monitoring"><AccordionTrigger className="font-semibold text-lg">Monitoring Plan</AccordionContent></AccordionItem>
                     <AccordionItem value="counseling"><AccordionTrigger className="font-semibold text-lg">Lifestyle Counseling</AccordionTrigger><AccordionContent className="p-4">{feedback.lifestyleCounseling}</AccordionContent></AccordionItem>
                     <AccordionItem value="model"><AccordionTrigger className="font-semibold text-lg">Model Answer</AccordionTrigger><AccordionContent className="p-4 whitespace-pre-wrap">{feedback.modelAnswer}</AccordionContent></AccordionItem>
                 </Accordion>
@@ -528,8 +537,10 @@ export function OsceVivaPrepClient() {
                                 <FormField name="answer" control={practiceAnswerForm.control} render={({ field }) => (
                                     <FormItem><FormControl>{questions[practiceStep].type === 'multiple_choice' && questions[practiceStep].options ? (<RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="pt-2 space-y-1">{questions[practiceStep].options?.map((opt, i) => (<FormItem key={i} className="flex items-center space-x-3"><FormControl><RadioGroupItem value={opt} disabled={awaitingFeedback || !!state.instantFeedback} /></FormControl><Label className="font-normal">{opt}</Label></FormItem>))}</RadioGroup>) : (<Textarea placeholder="Your answer..." {...field} disabled={awaitingFeedback || !!state.instantFeedback} />)}</FormControl><FormMessage/></FormItem>
                                 )} />
-                                { !state.instantFeedback && (
+                                { !state.instantFeedback ? (
                                      <Button type="submit" disabled={isPending || awaitingFeedback || timeLeft === 0}>Check Answer</Button>
+                                ) : (
+                                    <Button type="button" onClick={handleNextPracticeQuestion} className="w-full"><Forward className="mr-2"/>Next Question</Button>
                                 )}
                             </form>
                         </Form>
@@ -544,7 +555,6 @@ export function OsceVivaPrepClient() {
                         {state.instantFeedback && (
                             <div className="space-y-4 pt-4">
                                 <InstantFeedbackCard feedback={state.instantFeedback}/>
-                                <Button onClick={handleNextPracticeQuestion} className="w-full"><Forward className="mr-2"/>Next Question</Button>
                             </div>
                         )}
                     </CardContent>
@@ -601,7 +611,7 @@ export function OsceVivaPrepClient() {
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select a difficulty level..." />
-                                        </Trigger>
+                                        </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
                                         {Object.keys(DIFFICULTY_TIERS).map(tier => <SelectItem key={tier} value={tier}>{tier}</SelectItem>)}
@@ -637,3 +647,5 @@ export function OsceVivaPrepClient() {
     </Card>
   )
 }
+
+    
