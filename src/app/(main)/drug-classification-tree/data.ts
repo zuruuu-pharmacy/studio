@@ -82,7 +82,7 @@ export const drugTreeData: DrugClass[] = [
                 }
             ]
           },
-          {
+           {
             name: "Z-drugs",
             drugs: [
               {
@@ -137,6 +137,24 @@ export const drugTreeData: DrugClass[] = [
             drugs: [],
           },
         ]
+      },
+      {
+        name: "Antiepileptics",
+        pharmaFocus: "Bioavailability testing, therapeutic drug monitoring (TDM).",
+        subclasses: [
+            {
+                name: "Sodium channel blockers",
+                drugs: [],
+            },
+            {
+                name: "GABA enhancers",
+                drugs: [],
+            },
+            {
+                name: "Newer agents",
+                drugs: [],
+            },
+        ],
       },
       {
         name: "Antipsychotics",
