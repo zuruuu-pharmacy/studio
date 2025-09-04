@@ -1,7 +1,7 @@
 
 import { BackButton } from "@/components/back-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calculator, Beaker, Droplets } from "lucide-react";
+import { Calculator, Beaker, Droplets, TestTube } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -23,6 +23,12 @@ const calculationTypes = [
     description: "Calculate mL/hr, drops/min, and other infusion rates.",
     href: "/dose-calculator/iv-rate",
     icon: Droplets,
+  },
+  {
+    title: "Compounding Calculator",
+    description: "Calculate quantities for preparing solutions of a specific percentage strength.",
+    href: "/dose-calculator/compounding",
+    icon: TestTube,
   },
 ];
 
