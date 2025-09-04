@@ -12,8 +12,9 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Sparkles, BookA, Clipboard, Check } from "lucide-react";
+import { Loader2, Sparkles, BookA, Clipboard, Check, Plus, Library } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 
 const formSchema = z.object({
@@ -78,7 +79,6 @@ export function ReferenceGeneratorClient() {
   const formAction = async (formData: FormData) => {
     const parsed = formSchema.safeParse(Object.fromEntries(formData));
     if (!parsed.success) {
-      // The form's own validation will show messages, but we can have a fallback toast.
       toast({ variant: "destructive", title: "Error", description: "Invalid input. Please check the form."});
       return;
     }
@@ -107,55 +107,58 @@ export function ReferenceGeneratorClient() {
   };
 
   return (
-    <div className="grid md:grid-cols-3 gap-6">
-      <div className="md:col-span-1">
-        <Card>
-          <CardHeader>
-            <CardTitle>Generate Citation</CardTitle>
-            <CardDescription>Enter a source and select a style.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={handleFormSubmit} className="space-y-4">
-                <FormField control={form.control} name="sourceIdentifier" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Source Identifier</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Paste a DOI, PMID, URL, or citation" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="style" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Citation Style</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                      <SelectContent>
-                        <SelectItem value="Vancouver">Vancouver</SelectItem>
-                        <SelectItem value="APA">APA</SelectItem>
-                        <SelectItem value="Harvard">Harvard</SelectItem>
-                        <SelectItem value="MLA">MLA</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                        {styleDescriptions[selectedStyle]}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <Button type="submit" disabled={isPending} className="w-full">
-                  {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2" />}
-                  Generate & Add to List
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="md:col-span-2">
-         <Card>
+    <Tabs defaultValue="add" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="add"><Plus className="mr-2"/> Add Reference</TabsTrigger>
+            <TabsTrigger value="bibliography"><Library className="mr-2"/> Bibliography ({results.length})</TabsTrigger>
+        </TabsList>
+        <TabsContent value="add">
+            <Card className="mt-4">
+            <CardHeader>
+                <CardTitle>Generate Citation</CardTitle>
+                <CardDescription>Enter a source and select a style.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Form {...form}>
+                <form onSubmit={handleFormSubmit} className="space-y-4">
+                    <FormField control={form.control} name="sourceIdentifier" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Source Identifier</FormLabel>
+                        <FormControl>
+                        <Input placeholder="Paste a DOI, PMID, URL, or citation" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )} />
+                    <FormField control={form.control} name="style" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Citation Style</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                            <SelectItem value="Vancouver">Vancouver</SelectItem>
+                            <SelectItem value="APA">APA</SelectItem>
+                            <SelectItem value="Harvard">Harvard</SelectItem>
+                            <SelectItem value="MLA">MLA</SelectItem>
+                        </SelectContent>
+                        </Select>
+                        <FormDescription>
+                            {styleDescriptions[selectedStyle]}
+                        </FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                    )} />
+                    <Button type="submit" disabled={isPending} className="w-full">
+                    {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2" />}
+                    Generate & Add to Bibliography
+                    </Button>
+                </form>
+                </Form>
+            </CardContent>
+            </Card>
+        </TabsContent>
+        <TabsContent value="bibliography">
+            <Card className="mt-4">
             <CardHeader>
               <CardTitle className="text-2xl">Bibliography</CardTitle>
               <CardDescription>Generated citations will appear here as a running list.</CardDescription>
@@ -179,13 +182,13 @@ export function ReferenceGeneratorClient() {
                     <div className="flex flex-col items-center justify-center h-full min-h-[200px] text-center p-6 bg-muted/50 rounded-lg">
                         <BookA className="h-16 w-16 text-muted-foreground/50 mb-4" />
                         <h3 className="text-xl font-semibold text-muted-foreground">Your Bibliography is Empty</h3>
-                        <p className="text-muted-foreground/80 mt-2">Use the form to generate your first citation.</p>
+                        <p className="text-muted-foreground/80 mt-2">Use the "Add Reference" tab to generate your first citation.</p>
                     </div>
                   )
                 )}
             </CardContent>
           </Card>
-      </div>
-    </div>
+        </TabsContent>
+    </Tabs>
   );
 }
