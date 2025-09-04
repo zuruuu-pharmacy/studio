@@ -1,71 +1,83 @@
 
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Briefcase, Building, Hospital, FlaskConical, Book, UserTie, BrainCircuit, Rocket } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { BackButton } from "@/components/back-button";
+import { Briefcase, Building, Hospital, FlaskConical, Book, UserTie, BrainCircuit, Rocket, Activity, Target, ShieldCheck } from "lucide-react";
 
 
 const careerPaths = [
     {
         title: "Clinical Pharmacy",
         icon: Hospital,
-        description: "Work directly with physicians and patients to optimize medication use, typically in a hospital or clinic setting.",
+        description: "Optimize medication therapy and promote health, wellness, and disease prevention in patient care settings.",
         details: {
-            "Key Responsibilities": "Patient medication reviews, therapeutic drug monitoring, patient counseling, participating in ward rounds.",
-            "Required Skills": "Strong clinical knowledge, communication skills, problem-solving, patient assessment.",
-            "Potential Job Titles": "Clinical Pharmacist, Hospital Pharmacist, Ambulatory Care Pharmacist, Critical Care Pharmacist."
+            "Typical Job Titles": "Hospital Pharmacist, Ambulatory Care Pharmacist, Critical Care Specialist.",
         }
     },
     {
-        title: "Industrial Pharmacy",
-        icon: Building,
-        description: "Focus on the discovery, development, and manufacturing of pharmaceutical drugs.",
-        details: {
-            "Key Responsibilities": "Research & Development (R&D), Quality Assurance (QA), Quality Control (QC), Production, Formulation Development.",
-            "Required Skills": "Scientific research, analytical skills, understanding of GMP (Good Manufacturing Practices), project management.",
-            "Potential Job Titles": "Formulation Scientist, QA Officer, Production Pharmacist, R&D Scientist."
-        }
-    },
-     {
-        title: "Community & Hospital Pharmacy",
+        title: "Hospital Practice",
         icon: Briefcase,
-        description: "Serve as the most accessible healthcare professionals, dispensing medications and providing public health advice.",
-        details: {
-            "Key Responsibilities": "Dispensing prescriptions, patient counseling, managing inventory, providing OTC advice, health screenings.",
-            "Required Skills": "Accuracy, patient communication, retail management, knowledge of common ailments.",
-            "Potential Job Titles": "Community Pharmacist, Retail Pharmacist, Pharmacy Manager, Hospital Staff Pharmacist."
+        description: "Manage medication distribution, sterile compounding, and pharmacy operations within a hospital.",
+         details: {
+            "Typical Job Titles": "Staff Pharmacist, Pharmacy Operations Manager, IV Admixture Pharmacist.",
         }
     },
     {
-        title: "Regulatory Affairs & Research",
+        title: "Industry R&D",
         icon: FlaskConical,
-        description: "Ensure that drugs meet government regulations and oversee clinical trials and research.",
+        description: "Focus on drug discovery, formulation development, and bringing new medicines to market.",
         details: {
-            "Key Responsibilities": "Preparing drug registration dossiers (e.g., CTD), liaising with health authorities, ensuring compliance, managing clinical trial protocols.",
-            "Required Skills": "Attention to detail, understanding of drug laws, scientific writing, data analysis.",
-            "Potential Job Titles": "Regulatory Affairs Officer, Clinical Research Associate (CRA), Medical Science Liaison (MSL)."
+            "Typical Job Titles": "Formulation Scientist, R&D Scientist, Analytical Chemist.",
+        }
+    },
+    {
+        title: "Regulatory Affairs",
+        icon: ShieldCheck,
+        description: "Ensure that pharmaceutical products meet government regulations for safety and efficacy.",
+         details: {
+            "Typical Job Titles": "Regulatory Affairs Officer, Compliance Specialist, Medical Writer.",
+        }
+    },
+    {
+        title: "Academia & Research",
+        icon: Book,
+        description: "Educate future pharmacists and conduct scholarly research to advance the pharmacy profession.",
+        details: {
+            "Typical Job Titles": "Assistant Professor, Lecturer, Research Fellow.",
         }
     },
      {
-        title: "Academia & Education",
-        icon: Book,
-        description: "Educate the next generation of pharmacists and conduct academic research.",
-        details: {
-            "Key Responsibilities": "Teaching, curriculum development, conducting research, publishing papers, mentoring students.",
-            "Required Skills": "Deep subject matter expertise, teaching and presentation skills, research methodology, grant writing.",
-            "Potential Job Titles": "Lecturer, Assistant Professor, Professor, Dean of Pharmacy."
+        title: "Pharmacovigilance",
+        icon: Activity,
+        description: "Monitor, detect, assess, and prevent adverse effects of pharmaceutical products.",
+         details: {
+            "Typical Job Titles": "Drug Safety Associate, PV Scientist, Safety Surveillance Physician.",
+        }
+    },
+     {
+        title: "Clinical Trials/CRO",
+        icon: Target,
+        description: "Manage and monitor clinical trials for new drugs at Contract Research Organizations (CROs).",
+         details: {
+            "Typical Job Titles": "Clinical Research Associate (CRA), Project Manager, Data Manager.",
         }
     },
     {
-        title: "Entrepreneurship & Management",
-        icon: Rocket,
-        description: "Start your own pharmacy, consulting firm, or tech startup in the health sector.",
+        title: "Medical Affairs",
+        icon: UserTie,
+        description: "Bridge the gap between a pharmaceutical company and the medical community.",
         details: {
-            "Key Responsibilities": "Business planning, financial management, marketing, staff management, innovation.",
-            "Required Skills": "Business acumen, leadership, risk-taking, networking, financial literacy.",
-            "Potential Job Titles": "Pharmacy Owner, Healthcare Consultant, CEO of Health-Tech Startup."
+            "Typical Job Titles": "Medical Science Liaison (MSL), Medical Advisor, Scientific Communications Manager.",
+        }
+    },
+    {
+        title: "Entrepreneurship",
+        icon: Rocket,
+        description: "Start a pharmacy, consulting firm, or health-tech venture.",
+        details: {
+            "Typical Job Titles": "Pharmacy Owner, Healthcare Consultant, Startup Founder.",
         }
     },
      {
@@ -73,9 +85,7 @@ const careerPaths = [
         icon: BrainCircuit,
         description: "Leverage data and technology to improve drug discovery, patient care, and health systems.",
         details: {
-            "Key Responsibilities": "Analyzing health data, developing clinical decision support systems, using AI for drug discovery, managing electronic health records (EHR).",
-            "Required Skills": "Data analysis, programming (e.g., Python), understanding of AI/ML models, knowledge of health IT systems.",
-            "Potential Job Titles": "Pharmacoinformatics Specialist, Clinical Data Analyst, AI in Medicine Researcher, Health IT Consultant."
+            "Typical Job Titles": "Pharmacoinformatics Specialist, Clinical Data Analyst, Health IT Consultant.",
         }
     }
 ];
@@ -86,35 +96,30 @@ export default function ExplorePathsPage() {
         <BackButton />
         <h1 className="text-3xl font-bold mb-2 font-headline">Explore Career Paths</h1>
         <p className="text-muted-foreground mb-6">
-            Explore the diverse roles a degree in pharmacy can lead to. Click on any path to see more details.
+            Discover the diverse roles a pharmacy degree can lead to. Explore the details for each path.
         </p>
-        <Card>
-            <CardContent className="pt-6">
-                <Accordion type="single" collapsible className="w-full space-y-4">
-                    {careerPaths.map((path) => (
-                         <AccordionItem key={path.title} value={path.title} className="border rounded-lg bg-background/50">
-                            <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline">
-                               <div className="flex items-center gap-4">
-                                 <path.icon className="h-8 w-8 text-primary"/>
-                                 <div>
-                                    <p>{path.title}</p>
-                                    <p className="text-sm text-muted-foreground font-normal text-left">{path.description}</p>
-                                 </div>
-                               </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="px-6 pb-4 space-y-4">
-                                {Object.entries(path.details).map(([key, value]) => (
-                                    <div key={key}>
-                                        <h4 className="font-semibold text-base">{key}</h4>
-                                        <p className="text-muted-foreground">{value}</p>
-                                    </div>
-                                ))}
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
-            </CardContent>
-        </Card>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {careerPaths.map((path) => (
+                <Card key={path.title} className="flex flex-col">
+                    <CardHeader>
+                        <div className="flex items-center gap-4 mb-2">
+                             <path.icon className="h-10 w-10 text-primary"/>
+                            <CardTitle>{path.title}</CardTitle>
+                        </div>
+                        <CardDescription>{path.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4 flex-grow">
+                         <div>
+                            <h4 className="font-semibold text-sm">Typical Job Titles</h4>
+                            <p className="text-sm text-muted-foreground">{path.details["Typical Job Titles"]}</p>
+                        </div>
+                    </CardContent>
+                    <CardFooter>
+                        <Button variant="secondary" className="w-full" disabled>See Roadmap (Coming Soon)</Button>
+                    </CardFooter>
+                </Card>
+            ))}
+        </div>
     </div>
   );
 }
