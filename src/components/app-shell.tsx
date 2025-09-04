@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, ClipboardCheck as OsceIcon } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, ClipboardCheck as OsceIcon, Combine } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -68,6 +68,7 @@ const studentMenuItems = [
     { href: "/sop-repository", label: "SOP Repository", icon: FileJson },
     { href: "/virtual-lab-simulator", label: "Virtual Lab Simulator", icon: Beaker },
     { href: "/pharma-games", label: "Pharma Games", icon: Puzzle },
+    { href: "/mnemonic-generator", label: "Mnemonic Generator", icon: Combine },
 ];
 
 
