@@ -190,6 +190,7 @@ export function OsceVivaPrepClient() {
   
   // State for practice/drill modes
   const [practiceStep, setPracticeStep] = useState(0);
+  const [awaitingFeedback, setAwaitingFeedback] = useState(false);
   
   // State for Timer
   const [timeLeft, setTimeLeft] = useState(420); // 7 minutes default
@@ -218,6 +219,7 @@ export function OsceVivaPrepClient() {
     if (state) {
       if ('error' in state) {
         toast({ variant: "destructive", title: "Error", description: state.error });
+        setAwaitingFeedback(false);
       } else if (state.caseDetails && state.questions && !state.feedback && !state.instantFeedback) { // Initial case generation
         examAnswerForm.reset({ answers: state.questions.map(q => ({ question: q.question, answer: '' })) });
         setAppStep('case');
@@ -229,7 +231,7 @@ export function OsceVivaPrepClient() {
         setAppStep('feedback');
         setTimerActive(false);
       } else if (state.instantFeedback) { // Practice/Drill mode feedback
-        // The feedback is handled directly in the component, no step change needed
+        setAwaitingFeedback(false);
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -271,6 +273,7 @@ export function OsceVivaPrepClient() {
   const handlePracticeAnswerSubmit = practiceAnswerForm.handleSubmit((data) => {
       if(!state?.caseDetails || !state?.questions) return;
       const currentQuestion = state.questions[practiceStep];
+      setAwaitingFeedback(true);
 
       const formData = new FormData();
       formData.append("topic", topicForm.getValues("topic"));
@@ -322,6 +325,7 @@ export function OsceVivaPrepClient() {
     setPracticeStep(0);
     setTimerActive(false);
     setTimeLeft(420);
+    setAwaitingFeedback(false);
     // Important: Clear the AI state to avoid re-rendering old data
     const formData = new FormData();
     formData.append("topic", "reset"); // A dummy value to trigger a state clear
@@ -510,11 +514,18 @@ export function OsceVivaPrepClient() {
                         <Form {...practiceAnswerForm}>
                             <form onSubmit={handlePracticeAnswerSubmit} className="space-y-4">
                                 <FormField name="answer" control={practiceAnswerForm.control} render={({ field }) => (
-                                    <FormItem><FormControl>{questions[practiceStep].type === 'multiple_choice' && questions[practiceStep].options ? (<RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="pt-2 space-y-1">{questions[practiceStep].options?.map((opt, i) => (<FormItem key={i} className="flex items-center space-x-3"><FormControl><RadioGroupItem value={opt}/></FormControl><Label className="font-normal">{opt}</Label></FormItem>))}</RadioGroup>) : (<Textarea placeholder="Your answer..." {...field}/>)}</FormControl><FormMessage/></FormItem>
+                                    <FormItem><FormControl>{questions[practiceStep].type === 'multiple_choice' && questions[practiceStep].options ? (<RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="pt-2 space-y-1">{questions[practiceStep].options?.map((opt, i) => (<FormItem key={i} className="flex items-center space-x-3"><FormControl><RadioGroupItem value={opt} disabled={awaitingFeedback || !!state.instantFeedback} /></FormControl><Label className="font-normal">{opt}</Label></FormItem>))}</RadioGroup>) : (<Textarea placeholder="Your answer..." {...field} disabled={awaitingFeedback || !!state.instantFeedback} />)}</FormControl><FormMessage/></FormItem>
                                 )} />
-                                <Button type="submit" disabled={isPending || !!state.instantFeedback || timeLeft === 0}>Check Answer</Button>
+                                <Button type="submit" disabled={isPending || awaitingFeedback || !!state.instantFeedback || timeLeft === 0}>Check Answer</Button>
                             </form>
                         </Form>
+
+                        {awaitingFeedback && !state.instantFeedback && (
+                          <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                            <p>Checking answer...</p>
+                          </div>
+                        )}
 
                         {state.instantFeedback && (
                             <div className="space-y-4 pt-4">
