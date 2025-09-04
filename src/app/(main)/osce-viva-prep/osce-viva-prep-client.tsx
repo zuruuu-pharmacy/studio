@@ -7,6 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { generateOsceStation, type OsceStationGeneratorOutput, type OsceStationGeneratorInput } from "@/ai/flows/osce-station-generator";
+import { generateQuestions, type QuestionGeneratorOutput } from "@/ai/flows/question-generator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -14,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Sparkles, User, FileText, FlaskConical, Microscope, HeartPulse, ShieldPlus, Activity, Lightbulb, ClipboardCheck, Zap, CaseSensitive, BookCopy, Repeat, Check, X, Forward, Save, TimerIcon, AlertTriangle } from "lucide-react";
+import { Loader2, Sparkles, User, FileText, FlaskConical, Microscope, HeartPulse, ShieldPlus, Activity, Lightbulb, ClipboardCheck, Zap, CaseSensitive, BookCopy, Repeat, Check, X, Forward, Save, TimerIcon, AlertTriangle, MessageSquareQuestion } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Label } from "@/components/ui/label";
@@ -25,14 +26,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 
 
-type Mode = "exam" | "practice" | "review" | "drill" | "adaptive";
+type Mode = "exam" | "practice" | "review" | "drill" | "adaptive" | "qgen";
 
-type AppStep = 'mode' | 'topic' | 'case' | 'feedback';
+type AppStep = 'mode' | 'topic' | 'case' | 'feedback' | 'qgen_results';
+
+type CombinedOutput = (OsceStationGeneratorOutput | QuestionGeneratorOutput | { error: string } | null);
 
 // Schemas
 const topicFormSchema = z.object({
   topic: z.string().min(3, "Please enter a topic."),
-  difficulty: z.string().min(1, "Please select a difficulty tier."),
+  difficulty: z.string().optional(),
 });
 type TopicFormValues = z.infer<typeof topicFormSchema>;
 
@@ -136,33 +139,38 @@ export function OsceVivaPrepClient() {
   const { addSession } = useOsceSessions();
   const router = useRouter();
   
-  const [state, formAction] = useActionState<OsceStationGeneratorOutput | { error: string } | null, FormData>(
+  const [state, formAction] = useActionState<CombinedOutput, FormData>(
     async (previousState, formData) => {
       const topic = formData.get("topic") as string;
-      if (topic === 'reset') return null; // Handle reset command
-
-      const difficulty = formData.get("difficulty") as string;
-      const caseDetails = formData.get("caseDetails") ? JSON.parse(formData.get("caseDetails") as string) : undefined;
-      const questions = formData.get("questions") ? JSON.parse(formData.get("questions") as string) : undefined;
       const mode = formData.get("mode") as Mode;
+      if (topic === 'reset') return null; // Handle reset command
       
-      // Check for exam mode answers
-      const examAnswers: { question: string, answer: string }[] = [];
-      let i = 0;
-      while (formData.has(`answers[${i}].question`)) {
-        examAnswers.push({
-          question: formData.get(`answers[${i}].question`) as string,
-          answer: formData.get(`answers[${i}].answer`) as string,
-        });
-        i++;
-      }
-
-      // Check for practice mode answer
-      const practiceAnswerQuestion = formData.get("practiceAnswer[question]");
-      const practiceAnswerAnswer = formData.get("practiceAnswer[answer]");
-      const practiceAnswer = practiceAnswerQuestion && practiceAnswerAnswer ? { question: practiceAnswerQuestion.toString(), answer: practiceAnswerAnswer.toString() } : undefined;
-
       try {
+        if (mode === 'qgen') {
+            const result = await generateQuestions({ topic: topic });
+            return result;
+        }
+
+        const difficulty = formData.get("difficulty") as string;
+        const caseDetails = formData.get("caseDetails") ? JSON.parse(formData.get("caseDetails") as string) : undefined;
+        const questions = formData.get("questions") ? JSON.parse(formData.get("questions") as string) : undefined;
+        
+        // Check for exam mode answers
+        const examAnswers: { question: string, answer: string }[] = [];
+        let i = 0;
+        while (formData.has(`answers[${i}].question`)) {
+          examAnswers.push({
+            question: formData.get(`answers[${i}].question`) as string,
+            answer: formData.get(`answers[${i}].answer`) as string,
+          });
+          i++;
+        }
+
+        // Check for practice mode answer
+        const practiceAnswerQuestion = formData.get("practiceAnswer[question]");
+        const practiceAnswerAnswer = formData.get("practiceAnswer[answer]");
+        const practiceAnswer = practiceAnswerQuestion && practiceAnswerAnswer ? { question: practiceAnswerQuestion.toString(), answer: practiceAnswerAnswer.toString() } : undefined;
+
         let fullTopic = topic;
         if (mode === 'drill') {
             fullTopic = `Drill questions for: ${topic}`;
@@ -176,18 +184,18 @@ export function OsceVivaPrepClient() {
           caseDetails: caseDetails,
           questions: questions,
         });
-        // This is a crucial step: when we get instant feedback, we must merge it with the existing state
-        // so that we don't lose the caseDetails and questions.
-        if (result.instantFeedback) {
+
+        if (result.instantFeedback && previousState && 'caseDetails' in previousState) {
             return {
                 ...previousState,
                 instantFeedback: result.instantFeedback,
             }
         }
         return result;
+
       } catch (e) {
         console.error(e);
-        return { error: "Failed to process the case. Please try again." };
+        return { error: "Failed to process your request. Please try again." };
       }
     },
     null
@@ -226,28 +234,30 @@ export function OsceVivaPrepClient() {
 
   useEffect(() => {
     if (state) {
-      if ('error' in state) {
+      if ('error' in state && state.error) {
         toast({ variant: "destructive", title: "Error", description: state.error });
         setAwaitingFeedback(false);
-      } else if (state.caseDetails && state.questions && !state.feedback && !state.instantFeedback) { // Initial case generation
+      } else if (state && 'caseDetails' in state && state.caseDetails && state.questions && !state.feedback && !state.instantFeedback) { // Initial case generation
         examAnswerForm.reset({ answers: state.questions.map(q => ({ question: q.question, answer: '' })) });
         setAppStep('case');
         if (selectedMode === 'exam' || selectedMode === 'practice') {
             setTimeLeft(420);
             setTimerActive(true);
         }
-      } else if (state.feedback) { // Exam mode feedback
+      } else if (state && 'feedback' in state && state.feedback) { // Exam mode feedback
         setAppStep('feedback');
         setTimerActive(false);
-      } else if (state.instantFeedback) { // Practice/Drill mode feedback
+      } else if (state && 'instantFeedback' in state && state.instantFeedback) { // Practice/Drill mode feedback
         setAwaitingFeedback(false);
+      } else if (selectedMode === 'qgen' && state && 'questions' in state && Array.isArray(state.questions) && !('caseDetails' in state)) {
+        setAppStep('qgen_results');
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, toast, examAnswerForm, selectedMode]);
 
   const handleModeSelect = (mode: Mode) => {
-    if (mode === 'exam' || mode === 'practice' || mode === 'drill') {
+    if (mode === 'exam' || mode === 'practice' || mode === 'drill' || mode === 'qgen') {
         setSelectedMode(mode);
         setAppStep('topic');
     } else if (mode === 'review') {
@@ -260,18 +270,23 @@ export function OsceVivaPrepClient() {
   const handleTopicSubmit = topicForm.handleSubmit((data) => {
     const formData = new FormData();
     formData.append("topic", data.topic);
-    formData.append("difficulty", data.difficulty);
     if(selectedMode) formData.append("mode", selectedMode);
+    if(data.difficulty) formData.append("difficulty", data.difficulty);
     startTransition(() => formAction(formData));
   });
 
   const handleExamAnswerSubmit = examAnswerForm.handleSubmit((data) => {
     const formData = new FormData();
     formData.append("topic", topicForm.getValues("topic"));
-    formData.append("difficulty", topicForm.getValues("difficulty"));
+    const difficulty = topicForm.getValues("difficulty");
+    if(difficulty) formData.append("difficulty", difficulty);
     if(selectedMode) formData.append("mode", selectedMode);
-    formData.append("caseDetails", JSON.stringify(state?.caseDetails));
-    formData.append("questions", JSON.stringify(state?.questions));
+    if (state && 'caseDetails' in state && state.caseDetails) {
+        formData.append("caseDetails", JSON.stringify(state.caseDetails));
+    }
+    if (state && 'questions' in state && state.questions) {
+        formData.append("questions", JSON.stringify(state.questions));
+    }
     data.answers.forEach((ans, i) => {
       formData.append(`answers[${i}].question`, ans.question);
       formData.append(`answers[${i}].answer`, ans.answer);
@@ -280,13 +295,14 @@ export function OsceVivaPrepClient() {
   });
 
   const handlePracticeAnswerSubmit = practiceAnswerForm.handleSubmit((data) => {
-      if(!state?.caseDetails || !state?.questions) return;
+      if(!state || !('caseDetails' in state) || !state.caseDetails || !state.questions) return;
       const currentQuestion = state.questions[practiceStep];
       setAwaitingFeedback(true);
 
       const formData = new FormData();
       formData.append("topic", topicForm.getValues("topic"));
-      formData.append("difficulty", topicForm.getValues("difficulty"));
+      const difficulty = topicForm.getValues("difficulty");
+      if(difficulty) formData.append("difficulty", difficulty);
       if(selectedMode) formData.append("mode", selectedMode);
       formData.append("caseDetails", JSON.stringify(state.caseDetails));
       formData.append("questions", JSON.stringify(state.questions));
@@ -296,20 +312,18 @@ export function OsceVivaPrepClient() {
   });
 
   const handleNextPracticeQuestion = useCallback(() => {
-    if (!state?.questions) return;
+    if (!state || !('questions' in state) || !Array.isArray(state.questions)) return;
     practiceAnswerForm.reset({ answer: "" });
-
-    // Create a new state object without the instantFeedback to clear it
-    const newState: OsceStationGeneratorOutput | { error: string } | null = { ...state };
-    if (newState && 'instantFeedback' in newState) {
-        delete newState.instantFeedback;
-    }
     
-    // Use a 'reset' action to clear the state in the hook without calling the AI
+    // Clear instant feedback from the state
+    const newState = { ...state };
+    if('instantFeedback' in newState) delete newState.instantFeedback;
+    
+    // Use a special action to reset state without re-calling AI
     const resetFormData = new FormData();
     resetFormData.append('topic','reset');
     formAction(resetFormData);
-    
+
     setAwaitingFeedback(false);
 
     if (practiceStep < state.questions.length - 1) {
@@ -320,7 +334,7 @@ export function OsceVivaPrepClient() {
   }, [practiceAnswerForm, practiceStep, state, formAction]);
   
   const handleSaveSession = () => {
-    if (!state || !state.caseDetails || !state.feedback) {
+    if (!state || !('caseDetails' in state) || !state.caseDetails || !('feedback' in state) || !state.feedback) {
         toast({
             variant: "destructive",
             title: "Save Failed",
@@ -376,8 +390,39 @@ export function OsceVivaPrepClient() {
     )
   }
 
+  // Question Generator Results View
+  if (appStep === 'qgen_results' && state && 'questions' in state && !('caseDetails' in state)) {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Generated Questions for: {state.topic}</CardTitle>
+                <CardDescription>Here are the AI-generated questions for your topic.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                 <Accordion type="multiple" className="w-full space-y-3">
+                    {(state.questions as {question: string, hint: string}[]).map((q, index) => (
+                         <AccordionItem value={`q-${index}`} key={index} className="border rounded-lg bg-background/50">
+                            <AccordionTrigger className="p-4 text-base font-semibold hover:no-underline text-left">
+                                {index + 1}. {q.question}
+                            </AccordionTrigger>
+                            <AccordionContent className="px-6 pb-4">
+                               <Alert>
+                                <Lightbulb className="h-4 w-4"/>
+                                <AlertTitle>Hint</AlertTitle>
+                                <AlertDescription>{q.hint}</AlertDescription>
+                               </Alert>
+                            </AccordionContent>
+                        </AccordionItem>
+                    ))}
+                 </Accordion>
+                <Button onClick={resetAll} variant="outline">Generate New Questions</Button>
+            </CardContent>
+        </Card>
+    );
+  }
+
   // Final Feedback View (Exam Mode)
-  if (appStep === 'feedback' && state?.feedback) {
+  if (appStep === 'feedback' && state && 'feedback' in state && state.feedback) {
     const { scoring, ...feedback } = state.feedback;
 
     const rubricRows = [
@@ -467,7 +512,7 @@ export function OsceVivaPrepClient() {
   }
   
   // Main Case/Drill View
-  if (appStep === 'case' && state?.caseDetails && state?.questions) {
+  if (appStep === 'case' && state && 'caseDetails' in state && state.caseDetails && state.questions) {
     const { caseDetails, questions } = state;
     const isPracticeOrDrill = selectedMode === 'practice' || selectedMode === 'drill';
     const isFinished = isPracticeOrDrill && practiceStep >= questions.length;
@@ -536,9 +581,9 @@ export function OsceVivaPrepClient() {
                         <Form {...practiceAnswerForm}>
                             <form onSubmit={handlePracticeAnswerSubmit} className="space-y-4">
                                 <FormField name="answer" control={practiceAnswerForm.control} render={({ field }) => (
-                                    <FormItem><FormControl>{questions[practiceStep].type === 'multiple_choice' && questions[practiceStep].options ? (<RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="pt-2 space-y-1">{questions[practiceStep].options?.map((opt, i) => (<FormItem key={i} className="flex items-center space-x-3"><FormControl><RadioGroupItem value={opt} disabled={awaitingFeedback || !!state.instantFeedback} /></FormControl><Label className="font-normal">{opt}</Label></FormItem>))}</RadioGroup>) : (<Textarea placeholder="Your answer..." {...field} disabled={awaitingFeedback || !!state.instantFeedback} />)}</FormControl><FormMessage/></FormItem>
+                                    <FormItem><FormControl>{questions[practiceStep].type === 'multiple_choice' && questions[practiceStep].options ? (<RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="pt-2 space-y-1">{questions[practiceStep].options?.map((opt, i) => (<FormItem key={i} className="flex items-center space-x-3"><FormControl><RadioGroupItem value={opt} disabled={awaitingFeedback || !!(state && 'instantFeedback' in state && state.instantFeedback)} /></FormControl><Label className="font-normal">{opt}</Label></FormItem>))}</RadioGroup>) : (<Textarea placeholder="Your answer..." {...field} disabled={awaitingFeedback || !!(state && 'instantFeedback' in state && state.instantFeedback)} />)}</FormControl><FormMessage/></FormItem>
                                 )} />
-                                { !state.instantFeedback ? (
+                                { !(state && 'instantFeedback' in state && state.instantFeedback) ? (
                                      <Button type="submit" disabled={isPending || awaitingFeedback || timeLeft === 0}>Check Answer</Button>
                                 ) : (
                                     <Button type="button" onClick={handleNextPracticeQuestion} className="w-full"><Forward className="mr-2"/>Next Question</Button>
@@ -546,14 +591,14 @@ export function OsceVivaPrepClient() {
                             </form>
                         </Form>
 
-                        {awaitingFeedback && !state.instantFeedback && (
+                        {awaitingFeedback && !(state && 'instantFeedback' in state && state.instantFeedback) && (
                           <div className="flex items-center justify-center gap-2 text-muted-foreground">
                             <Loader2 className="h-5 w-5 animate-spin" />
                             <p>Checking answer...</p>
                           </div>
                         )}
 
-                        {state.instantFeedback && (
+                        {state && 'instantFeedback' in state && state.instantFeedback && (
                             <div className="space-y-4 pt-4">
                                 <InstantFeedbackCard feedback={state.instantFeedback}/>
                             </div>
@@ -571,6 +616,7 @@ export function OsceVivaPrepClient() {
         exam: { title: 'Exam Domain', description: 'Select a domain for your exam simulation.' },
         practice: { title: 'Practice Domain', description: 'Select a domain to practice with instant feedback.' },
         drill: { title: 'Drill Domain', description: 'Select a competency to drill.' },
+        qgen: { title: 'Question Topic', description: 'Enter a topic to generate questions about.'},
         review: { title: '', description: ''},
         adaptive: { title: '', description: ''},
     }
@@ -587,41 +633,36 @@ export function OsceVivaPrepClient() {
                         name="topic"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Station Domain</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a domain to practice..." />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {DOMAINS.map(domain => <SelectItem key={domain} value={domain}>{domain}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
+                                <FormLabel>Topic / Domain</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="e.g., Anticoagulants, Pediatric Dosage..." {...field} />
+                                </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                         />
-                     <FormField
-                        control={topicForm.control}
-                        name="difficulty"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Difficulty Tier</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a difficulty level..." />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {Object.keys(DIFFICULTY_TIERS).map(tier => <SelectItem key={tier} value={tier}>{tier}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                        />
+                     { selectedMode !== 'qgen' &&
+                        <FormField
+                            control={topicForm.control}
+                            name="difficulty"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Difficulty Tier</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select a difficulty level..." />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {Object.keys(DIFFICULTY_TIERS).map(tier => <SelectItem key={tier} value={tier}>{tier}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+                      }
                     <Button type="submit" className="w-full" disabled={isPending}>
                         {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
                         Generate Station
@@ -642,6 +683,7 @@ export function OsceVivaPrepClient() {
             <button onClick={() => handleModeSelect('exam')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><CaseSensitive className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Exam Mode</h3><p className="text-sm text-muted-foreground">Full station with locked hints and feedback at the end. Simulates the real exam.</p></div></button>
             <button onClick={() => handleModeSelect('practice')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><Lightbulb className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Practice Mode</h3><p className="text-sm text-muted-foreground">Get instant feedback after each question and access hints.</p></div></button>
             <button onClick={() => handleModeSelect('drill')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><Zap className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Drill Mode</h3><p className="text-sm text-muted-foreground">Rapid-fire short items on a single competency.</p></div></button>
+            <button onClick={() => handleModeSelect('qgen')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><MessageSquareQuestion className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Question Generator</h3><p className="text-sm text-muted-foreground">Generate practice questions on any topic.</p></div></button>
             <button onClick={() => handleModeSelect('review')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><BookCopy className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Review Mode</h3><p className="text-sm text-muted-foreground">Analyze your past performance with transcripts and model answers.</p></div></button>
             <button onClick={() => toast({ title: 'Coming Soon', description: 'This mode is currently under development.' })} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><Repeat className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Adaptive Mode</h3><p className="text-sm text-muted-foreground">Difficulty increases or decreases based on performance.</p></div></button>
         </CardContent>
