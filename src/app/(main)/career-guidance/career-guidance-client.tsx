@@ -139,6 +139,9 @@ export function CareerGuidanceClient() {
                             <li className="font-semibold text-primary">
                                 <Link href="/career-guidance/skills-lab">Skills Lab</Link>
                             </li>
+                            <li className="font-semibold text-primary">
+                                <Link href="/career-guidance/certifications-library">Certifications Library</Link>
+                            </li>
                            <li>Jobs & Internships</li>
                            <li>Mentors & Alumni</li>
                         </ul>
