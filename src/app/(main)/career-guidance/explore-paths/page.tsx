@@ -24,7 +24,7 @@ const careerPaths = [
         },
         certifications: "Post-graduate diplomas in clinical pharmacy, Board Certified Pharmacotherapy Specialist (BCPS - US), local clinical pharmacy diplomas.",
         timeline: "Year 0–1: Ward internships and rotations. Year 1–3: Residency or entry-level clinical role. Year 3+: Specialist role (e.g., cardiology, oncology) or lead clinical pharmacist.",
-        salaryBand: "USA: Median annual wage is ~$137,480 (BLS, May 2024). Pakistan: Entry-level roles may start around PKR 60-90k/month, with significant growth potential. Ranges vary widely by employer and location.",
+        salaryBand: "USA: Median annual wage is ~$137,480 (Source: US BLS, May 2024). Pakistan: Entry-level roles may start around PKR 60-90k/month, with significant growth potential (Source: local job postings, Payscale). Ranges vary widely by employer and location.",
         demand: "High (Local), Very High (International)",
         alumni: [
             { name: "Dr. Aisha Baig", role: "Cardiology Pharmacist, National Hospital" },
@@ -45,7 +45,7 @@ const careerPaths = [
         },
         certifications: "GMP certification, Six Sigma, Quality Management certifications.",
         timeline: "Year 0–1: Internship/trainee role. Year 1–3: Officer/Executive level in QA, Production, or R&D. Year 3+: Managerial or senior scientist roles.",
-        salaryBand: "Pakistan: Entry-level roles in production/QA range from PKR 50-80k/month. R&D roles with a PhD can command significantly higher salaries. International roles are highly competitive and well-compensated.",
+        salaryBand: "Pakistan: Entry-level roles in production/QA range from PKR 50-80k/month. R&D roles with a PhD can command significantly higher salaries. International roles are highly competitive and well-compensated. (Source: SalaryExpert, local job postings).",
         demand: "High (Local), High (International)",
         alumni: [
             { name: "Mr. Bilal Khan", role: "Head of Production, Zuruu Pharma" },
@@ -65,7 +65,7 @@ const careerPaths = [
         },
         certifications: "Immunization certification, MTM (Medication Therapy Management) certification.",
         timeline: "Year 0–1: Entry-level pharmacist. Year 1–3: Pharmacy Manager or senior pharmacist. Year 3+: Multi-store management or ownership.",
-        salaryBand: "Pakistan: Varies based on location and ownership model, can range from PKR 40k to over 150k/month for managers/owners. USA: Median is similar to clinical pharmacist, ~$137,480/year.",
+        salaryBand: "Pakistan: Varies based on location and ownership model, can range from PKR 40k to over 150k/month for managers/owners. USA: Median is similar to clinical pharmacist, ~$137,480/year (Source: US BLS, May 2024).",
         demand: "Very High (Local), Medium (International)",
         alumni: []
     },
@@ -83,7 +83,7 @@ const careerPaths = [
         },
         certifications: "Regulatory Affairs Certification (RAC) is a globally recognized standard.",
         timeline: "Year 0–2: Junior Officer. Year 2–5: Senior Officer/Assistant Manager. Year 5+: Manager/Head of Regulatory Affairs.",
-        salaryBand: "Pakistan: Starts around PKR 60-90k/month, with high growth potential due to its specialized nature. International roles are very well-compensated.",
+        salaryBand: "Pakistan: Starts around PKR 60-90k/month, with high growth potential due to its specialized nature. International roles are very well-compensated. (Source: local job postings, Payscale).",
         demand: "Medium (Local), High (International)",
         alumni: []
     },

@@ -40,8 +40,8 @@ export function LicensingExamsClient() {
                   <p><strong>Registration Body:</strong> {path.body}</p>
                   <p><strong>Details:</strong> {path.details}</p>
                   <a href={path.link} target="_blank" rel="noopener noreferrer">
-                    <Button variant="link" className="p-0">
-                        Visit Official Website <ExternalLink className="ml-2"/>
+                    <Button variant="link" className="p-0 h-auto" disabled={path.link === '#'}>
+                        Visit Official Website <ExternalLink className="ml-2 h-4 w-4"/>
                     </Button>
                   </a>
                    <div className="flex flex-col items-center justify-center text-center h-full bg-muted/50 p-8 rounded-lg mt-4">
