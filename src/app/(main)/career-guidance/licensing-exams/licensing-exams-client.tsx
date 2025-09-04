@@ -63,14 +63,21 @@ export function LicensingExamsClient() {
             <CardTitle className="flex items-center gap-2"><Languages />Language Exams (IELTS/TOEFL)</CardTitle>
             <CardDescription>Guidance on language proficiency tests required for many countries.</CardDescription>
           </CardHeader>
-          <CardContent>
-             <div className="flex flex-col items-center justify-center text-center h-full bg-muted/50 p-8 rounded-lg">
-                 <Construction className="h-16 w-16 text-muted-foreground/30 mb-4" />
-                 <h3 className="text-xl font-semibold text-muted-foreground">Feature Under Construction</h3>
-                 <p className="text-muted-foreground/80 mt-2">
-                    A detailed guide on language exam requirements and preparation is coming soon.
-                 </p>
-            </div>
+          <CardContent className="grid md:grid-cols-2 gap-6">
+             <div className="p-4 bg-muted/50 rounded-lg space-y-3">
+                <h3 className="font-semibold text-lg">IELTS (International English Language Testing System)</h3>
+                <p className="text-sm text-muted-foreground">Widely accepted for study, work, and migration in countries like the UK, Australia, Canada, and New Zealand. Most pharmacy boards require the Academic module with specific minimum scores in each section (Listening, Reading, Writing, Speaking).</p>
+                <a href="https://www.ielts.org" target="_blank" rel="noopener noreferrer">
+                    <Button variant="outline">Visit IELTS Website <ExternalLink className="ml-2"/></Button>
+                </a>
+             </div>
+             <div className="p-4 bg-muted/50 rounded-lg space-y-3">
+                <h3 className="font-semibold text-lg">TOEFL (Test of English as a Foreign Language)</h3>
+                <p className="text-sm text-muted-foreground">Primarily accepted by universities and pharmacy boards in the United States and Canada. The TOEFL iBT (Internet-based Test) is the most common version, assessing reading, listening, speaking, and writing skills.</p>
+                 <a href="https://www.ets.org/toefl" target="_blank" rel="noopener noreferrer">
+                    <Button variant="outline">Visit TOEFL Website <ExternalLink className="ml-2"/></Button>
+                </a>
+             </div>
           </CardContent>
       </Card>
     </div>
