@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ClipboardList, Target, GraduationCap, Construction, Sparkles, CheckCircle, AlertTriangle } from "lucide-react";
+import { ClipboardList, Target, GraduationCap, Construction, Sparkles, CheckCircle, AlertTriangle, BookCheck } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 export function SkillsLabClient() {
@@ -62,7 +62,7 @@ export function SkillsLabClient() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><GraduationCap/>Personalized Learning Plan</CardTitle>
-            <CardDescription>Curated resources and tasks to help you close your skill gaps.</CardDescription>
+            <CardDescription>Curated resources and tasks to help you close your skill gaps and track continuous education.</CardDescription>
           </CardHeader>
           <CardContent>
              <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
@@ -73,6 +73,14 @@ export function SkillsLabClient() {
                  <Card className="bg-background">
                     <CardHeader><CardTitle className="text-base">Course: Clinical Pharmacotherapy Micro-course</CardTitle></CardHeader>
                     <CardContent><Button size="sm" variant="secondary" disabled>View on edX</Button></CardContent>
+                </Card>
+                <Card className="bg-background">
+                    <CardHeader><CardTitle className="text-base">Scholarly Activity: Write a Case Report</CardTitle></CardHeader>
+                    <CardContent><Button size="sm" variant="secondary" disabled>View Templates</Button></CardContent>
+                </Card>
+                 <Card className="bg-background">
+                    <CardHeader><CardTitle className="text-base flex items-center gap-2"><BookCheck/>CE Tracker</CardTitle></CardHeader>
+                    <CardContent><p className="text-sm text-muted-foreground">Track your Continuing Education credits to meet licensure requirements.</p></CardContent>
                 </Card>
                  <p className="text-xs text-muted-foreground pt-4">Your personalized learning tasks will appear here after you complete the self-assessment.</p>
             </div>

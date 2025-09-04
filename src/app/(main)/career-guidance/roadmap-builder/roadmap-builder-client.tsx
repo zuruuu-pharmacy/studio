@@ -21,8 +21,8 @@ export function RoadmapBuilderClient() {
         <div className="lg:col-span-2">
             <Card className="min-h-[600px]">
                 <CardHeader>
-                    <CardTitle>My Clinical Pharmacy Roadmap</CardTitle>
-                    <CardDescription>Drag items from the toolbox onto your timeline or click the buttons to add milestones.</CardDescription>
+                    <CardTitle>My Career Roadmap</CardTitle>
+                    <CardDescription>Visually plan your 1, 3, and 5-year goals. Add milestones for certifications, job applications, and continuing education to build a comprehensive career growth plan.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center justify-center text-center h-full">
                      <Construction className="h-24 w-24 text-muted-foreground/30 mb-4" />
