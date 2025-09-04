@@ -21,13 +21,41 @@ const formSchema = z.object({
 });
 type FormValues = z.infer<typeof formSchema>;
 
+function CitationCard({ citation, onCopy }: { citation: ReferenceGeneratorOutput, onCopy: (text: string) => void }) {
+    const [hasCopied, setHasCopied] = useState(false);
+
+    const handleCopy = () => {
+        onCopy(citation.formattedCitation);
+        setHasCopied(true);
+        setTimeout(() => setHasCopied(false), 2000);
+    }
+    
+    return (
+        <Card className="bg-muted/50">
+            <CardContent className="p-4 space-y-3">
+                 <div className="relative">
+                    <p className="font-mono text-sm whitespace-pre-wrap pr-12">{citation.formattedCitation}</p>
+                    <Button variant="ghost" size="icon" className="absolute top-0 right-0" onClick={handleCopy}>
+                      {hasCopied ? <Check className="h-5 w-5 text-green-500"/> : <Clipboard className="h-5 w-5"/>}
+                    </Button>
+                </div>
+                 <Alert>
+                    <BookA className="h-4 w-4" />
+                    <AlertTitle>Reference Rationale</AlertTitle>
+                    <AlertDescription>
+                      {citation.explanation}
+                    </AlertDescription>
+                </Alert>
+            </CardContent>
+        </Card>
+    );
+}
+
 export function ReferenceGeneratorClient() {
   const [isPending, startTransition] = useTransition();
-  // State is now an array to prepare for bibliography features
-  const [results, setResults] = useState<(ReferenceGeneratorOutput | { error: string })[]>([]);
+  const [results, setResults] = useState<ReferenceGeneratorOutput[]>([]);
 
   const { toast } = useToast();
-  const [hasCopied, setHasCopied] = useState(false);
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,11 +73,11 @@ export function ReferenceGeneratorClient() {
     startTransition(async () => {
       try {
         const result = await generateReference(parsed.data);
-        setResults([result]); // Set the result as the first item in the array
+        setResults(prev => [result, ...prev]); 
+        form.reset({ ...form.getValues(), sourceIdentifier: "" });
       } catch (e) {
         console.error(e);
         toast({ variant: "destructive", title: "Error", description: "Failed to generate reference. The AI may not have a suitable reference for this text." });
-        setResults([{ error: "Failed to generate reference." }]);
       }
     });
   };
@@ -63,8 +91,7 @@ export function ReferenceGeneratorClient() {
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    setHasCopied(true);
-    setTimeout(() => setHasCopied(false), 2000);
+    toast({ title: "Copied!", description: "The citation has been copied to your clipboard." });
   };
 
   return (
@@ -104,7 +131,7 @@ export function ReferenceGeneratorClient() {
                 )} />
                 <Button type="submit" disabled={isPending} className="w-full">
                   {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2" />}
-                  Generate
+                  Generate & Add to List
                 </Button>
               </form>
             </Form>
@@ -113,46 +140,36 @@ export function ReferenceGeneratorClient() {
       </div>
 
       <div className="md:col-span-2">
-        {isPending && (
-          <div className="flex justify-center items-center h-full">
-            <div className="text-center space-y-2">
-              <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
-              <p className="text-muted-foreground">Finding and formatting the best reference...</p>
-            </div>
-          </div>
-        )}
-        
-        {results.length > 0 && 'formattedCitation' in results[0] ? (
-          <Card>
+         <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">Generated Citation</CardTitle>
-              <CardDescription>Style: {form.getValues('style')}</CardDescription>
+              <CardTitle className="text-2xl">Bibliography</CardTitle>
+              <CardDescription>Generated citations will appear here as a running list.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-4 bg-muted rounded-lg relative">
-                <p className="font-mono text-sm whitespace-pre-wrap">{results[0].formattedCitation}</p>
-                <Button variant="ghost" size="icon" className="absolute top-2 right-2" onClick={() => handleCopy(results[0].formattedCitation)}>
-                  {hasCopied ? <Check className="h-5 w-5 text-green-500"/> : <Clipboard className="h-5 w-5"/>}
-                </Button>
-              </div>
-              <Alert>
-                <BookA className="h-4 w-4" />
-                <AlertTitle>Reference Rationale</AlertTitle>
-                <AlertDescription>
-                  {results[0].explanation}
-                </AlertDescription>
-              </Alert>
+                {isPending && (
+                    <div className="flex justify-center items-center h-full p-8">
+                        <div className="text-center space-y-2">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+                        <p className="text-muted-foreground">Finding and formatting reference...</p>
+                        </div>
+                    </div>
+                )}
+        
+                {results.length > 0 ? (
+                    results.map((result, index) => (
+                        <CitationCard key={index} citation={result} onCopy={handleCopy} />
+                    ))
+                ) : (
+                  !isPending && (
+                    <div className="flex flex-col items-center justify-center h-full min-h-[200px] text-center p-6 bg-muted/50 rounded-lg">
+                        <BookA className="h-16 w-16 text-muted-foreground/50 mb-4" />
+                        <h3 className="text-xl font-semibold text-muted-foreground">Your Bibliography is Empty</h3>
+                        <p className="text-muted-foreground/80 mt-2">Use the form to generate your first citation.</p>
+                    </div>
+                  )
+                )}
             </CardContent>
           </Card>
-        ) : (
-          !isPending && (
-            <Card className="flex flex-col items-center justify-center h-full min-h-[300px] text-center p-6 bg-muted/50">
-              <BookA className="h-16 w-16 text-muted-foreground/50 mb-4" />
-              <h3 className="text-xl font-semibold text-muted-foreground">Your Citation Will Appear Here</h3>
-              <p className="text-muted-foreground/80 mt-2">Enter a source identifier to get started.</p>
-            </Card>
-          )
-        )}
       </div>
     </div>
   );
