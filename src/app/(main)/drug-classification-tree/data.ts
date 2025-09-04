@@ -233,6 +233,24 @@ export const drugTreeData: DrugClass[] = [
         pharmaFocus: "storage (cylinders, pressure control), pharmaceutical grade purity, applications in ICU.",
         drugs: [],
       },
+       {
+        name: "CNS Stimulants",
+        pharmaFocus: "assay techniques, OTC vs controlled formulations.",
+        subclasses: [
+          {
+            name: "Cerebral stimulants (Caffeine, Theophylline)",
+            drugs: [],
+          },
+          {
+            name: "Medullary stimulants (Nikethamide)",
+            drugs: [],
+          },
+           {
+            name: "Spinal stimulants (Strychnine – historical, not clinical now)",
+            drugs: [],
+          },
+        ]
+      },
     ],
   },
 ];
