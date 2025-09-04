@@ -5,12 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { FileText, Bot, MessageSquare, ListChecks, Sparkles } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import Link from "next/link";
 
 export function CvInterviewToolkitClient() {
   const handleActionClick = (feature: string) => {
     toast({
-      title: `${feature} Initialized`,
-      description: "This feature is now active. A full implementation would follow.",
+      title: "Coming Soon!",
+      description: `The ${feature} is under development and will be available shortly.`,
     });
   };
 
@@ -25,7 +26,9 @@ export function CvInterviewToolkitClient() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => handleActionClick('CV Builder')}>Open CV Builder</Button>
+            <Link href="/career-guidance/cv-builder">
+                <Button>Open CV Builder</Button>
+            </Link>
           </CardContent>
         </Card>
 
@@ -37,7 +40,7 @@ export function CvInterviewToolkitClient() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => handleActionClick('Cover Letter Generator')}>Generate Cover Letter</Button>
+            <Button onClick={() => handleActionClick('AI Cover Letter Generator')}>Generate Cover Letter</Button>
           </CardContent>
         </Card>
       </div>
