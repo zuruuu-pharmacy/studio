@@ -14,11 +14,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { Plus, ListChecks, Check, BarChart3, Users, Percent, ShieldQuestion } from "lucide-react";
+import { Plus, ListChecks, Check, BarChart3, Users, Percent, ShieldQuestion, BarChartHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 
 const newPollSchema = z.object({
@@ -171,6 +173,11 @@ export function StudentPollsClient() {
 
                     const totalVotes = poll.votes.length;
                     
+                    const chartData = poll.options.map((option, index) => ({
+                        name: option.text,
+                        votes: poll.votes.filter(v => v.optionIndex === index).length
+                    }));
+
                     return (
                          <Card key={poll.id}>
                             <CardHeader>
@@ -184,24 +191,38 @@ export function StudentPollsClient() {
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-3">
-                                    {poll.options.map((option, index) => {
-                                        if (hasVoted) {
-                                            const optionVotes = poll.votes.filter(v => v.optionIndex === index).length;
-                                            const percentage = totalVotes > 0 ? (optionVotes / totalVotes) * 100 : 0;
-                                            return (
-                                                <div key={index} className="space-y-1">
-                                                    <div className="flex justify-between items-center text-sm">
-                                                        <div className="flex items-center gap-2">
-                                                            {userVoteIndex === index && <Check className="h-4 w-4 text-primary" />}
-                                                            <span className={cn(userVoteIndex === index && "font-bold")}>{option.text}</span>
-                                                        </div>
-                                                        <span className="font-semibold text-muted-foreground">{percentage.toFixed(0)}%</span>
-                                                    </div>
-                                                    <Progress value={percentage} />
-                                                </div>
-                                            )
-                                        }
-                                        return (
+                                    {hasVoted ? (
+                                        <ChartContainer config={{
+                                            votes: {
+                                                label: "Votes",
+                                                color: "hsl(var(--primary))",
+                                            }
+                                        }} className="h-[200px] w-full">
+                                            <BarChart
+                                                accessibilityLayer
+                                                data={chartData}
+                                                layout="vertical"
+                                                margin={{ left: 10, right: 10 }}
+                                            >
+                                                <YAxis
+                                                    dataKey="name"
+                                                    type="category"
+                                                    tickLine={false}
+                                                    axisLine={false}
+                                                    tickMargin={10}
+                                                    className="text-xs"
+                                                    width={80}
+                                                />
+                                                <XAxis dataKey="votes" type="number" hide />
+                                                <ChartTooltip
+                                                    cursor={false}
+                                                    content={<ChartTooltipContent hideLabel />}
+                                                />
+                                                <Bar dataKey="votes" layout="vertical" radius={5} />
+                                            </BarChart>
+                                        </ChartContainer>
+                                    ) : (
+                                        poll.options.map((option, index) => (
                                             <Button 
                                                 key={index}
                                                 variant="outline" 
@@ -210,8 +231,8 @@ export function StudentPollsClient() {
                                             >
                                                 {option.text}
                                             </Button>
-                                        )
-                                    })}
+                                        ))
+                                    )}
                                 </div>
                             </CardContent>
                          </Card>
