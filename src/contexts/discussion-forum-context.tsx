@@ -4,6 +4,22 @@
 import type { ReactNode } from 'react';
 import { createContext, useContext, useState, useMemo, useEffect } from 'react';
 
+export type ForumCategory = 
+    | "Pharmacology"
+    | "Pharmaceutics"
+    | "Pharmacognosy"
+    | "Pharmaceutical Chemistry"
+    | "Clinical Pharmacy";
+
+export const FORUM_CATEGORIES: ForumCategory[] = [
+    "Pharmacology",
+    "Pharmaceutics",
+    "Pharmacognosy",
+    "Pharmaceutical Chemistry",
+    "Clinical Pharmacy",
+];
+
+
 export interface ForumReply {
   id: string;
   author: string;
@@ -16,6 +32,7 @@ export interface ForumPost {
   author: string;
   title: string;
   content: string;
+  category: ForumCategory;
   date: string;
   replies: ForumReply[];
 }

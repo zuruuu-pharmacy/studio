@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useDiscussionForum } from "@/contexts/discussion-forum-context";
+import { useDiscussionForum, FORUM_CATEGORIES, type ForumCategory } from "@/contexts/discussion-forum-context";
 import { usePatient } from "@/contexts/patient-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -14,14 +14,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { MessageSquare, Plus, Send, ArrowLeft, UserCircle } from "lucide-react";
+import { MessageSquare, Plus, Send, ArrowLeft, UserCircle, Folder } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
 
 const newPostSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters."),
   content: z.string().min(10, "Content must be at least 10 characters."),
+  category: z.string().min(1, "Please select a category."),
 });
 type NewPostValues = z.infer<typeof newPostSchema>;
 
@@ -62,9 +64,9 @@ export function StudentDiscussionForumClient() {
   }
 
   const handleCreatePost = newPostForm.handleSubmit((data) => {
-    addPost({ ...data, author: authorName });
+    addPost({ ...data, author: authorName, category: data.category as ForumCategory });
     toast({ title: "Post Created!", description: "Your new discussion topic is live." });
-    newPostForm.reset({ title: "", content: "" });
+    newPostForm.reset({ title: "", content: "", category: "" });
     setIsNewPostModalOpen(false);
   });
 
@@ -83,7 +85,9 @@ export function StudentDiscussionForumClient() {
         <Card>
           <CardHeader>
             <CardTitle>{selectedPost.title}</CardTitle>
-            <CardDescription>Posted by {selectedPost.author} on {new Date(selectedPost.date).toLocaleDateString()}</CardDescription>
+            <CardDescription>
+                Category: {selectedPost.category} | Posted by {selectedPost.author} on {new Date(selectedPost.date).toLocaleDateString()}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <p className="whitespace-pre-wrap">{selectedPost.content}</p>
@@ -125,6 +129,18 @@ export function StudentDiscussionForumClient() {
               <DialogHeader><DialogTitle>Start a New Discussion</DialogTitle></DialogHeader>
               <Form {...newPostForm}>
                 <form onSubmit={handleCreatePost} className="space-y-4">
+                   <FormField name="category" control={newPostForm.control} render={({ field }) => (
+                     <FormItem>
+                       <FormLabel>Category</FormLabel>
+                       <Select onValueChange={field.onChange} defaultValue={field.value}>
+                         <FormControl><SelectTrigger><SelectValue placeholder="Select a subject category..." /></SelectTrigger></FormControl>
+                         <SelectContent>
+                           {FORUM_CATEGORIES.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                         </SelectContent>
+                       </Select>
+                       <FormMessage />
+                     </FormItem>
+                   )} />
                   <FormField name="title" control={newPostForm.control} render={({ field }) => (
                     <FormItem><FormLabel>Topic Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                   )} />
@@ -137,7 +153,7 @@ export function StudentDiscussionForumClient() {
             </DialogContent>
           </Dialog>
         </div>
-        <CardDescription>Click a post to view the discussion and reply.</CardDescription>
+        <CardDescription>Browse discussions by category or start a new thread.</CardDescription>
       </CardHeader>
       <CardContent>
         {posts.length === 0 ? (
@@ -146,18 +162,32 @@ export function StudentDiscussionForumClient() {
             <p>No discussions yet. Be the first to start one!</p>
           </div>
         ) : (
-          <ScrollArea className="h-[60vh]">
-            <ul className="space-y-3 pr-4">
-              {posts.map(post => (
-                <li key={post.id}>
-                  <button onClick={() => setSelectedPostId(post.id)} className="w-full text-left p-4 border rounded-lg hover:bg-muted/50 transition">
-                    <p className="font-semibold">{post.title}</p>
-                    <p className="text-sm text-muted-foreground">by {post.author} on {new Date(post.date).toLocaleDateString()} | {post.replies.length} replies</p>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </ScrollArea>
+          <Accordion type="multiple" className="w-full space-y-3">
+            {FORUM_CATEGORIES.map(category => {
+              const postsInCategory = posts.filter(p => p.category === category);
+              if (postsInCategory.length === 0) return null;
+
+              return (
+                <AccordionItem value={category} key={category} className="border rounded-lg bg-background/50">
+                  <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline">
+                    <div className="flex items-center gap-2"><Folder className="text-primary"/>{category}</div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4">
+                    <ul className="space-y-2">
+                      {postsInCategory.map(post => (
+                        <li key={post.id}>
+                          <button onClick={() => setSelectedPostId(post.id)} className="w-full text-left p-2 rounded-md hover:bg-muted">
+                            <p className="font-semibold">{post.title}</p>
+                            <p className="text-sm text-muted-foreground">by {post.author} on {new Date(post.date).toLocaleDateString()} | {post.replies.length} replies</p>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
         )}
       </CardContent>
     </Card>
