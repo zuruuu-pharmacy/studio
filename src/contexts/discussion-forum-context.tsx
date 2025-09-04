@@ -29,6 +29,8 @@ export interface ForumReply {
   author: string;
   content: string;
   date: string;
+  upvotes: number;
+  isBestAnswer: boolean;
 }
 
 export interface ForumPost {
@@ -44,7 +46,9 @@ export interface ForumPost {
 interface DiscussionForumContextType {
   posts: ForumPost[];
   addPost: (post: Omit<ForumPost, 'id' | 'date' | 'replies'>) => void;
-  addReply: (postId: string, reply: Omit<ForumReply, 'id' | 'date'>) => void;
+  addReply: (postId: string, reply: Omit<ForumReply, 'id' | 'date' | 'upvotes' | 'isBestAnswer'>) => void;
+  upvoteReply: (postId: string, replyId: string) => void;
+  toggleBestAnswer: (postId: string, replyId: string) => void;
 }
 
 const DiscussionForumContext = createContext<DiscussionForumContextType | undefined>(undefined);
@@ -90,11 +94,13 @@ export function DiscussionForumProvider({ children }: { children: ReactNode }) {
     setPosts(prevPosts => [newPost, ...prevPosts]);
   };
   
-  const addReply = (postId: string, reply: Omit<ForumReply, 'id' | 'date'>) => {
+  const addReply = (postId: string, reply: Omit<ForumReply, 'id' | 'date' | 'upvotes' | 'isBestAnswer'>) => {
     const newReply: ForumReply = {
       ...reply,
       id: `reply_${Date.now().toString()}`,
       date: new Date().toISOString(),
+      upvotes: 0,
+      isBestAnswer: false,
     };
     setPosts(prevPosts => prevPosts.map(post => {
       if (post.id === postId) {
@@ -103,8 +109,41 @@ export function DiscussionForumProvider({ children }: { children: ReactNode }) {
       return post;
     }));
   };
+
+  const upvoteReply = (postId: string, replyId: string) => {
+    setPosts(prevPosts => prevPosts.map(post => {
+        if (post.id === postId) {
+            return {
+                ...post,
+                replies: post.replies.map(reply => 
+                    reply.id === replyId ? { ...reply, upvotes: reply.upvotes + 1 } : reply
+                )
+            };
+        }
+        return post;
+    }));
+  };
+
+  const toggleBestAnswer = (postId: string, replyId: string) => {
+     setPosts(prevPosts => prevPosts.map(post => {
+        if (post.id === postId) {
+            const isAlreadyBest = post.replies.find(r => r.id === replyId)?.isBestAnswer;
+            return {
+                ...post,
+                replies: post.replies.map(reply => {
+                    if (reply.id === replyId) {
+                        return { ...reply, isBestAnswer: !isAlreadyBest };
+                    }
+                    // Only one best answer is allowed, so untag others
+                    return { ...reply, isBestAnswer: false };
+                })
+            };
+        }
+        return post;
+    }));
+  };
   
-  const contextValue = useMemo(() => ({ posts, addPost, addReply }), [posts]);
+  const contextValue = useMemo(() => ({ posts, addPost, addReply, upvoteReply, toggleBestAnswer }), [posts]);
 
   return (
     <DiscussionForumContext.Provider value={contextValue}>
