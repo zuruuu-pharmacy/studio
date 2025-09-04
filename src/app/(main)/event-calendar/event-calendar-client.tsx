@@ -5,11 +5,11 @@ import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEventCalendar, EVENT_CATEGORIES, type EventCategory } from '@/contexts/event-calendar-context';
+import { useEventCalendar, EVENT_CATEGORIES, type EventCategory, CalendarEvent } from '@/contexts/event-calendar-context';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -59,9 +59,20 @@ export function EventCalendarClient() {
     },
   });
 
-  const eventsForSelectedDay = useMemo(() => {
-    if (!selectedDate) return [];
-    return events.filter(event => isSameDay(event.date, selectedDate)).sort((a,b) => a.date.getTime() - b.date.getTime());
+  const groupedEvents = useMemo(() => {
+    if (!selectedDate) return {};
+    const eventsForDay = events.filter(event => isSameDay(event.date, selectedDate)).sort((a,b) => a.date.getTime() - b.date.getTime());
+    
+    return eventsForDay.reduce((acc, event) => {
+        (acc[event.category] = acc[event.category] || []).push(event);
+        return acc;
+    }, {} as Record<EventCategory, CalendarEvent[]>);
+
+  }, [events, selectedDate]);
+  
+  const totalEventsForDay = useMemo(() => {
+    if (!selectedDate) return 0;
+    return events.filter(event => isSameDay(event.date, selectedDate)).length;
   }, [events, selectedDate]);
 
   const handleDateSelect = (date: Date | undefined) => {
@@ -120,7 +131,7 @@ export function EventCalendarClient() {
                 Events for {selectedDate ? format(selectedDate, 'PPP') : 'N/A'}
               </CardTitle>
               <CardDescription>
-                {eventsForSelectedDay.length} event(s) scheduled.
+                {totalEventsForDay} event(s) scheduled.
               </CardDescription>
             </div>
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -164,32 +175,42 @@ export function EventCalendarClient() {
           </div>
         </CardHeader>
         <CardContent>
-          {eventsForSelectedDay.length > 0 ? (
-            <ul className="space-y-3">
-              {eventsForSelectedDay.map(event => (
-                <li key={event.id} className="p-3 rounded-lg border bg-muted/50 flex justify-between items-start">
-                  <div>
-                    <Badge className={categoryColors[event.category]}>{event.category}</Badge>
-                    <p className="font-semibold mt-1">{event.title}</p>
-                    {event.description && <p className="text-sm text-muted-foreground">{event.description}</p>}
+          {totalEventsForDay > 0 ? (
+            <div className="space-y-4">
+              {EVENT_CATEGORIES.map(category => {
+                if (!groupedEvents[category]) return null;
+                return (
+                  <div key={category}>
+                    <h3 className="font-semibold text-lg mb-2">{category}</h3>
+                    <ul className="space-y-3">
+                      {groupedEvents[category].map(event => (
+                         <li key={event.id} className="p-3 rounded-lg border bg-muted/50 flex justify-between items-start">
+                          <div>
+                            <Badge className={categoryColors[event.category]}>{event.category}</Badge>
+                            <p className="font-semibold mt-1">{event.title}</p>
+                            {event.description && <p className="text-sm text-muted-foreground">{event.description}</p>}
+                          </div>
+                          <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                   <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
+                                        <Trash2 className="h-4 w-4 text-destructive"/>
+                                   </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                    <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete the event: "{event.title}".</AlertDialogDescription></AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => deleteEvent(event.id)}>Delete</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                          </AlertDialog>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                           <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-                                <Trash2 className="h-4 w-4 text-destructive"/>
-                           </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                            <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete the event: "{event.title}".</AlertDialogDescription></AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => deleteEvent(event.id)}>Delete</AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                  </AlertDialog>
-                </li>
-              ))}
-            </ul>
+                )
+              })}
+            </div>
           ) : (
             <div className="text-center text-muted-foreground py-12">
               <CalendarIcon className="mx-auto h-12 w-12 mb-4" />
