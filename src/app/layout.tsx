@@ -7,6 +7,7 @@ import { PatientProvider } from '@/contexts/patient-context';
 import { LectureNotesProvider } from '@/contexts/lecture-notes-context';
 import { OsceSessionsProvider } from '@/contexts/osce-sessions-context';
 import { DiscussionForumProvider } from '@/contexts/discussion-forum-context';
+import { PollsProvider } from '@/contexts/polls-context';
 
 export const metadata: Metadata = {
   title: 'Zuruu AI Pharmacy',
@@ -31,9 +32,11 @@ export default function RootLayout({
             <LectureNotesProvider>
                 <OsceSessionsProvider>
                     <DiscussionForumProvider>
-                        {children}
+                        <PollsProvider>
+                            {children}
+                        </PollsProvider>
+                        <Toaster />
                     </DiscussionForumProvider>
-                    <Toaster />
                 </OsceSessionsProvider>
             </LectureNotesProvider>
           </PatientProvider>
