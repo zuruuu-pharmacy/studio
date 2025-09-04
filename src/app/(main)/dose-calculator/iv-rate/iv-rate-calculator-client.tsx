@@ -12,7 +12,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Beaker, FileText, Droplets } from "lucide-react";
-import { useMode } from "@/contexts/mode-context";
 import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
@@ -42,7 +41,6 @@ export function IvRateCalculatorClient() {
     null
   );
 
-  const { mode } = useMode();
   const { toast } = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -122,7 +120,7 @@ export function IvRateCalculatorClient() {
               </CardContent>
             </Card>
 
-            {mode === 'pharmacist' && (
+            
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2"><Beaker className="h-5 w-5 text-primary"/>Calculation Steps</CardTitle>
@@ -138,7 +136,7 @@ export function IvRateCalculatorClient() {
                   </div>
                 </CardContent>
               </Card>
-            )}
+            
           </div>
         )}
       </div>

@@ -12,7 +12,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Beaker, FileText, CheckCircle } from "lucide-react";
-import { useMode } from "@/contexts/mode-context";
 import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
@@ -43,7 +42,6 @@ export function BsaDoseCalculatorClient() {
     null
   );
 
-  const { mode } = useMode();
   const { toast } = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -127,7 +125,7 @@ export function BsaDoseCalculatorClient() {
                     </div>
                 </div>
 
-                {mode === 'pharmacist' && (
+                
                   <>
                     <Separator />
                     {state.calculationSteps && (
@@ -143,7 +141,7 @@ export function BsaDoseCalculatorClient() {
                       </div>
                     )}
                   </>
-                )}
+                
               </CardContent>
             </Card>
         )}

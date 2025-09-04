@@ -12,7 +12,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Beaker, FileText } from "lucide-react";
-import { useMode } from "@/contexts/mode-context";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -44,7 +43,6 @@ export function CompoundingCalculatorClient() {
     null
   );
 
-  const { mode } = useMode();
   const { toast } = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -142,7 +140,6 @@ export function CompoundingCalculatorClient() {
                     <p className="text-4xl font-bold text-primary">{state.soluteNeeded}</p>
                 </div>
                 
-                {mode === 'pharmacist' && (
                   <>
                     <Separator />
                     {state.calculationSteps && (
@@ -158,7 +155,6 @@ export function CompoundingCalculatorClient() {
                       </div>
                     )}
                   </>
-                )}
               </CardContent>
             </Card>
         )}

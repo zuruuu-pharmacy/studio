@@ -12,7 +12,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Beaker, FileText, CheckCircle, AlertTriangle } from "lucide-react";
-import { useMode } from "@/contexts/mode-context";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -78,7 +77,6 @@ export function DoseCalculatorClient() {
     null
   );
 
-  const { mode } = useMode();
   const { toast } = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -213,8 +211,7 @@ export function DoseCalculatorClient() {
                     </div>
                   </div>
                 )}
-
-                {mode === 'pharmacist' && (
+                
                   <>
                     <Separator />
                     {state.calculationSteps && (
@@ -230,7 +227,7 @@ export function DoseCalculatorClient() {
                       </div>
                     )}
                   </>
-                )}
+                
               </CardContent>
             </Card>
           ) : null
