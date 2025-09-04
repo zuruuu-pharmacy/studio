@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,13 +37,14 @@ const eventSchema = z.object({
 type EventFormValues = z.infer<typeof eventSchema>;
 
 const categoryColors: { [key in EventCategory]: string } = {
-  Academic: "bg-blue-500/80 text-white",
-  Professional: "bg-purple-500/80 text-white",
-  "Skill-based": "bg-green-500/80 text-white",
-  Career: "bg-orange-500/80 text-white",
-  Community: "bg-teal-500/80 text-white",
-  Other: "bg-gray-500/80 text-white",
+  Academic: "bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 border-blue-500/50",
+  Professional: "bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300 border-purple-500/50",
+  "Skill-based": "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300 border-green-500/50",
+  Career: "bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300 border-orange-500/50",
+  Community: "bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300 border-teal-500/50",
+  Other: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 border-gray-500/50",
 };
+
 
 export function EventCalendarClient() {
   const { events, addEvent, deleteEvent } = useEventCalendar();
