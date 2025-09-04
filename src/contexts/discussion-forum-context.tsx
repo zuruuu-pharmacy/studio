@@ -9,7 +9,9 @@ export type ForumCategory =
     | "Pharmaceutics"
     | "Pharmacognosy"
     | "Pharmaceutical Chemistry"
-    | "Clinical Pharmacy";
+    | "Clinical Pharmacy"
+    | "Pathology"
+    | "Computer";
 
 export const FORUM_CATEGORIES: ForumCategory[] = [
     "Pharmacology",
@@ -17,6 +19,8 @@ export const FORUM_CATEGORIES: ForumCategory[] = [
     "Pharmacognosy",
     "Pharmaceutical Chemistry",
     "Clinical Pharmacy",
+    "Pathology",
+    "Computer"
 ];
 
 
