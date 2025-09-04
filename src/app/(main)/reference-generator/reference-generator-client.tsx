@@ -24,22 +24,8 @@ type FormValues = z.infer<typeof formSchema>;
 
 export function ReferenceGeneratorClient() {
   const [isPending, startTransition] = useTransition();
-  const [state, formAction] = useActionState<ReferenceGeneratorOutput | { error: string } | null, FormData>(
-    async (previousState, formData) => {
-      const parsed = formSchema.safeParse(Object.fromEntries(formData));
-      if (!parsed.success) {
-        return { error: "Invalid input. Please check the form." };
-      }
-      try {
-        const result = await generateReference(parsed.data);
-        return result;
-      } catch (e) {
-        console.error(e);
-        return { error: "Failed to generate reference. The AI may not have a suitable reference for this text." };
-      }
-    },
-    null
-  );
+  // State is now an array to prepare for bibliography features
+  const [results, setResults] = useState<(ReferenceGeneratorOutput | { error: string })[]>([]);
 
   const { toast } = useToast();
   const [hasCopied, setHasCopied] = useState(false);
@@ -51,25 +37,35 @@ export function ReferenceGeneratorClient() {
     },
   });
 
-  useEffect(() => {
-    if (state && 'error' in state && state.error) {
-      toast({ variant: "destructive", title: "Error", description: state.error });
+  const formAction = async (formData: FormData) => {
+    const parsed = formSchema.safeParse(Object.fromEntries(formData));
+    if (!parsed.success) {
+      toast({ variant: "destructive", title: "Error", description: "Invalid input. Please check the form."});
+      return;
     }
-  }, [state, toast]);
+    startTransition(async () => {
+      try {
+        const result = await generateReference(parsed.data);
+        setResults([result]); // Set the result as the first item in the array
+      } catch (e) {
+        console.error(e);
+        toast({ variant: "destructive", title: "Error", description: "Failed to generate reference. The AI may not have a suitable reference for this text." });
+        setResults([{ error: "Failed to generate reference." }]);
+      }
+    });
+  };
 
   const handleFormSubmit = form.handleSubmit((data) => {
     const formData = new FormData();
     formData.append("sourceIdentifier", data.sourceIdentifier);
     formData.append("style", data.style);
-    startTransition(() => formAction(formData));
+    formAction(formData);
   });
 
-  const handleCopy = () => {
-    if (state && 'formattedCitation' in state) {
-      navigator.clipboard.writeText(state.formattedCitation);
-      setHasCopied(true);
-      setTimeout(() => setHasCopied(false), 2000);
-    }
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setHasCopied(true);
+    setTimeout(() => setHasCopied(false), 2000);
   };
 
   return (
@@ -127,7 +123,7 @@ export function ReferenceGeneratorClient() {
           </div>
         )}
         
-        {state && 'formattedCitation' in state ? (
+        {results.length > 0 && 'formattedCitation' in results[0] ? (
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Generated Citation</CardTitle>
@@ -135,8 +131,8 @@ export function ReferenceGeneratorClient() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="p-4 bg-muted rounded-lg relative">
-                <p className="font-mono text-sm whitespace-pre-wrap">{state.formattedCitation}</p>
-                <Button variant="ghost" size="icon" className="absolute top-2 right-2" onClick={handleCopy}>
+                <p className="font-mono text-sm whitespace-pre-wrap">{results[0].formattedCitation}</p>
+                <Button variant="ghost" size="icon" className="absolute top-2 right-2" onClick={() => handleCopy(results[0].formattedCitation)}>
                   {hasCopied ? <Check className="h-5 w-5 text-green-500"/> : <Clipboard className="h-5 w-5"/>}
                 </Button>
               </div>
@@ -144,7 +140,7 @@ export function ReferenceGeneratorClient() {
                 <BookA className="h-4 w-4" />
                 <AlertTitle>Reference Rationale</AlertTitle>
                 <AlertDescription>
-                  {state.explanation}
+                  {results[0].explanation}
                 </AlertDescription>
               </Alert>
             </CardContent>
