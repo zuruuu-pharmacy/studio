@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { drugTreeData, type DrugClass, type Drug } from "./data";
-import { Search, Pill, ChevronsRight, FlaskConical, Stethoscope, AlertTriangle, ShieldCheck, Beaker, FileText, Star, BrainCircuit } from "lucide-react";
+import { Search, Pill, ChevronsRight, FlaskConical, Stethoscope, AlertTriangle, ShieldCheck, Beaker, FileText, Star, BrainCircuit, Package, Archive } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -53,8 +53,8 @@ function DrugCard({ drug }: { drug: Drug }) {
                 </AccordionTrigger>
                 <AccordionContent className="pt-2 space-y-4">
                     <DetailSection title="Dosage Forms" content={drug.pharmaApplications.dosageForms} icon={Pill} />
-                    <DetailSection title="Market Formulations" content={drug.pharmaApplications.formulations} icon={Pill} />
-                    <DetailSection title="Storage" content={drug.pharmaApplications.storage} icon={Pill} />
+                    <DetailSection title="Market Formulations" content={drug.pharmaApplications.formulations} icon={Package} />
+                    <DetailSection title="Storage & Stability" content={drug.pharmaApplications.storage} icon={Archive} />
                 </AccordionContent>
             </AccordionItem>
             <AccordionItem value="analysis" className="border rounded-md px-4 bg-background">
