@@ -23,6 +23,10 @@ const conversionFactors: { [key: string]: { [key: string]: number } } = {
     L: 1,
     mL: 1000,
   },
+  concentration: {
+    'percent_w_v': 1,
+    'mg_ml': 10,
+  }
 };
 
 const unitLabels: { [key: string]: { [key: string]: string } } = {
@@ -43,10 +47,14 @@ const unitLabels: { [key: string]: { [key: string]: string } } = {
     C: 'Celsius (°C)',
     F: 'Fahrenheit (°F)',
     K: 'Kelvin (K)',
+  },
+  concentration: {
+    'percent_w_v': '% w/v',
+    'mg_ml': 'mg/mL',
   }
 };
 
-type UnitCategory = 'mass' | 'weight' | 'volume' | 'temperature';
+type UnitCategory = 'mass' | 'weight' | 'volume' | 'temperature' | 'concentration';
 
 export function UnitConverterClient() {
   const [category, setCategory] = useState<UnitCategory>('mass');
@@ -100,7 +108,16 @@ export function UnitConverterClient() {
         }
         return Number(result.toPrecision(10)).toString();
 
-    } else {
+    } else if (category === 'concentration') {
+        if (fromUnit === 'percent_w_v' && toUnit === 'mg_ml') {
+            return (value * 10).toString();
+        }
+        if (fromUnit === 'mg_ml' && toUnit === 'percent_w_v') {
+            return (value / 10).toString();
+        }
+        return value.toString(); // Same unit
+    }
+    else {
         if (!conversionFactors[category]) return '';
         const fromFactor = conversionFactors[category][fromUnit];
         const toFactor = conversionFactors[category][toUnit];
@@ -131,6 +148,7 @@ export function UnitConverterClient() {
               <SelectItem value="weight">Weight</SelectItem>
               <SelectItem value="volume">Volume</SelectItem>
               <SelectItem value="temperature">Temperature</SelectItem>
+              <SelectItem value="concentration">Concentration</SelectItem>
             </SelectContent>
           </Select>
         </div>
