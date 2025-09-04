@@ -11,9 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, CalendarDays, Sparkles, BookOpen, Brain, Clock, PlusCircle, XCircle } from "lucide-react";
+import { Loader2, CalendarDays, Sparkles, Brain, Clock, PlusCircle, XCircle } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
@@ -125,8 +124,11 @@ export function StudyPlannerClient() {
                                         <div className="flex flex-col gap-2">
                                             {dayPlan.slots.map((slot, i) => (
                                                 <div key={i} className={`p-2 rounded-md ${slot.isBreak ? 'bg-muted/50' : 'bg-primary/10'}`}>
-                                                    <p className="font-bold text-sm">{slot.time}</p>
-                                                    <p className="text-sm text-muted-foreground">
+                                                    <p className="font-bold text-sm flex items-center gap-2">
+                                                        <Clock className="h-4 w-4"/>
+                                                        {slot.time}
+                                                    </p>
+                                                    <p className="text-sm text-muted-foreground pl-6">
                                                         {slot.isBreak ? `🧠 ${slot.activity}` : `${slot.subject}: ${slot.activity}`}
                                                     </p>
                                                 </div>
@@ -140,7 +142,9 @@ export function StudyPlannerClient() {
                 </CardContent>
             </Card>
             <Card>
-                 <CardHeader><CardTitle>AI Study Strategy</CardTitle></CardHeader>
+                 <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Brain className="text-primary"/>AI Study Strategy & Notes</CardTitle>
+                 </CardHeader>
                  <CardContent>
                     <p className="text-muted-foreground whitespace-pre-wrap">{state.summaryNotes}</p>
                  </CardContent>
