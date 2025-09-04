@@ -10,14 +10,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Sparkles, BookA, Clipboard, Check } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 
 const formSchema = z.object({
-  textToCite: z.string().min(20, "Please provide at least 20 characters of text to generate a relevant citation."),
+  sourceIdentifier: z.string().min(10, "Please provide a valid DOI, PMID, or URL."),
   style: z.enum(['Vancouver', 'APA', 'Harvard', 'MLA']),
 });
 type FormValues = z.infer<typeof formSchema>;
@@ -46,7 +46,7 @@ export function ReferenceGeneratorClient() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      textToCite: "",
+      sourceIdentifier: "",
       style: "Vancouver",
     },
   });
@@ -59,7 +59,7 @@ export function ReferenceGeneratorClient() {
 
   const handleFormSubmit = form.handleSubmit((data) => {
     const formData = new FormData();
-    formData.append("textToCite", data.textToCite);
+    formData.append("sourceIdentifier", data.sourceIdentifier);
     formData.append("style", data.style);
     startTransition(() => formAction(formData));
   });
@@ -78,16 +78,16 @@ export function ReferenceGeneratorClient() {
         <Card>
           <CardHeader>
             <CardTitle>Generate Citation</CardTitle>
-            <CardDescription>Enter text and select a style.</CardDescription>
+            <CardDescription>Enter a source and select a style.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
               <form onSubmit={handleFormSubmit} className="space-y-4">
-                <FormField control={form.control} name="textToCite" render={({ field }) => (
+                <FormField control={form.control} name="sourceIdentifier" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Text to Cite</FormLabel>
+                    <FormLabel>Source (DOI, PMID, or URL)</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Paste the text or statement that needs a reference..." {...field} rows={6}/>
+                      <Input placeholder="e.g., 10.1056/NEJMoa2033700" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -154,7 +154,7 @@ export function ReferenceGeneratorClient() {
             <Card className="flex flex-col items-center justify-center h-full min-h-[300px] text-center p-6 bg-muted/50">
               <BookA className="h-16 w-16 text-muted-foreground/50 mb-4" />
               <h3 className="text-xl font-semibold text-muted-foreground">Your Citation Will Appear Here</h3>
-              <p className="text-muted-foreground/80 mt-2">Enter some text to get started.</p>
+              <p className="text-muted-foreground/80 mt-2">Enter a source identifier to get started.</p>
             </Card>
           )
         )}

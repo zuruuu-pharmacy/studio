@@ -10,7 +10,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const ReferenceGeneratorInputSchema = z.object({
-  textToCite: z.string().min(20, "Please provide at least 20 characters of text to cite.").describe("The block of text or statement that requires a citation."),
+  sourceIdentifier: z.string().min(10, "Please provide a valid DOI, PMID, or URL.").describe("The DOI, PMID, or URL of the article to cite."),
   style: z.enum(['Vancouver', 'APA', 'Harvard', 'MLA']).describe("The desired citation style."),
 });
 export type ReferenceGeneratorInput = z.infer<typeof ReferenceGeneratorInputSchema>;
@@ -31,19 +31,19 @@ const prompt = ai.definePrompt({
   input: {schema: ReferenceGeneratorInputSchema},
   output: {schema: ReferenceGeneratorOutputSchema},
   model: 'googleai/gemini-1.5-flash',
-  prompt: `You are an expert academic librarian and citation specialist. Your task is to find the most appropriate scientific reference for a given piece of text and format it correctly in the specified citation style.
+  prompt: `You are an expert academic librarian and citation specialist. Your task is to find the full citation details for a given source identifier (DOI, PMID, or URL) and format it correctly in the specified citation style.
 
-**Text to Cite:**
-"{{{textToCite}}}"
+**Source Identifier (DOI, PMID, or URL):**
+"{{{sourceIdentifier}}}"
 
 **Citation Style:**
 {{{style}}}
 
 **Instructions:**
-1.  **Identify Core Claim:** Analyze the "Text to Cite" to understand its core scientific claim or statement.
-2.  **Find Best Reference:** Based on your knowledge, find the most accurate and authoritative reference for this claim. Prioritize primary research articles, major clinical guidelines, or reputable textbooks (like Goodman & Gilman's, BNF, etc.).
-3.  **Format Citation:** Format the reference you found perfectly according to the rules of the selected '{{{style}}}' style.
-4.  **Explain Your Choice:** In the 'explanation' field, briefly justify why you chose this specific reference. For example, explain if it's the seminal paper on the topic or a major clinical guideline.
+1.  **Identify the Source:** Analyze the "sourceIdentifier" to find the specific academic article, book, or webpage.
+2.  **Find Full Details:** Based on your knowledge and access to information, retrieve all necessary citation details (authors, title, journal, year, volume, pages, etc.).
+3.  **Format Citation:** Format the full reference perfectly according to the rules of the selected '{{{style}}}' style.
+4.  **Explain Your Choice:** In the 'explanation' field, briefly confirm the source you found (e.g., "This citation is for the article 'The Efficacy of...' published in The Lancet.").
 
 Respond ONLY with the structured JSON output.
 `,
