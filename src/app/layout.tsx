@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { PatientProvider } from '@/contexts/patient-context';
 import { LectureNotesProvider } from '@/contexts/lecture-notes-context';
 import { OsceSessionsProvider } from '@/contexts/osce-sessions-context';
+import { DiscussionForumProvider } from '@/contexts/discussion-forum-context';
 
 export const metadata: Metadata = {
   title: 'Zuruu AI Pharmacy',
@@ -28,10 +29,12 @@ export default function RootLayout({
         <ModeProvider>
           <PatientProvider>
             <LectureNotesProvider>
-              <OsceSessionsProvider>
-                {children}
-                <Toaster />
-              </OsceSessionsProvider>
+                <OsceSessionsProvider>
+                    <DiscussionForumProvider>
+                        {children}
+                    </DiscussionForumProvider>
+                    <Toaster />
+                </OsceSessionsProvider>
             </LectureNotesProvider>
           </PatientProvider>
         </ModeProvider>
