@@ -57,6 +57,7 @@ const studentMenuItems = [
     { href: "/clinical-case-simulator", label: "Clinical Case Simulator", icon: CaseSensitive },
     { href: "/osce-viva-prep", label: "OSCE & Viva Preparation", icon: OsceIcon },
     { href: "/interaction-checker", label: "Interaction Simulator", icon: FlaskConical },
+    { href: "/dose-calculator", label: "Drug Calculation Tool", icon: Calculator },
     { href: "/lecture-notes", label: "Lecture Notes Library", icon: BookOpen },
     { href: "/notes-organizer", label: "Notes Organizer", icon: FolderOpen },
     { href: "/e-library", label: "AI E-Library", icon: Library },

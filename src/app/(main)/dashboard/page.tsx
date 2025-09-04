@@ -184,6 +184,13 @@ const studentTools = [
         href: "/interaction-checker",
         color: "text-purple-500",
     },
+     {
+        icon: Calculator,
+        title: "Drug Calculation Tool",
+        description: "Practice and verify patient-specific dosages.",
+        href: "/dose-calculator",
+        color: "text-green-500",
+    },
     {
         icon: BookOpen,
         title: "Lecture Notes Library",
