@@ -2,11 +2,12 @@
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowRightLeft } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ArrowRightLeft, ChevronsDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const conversionFactors: { [key: string]: { [key: string]: number } } = {
@@ -88,48 +89,56 @@ export function UnitConverterClient() {
 
     if (category === 'temperature') {
         let celsiusValue: number;
-        // First, convert input to a base of Celsius
-        if (fromUnit === 'C') {
-            celsiusValue = value;
-        } else if (fromUnit === 'F') {
-            celsiusValue = (value - 32) * 5/9;
-        } else { // Kelvin
-            celsiusValue = value - 273.15;
-        }
+        if (fromUnit === 'C') celsiusValue = value;
+        else if (fromUnit === 'F') celsiusValue = (value - 32) * 5/9;
+        else celsiusValue = value - 273.15; // Kelvin
 
-        // Then, convert from Celsius to the target unit
-        let result: number;
-        if (toUnit === 'C') {
-            result = celsiusValue;
-        } else if (toUnit === 'F') {
-            result = (celsiusValue * 9/5) + 32;
-        } else { // Kelvin
-            result = celsiusValue + 273.15;
-        }
-        return Number(result.toPrecision(10)).toString();
-
-    } else if (category === 'concentration') {
-        if (fromUnit === 'percent_w_v' && toUnit === 'mg_ml') {
-            return (value * 10).toString();
-        }
-        if (fromUnit === 'mg_ml' && toUnit === 'percent_w_v') {
-            return (value / 10).toString();
-        }
-        return value.toString(); // Same unit
-    }
-    else {
+        if (toUnit === 'C') return Number(celsiusValue.toPrecision(10)).toString();
+        if (toUnit === 'F') return Number(((celsiusValue * 9/5) + 32).toPrecision(10)).toString();
+        if (toUnit === 'K') return Number((celsiusValue + 273.15).toPrecision(10)).toString();
+        return '';
+    } else {
         if (!conversionFactors[category]) return '';
         const fromFactor = conversionFactors[category][fromUnit];
         const toFactor = conversionFactors[category][toUnit];
+        if (!fromFactor || !toFactor) return '';
 
         const baseValue = value / fromFactor;
         const result = baseValue * toFactor;
-
-        // Avoid floating point inaccuracies for display
         return Number(result.toPrecision(10)).toString();
     }
-
   }, [inputValue, fromUnit, toUnit, category]);
+
+  const calculationExplanation = useMemo(() => {
+    const value = parseFloat(inputValue);
+    if (isNaN(value)) return 'Invalid input value.';
+    
+    if (category === 'temperature') {
+        if (fromUnit === 'F' && toUnit === 'C') return `Formula: (°F - 32) × 5/9 = °C\nCalculation: (${value} - 32) × 5/9 = ${convertedValue} °C`;
+        if (fromUnit === 'C' && toUnit === 'F') return `Formula: (°C × 9/5) + 32 = °F\nCalculation: (${value} × 9/5) + 32 = ${convertedValue} °F`;
+        if (fromUnit === 'C' && toUnit === 'K') return `Formula: °C + 273.15 = K\nCalculation: ${value} + 273.15 = ${convertedValue} K`;
+        if (fromUnit === 'K' && toUnit === 'C') return `Formula: K - 273.15 = °C\nCalculation: ${value} - 273.15 = ${convertedValue} °C`;
+        // Other temperature conversions can be added here
+        return 'Select different temperature units to see the calculation.';
+    }
+
+    const factors = conversionFactors[category];
+    if (!factors) return 'No conversion factors available for this category.';
+
+    const fromFactor = factors[fromUnit];
+    const toFactor = factors[toUnit];
+    const fromLabel = unitLabels[category][fromUnit].split(' ')[1];
+    const toLabel = unitLabels[category][toUnit].split(' ')[1];
+
+    if (fromFactor > toFactor) { // e.g. g to mg
+      const factor = fromFactor / toFactor;
+      return `Formula: 1 ${fromUnit} = ${factor} ${toUnit}\nCalculation: ${value} ${fromUnit} × ${factor} = ${convertedValue} ${toUnit}`;
+    } else { // e.g. mg to g
+      const factor = toFactor / fromFactor;
+      return `Formula: 1 ${toUnit} = ${factor} ${fromUnit}\nCalculation: ${value} ${fromUnit} ÷ ${factor} = ${convertedValue} ${toUnit}`;
+    }
+  }, [inputValue, fromUnit, toUnit, category, convertedValue]);
+
 
   return (
     <Card className="max-w-md mx-auto">
@@ -196,6 +205,23 @@ export function UnitConverterClient() {
           </div>
         </div>
       </CardContent>
+       <CardFooter>
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <ChevronsDown className="h-4 w-4" />
+                  Show Calculation
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="p-4 bg-muted/50 rounded-md whitespace-pre-wrap font-mono text-sm">
+                  {calculationExplanation}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+       </CardFooter>
     </Card>
   );
 }
