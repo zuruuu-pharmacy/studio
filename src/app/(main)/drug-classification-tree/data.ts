@@ -113,6 +113,32 @@ export const drugTreeData: DrugClass[] = [
         ],
       },
       {
+        name: "Anxiolytics, Antidepressants, and Antimanic Drugs",
+        pharmaFocus: "Plasma protein binding, drug assays, titrimetric methods (e.g., lithium estimation).",
+        subclasses: [
+          {
+            name: "SSRIs",
+            drugs: [],
+          },
+          {
+            name: "SNRIs",
+            drugs: [],
+          },
+          {
+            name: "TCAs",
+            drugs: [],
+          },
+          {
+            name: "MAOIs",
+            drugs: [],
+          },
+          {
+            name: "Mood stabilizers",
+            drugs: [],
+          },
+        ]
+      },
+      {
         name: "Antipsychotics",
         pharmaFocus: "Receptor selectivity, metabolic pathways, monitoring ADRs.",
         subclasses: [
