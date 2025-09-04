@@ -6,15 +6,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { drugTreeData, type DrugClass, type Drug } from "./data";
-import { Search, Pill, ChevronsRight, FlaskConical, Stethoscope, AlertTriangle, ShieldCheck, Beaker, FileText, Star, BrainCircuit, Package, Archive, FolderOpen, FileHeart, HelpCircle, CaseSensitive } from "lucide-react";
+import { Search, Pill, ChevronsRight, FlaskConical, Stethoscope, AlertTriangle, ShieldCheck, Beaker, FileText, Star, BrainCircuit, Package, Archive, FolderOpen, FileHeart, HelpCircle, CaseSensitive, BookCopy, PackageOpen, Microscope, TestTube, Library } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 
 // Section component for displaying details in the drug card
-function DetailSection({ title, content, icon: Icon, isList = false }: { title: string, content?: string | string[], icon: React.ElementType, isList?: boolean }) {
-    if (!content || (Array.isArray(content) && content.length === 0)) return null;
+function DetailSection({ title, content, icon: Icon }: { title: string, content?: string, icon: React.ElementType }) {
+    if (!content) return null;
     return (
         <div className="space-y-1">
             <h4 className="font-semibold text-base flex items-center gap-2 text-primary">
@@ -22,13 +24,7 @@ function DetailSection({ title, content, icon: Icon, isList = false }: { title: 
                 {title}
             </h4>
             <div className="pl-6 text-muted-foreground text-sm">
-                 {isList && Array.isArray(content) ? (
-                    <ul className="list-disc list-inside">
-                        {content.map((item, i) => <li key={i}>{item}</li>)}
-                    </ul>
-                 ) : (
-                    <p className="whitespace-pre-wrap">{content as string}</p>
-                 )}
+                <p className="whitespace-pre-wrap">{content}</p>
             </div>
         </div>
     );
@@ -44,40 +40,46 @@ function DrugCard({ drug }: { drug: Drug }) {
   }
 
   return (
-    <Card className="my-2 bg-muted/30">
+    <Card className="my-2 bg-muted/30 shadow-inner">
       <CardHeader>
-        <CardTitle>{drug.name}</CardTitle>
+        <CardTitle className="text-2xl">{drug.name}</CardTitle>
         <CardDescription>{drug.classification}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <DetailSection title="Mechanism of Action" content={drug.moa} icon={BrainCircuit} />
-        <DetailSection title="Therapeutic Uses" content={drug.therapeuticUses} icon={Stethoscope} />
-        <DetailSection title="Adverse Effects (ADRs)" content={drug.adrs} icon={AlertTriangle} />
-        <DetailSection title="Contraindications" content={drug.contraindications} icon={ShieldCheck} />
+      <CardContent>
+        <Tabs defaultValue="general" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="general">General</TabsTrigger>
+                <TabsTrigger value="clinical">Clinical</TabsTrigger>
+                <TabsTrigger value="pharma">Pharma</TabsTrigger>
+                <TabsTrigger value="analysis">Analysis</TabsTrigger>
+            </TabsList>
+            <TabsContent value="general" className="pt-4 space-y-4">
+                <DetailSection title="Mechanism of Action" content={drug.moa} icon={BrainCircuit} />
+                <div className="p-4 bg-amber-100/50 dark:bg-amber-900/20 border-l-4 border-amber-500 rounded-r-md">
+                    <h4 className="font-semibold flex items-center gap-2 text-amber-700 dark:text-amber-400"><Star/>Exam Highlights & Special Notes</h4>
+                    <p className="text-sm text-muted-foreground mt-1">{drug.specialNotes}</p>
+                </div>
+            </TabsContent>
+            <TabsContent value="clinical" className="pt-4 space-y-4">
+                 <DetailSection title="Therapeutic Uses" content={drug.therapeuticUses} icon={Stethoscope} />
+                 <DetailSection title="Adverse Effects (ADRs)" content={drug.adrs} icon={AlertTriangle} />
+                 <DetailSection title="Contraindications" content={drug.contraindications} icon={ShieldCheck} />
+            </TabsContent>
+             <TabsContent value="pharma" className="pt-4 space-y-4">
+                 <DetailSection title="Dosage Forms" content={drug.pharmaApplications.dosageForms} icon={Pill} />
+                 <DetailSection title="Market Formulations" content={drug.pharmaApplications.formulations} icon={Package} />
+                 <DetailSection title="Storage & Stability" content={drug.pharmaApplications.storage} icon={Archive} />
+            </TabsContent>
+             <TabsContent value="analysis" className="pt-4 space-y-4">
+                 <DetailSection title="Qualitative Analysis" content={drug.analyticalMethods.qualitative} icon={Microscope} />
+                 <DetailSection title="Quantitative Analysis" content={drug.analyticalMethods.quantitative} icon={TestTube} />
+                 <DetailSection title="Pharmacopoeial Standards" content={drug.analyticalMethods.pharmacopoeial} icon={Library} />
+            </TabsContent>
+        </Tabs>
         
-        <Accordion type="multiple" className="w-full space-y-2" defaultValue={['learning']}>
-            <AccordionItem value="pharma" className="border rounded-md px-4 bg-background">
-                 <AccordionTrigger className="hover:no-underline font-semibold">
-                    <div className="flex items-center gap-2"><FlaskConical/>Pharmaceutical Details</div>
-                </AccordionTrigger>
-                <AccordionContent className="pt-2 space-y-4">
-                    <DetailSection title="Dosage Forms" content={drug.pharmaApplications.dosageForms} icon={Pill} />
-                    <DetailSection title="Market Formulations" content={drug.pharmaApplications.formulations} icon={Package} />
-                    <DetailSection title="Storage & Stability" content={drug.pharmaApplications.storage} icon={Archive} />
-                </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="analysis" className="border rounded-md px-4 bg-background">
-                <AccordionTrigger className="hover:no-underline font-semibold">
-                    <div className="flex items-center gap-2"><Beaker/>Analytical Methods</div>
-                </AccordionTrigger>
-                <AccordionContent className="pt-2 space-y-4">
-                    <DetailSection title="Qualitative Analysis" content={drug.analyticalMethods.qualitative} icon={FileText} />
-                    <DetailSection title="Quantitative Analysis" content={drug.analyticalMethods.quantitative} icon={FileText} />
-                    <DetailSection title="Pharmacopoeial Standards" content={drug.analyticalMethods.pharmacopoeial} icon={FileText} />
-                </AccordionContent>
-            </AccordionItem>
-             <AccordionItem value="learning" className="border rounded-md px-4 bg-background">
-                <AccordionTrigger className="hover:no-underline font-semibold">
+        <Accordion type="single" collapsible className="w-full mt-4">
+            <AccordionItem value="learning" className="border rounded-md px-4 bg-background">
+                <AccordionTrigger className="hover:no-underline font-semibold text-base">
                     <div className="flex items-center gap-2"><FolderOpen/>Integration with Learning</div>
                 </AccordionTrigger>
                 <AccordionContent className="pt-4 space-y-3">
@@ -93,11 +95,6 @@ function DrugCard({ drug }: { drug: Drug }) {
                 </AccordionContent>
             </AccordionItem>
         </Accordion>
-        
-        <div className="p-3 bg-amber-100/50 dark:bg-amber-900/20 border-l-4 border-amber-500 rounded-r-md">
-            <h4 className="font-semibold flex items-center gap-2 text-amber-700 dark:text-amber-400"><Star/>Special Notes</h4>
-            <p className="text-sm text-muted-foreground mt-1">{drug.specialNotes}</p>
-        </div>
       </CardContent>
     </Card>
   );
