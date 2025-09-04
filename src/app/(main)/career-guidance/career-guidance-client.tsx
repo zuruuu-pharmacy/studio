@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Rocket, Map, FlaskConical, Stethoscope, Briefcase, BookOpen, User, Search, Globe, Building, Users, Calendar, BarChart } from "lucide-react";
+import { Rocket, Map, FlaskConical, Stethoscope, Briefcase, BookOpen, User, Search, Globe, Building, Users, Calendar, BarChart, FileText } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { usePatient } from "@/contexts/patient-context";
@@ -144,6 +144,9 @@ export function CareerGuidanceClient() {
                             </li>
                             <li className="font-semibold text-primary">
                                 <Link href="/career-guidance/licensing-exams">Licensing &amp; Exams Hub</Link>
+                            </li>
+                             <li className="font-semibold text-primary">
+                                <Link href="/career-guidance/cv-interview-toolkit">CV &amp; Interview Toolkit</Link>
                             </li>
                            <li className="font-semibold text-primary">
                                 <Link href="/career-guidance/jobs-internships">Jobs & Internships</Link>
