@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -98,7 +98,9 @@ export function StudentDiscussionForumClient() {
   const [isTeacher, setIsTeacher] = useState(false);
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
 
-
+  // All hooks must be called at the top level
+  const currentUser = patientState.activeUser;
+  
   const newPostForm = useForm<NewPostValues>({ 
     resolver: zodResolver(newPostSchema),
     defaultValues: {
@@ -116,8 +118,6 @@ export function StudentDiscussionForumClient() {
     }
   });
 
-  const currentUser = patientState.activeUser;
-  
   const reputationScores = useMemo(() => {
     const scores = new Map<string, number>();
     posts.forEach(post => {
@@ -140,9 +140,10 @@ export function StudentDiscussionForumClient() {
   }, [selectedPost]);
   
   const filteredPosts = useMemo(() => {
+    if (!currentUser) return [];
     const lowercasedFilter = searchTerm.toLowerCase();
     return posts.filter((post) => {
-        const isBookmarked = currentUser?.bookmarkedPostIds?.includes(post.id);
+        const isBookmarked = currentUser.bookmarkedPostIds?.includes(post.id);
         const matchesSearch = post.title.toLowerCase().includes(lowercasedFilter) ||
                               post.content.toLowerCase().includes(lowercasedFilter) ||
                               post.category.toLowerCase().includes(lowercasedFilter);
@@ -162,20 +163,6 @@ export function StudentDiscussionForumClient() {
   const getInitials = (name?: string) => {
     if (!name) return "AS";
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
-  }
-
-  if (!currentUser || currentUser.role !== 'student') {
-    return (
-        <Card className="text-center">
-            <CardHeader>
-                <CardTitle>Access Denied</CardTitle>
-                <CardDescription>This feature is available for students only. Please log in as a student to participate.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Link href="/"><Button>Back to Login</Button></Link>
-            </CardContent>
-        </Card>
-    )
   }
 
   const handleCreatePost = newPostForm.handleSubmit(async (data) => {
@@ -229,6 +216,21 @@ export function StudentDiscussionForumClient() {
       toast({ variant: "destructive", title: "Incorrect Code" });
     }
   }
+  
+  if (!currentUser || currentUser.role !== 'student') {
+    return (
+        <Card className="text-center">
+            <CardHeader>
+                <CardTitle>Access Denied</CardTitle>
+                <CardDescription>This feature is available for students only. Please log in as a student to participate.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Link href="/"><Button>Back to Login</Button></Link>
+            </CardContent>
+        </Card>
+    )
+  }
+
 
   if (selectedPost) {
     const isOriginalPoster = selectedPost.author === authorName;
