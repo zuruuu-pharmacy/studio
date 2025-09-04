@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useActionState, useEffect, useState, useTransition, useCallback } from "react";
@@ -299,8 +300,8 @@ export function OsceVivaPrepClient() {
     practiceAnswerForm.reset({ answer: "" });
 
     // Create a new state object without the instantFeedback to clear it
-    const newState = { ...state };
-    if (newState.instantFeedback) {
+    const newState: OsceStationGeneratorOutput | { error: string } | null = { ...state };
+    if (newState && 'instantFeedback' in newState) {
         delete newState.instantFeedback;
     }
     
@@ -452,7 +453,7 @@ export function OsceVivaPrepClient() {
                 <Accordion type="multiple" className="w-full space-y-4" defaultValue={['diagnosis', 'drugs', 'model']}>
                     <AccordionItem value="diagnosis"><AccordionTrigger className="font-semibold text-lg">Diagnosis Confirmation</AccordionTrigger><AccordionContent className="p-4">{feedback.diagnosisConfirmation}</AccordionContent></AccordionItem>
                     <AccordionItem value="drugs"><AccordionTrigger className="font-semibold text-lg">Drug Choice Rationale</AccordionTrigger><AccordionContent className="p-4">{feedback.drugChoiceRationale}</AccordionContent></AccordionItem>
-                    <AccordionItem value="monitoring"><AccordionTrigger className="font-semibold text-lg">Monitoring Plan</AccordionContent></AccordionItem>
+                    <AccordionItem value="monitoring"><AccordionTrigger className="font-semibold text-lg">Monitoring Plan</AccordionTrigger><AccordionContent className="p-4">{feedback.monitoringPlan}</AccordionContent></AccordionItem>
                     <AccordionItem value="counseling"><AccordionTrigger className="font-semibold text-lg">Lifestyle Counseling</AccordionTrigger><AccordionContent className="p-4">{feedback.lifestyleCounseling}</AccordionContent></AccordionItem>
                     <AccordionItem value="model"><AccordionTrigger className="font-semibold text-lg">Model Answer</AccordionTrigger><AccordionContent className="p-4 whitespace-pre-wrap">{feedback.modelAnswer}</AccordionContent></AccordionItem>
                 </Accordion>
@@ -647,5 +648,3 @@ export function OsceVivaPrepClient() {
     </Card>
   )
 }
-
-    
