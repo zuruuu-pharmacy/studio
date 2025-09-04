@@ -171,7 +171,7 @@ const studentTools = [
         color: "text-teal-500",
     },
     {
-        icon: OsceIcon,
+        icon: FileHeart,
         title: "OSCE and Viva Preparation",
         description: "Practice for your exams with AI-driven OSCE and viva scenarios.",
         href: "/osce-viva-prep",
