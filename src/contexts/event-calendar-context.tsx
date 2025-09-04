@@ -21,6 +21,12 @@ export const EVENT_CATEGORIES: EventCategory[] = [
     "Other"
 ];
 
+export interface Attachment {
+  name: string;
+  type: 'image' | 'pdf' | 'other';
+  dataUri: string;
+}
+
 export interface CalendarEvent {
   id: string;
   title: string;
@@ -29,17 +35,19 @@ export interface CalendarEvent {
   category: EventCategory;
   registrationLink?: string;
   forumThreadId?: string; // Link to the discussion forum post
+  attachments?: Attachment[];
 }
 
 interface EventCalendarContextType {
   events: CalendarEvent[];
   addEvent: (event: Omit<CalendarEvent, 'id'>) => void;
+  updateEvent: (eventId: string, updatedEvent: CalendarEvent) => void;
   deleteEvent: (eventId: string) => void;
 }
 
 const EventCalendarContext = createContext<EventCalendarContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'event_calendar_v1';
+const LOCAL_STORAGE_KEY = 'event_calendar_v2'; // Bumped version for attachments
 
 export function EventCalendarProvider({ children }: { children: ReactNode }) {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -50,7 +58,6 @@ export function EventCalendarProvider({ children }: { children: ReactNode }) {
       const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (savedData) {
         const parsedData = JSON.parse(savedData, (key, value) => {
-            // Revive date strings back into Date objects
             if (key === 'date') return new Date(value);
             return value;
         });
@@ -82,11 +89,15 @@ export function EventCalendarProvider({ children }: { children: ReactNode }) {
     setEvents(prevEvents => [...prevEvents, newEvent]);
   };
   
+  const updateEvent = (eventId: string, updatedEvent: CalendarEvent) => {
+    setEvents(prevEvents => prevEvents.map(event => event.id === eventId ? updatedEvent : event));
+  }
+  
   const deleteEvent = (eventId: string) => {
     setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
   };
   
-  const contextValue = useMemo(() => ({ events, addEvent, deleteEvent }), [events]);
+  const contextValue = useMemo(() => ({ events, addEvent, updateEvent, deleteEvent }), [events]);
 
   return (
     <EventCalendarContext.Provider value={contextValue}>
