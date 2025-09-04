@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, Combine, CalendarDays, FolderOpen, Replace, BookA, MessageSquare, ClipboardList } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, Combine, CalendarDays, FolderOpen, Replace, BookA, MessageSquare, ClipboardList, CalendarPlus } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -68,6 +68,7 @@ const studentMenuItems = [
     { href: "/drug-classification-tree", label: "Drug Classification Tree", icon: Network },
     { href: "/study-material-generator", label: "Study Material Generator", icon: GraduationCap },
     { href: "/study-planner", label: "AI Study Planner", icon: CalendarDays },
+    { href: "/event-calendar", label: "Event Calendar", icon: CalendarPlus },
     { href: "/sop-repository", label: "SOP Repository", icon: FileJson },
     { href: "/lab-analyzer", label: "Lab Report Analyzer", icon: TestTube },
      {
