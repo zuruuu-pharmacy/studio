@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, Combine, CalendarDays, FolderOpen, Replace, BookA, MessageSquare } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, Combine, CalendarDays, FolderOpen, Replace, BookA, MessageSquare, ClipboardList } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -55,6 +55,7 @@ const studentMenuItems = [
     { href: "/patient-history", label: "My Health History", icon: User },
     { href: "/patients", label: "View Patient Cases", icon: Users },
     { href: "/student-discussion-forum", label: "Discussion Forum", icon: MessageSquare },
+    { href: "/student-polls", label: "Student Polls/Surveys", icon: ClipboardList },
     { href: "/clinical-case-simulator", label: "Clinical Case Simulator", icon: CaseSensitive },
     { href: "/osce-viva-prep", label: "OSCE &amp; Viva Preparation", icon: FileHeart },
     { href: "/interaction-checker", label: "Interaction Simulator", icon: FlaskConical },
