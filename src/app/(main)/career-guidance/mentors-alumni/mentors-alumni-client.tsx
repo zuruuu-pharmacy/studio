@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Construction, MessageSquare } from "lucide-react";
+import { Search, Construction, MessageSquare, BookOpen } from "lucide-react";
 
 const placeholderMentors = [
   { name: 'Dr. Fatima Ahmed', role: 'Clinical Pharmacist, National Hospital', expertise: 'Cardiology, Infectious Disease', img: 'https://picsum.photos/100/100?random=1' },
@@ -55,14 +55,15 @@ export function MentorsAlumniClient() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">Alumni Stories</CardTitle>
+          <CardTitle className="flex items-center gap-2"><BookOpen/>Alumni Success Stories</CardTitle>
+          <CardDescription>Learn from the journeys of those who came before you.</CardDescription>
         </CardHeader>
         <CardContent>
             <div className="flex flex-col items-center justify-center text-center h-full bg-muted/50 p-8 rounded-lg">
                  <Construction className="h-16 w-16 text-muted-foreground/30 mb-4" />
                  <h3 className="text-xl font-semibold text-muted-foreground">Feature Under Construction</h3>
-                 <p className="text-muted-foreground/80 mt-2">
-                    Video interviews and written case studies from our alumni network are coming soon.
+                 <p className="text-muted-foreground/80 mt-2 max-w-md">
+                    Video interviews and written case studies from our alumni network are coming soon. You'll be able to see how they transitioned from student to professional.
                  </p>
             </div>
         </CardContent>
