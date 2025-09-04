@@ -11,10 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription as DialogDescriptionComponent, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { Plus, ListChecks, Check, BarChart3, Users, Percent, ShieldQuestion, BarChartHorizontal, Download } from "lucide-react";
+import { Plus, ListChecks, Check, BarChart3, Users, Percent, ShieldQuestion, BarChartHorizontal, Download, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { useMode } from "@/contexts/mode-context";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 
 const newPollSchema = z.object({
@@ -36,7 +37,7 @@ type NewPollValues = z.infer<typeof newPollSchema>;
 
 
 export function StudentPollsClient() {
-  const { polls, addPoll, vote } = usePolls();
+  const { polls, addPoll, vote, deletePoll } = usePolls();
   const { patientState, addVotedPoll } = usePatient();
   const currentUser = patientState.activeUser;
   const { mode } = useMode();
@@ -89,6 +90,11 @@ export function StudentPollsClient() {
       addVotedPoll(pollId);
     }
   }
+
+  const handleDeletePoll = (pollId: string) => {
+    deletePoll(pollId);
+    toast({ title: "Poll Deleted", description: "The poll has been removed." });
+  }
   
   const handleExport = (poll: typeof polls[0]) => {
     const headers = ["Option", "Votes"];
@@ -116,7 +122,7 @@ export function StudentPollsClient() {
             <Dialog open={isNewPollModalOpen} onOpenChange={setIsNewPollModalOpen}>
                 <DialogTrigger asChild><Button><Plus className="mr-2"/> Create New Poll</Button></DialogTrigger>
                 <DialogContent>
-                    <DialogHeader><DialogTitle>Create a New Poll</DialogTitle><DialogDescriptionComponent>Ask a question and gather opinions from your peers.</DialogDescriptionComponent></DialogHeader>
+                    <DialogHeader><DialogTitle>Create a New Poll</DialogTitle><DialogDescription>Ask a question and gather opinions from your peers.</DialogDescription></DialogHeader>
                     <Form {...newPollForm}>
                         <form onSubmit={handleCreatePoll} className="space-y-4">
                         <FormField name="title" control={newPollForm.control} render={({ field }) => (
@@ -156,9 +162,21 @@ export function StudentPollsClient() {
                                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                                 <div className="space-y-0.5">
                                     <FormLabel>Anonymous Poll</FormLabel>
-                                    <FormDescription>
-                                    If checked, voter identities will not be tracked.
-                                    </FormDescription>
+                                    <FormField name="isAnonymous" control={newPollForm.control} render={({ field }) => (
+                                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                            <div className="space-y-0.5">
+                                                <FormLabel>Anonymous Poll</FormLabel>
+                                                <FormMessage />
+                                            </div>
+                                            <FormControl>
+                                                <Switch
+                                                    checked={field.value}
+                                                    onCheckedChange={field.onChange}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                     )}
+                                    />
                                 </div>
                                 <FormControl>
                                     <Switch
@@ -198,10 +216,31 @@ export function StudentPollsClient() {
                         votes: poll.votes.filter(v => v.optionIndex === index).length
                     }));
 
+                    const canDelete = mode === 'pharmacist' || poll.author === currentUser.demographics?.name;
+
                     return (
                          <Card key={poll.id}>
                             <CardHeader>
-                                <CardTitle>{poll.title}</CardTitle>
+                                <div className="flex justify-between items-start">
+                                    <CardTitle>{poll.title}</CardTitle>
+                                     {canDelete && (
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8"><Trash2 className="h-4 w-4 text-destructive"/></Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                    <AlertDialogDescription>This will permanently delete the poll "{poll.title}". This action cannot be undone.</AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={() => handleDeletePoll(poll.id)}>Delete Poll</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    )}
+                                </div>
                                 <CardDescription>{poll.description}</CardDescription>
                                 <div className="text-xs text-muted-foreground pt-2 flex items-center gap-4">
                                     <span>By {poll.author}</span>

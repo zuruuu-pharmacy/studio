@@ -30,6 +30,7 @@ interface PollsContextType {
   polls: Poll[];
   addPoll: (poll: Omit<Poll, 'id' | 'date' | 'votes'>) => void;
   vote: (pollId: string, userId: string, optionIndex: number) => void;
+  deletePoll: (pollId: string) => void;
 }
 
 const PollsContext = createContext<PollsContextType | undefined>(undefined);
@@ -89,8 +90,12 @@ export function PollsProvider({ children }: { children: ReactNode }) {
       return poll;
     }));
   };
+
+  const deletePoll = (pollId: string) => {
+    setPolls(prevPolls => prevPolls.filter(p => p.id !== pollId));
+  }
   
-  const contextValue = useMemo(() => ({ polls, addPoll, vote }), [polls]);
+  const contextValue = useMemo(() => ({ polls, addPoll, vote, deletePoll }), [polls]);
 
   return (
     <PollsContext.Provider value={contextValue}>
