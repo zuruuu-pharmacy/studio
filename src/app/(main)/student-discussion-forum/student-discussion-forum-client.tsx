@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { MessageSquare, Plus, Send, ArrowLeft, UserCircle, Folder, ThumbsUp, Star, Paperclip, Download, Search } from "lucide-react";
+import { MessageSquare, Plus, Send, ArrowLeft, UserCircle, Folder, ThumbsUp, Star, Paperclip, Download, Search, Flame } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -164,6 +164,10 @@ export function StudentDiscussionForumClient() {
         post.category.toLowerCase().includes(lowercasedFilter)
     );
   }, [searchTerm, posts]);
+  
+  const hotTopics = useMemo(() => {
+    return [...posts].sort((a, b) => b.replies.length - a.replies.length).slice(0, 3);
+  }, [posts]);
 
 
   if (selectedPost) {
@@ -232,111 +236,139 @@ export function StudentDiscussionForumClient() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex justify-between items-center flex-wrap gap-4">
-          <div>
-            <CardTitle>Discussion Threads</CardTitle>
-            <CardDescription>Browse discussions by category or start a new thread.</CardDescription>
-          </div>
-          <Dialog open={isNewPostModalOpen} onOpenChange={setIsNewPostModalOpen}>
-            <DialogTrigger asChild><Button><Plus className="mr-2"/> New Post</Button></DialogTrigger>
-            <DialogContent>
-              <DialogHeader><DialogTitle>Start a New Discussion</DialogTitle></DialogHeader>
-              <Form {...newPostForm}>
-                <form onSubmit={handleCreatePost} className="space-y-4">
-                   <FormField name="category" control={newPostForm.control} render={({ field }) => (
-                     <FormItem>
-                       <FormLabel>Category</FormLabel>
-                       <Select onValueChange={field.onChange} defaultValue={field.value}>
-                         <FormControl><SelectTrigger><SelectValue placeholder="Select a subject category..." /></SelectTrigger></FormControl>
-                         <SelectContent>
-                           {FORUM_CATEGORIES.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
-                         </SelectContent>
-                       </Select>
-                       <FormMessage />
-                     </FormItem>
-                   )} />
-                  <FormField name="title" control={newPostForm.control} render={({ field }) => (
-                    <FormItem><FormLabel>Topic Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                  )} />
-                  <FormField name="content" control={newPostForm.control} render={({ field }) => (
-                    <FormItem><FormLabel>Your Question or Comment</FormLabel><FormControl><Textarea {...field} rows={6} /></FormControl><FormMessage /></FormItem>
-                  )} />
-                  <FormField name="attachment" control={newPostForm.control} render={({ field: { onChange, ...fieldProps} }) => (
-                    <FormItem>
-                        <FormLabel>Attach File (Optional)</FormLabel>
-                        <FormControl><Input {...fieldProps} type="file" onChange={(e) => onChange(e.target.files)} /></FormControl>
-                        <FormMessage />
-                    </FormItem>
-                  )} />
-                  <DialogFooter><Button type="submit">Create Post</Button></DialogFooter>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
-        </div>
-        <div className="flex flex-col md:flex-row gap-4 mt-4">
-            <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input
-                    placeholder="Search all discussions..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                />
-            </div>
-            <div className="w-full md:w-48">
-                <Select value={sortBy} onValueChange={(v) => setSortBy(v as "newest" | "oldest")}>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Sort by..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="newest">Sort by Newest</SelectItem>
-                        <SelectItem value="oldest">Sort by Oldest</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {filteredPosts.length === 0 ? (
-          <div className="text-center text-muted-foreground py-12">
-            <MessageSquare className="mx-auto h-12 w-12 mb-4" />
-            <p>{searchTerm ? `No results found for "${searchTerm}".` : 'No discussions yet. Be the first to start one!'}</p>
-          </div>
-        ) : (
-          <Accordion type="multiple" className="w-full space-y-3" defaultValue={FORUM_CATEGORIES}>
-            {FORUM_CATEGORIES.map(category => {
-              const postsInCategory = filteredPosts
-                .filter(p => p.category === category)
-                .sort((a, b) => sortBy === 'newest' ? new Date(b.date).getTime() - new Date(a.date).getTime() : new Date(a.date).getTime() - new Date(b.date).getTime());
+    <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+            <Card>
+                <CardHeader>
+                    <div className="flex justify-between items-center flex-wrap gap-4">
+                    <div>
+                        <CardTitle>Discussion Threads</CardTitle>
+                        <CardDescription>Browse discussions by category or start a new thread.</CardDescription>
+                    </div>
+                    <Dialog open={isNewPostModalOpen} onOpenChange={setIsNewPostModalOpen}>
+                        <DialogTrigger asChild><Button><Plus className="mr-2"/> New Post</Button></DialogTrigger>
+                        <DialogContent>
+                        <DialogHeader><DialogTitle>Start a New Discussion</DialogTitle></DialogHeader>
+                        <Form {...newPostForm}>
+                            <form onSubmit={handleCreatePost} className="space-y-4">
+                            <FormField name="category" control={newPostForm.control} render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Category</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl><SelectTrigger><SelectValue placeholder="Select a subject category..." /></SelectTrigger></FormControl>
+                                    <SelectContent>
+                                    {FORUM_CATEGORIES.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                                </FormItem>
+                            )} />
+                            <FormField name="title" control={newPostForm.control} render={({ field }) => (
+                                <FormItem><FormLabel>Topic Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                            )} />
+                            <FormField name="content" control={newPostForm.control} render={({ field }) => (
+                                <FormItem><FormLabel>Your Question or Comment</FormLabel><FormControl><Textarea {...field} rows={6} /></FormControl><FormMessage /></FormItem>
+                            )} />
+                            <FormField name="attachment" control={newPostForm.control} render={({ field: { onChange, ...fieldProps} }) => (
+                                <FormItem>
+                                    <FormLabel>Attach File (Optional)</FormLabel>
+                                    <FormControl><Input {...fieldProps} type="file" onChange={(e) => onChange(e.target.files)} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                            <DialogFooter><Button type="submit">Create Post</Button></DialogFooter>
+                            </form>
+                        </Form>
+                        </DialogContent>
+                    </Dialog>
+                    </div>
+                    <div className="flex flex-col md:flex-row gap-4 mt-4">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <Input
+                                placeholder="Search all discussions..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="pl-10"
+                            />
+                        </div>
+                        <div className="w-full md:w-48">
+                            <Select value={sortBy} onValueChange={(v) => setSortBy(v as "newest" | "oldest")}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Sort by..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="newest">Sort by Newest</SelectItem>
+                                    <SelectItem value="oldest">Sort by Oldest</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    {filteredPosts.length === 0 ? (
+                    <div className="text-center text-muted-foreground py-12">
+                        <MessageSquare className="mx-auto h-12 w-12 mb-4" />
+                        <p>{searchTerm ? `No results found for "${searchTerm}".` : 'No discussions yet. Be the first to start one!'}</p>
+                    </div>
+                    ) : (
+                    <Accordion type="multiple" className="w-full space-y-3" defaultValue={FORUM_CATEGORIES}>
+                        {FORUM_CATEGORIES.map(category => {
+                        const postsInCategory = filteredPosts
+                            .filter(p => p.category === category)
+                            .sort((a, b) => sortBy === 'newest' ? new Date(b.date).getTime() - new Date(a.date).getTime() : new Date(a.date).getTime() - new Date(b.date).getTime());
 
-              if (postsInCategory.length === 0) return null;
+                        if (postsInCategory.length === 0) return null;
 
-              return (
-                <AccordionItem value={category} key={category} className="border rounded-lg bg-background/50">
-                  <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline">
-                    <div className="flex items-center gap-2"><Folder className="text-primary"/>{category}</div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6 pb-4">
-                    <ul className="space-y-2">
-                      {postsInCategory.map(post => (
-                        <li key={post.id}>
-                          <button onClick={() => setSelectedPostId(post.id)} className="w-full text-left p-2 rounded-md hover:bg-muted">
-                            <p className="font-semibold">{post.title}</p>
-                            <p className="text-sm text-muted-foreground">by {post.author} on {new Date(post.date).toLocaleDateString()} | {post.replies.length} replies</p>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-              );
-            })}
-          </Accordion>
-        )}
-      </CardContent>
-    </Card>
+                        return (
+                            <AccordionItem value={category} key={category} className="border rounded-lg bg-background/50">
+                            <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline">
+                                <div className="flex items-center gap-2"><Folder className="text-primary"/>{category}</div>
+                            </AccordionTrigger>
+                            <AccordionContent className="px-6 pb-4">
+                                <ul className="space-y-2">
+                                {postsInCategory.map(post => (
+                                    <li key={post.id}>
+                                    <button onClick={() => setSelectedPostId(post.id)} className="w-full text-left p-2 rounded-md hover:bg-muted">
+                                        <p className="font-semibold">{post.title}</p>
+                                        <p className="text-sm text-muted-foreground">by {post.author} on {new Date(post.date).toLocaleDateString()} | {post.replies.length} replies</p>
+                                    </button>
+                                    </li>
+                                ))}
+                                </ul>
+                            </AccordionContent>
+                            </AccordionItem>
+                        );
+                        })}
+                    </Accordion>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+        <div className="space-y-6">
+             <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Flame className="text-destructive"/> Hot Topics</CardTitle>
+                    <CardDescription>Most active discussions right now.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {hotTopics.length > 0 ? (
+                         <ul className="space-y-2">
+                            {hotTopics.map(post => (
+                                <li key={post.id}>
+                                    <button onClick={() => setSelectedPostId(post.id)} className="w-full text-left p-2 rounded-md hover:bg-muted">
+                                        <p className="font-semibold text-sm">{post.title}</p>
+                                        <p className="text-xs text-muted-foreground">{post.replies.length} replies</p>
+                                    </button>
+                                </li>
+                            ))}
+                         </ul>
+                    ) : (
+                        <p className="text-sm text-muted-foreground">No active discussions yet.</p>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+    </div>
   );
 }
