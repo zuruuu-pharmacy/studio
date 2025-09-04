@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Rocket, Map, FlaskConical, Stethoscope, Briefcase, BookOpen, User, Search, Globe, Building, Users, Calendar, BarChart, FileText } from "lucide-react";
+import { Rocket, Map, FlaskConical, Stethoscope, Briefcase, BookOpen, User, Search, Globe, Building, Users, Calendar, BarChart, FileText, Lightbulb } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { usePatient } from "@/contexts/patient-context";
@@ -153,6 +153,9 @@ export function CareerGuidanceClient() {
                             </li>
                            <li className="font-semibold text-primary">
                                 <Link href="/career-guidance/mentors-alumni">Mentors & Alumni</Link>
+                            </li>
+                             <li className="font-semibold text-primary">
+                                <Link href="/career-guidance/entrepreneurship-hub">Entrepreneurship Hub</Link>
                             </li>
                             <li className="font-semibold text-primary">
                                 <Link href="/event-calendar">Workshops & Events</Link>
