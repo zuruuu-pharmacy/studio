@@ -3,9 +3,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Briefcase, Building, Hospital, FlaskConical, Book, UserTie, BrainCircuit, Rocket, Activity, CheckCircle, GraduationCap, Star, BarChart, HardHat, Link } from "lucide-react";
+import { Briefcase, Building, Hospital, FlaskConical, Book, UserTie, BrainCircuit, Rocket, Activity, CheckCircle, GraduationCap, Star, BarChart, HardHat, Link as LinkIcon } from "lucide-react";
 import { BackButton } from "@/components/back-button";
 import { Button } from "@/components/ui/button";
+import Link from 'next/link';
 
 
 const careerPaths = [
@@ -143,7 +144,7 @@ export default function ExplorePathsPage() {
                                         <p><strong>Salary Band:</strong> {path.salaryBand}</p>
                                         <p><strong>Job Market Demand:</strong> {path.demand}</p>
                                     </DetailSection>
-                                     <DetailSection title="Alumni Network" icon={Link}>
+                                     <DetailSection title="Alumni Network" icon={LinkIcon}>
                                         {path.alumni.length > 0 ? (
                                             <ul className="space-y-1">
                                                 {path.alumni.map(alum => <li key={alum.name}>{alum.name} ({alum.role})</li>)}
@@ -154,7 +155,9 @@ export default function ExplorePathsPage() {
                                 </div>
                                 
                                <div className="pt-4">
-                                  <Button disabled>Start Roadmap for this Path (Coming Soon)</Button>
+                                  <Link href="/career-guidance/roadmap-builder">
+                                    <Button>Start Roadmap for this Path</Button>
+                                  </Link>
                                </div>
 
                             </AccordionContent>
