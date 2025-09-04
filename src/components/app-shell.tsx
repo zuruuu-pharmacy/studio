@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, ClipboardCheck as OsceIcon, Combine } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, ClipboardCheck as OsceIcon, Combine, CalendarDays } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -62,6 +62,7 @@ const studentMenuItems = [
     { href: "/moa-animations", label: "MOA Animations", icon: Video },
     { href: "/drug-classification-tree", label: "Drug Classification Tree", icon: Network },
     { href: "/study-material-generator", label: "Study Material Generator", icon: GraduationCap },
+    { href: "/study-planner", label: "AI Study Planner", icon: CalendarDays },
     { href: "/herbal-hub", label: "Herbal Hub", icon: Leaf },
     { href: "/flashcard-generator", label: "Flashcard Generator", icon: FileHeart },
     { href: "/mcq-bank", label: "MCQ Bank", icon: HelpCircle },

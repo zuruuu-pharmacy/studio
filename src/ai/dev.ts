@@ -31,5 +31,7 @@ import '@/ai/flows/crossword-generator.ts';
 import '@/ai/flows/word-search-generator.ts';
 import '@/ai/flows/matching-game-generator.ts';
 import '@/ai/flows/mnemonic-generator.ts';
+import '@/ai/flows/study-planner.ts';
+
 
 
