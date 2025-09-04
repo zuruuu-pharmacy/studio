@@ -114,7 +114,7 @@ export const drugTreeData: DrugClass[] = [
       },
       {
         name: "Anxiolytics, Antidepressants, and Antimanic Drugs",
-        pharmaFocus: "Plasma protein binding, drug assays, titrimetric methods (e.g., lithium estimation).",
+        pharmaFocus: "plasma protein binding, drug assays, titrimetric methods (e.g., lithium estimation).",
         subclasses: [
           {
             name: "SSRIs",
@@ -140,7 +140,7 @@ export const drugTreeData: DrugClass[] = [
       },
       {
         name: "Antiepileptics",
-        pharmaFocus: "Bioavailability testing, therapeutic drug monitoring (TDM).",
+        pharmaFocus: "bioavailability testing, therapeutic drug monitoring (TDM).",
         subclasses: [
             {
                 name: "Sodium channel blockers",
@@ -158,7 +158,7 @@ export const drugTreeData: DrugClass[] = [
       },
       {
         name: "Antipsychotics",
-        pharmaFocus: "Receptor selectivity, metabolic pathways, monitoring ADRs.",
+        pharmaFocus: "receptor selectivity, metabolic pathways, monitoring ADRs.",
         subclasses: [
             {
                 name: "Typical Antipsychotics",
@@ -227,6 +227,11 @@ export const drugTreeData: DrugClass[] = [
             drugs: [],
           },
         ]
+      },
+      {
+        name: "Therapeutic Gases",
+        pharmaFocus: "storage (cylinders, pressure control), pharmaceutical grade purity, applications in ICU.",
+        drugs: [],
       },
     ],
   },
