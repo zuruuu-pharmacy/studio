@@ -1,10 +1,10 @@
 
 "use client";
 
-import { useState, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useState, useMemo, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useEventCalendar, EVENT_CATEGORIES, type EventCategory, CalendarEvent } from '@/contexts/event-calendar-context';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -14,11 +14,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, CalendarIcon, Search, ExternalLink } from 'lucide-react';
+import { Plus, Trash2, CalendarIcon, Search, ExternalLink, Download } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import * as ics from 'ics';
 
 
 const eventSchema = z.object({
@@ -115,6 +116,30 @@ export function EventCalendarClient() {
     toast({ title: "Event Added", description: `${data.title} has been added to your calendar.` });
     setIsModalOpen(false);
   });
+
+  const handleDownloadIcs = (event: CalendarEvent) => {
+    const { error, value } = ics.createEvent({
+        title: event.title,
+        description: event.description,
+        start: [event.date.getFullYear(), event.date.getMonth() + 1, event.date.getDate(), event.date.getHours(), event.date.getMinutes()],
+        duration: { hours: 1 }, // Default duration
+    });
+
+    if (error) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not create calendar file.' });
+        return;
+    }
+
+    const blob = new Blob([value as string], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${event.title.replace(/ /g, '_')}.ics`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
 
   return (
     <div className="grid md:grid-cols-2 gap-6 items-start">
@@ -224,13 +249,18 @@ export function EventCalendarClient() {
                                 <Badge className={categoryColors[event.category]}>{event.category}</Badge>
                                 <p className="font-semibold mt-1">{event.title}</p>
                                 {event.description && <p className="text-sm text-muted-foreground">{event.description}</p>}
-                                {event.registrationLink && (
-                                    <a href={event.registrationLink} target="_blank" rel="noopener noreferrer">
-                                        <Button variant="secondary" size="sm" className="mt-2">
-                                            RSVP / Register <ExternalLink className="ml-2 h-4 w-4"/>
-                                        </Button>
-                                    </a>
-                                )}
+                                <div className='flex gap-2 mt-2'>
+                                  {event.registrationLink && (
+                                      <a href={event.registrationLink} target="_blank" rel="noopener noreferrer">
+                                          <Button variant="secondary" size="sm">
+                                              RSVP / Register <ExternalLink className="ml-2 h-4 w-4"/>
+                                          </Button>
+                                      </a>
+                                  )}
+                                  <Button variant="outline" size="sm" onClick={() => handleDownloadIcs(event)}>
+                                      Add to Calendar <Download className="ml-2 h-4 w-4"/>
+                                  </Button>
+                                </div>
                             </div>
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
