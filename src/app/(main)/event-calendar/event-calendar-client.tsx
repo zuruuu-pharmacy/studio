@@ -14,7 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, CalendarIcon } from 'lucide-react';
+import { Plus, Trash2, CalendarIcon, Search } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -43,6 +43,7 @@ export function EventCalendarClient() {
   const { events, addEvent, deleteEvent } = useEventCalendar();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventSchema),
@@ -53,22 +54,37 @@ export function EventCalendarClient() {
       category: "Other",
     },
   });
+  
+  const dailyEvents = useMemo(() => {
+    if (!selectedDate) return [];
+    return events.filter(event => isSameDay(event.date, selectedDate))
+  }, [events, selectedDate]);
+  
+  const filteredEvents = useMemo(() => {
+    const lowercasedSearch = searchTerm.toLowerCase();
+    const eventsToFilter = dailyEvents;
+    
+    if (!lowercasedSearch) return eventsToFilter;
+
+    return eventsToFilter.filter(event => 
+        event.title.toLowerCase().includes(lowercasedSearch) ||
+        (event.description && event.description.toLowerCase().includes(lowercasedSearch)) ||
+        event.category.toLowerCase().includes(lowercasedSearch)
+    );
+  }, [dailyEvents, searchTerm]);
+
 
   const groupedEvents = useMemo(() => {
-    if (!selectedDate) return {};
-    const eventsForDay = events.filter(event => isSameDay(event.date, selectedDate)).sort((a,b) => a.date.getTime() - b.date.getTime());
-    
-    return eventsForDay.reduce((acc, event) => {
+    return filteredEvents.reduce((acc, event) => {
         (acc[event.category] = acc[event.category] || []).push(event);
         return acc;
     }, {} as Record<EventCategory, CalendarEvent[]>);
 
-  }, [events, selectedDate]);
+  }, [filteredEvents]);
   
-  const totalEventsForDay = useMemo(() => {
-    if (!selectedDate) return 0;
-    return events.filter(event => isSameDay(event.date, selectedDate)).length;
-  }, [events, selectedDate]);
+  const totalEventsForDay = dailyEvents.length;
+  const showingEventsCount = filteredEvents.length;
+
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
@@ -120,13 +136,14 @@ export function EventCalendarClient() {
       
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-start flex-wrap gap-2">
             <div>
               <CardTitle>
                 Events for {selectedDate ? format(selectedDate, 'PPP') : 'N/A'}
               </CardTitle>
               <CardDescription>
-                {totalEventsForDay} event(s) scheduled.
+                {totalEventsForDay} event(s) scheduled. 
+                {searchTerm && ` Showing ${showingEventsCount}.`}
               </CardDescription>
             </div>
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -168,44 +185,60 @@ export function EventCalendarClient() {
               </DialogContent>
             </Dialog>
           </div>
+          <div className="relative mt-4">
+             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+             <Input 
+                placeholder="Search events for this day..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+             />
+          </div>
         </CardHeader>
         <CardContent>
           {totalEventsForDay > 0 ? (
             <div className="space-y-4">
-              {EVENT_CATEGORIES.map(category => {
-                const eventsInCategory = groupedEvents[category as EventCategory];
-                if (!eventsInCategory) return null;
-                return (
-                  <div key={category}>
-                    <h3 className="font-semibold text-lg mb-2">{category}</h3>
-                    <ul className="space-y-3">
-                      {eventsInCategory.map(event => (
-                         <li key={event.id} className="p-3 rounded-lg border bg-muted/50 flex justify-between items-start">
-                          <div>
-                            <Badge className={categoryColors[event.category]}>{event.category}</Badge>
-                            <p className="font-semibold mt-1">{event.title}</p>
-                            {event.description && <p className="text-sm text-muted-foreground">{event.description}</p>}
-                          </div>
-                          <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                   <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-                                        <Trash2 className="h-4 w-4 text-destructive"/>
-                                   </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                    <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete the event: "{event.title}".</AlertDialogDescription></AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => deleteEvent(event.id)}>Delete</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                          </AlertDialog>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )
-              })}
+              {Object.keys(groupedEvents).length === 0 && searchTerm ? (
+                <div className="text-center text-muted-foreground py-12">
+                    <Search className="mx-auto h-12 w-12 mb-4" />
+                    <p>No events match your search.</p>
+                </div>
+              ) : (
+                EVENT_CATEGORIES.map(category => {
+                    const eventsInCategory = groupedEvents[category as EventCategory];
+                    if (!eventsInCategory) return null;
+                    return (
+                    <div key={category}>
+                        <h3 className="font-semibold text-lg mb-2">{category}</h3>
+                        <ul className="space-y-3">
+                        {eventsInCategory.map(event => (
+                            <li key={event.id} className="p-3 rounded-lg border bg-muted/50 flex justify-between items-start">
+                            <div>
+                                <Badge className={categoryColors[event.category]}>{event.category}</Badge>
+                                <p className="font-semibold mt-1">{event.title}</p>
+                                {event.description && <p className="text-sm text-muted-foreground">{event.description}</p>}
+                            </div>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
+                                            <Trash2 className="h-4 w-4 text-destructive"/>
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                        <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete the event: "{event.title}".</AlertDialogDescription></AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => deleteEvent(event.id)}>Delete</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                            </AlertDialog>
+                            </li>
+                        ))}
+                        </ul>
+                    </div>
+                    )
+                })
+              )}
             </div>
           ) : (
             <div className="text-center text-muted-foreground py-12">
