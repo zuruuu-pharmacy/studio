@@ -175,6 +175,14 @@ export function OsceVivaPrepClient() {
           caseDetails: caseDetails,
           questions: questions,
         });
+        // This is a crucial step: when we get instant feedback, we must merge it with the existing state
+        // so that we don't lose the caseDetails and questions.
+        if (result.instantFeedback) {
+            return {
+                ...previousState,
+                instantFeedback: result.instantFeedback,
+            }
+        }
         return result;
       } catch (e) {
         console.error(e);
@@ -289,12 +297,16 @@ export function OsceVivaPrepClient() {
   const handleNextPracticeQuestion = useCallback(() => {
     if (!state?.questions) return;
     practiceAnswerForm.reset({ answer: "" });
+    // This is the key fix: clear the instantFeedback from the state before moving on.
+    if (state.instantFeedback) {
+        state.instantFeedback = undefined;
+    }
     if (practiceStep < state.questions.length - 1) {
       setPracticeStep(prev => prev + 1);
     } else {
       setAppStep('feedback'); // Or a 'finished' screen
     }
-  }, [practiceAnswerForm, practiceStep, state?.questions]);
+  }, [practiceAnswerForm, practiceStep, state]);
   
   const handleSaveSession = () => {
     if (!state || !state.caseDetails || !state.feedback) {
@@ -516,7 +528,9 @@ export function OsceVivaPrepClient() {
                                 <FormField name="answer" control={practiceAnswerForm.control} render={({ field }) => (
                                     <FormItem><FormControl>{questions[practiceStep].type === 'multiple_choice' && questions[practiceStep].options ? (<RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="pt-2 space-y-1">{questions[practiceStep].options?.map((opt, i) => (<FormItem key={i} className="flex items-center space-x-3"><FormControl><RadioGroupItem value={opt} disabled={awaitingFeedback || !!state.instantFeedback} /></FormControl><Label className="font-normal">{opt}</Label></FormItem>))}</RadioGroup>) : (<Textarea placeholder="Your answer..." {...field} disabled={awaitingFeedback || !!state.instantFeedback} />)}</FormControl><FormMessage/></FormItem>
                                 )} />
-                                <Button type="submit" disabled={isPending || awaitingFeedback || !!state.instantFeedback || timeLeft === 0}>Check Answer</Button>
+                                { !state.instantFeedback && (
+                                     <Button type="submit" disabled={isPending || awaitingFeedback || timeLeft === 0}>Check Answer</Button>
+                                )}
                             </form>
                         </Form>
 
@@ -587,7 +601,7 @@ export function OsceVivaPrepClient() {
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select a difficulty level..." />
-                                        </SelectTrigger>
+                                        </Trigger>
                                     </FormControl>
                                     <SelectContent>
                                         {Object.keys(DIFFICULTY_TIERS).map(tier => <SelectItem key={tier} value={tier}>{tier}</SelectItem>)}
