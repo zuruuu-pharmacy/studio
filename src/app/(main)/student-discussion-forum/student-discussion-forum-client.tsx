@@ -117,12 +117,7 @@ export function StudentDiscussionForumClient() {
   });
 
   const currentUser = patientState.activeUser;
-  const authorName = currentUser?.demographics?.name || 'Anonymous Student';
-  const getInitials = (name?: string) => {
-    if (!name) return "AS";
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
-  }
-
+  
   const reputationScores = useMemo(() => {
     const scores = new Map<string, number>();
     posts.forEach(post => {
@@ -132,6 +127,42 @@ export function StudentDiscussionForumClient() {
     });
     return scores;
   }, [posts]);
+
+  const selectedPost = useMemo(() => posts.find(p => p.id === selectedPostId), [posts, selectedPostId]);
+  
+  const sortedReplies = useMemo(() => {
+    if (!selectedPost) return [];
+    return [...selectedPost.replies].sort((a, b) => {
+        if (a.isBestAnswer) return -1;
+        if (b.isBestAnswer) return 1;
+        return b.upvotes - a.upvotes;
+    });
+  }, [selectedPost]);
+  
+  const filteredPosts = useMemo(() => {
+    const lowercasedFilter = searchTerm.toLowerCase();
+    return posts.filter((post) => {
+        const isBookmarked = currentUser?.bookmarkedPostIds?.includes(post.id);
+        const matchesSearch = post.title.toLowerCase().includes(lowercasedFilter) ||
+                              post.content.toLowerCase().includes(lowercasedFilter) ||
+                              post.category.toLowerCase().includes(lowercasedFilter);
+        
+        if(showBookmarksOnly) {
+            return isBookmarked && matchesSearch;
+        }
+        return matchesSearch;
+    });
+  }, [searchTerm, posts, showBookmarksOnly, currentUser]);
+  
+  const hotTopics = useMemo(() => {
+    return [...posts].sort((a, b) => b.replies.length - a.replies.length).slice(0, 3);
+  }, [posts]);
+
+  const authorName = currentUser?.demographics?.name || 'Anonymous Student';
+  const getInitials = (name?: string) => {
+    if (!name) return "AS";
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  }
 
   if (!currentUser || currentUser.role !== 'student') {
     return (
@@ -198,38 +229,6 @@ export function StudentDiscussionForumClient() {
       toast({ variant: "destructive", title: "Incorrect Code" });
     }
   }
-
-
-  const selectedPost = posts.find(p => p.id === selectedPostId);
-
-  const sortedReplies = useMemo(() => {
-    if (!selectedPost) return [];
-    return [...selectedPost.replies].sort((a, b) => {
-        if (a.isBestAnswer) return -1;
-        if (b.isBestAnswer) return 1;
-        return b.upvotes - a.upvotes;
-    });
-  }, [selectedPost]);
-  
-  const filteredPosts = useMemo(() => {
-    const lowercasedFilter = searchTerm.toLowerCase();
-    return posts.filter((post) => {
-        const isBookmarked = currentUser?.bookmarkedPostIds?.includes(post.id);
-        const matchesSearch = post.title.toLowerCase().includes(lowercasedFilter) ||
-                              post.content.toLowerCase().includes(lowercasedFilter) ||
-                              post.category.toLowerCase().includes(lowercasedFilter);
-        
-        if(showBookmarksOnly) {
-            return isBookmarked && matchesSearch;
-        }
-        return matchesSearch;
-    });
-  }, [searchTerm, posts, showBookmarksOnly, currentUser]);
-  
-  const hotTopics = useMemo(() => {
-    return [...posts].sort((a, b) => b.replies.length - a.replies.length).slice(0, 3);
-  }, [posts]);
-
 
   if (selectedPost) {
     const isOriginalPoster = selectedPost.author === authorName;
