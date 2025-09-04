@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Sparkles, User, FileText, FlaskConical, Microscope, HeartPulse, ShieldPlus, Activity, Lightbulb, ClipboardCheck, Zap, CaseSensitive, BookCopy, Repeat, Check, X, Forward, Save, TimerIcon, AlertTriangle, MessageSquareQuestion } from "lucide-react";
+import { Loader2, Sparkles, User, FileText, FlaskConical, Microscope, HeartPulse, ShieldPlus, Activity, Lightbulb, ClipboardCheck, Zap, CaseSensitive, BookCopy, Repeat, Check, X, Forward, Save, TimerIcon, AlertTriangle, MessageSquarePlus } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Label } from "@/components/ui/label";
@@ -347,7 +347,7 @@ export function OsceVivaPrepClient() {
         id: `session_${Date.now()}`,
         topic: `${topicForm.getValues("topic")} (Difficulty: ${topicForm.getValues("difficulty")})`,
         date: new Date().toISOString(),
-        output: state,
+        output: state as OsceStationGeneratorOutput,
     };
 
     addSession(sessionToSave);
@@ -395,7 +395,7 @@ export function OsceVivaPrepClient() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Generated Questions for: {state.topic}</CardTitle>
+                <CardTitle>Generated Questions for: {(state as QuestionGeneratorOutput).topic}</CardTitle>
                 <CardDescription>Here are the AI-generated questions for your topic.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -683,7 +683,7 @@ export function OsceVivaPrepClient() {
             <button onClick={() => handleModeSelect('exam')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><CaseSensitive className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Exam Mode</h3><p className="text-sm text-muted-foreground">Full station with locked hints and feedback at the end. Simulates the real exam.</p></div></button>
             <button onClick={() => handleModeSelect('practice')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><Lightbulb className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Practice Mode</h3><p className="text-sm text-muted-foreground">Get instant feedback after each question and access hints.</p></div></button>
             <button onClick={() => handleModeSelect('drill')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><Zap className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Drill Mode</h3><p className="text-sm text-muted-foreground">Rapid-fire short items on a single competency.</p></div></button>
-            <button onClick={() => handleModeSelect('qgen')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><MessageSquareQuestion className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Question Generator</h3><p className="text-sm text-muted-foreground">Generate practice questions on any topic.</p></div></button>
+            <button onClick={() => handleModeSelect('qgen')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><MessageSquarePlus className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Question Generator</h3><p className="text-sm text-muted-foreground">Generate practice questions on any topic.</p></div></button>
             <button onClick={() => handleModeSelect('review')} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><BookCopy className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Review Mode</h3><p className="text-sm text-muted-foreground">Analyze your past performance with transcripts and model answers.</p></div></button>
             <button onClick={() => toast({ title: 'Coming Soon', description: 'This mode is currently under development.' })} className="p-4 border rounded-lg text-left hover:bg-muted/50 transition flex items-start gap-4"><Repeat className="h-8 w-8 text-primary mt-1"/><div><h3 className="font-semibold text-lg">Adaptive Mode</h3><p className="text-sm text-muted-foreground">Difficulty increases or decreases based on performance.</p></div></button>
         </CardContent>
