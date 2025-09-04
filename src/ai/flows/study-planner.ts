@@ -22,8 +22,9 @@ export type StudyPlannerInput = z.infer<typeof StudyPlannerInputSchema>;
 
 const TimeSlotSchema = z.object({
     time: z.string().describe("The time for the study block (e.g., '9:00 AM - 11:00 AM')."),
-    subject: z.string().describe("The subject to be studied during this block."),
-    activity: z.string().describe("The suggested activity (e.g., 'Read Chapter 5', 'Practice MCQs', 'Active Recall Session', 'Watch Lecture')."),
+    subject: z.string().describe("The subject to be studied during this block. For breaks, this should be 'Break' or similar."),
+    activity: z.string().describe("The suggested activity (e.g., 'Read Chapter 5', 'Practice MCQs', 'Active Recall Session', 'Watch Lecture', 'Short walk')."),
+    category: z.enum(['Theory', 'Revision', 'Lab', 'Assignment', 'Exam', 'Break']).describe("The category of the activity."),
     isBreak: z.boolean().default(false).describe("Whether this slot is a break."),
 });
 
@@ -69,16 +70,15 @@ const prompt = ai.definePrompt({
     -   **Prioritization:** If preferences are mentioned (e.g., "freshest in the morning"), place more cognitively demanding or "weak" subjects during those times.
     -   **Weekend Balance:** Make the weekend schedule slightly lighter if possible, to allow for rest and consolidation of the week's learning.
 
-4.  **Incorporate Essential Breaks:** You MUST schedule short breaks (e.g., 15-30 minutes, using activities like 'Short walk', 'Stretch break', 'Mindfulness break') between study sessions and a longer break for lunch/dinner. Mark these slots with 'isBreak: true'. A good pattern is 1-2 hours of study followed by a break. If the user mentions a preference like Pomodoro, incorporate that pattern.
+4.  **Incorporate Essential Breaks:** You MUST schedule short breaks (e.g., 15-30 minutes). For each break, set 'isBreak' to true and the 'category' to 'Break'.
 
-5.  **Suggest Varied, Actionable Activities:** For each study block, suggest a specific and effective learning 'activity'. Go beyond simple "reading". Use a mix of techniques to promote deeper learning. Examples:
-    -   "Read Chapter 3 on Beta-blockers, focusing on the mechanism of action."
-    -   "Solve 20 practice problems for Pharmaceutics from the textbook."
-    -   "Active Recall Session: Write down everything you remember about Pharmacognosy topics from a blank sheet of paper."
-    -   "Pomodoro Block (50 min study / 10 min break) on drug interactions."
-    -   "Watch the online lecture on pharmacokinetics and take notes."
+5.  **Suggest Varied, Actionable Activities & Categories:** For each study block, suggest a specific and effective learning 'activity'. Go beyond simple "reading". Use a mix of techniques to promote deeper learning. You MUST also categorize each activity.
+    -   **Category 'Theory':** Use for activities like "Read Chapter 3 on Beta-blockers", "Watch the online lecture on pharmacokinetics".
+    -   **Category 'Revision':** Use for "Active Recall Session", "Solve 20 practice problems", "Review flashcards".
+    -   **Category 'Assignment' / 'Lab' / 'Exam':** Use if the objective mentions specific work.
+    -   For breaks, the activity should be something like 'Short walk', 'Stretch break', or 'Mindfulness break' with the category 'Break'.
 
-6.  **Generate Summary & Strategy Notes:** Provide a brief, encouraging summary of the overall strategy. Offer actionable tips for effective studying, like the importance of consistency, quality sleep, staying hydrated, and using active learning techniques. Explain *why* the plan is structured the way it is (e.g., "I've allocated more time to Pharmacology as you mentioned it's a weak area. The plan also includes breaks to help you stay focused and varies activities to keep you engaged, respecting your preference for morning study.").
+6.  **Generate Summary & Strategy Notes:** Provide a brief, encouraging summary of the overall strategy. Explain *why* the plan is structured the way it is (e.g., "I've allocated more time to Pharmacology as you mentioned it's a weak area. The plan also includes breaks to help you stay focused and varies activities to keep you engaged, respecting your preference for morning study.").
 
 Respond ONLY with the structured JSON output as defined by the schema.
 `,

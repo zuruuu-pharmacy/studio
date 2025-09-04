@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, CalendarDays, Sparkles, Brain, Clock, PlusCircle, XCircle } from "lucide-react";
+import { Loader2, CalendarDays, Sparkles, Brain, Clock, PlusCircle, XCircle, Book, TestTube, FilePen, BookCopy, ShieldAlert } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -24,6 +24,15 @@ const formSchema = z.object({
   learningObjective: z.string().optional(),
 });
 type FormValues = z.infer<typeof formSchema>;
+
+const categoryStyles: { [key: string]: { icon: React.ElementType, color: string } } = {
+    'Theory': { icon: Book, color: 'bg-blue-500/10' },
+    'Revision': { icon: BookCopy, color: 'bg-purple-500/10' },
+    'Lab': { icon: TestTube, color: 'bg-orange-500/10' },
+    'Assignment': { icon: FilePen, color: 'bg-yellow-500/10' },
+    'Exam': { icon: ShieldAlert, color: 'bg-red-500/10' },
+    'Break': { icon: Brain, color: 'bg-green-500/10' },
+};
 
 export function StudyPlannerClient() {
   const [isPending, startTransition] = useTransition();
@@ -138,17 +147,22 @@ export function StudyPlannerClient() {
                                     <TableCell className="font-semibold">{dayPlan.day}</TableCell>
                                     <TableCell>
                                         <div className="flex flex-col gap-2">
-                                            {dayPlan.slots.map((slot, i) => (
-                                                <div key={i} className={`p-2 rounded-md ${slot.isBreak ? 'bg-muted/50' : 'bg-primary/10'}`}>
-                                                    <p className="font-bold text-sm flex items-center gap-2">
-                                                        <Clock className="h-4 w-4"/>
-                                                        {slot.time}
-                                                    </p>
-                                                    <p className="text-sm text-muted-foreground pl-6">
-                                                        {slot.isBreak ? `🧠 ${slot.activity}` : `${slot.subject}: ${slot.activity}`}
-                                                    </p>
-                                                </div>
-                                            ))}
+                                            {dayPlan.slots.map((slot, i) => {
+                                                const Icon = categoryStyles[slot.category]?.icon || Clock;
+                                                const colorClass = categoryStyles[slot.category]?.color || 'bg-muted/50';
+                                                return (
+                                                    <div key={i} className={`p-2 rounded-md ${colorClass}`}>
+                                                        <p className="font-bold text-sm flex items-center gap-2">
+                                                            <Clock className="h-4 w-4"/>
+                                                            {slot.time}
+                                                        </p>
+                                                        <p className="text-sm text-muted-foreground pl-6 flex items-center gap-2">
+                                                            <Icon className="h-4 w-4" />
+                                                            {slot.isBreak ? `${slot.activity}` : `${slot.subject}: ${slot.activity}`}
+                                                        </p>
+                                                    </div>
+                                                )
+                                            })}
                                         </div>
                                     </TableCell>
                                 </TableRow>
