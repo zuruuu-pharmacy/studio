@@ -27,6 +27,7 @@ export interface CalendarEvent {
   description?: string;
   date: Date;
   category: EventCategory;
+  registrationLink?: string;
 }
 
 interface EventCalendarContextType {

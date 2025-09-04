@@ -14,7 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, CalendarIcon, Search } from 'lucide-react';
+import { Plus, Trash2, CalendarIcon, Search, ExternalLink } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +26,7 @@ const eventSchema = z.object({
   description: z.string().optional(),
   date: z.date({ required_error: "A date is required." }),
   category: z.string().min(1, "Please select a category."),
+  registrationLink: z.string().url("Please enter a valid URL.").optional().or(z.literal('')),
 });
 
 type EventFormValues = z.infer<typeof eventSchema>;
@@ -52,6 +53,7 @@ export function EventCalendarClient() {
       description: "",
       date: selectedDate,
       category: "Other",
+      registrationLink: "",
     },
   });
   
@@ -97,6 +99,7 @@ export function EventCalendarClient() {
       description: "",
       date: selectedDate,
       category: "Other",
+      registrationLink: "",
     });
     setIsModalOpen(true);
   }
@@ -107,6 +110,7 @@ export function EventCalendarClient() {
       description: data.description,
       date: data.date,
       category: data.category as EventCategory,
+      registrationLink: data.registrationLink,
     });
     toast({ title: "Event Added", description: `${data.title} has been added to your calendar.` });
     setIsModalOpen(false);
@@ -177,6 +181,9 @@ export function EventCalendarClient() {
                         <FormField name="description" control={form.control} render={({ field }) => (
                             <FormItem><FormLabel>Description (Optional)</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
                         )}/>
+                         <FormField name="registrationLink" control={form.control} render={({ field }) => (
+                            <FormItem><FormLabel>Registration Link (Optional)</FormLabel><FormControl><Input type="url" placeholder="https://zoom.us/..." {...field} /></FormControl><FormMessage /></FormItem>
+                        )}/>
                         <DialogFooter>
                             <Button type="submit">Save Event</Button>
                         </DialogFooter>
@@ -212,11 +219,18 @@ export function EventCalendarClient() {
                         <h3 className="font-semibold text-lg mb-2">{category}</h3>
                         <ul className="space-y-3">
                         {eventsInCategory.map(event => (
-                            <li key={event.id} className="p-3 rounded-lg border bg-muted/50 flex justify-between items-start">
-                            <div>
+                            <li key={event.id} className="p-3 rounded-lg border bg-muted/50 flex justify-between items-start gap-2">
+                            <div className="flex-1">
                                 <Badge className={categoryColors[event.category]}>{event.category}</Badge>
                                 <p className="font-semibold mt-1">{event.title}</p>
                                 {event.description && <p className="text-sm text-muted-foreground">{event.description}</p>}
+                                {event.registrationLink && (
+                                    <a href={event.registrationLink} target="_blank" rel="noopener noreferrer">
+                                        <Button variant="secondary" size="sm" className="mt-2">
+                                            RSVP / Register <ExternalLink className="ml-2 h-4 w-4"/>
+                                        </Button>
+                                    </a>
+                                )}
                             </div>
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
