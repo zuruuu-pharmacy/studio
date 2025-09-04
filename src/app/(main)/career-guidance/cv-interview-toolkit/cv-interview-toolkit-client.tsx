@@ -4,16 +4,9 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Bot, MessageSquare, ListChecks, Sparkles } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
 import Link from "next/link";
 
 export function CvInterviewToolkitClient() {
-  const handleActionClick = (feature: string) => {
-    toast({
-      title: "Coming Soon!",
-      description: `The ${feature} is under development and will be available shortly.`,
-    });
-  };
 
   return (
     <div className="space-y-6">
@@ -40,7 +33,9 @@ export function CvInterviewToolkitClient() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => handleActionClick('AI Cover Letter Generator')}>Generate Cover Letter</Button>
+             <Link href="/career-guidance/cover-letter-generator">
+                <Button>Generate Cover Letter</Button>
+            </Link>
           </CardContent>
         </Card>
       </div>
@@ -53,7 +48,9 @@ export function CvInterviewToolkitClient() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => handleActionClick('Interview Simulator')}>Start Mock Interview</Button>
+            <Link href="/career-guidance/interview-simulator">
+                <Button>Start Mock Interview</Button>
+            </Link>
           </CardContent>
         </Card>
         
@@ -65,7 +62,9 @@ export function CvInterviewToolkitClient() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => handleActionClick('Resource Library')}>Browse Resources</Button>
+            <Link href="/career-guidance/resource-library">
+                <Button>Browse Resources</Button>
+            </Link>
           </CardContent>
         </Card>
     </div>
