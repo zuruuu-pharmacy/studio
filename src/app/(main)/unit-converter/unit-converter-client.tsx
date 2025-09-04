@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,64 +25,93 @@ const conversionFactors: { [key: string]: { [key: string]: number } } = {
   },
 };
 
-const unitLabels: { [key: string]: string } = {
-  g: 'Grams (g)',
-  mg: 'Milligrams (mg)',
-  mcg: 'Micrograms (mcg)',
-  kg: 'Kilograms (kg)',
-  lb: 'Pounds (lb)',
-  L: 'Liters (L)',
-  mL: 'Milliliters (mL)',
+const unitLabels: { [key: string]: { [key: string]: string } } = {
+  mass: {
+    g: 'Grams (g)',
+    mg: 'Milligrams (mg)',
+    mcg: 'Micrograms (mcg)',
+  },
+  weight: {
+    kg: 'Kilograms (kg)',
+    lb: 'Pounds (lb)',
+  },
+  volume: {
+    L: 'Liters (L)',
+    mL: 'Milliliters (mL)',
+  },
+  temperature: {
+    C: 'Celsius (°C)',
+    F: 'Fahrenheit (°F)',
+    K: 'Kelvin (K)',
+  }
 };
 
-type UnitCategory = 'mass' | 'weight' | 'volume';
+type UnitCategory = 'mass' | 'weight' | 'volume' | 'temperature';
 
 export function UnitConverterClient() {
   const [category, setCategory] = useState<UnitCategory>('mass');
   const [inputValue, setInputValue] = useState<string>('1');
   
-  const unitsForCategory = Object.keys(conversionFactors[category]);
+  const unitsForCategory = Object.keys(unitLabels[category]);
   
   const [fromUnit, setFromUnit] = useState<string>(unitsForCategory[0]);
   const [toUnit, setToUnit] = useState<string>(unitsForCategory[1]);
 
-  const handleCategoryChange = (newCategory: UnitCategory) => {
-    setCategory(newCategory);
-    const newUnits = Object.keys(conversionFactors[newCategory]);
+  // Reset units when category changes
+  useEffect(() => {
+    const newUnits = Object.keys(unitLabels[category]);
     setFromUnit(newUnits[0]);
     setToUnit(newUnits[1]);
-  };
+  }, [category]);
 
   const handleSwap = () => {
-    const currentInput = parseFloat(inputValue);
     const newFrom = toUnit;
     const newTo = fromUnit;
+    const newInputValue = convertedValue;
     
     setFromUnit(newFrom);
     setToUnit(newTo);
-    
-    // Also swap the value to reflect the new "from" unit
-    if (!isNaN(currentInput) && conversionFactors[category]) {
-        const fromFactor = conversionFactors[category][newTo];
-        const toFactor = conversionFactors[category][newFrom];
-        const baseValue = currentInput / fromFactor;
-        const convertedValue = baseValue * toFactor;
-        setInputValue(convertedValue.toString());
-    }
+    setInputValue(newInputValue);
   };
   
   const convertedValue = useMemo(() => {
     const value = parseFloat(inputValue);
-    if (isNaN(value) || !conversionFactors[category]) return '';
+    if (isNaN(value)) return '';
 
-    const fromFactor = conversionFactors[category][fromUnit];
-    const toFactor = conversionFactors[category][toUnit];
+    if (category === 'temperature') {
+        let celsiusValue: number;
+        // First, convert input to a base of Celsius
+        if (fromUnit === 'C') {
+            celsiusValue = value;
+        } else if (fromUnit === 'F') {
+            celsiusValue = (value - 32) * 5/9;
+        } else { // Kelvin
+            celsiusValue = value - 273.15;
+        }
 
-    const baseValue = value / fromFactor;
-    const result = baseValue * toFactor;
+        // Then, convert from Celsius to the target unit
+        let result: number;
+        if (toUnit === 'C') {
+            result = celsiusValue;
+        } else if (toUnit === 'F') {
+            result = (celsiusValue * 9/5) + 32;
+        } else { // Kelvin
+            result = celsiusValue + 273.15;
+        }
+        return Number(result.toPrecision(10)).toString();
 
-    // Avoid floating point inaccuracies for display
-    return Number(result.toPrecision(10)).toString();
+    } else {
+        if (!conversionFactors[category]) return '';
+        const fromFactor = conversionFactors[category][fromUnit];
+        const toFactor = conversionFactors[category][toUnit];
+
+        const baseValue = value / fromFactor;
+        const result = baseValue * toFactor;
+
+        // Avoid floating point inaccuracies for display
+        return Number(result.toPrecision(10)).toString();
+    }
+
   }, [inputValue, fromUnit, toUnit, category]);
 
   return (
@@ -93,7 +122,7 @@ export function UnitConverterClient() {
       <CardContent className="space-y-6">
         <div>
           <Label>Conversion Type</Label>
-          <Select value={category} onValueChange={(value) => handleCategoryChange(value as UnitCategory)}>
+          <Select value={category} onValueChange={(value) => setCategory(value as UnitCategory)}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -101,6 +130,7 @@ export function UnitConverterClient() {
               <SelectItem value="mass">Mass</SelectItem>
               <SelectItem value="weight">Weight</SelectItem>
               <SelectItem value="volume">Volume</SelectItem>
+              <SelectItem value="temperature">Temperature</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -120,7 +150,7 @@ export function UnitConverterClient() {
               </SelectTrigger>
               <SelectContent>
                 {unitsForCategory.map(unit => (
-                  <SelectItem key={unit} value={unit}>{unitLabels[unit]}</SelectItem>
+                  <SelectItem key={unit} value={unit}>{unitLabels[category][unit]}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -141,7 +171,7 @@ export function UnitConverterClient() {
               </SelectTrigger>
               <SelectContent>
                  {unitsForCategory.map(unit => (
-                  <SelectItem key={unit} value={unit}>{unitLabels[unit]}</SelectItem>
+                  <SelectItem key={unit} value={unit}>{unitLabels[category][unit]}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
