@@ -22,9 +22,9 @@ const MOCK_SCANNABLES = [
 ];
 
 const riskColors: { [key: string]: string } = {
-    red: 'bg-red-500',
-    amber: 'bg-amber-500',
-    green: 'bg-green-500'
+    red: 'border-red-500',
+    amber: 'border-amber-500',
+    green: 'border-green-500'
 }
 
 // Helper to find a drug by name in your data
@@ -63,7 +63,11 @@ function CompactOverlay({ item, onScan }: { item: { type: string, name: string, 
 
     const handleActionClick = (e: React.MouseEvent, action: string) => {
         e.stopPropagation();
-        toast({ title: "Coming Soon!", description: `${action} functionality will be implemented soon.`});
+        if (action === "Save") {
+            toast({ title: "Saved to Notes — tagged: Pharmacology > Analgesics", description: "This is a simulated action."});
+        } else {
+            toast({ title: "Coming Soon!", description: `${action} functionality will be implemented soon.`});
+        }
     };
     
     return (
@@ -72,8 +76,10 @@ function CompactOverlay({ item, onScan }: { item: { type: string, name: string, 
             style={item.stripPosition}
         >
             <div 
-                className="bg-white/90 dark:bg-black/90 backdrop-blur-sm p-2 rounded-lg shadow-xl w-64 border-l-4"
-                style={{ borderColor: riskColors[item.risk] }}
+                className={cn(
+                    "bg-white/90 dark:bg-black/90 backdrop-blur-sm p-2 rounded-lg shadow-xl w-64 border-l-4",
+                    riskColors[item.risk] || 'border-gray-500'
+                )}
             >
                 <div className="flex gap-2 cursor-pointer" onClick={() => onScan(item.name, item.type)}>
                     <item.icon className="h-6 w-6 text-primary mt-1" />
@@ -145,7 +151,7 @@ export function ScanMedicineStripClient() {
         setScannedItem({ drug: details, type: type });
         setIsModalOpen(true);
     } else {
-        toast({ variant: "destructive", title: "Drug Not Found", description: `Could not find details for ${drugName}.`})
+        toast({ variant: "destructive", title: "No confident match.", description: `Tap ‘Manual search’ or upload clearer photos.`})
     }
   }
 
@@ -172,7 +178,7 @@ export function ScanMedicineStripClient() {
           <CardTitle>Medicine Strip Scanner</CardTitle>
           <CardDescription>
             {hasCameraPermission 
-              ? "Live camera feed active. Tap a card to see details."
+              ? "Point your camera at medicine strip, bottle label, or herb."
               : "Enable your camera to scan medicine text, barcodes, or plant specimens."
             }
           </CardDescription>
@@ -229,7 +235,7 @@ export function ScanMedicineStripClient() {
                             <Alert variant="destructive">
                                 <AlertTriangle className="h-4 w-4"/>
                                 <AlertTitle>High-Risk Medication</AlertTitle>
-                                <AlertDescription>Check dose & monitoring. Not for patient dosing without supervision.</AlertDescription>
+                                <AlertDescription>Confirm dose & monitoring with supervisor.</AlertDescription>
                             </Alert>
                         )}
                         
@@ -237,7 +243,7 @@ export function ScanMedicineStripClient() {
                             <Alert>
                                 <AlertTriangle className="h-4 w-4"/>
                                 <AlertTitle>Possible Identification Only</AlertTitle>
-                                <AlertDescription>This identification is a suggestion. Always verify herb specimens with a qualified expert or reference text.</AlertDescription>
+                                <AlertDescription>Possible match: {scannedItem.drug.name}. Confirm with specimen.</AlertDescription>
                             </Alert>
                         )}
 
@@ -246,7 +252,7 @@ export function ScanMedicineStripClient() {
                             <CardContent className="space-y-3">
                                <DetailSection title="Scan Info" content={`Source: ${getRecognitionSource(scannedItem.type).source} | Confidence: ${getRecognitionSource(scannedItem.type).confidence}`} icon={Barcode}/>
                                <DetailSection title="Batch / Expiry" content={"Not detected on packaging."} icon={Calendar}/>
-                               <Button variant="link" size="sm" className="p-0 h-auto" onClick={() => toast({title: "Coming Soon!", description: "This would open a secure form to report an issue with this drug's data or packaging to administrators, with options for regulatory reporting."})}>Report Issue</Button>
+                               <Button variant="link" size="sm" className="p-0 h-auto" onClick={() => toast({title: "Report this product as suspicious?", description: "Your report will be shared with campus admin."})}>Report Incorrect Info</Button>
                             </CardContent>
                         </Card>
 
@@ -287,7 +293,7 @@ export function ScanMedicineStripClient() {
                         <Card>
                             <CardHeader><CardTitle className="text-lg">Learning & App Actions</CardTitle></CardHeader>
                             <CardContent className="flex flex-wrap gap-2">
-                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "Scan saved to your private Notes Organizer. You can delete it at any time."})}><Save className="mr-2"/>Save Study Note</Button>
+                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Saved to Notes — tagged: Pharmacology > Analgesics.", description: "This is a simulated action."})}><Save className="mr-2"/>Save Study Note</Button>
                                 <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will add flashcards to your deck."})}><BookCopy className="mr-2"/>Make Flashcards</Button>
                                 <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will launch a quiz on this drug."})}><HelpCircle className="mr-2"/>Quiz Me</Button>
                                 <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will launch a simulated counseling session."})}><User className="mr-2"/>Counseling Mode</Button>
