@@ -2,10 +2,9 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { BarChart, Briefcase, CheckCircle, Lightbulb, Target, Star } from "lucide-react";
+import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -14,81 +13,90 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart as RechartsBarChart } from "recharts";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
-const satisfactionChartData = [
-  { item: "Mentor Sessions", rating: 4.5 },
-  { item: "CV Workshop", rating: 4.2 },
-  { item: "Industry Talk", rating: 4.8 },
-  { item: "Licensing Seminar", rating: 4.1 },
-];
-
-const cohortChartData = [
-    { path: "Clinical", students: 45, color: "hsl(var(--chart-1))" },
-    { path: "Industry", students: 25, color: "hsl(var(--chart-2))"  },
-    { path: "Community", students: 20, color: "hsl(var(--chart-3))"  },
-    { path: "Regulatory", students: 10, color: "hsl(var(--chart-4))"  },
-];
-
-const chartConfig = {
-  students: {
-    label: "Students",
+const masteryData = [
+  {
+    subject: "Pharmacology",
+    masteryScore: 92,
+    trend: "positive",
+    dataDensity: "High",
   },
-} satisfies ChartConfig
+  {
+    subject: "Pharmaceutics",
+    masteryScore: 68,
+    trend: "positive",
+    dataDensity: "Medium",
+  },
+  {
+    subject: "Pharmacognosy",
+    masteryScore: 75,
+    trend: "neutral",
+    dataDensity: "High",
+  },
+  {
+    subject: "Pathology",
+    masteryScore: 55,
+    trend: "negative",
+    dataDensity: "Low",
+  },
+];
+
+const getMasteryColor = (score: number) => {
+  if (score >= 85) return "text-green-500";
+  if (score >= 60) return "text-amber-500";
+  return "text-red-500";
+};
+
+const getTrendIcon = (trend: string) => {
+    switch (trend) {
+        case 'positive': return <TrendingUp className="h-5 w-5 text-green-500"/>;
+        case 'negative': return <TrendingDown className="h-5 w-5 text-red-500"/>;
+        default: return <Minus className="h-5 w-5 text-muted-foreground"/>;
+    }
+}
 
 export function ProgressTrackerClient() {
   return (
     <div className="space-y-6">
-      <Card>
+       <Card>
         <CardHeader>
-          <CardTitle>Your Career Readiness</CardTitle>
-          <CardDescription>Target Role: Clinical Research Associate</CardDescription>
+          <CardTitle className="flex items-center gap-2"><BarChart/>Subject Mastery Overview</CardTitle>
+          <CardDescription>Your calculated mastery scores across different subjects based on all activities.</CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center text-center">
-            <div className="text-7xl font-bold text-primary">82%</div>
-            <p className="text-muted-foreground mb-4">Readiness Score</p>
-            <Progress value={82} className="w-full max-w-sm" />
-             <p className="text-xs text-muted-foreground mt-2">Based on your completed milestones and skills.</p>
+        <CardContent>
+           <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead>Subject</TableHead>
+                    <TableHead className="text-center">Mastery Score</TableHead>
+                    <TableHead className="text-center">Trend (Last 2 wks)</TableHead>
+                    <TableHead className="text-center">Data Density</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {masteryData.map(item => (
+                    <TableRow key={item.subject}>
+                        <TableCell className="font-semibold">{item.subject}</TableCell>
+                        <TableCell className={cn("text-center font-bold text-2xl", getMasteryColor(item.masteryScore))}>
+                            {item.masteryScore}%
+                        </TableCell>
+                        <TableCell className="flex justify-center items-center">
+                            {getTrendIcon(item.trend)}
+                        </TableCell>
+                         <TableCell className="text-center">
+                            <Badge variant={item.dataDensity === 'High' ? 'default' : item.dataDensity === 'Medium' ? 'secondary' : 'outline'}>
+                                {item.dataDensity}
+                            </Badge>
+                        </TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+           </Table>
         </CardContent>
       </Card>
 
-       <div className="grid lg:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Target /> Roadmap Progress</CardTitle>
-              <Progress value={60} className="mt-2"/>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">1 of 3 roadmaps active.</p>
-            <p className="text-sm text-muted-foreground">6 of 10 milestones completed.</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-              <CardTitle className="flex items-center gap-2"><CheckCircle /> Skills & Certs</CardTitle>
-              <Progress value={75} className="mt-2"/>
-          </CardHeader>
-          <CardContent>
-             <p className="text-sm text-muted-foreground">3 of 4 core skills acquired.</p>
-             <p className="text-sm text-muted-foreground">1 of 2 certifications in progress.</p>
-          </CardContent>
-        </Card>
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Briefcase />Application Funnel</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableBody>
-                        <TableRow><TableCell>Applied</TableCell><TableCell className="text-right font-bold">5</TableCell></TableRow>
-                        <TableRow><TableCell>Interviews</TableCell><TableCell className="text-right font-bold">2</TableCell></TableRow>
-                        <TableRow><TableCell>Offers</TableCell><TableCell className="text-right font-bold">1</TableCell></TableRow>
-                    </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
-      </div>
 
        <Card>
         <CardHeader>
@@ -98,77 +106,13 @@ export function ProgressTrackerClient() {
             <Alert>
                 <AlertTitle className="font-bold">Study Rebalancing Suggestion</AlertTitle>
                 <AlertDescription>
-                    Your progress in Pharmacology is strong, but your scores in Pharmaceutics are lagging. Consider allocating one more study session to Pharmaceutics this week to ensure you are prepared for the upcoming exam.
+                    Your mastery in <strong className="text-green-500">Pharmacology</strong> is excellent. However, your score in <strong className="text-red-500">Pathology</strong> is low and trending downwards with low data density. Consider allocating one more study session to Pathology this week, focusing on foundational topics to build evidence of your learning.
                 </AlertDescription>
             </Alert>
         </CardContent>
        </Card>
-       
-       <div className="grid lg:grid-cols-2 gap-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Star/>Satisfaction Scores</CardTitle>
-                    <CardDescription>Average student feedback on career events.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <ChartContainer config={{
-                        rating: {
-                            label: "Avg. Rating",
-                            color: "hsl(var(--chart-2))",
-                        }
-                    }} className="h-[250px] w-full">
-                        <RechartsBarChart
-                            data={satisfactionChartData}
-                            layout="vertical"
-                            margin={{ left: 10, right: 10, top: 10, bottom: 10 }}
-                        >
-                            <YAxis
-                                dataKey="item"
-                                type="category"
-                                tickLine={false}
-                                axisLine={false}
-                                tickMargin={10}
-                                width={110}
-                                className="text-xs"
-                            />
-                            <XAxis dataKey="rating" type="number" hide />
-                             <ChartTooltip
-                                cursor={false}
-                                content={<ChartTooltipContent hideLabel />}
-                            />
-                            <Bar dataKey="rating" layout="vertical" radius={5} fill="var(--color-rating)">
-                            </Bar>
-                        </RechartsBarChart>
-                    </ChartContainer>
-                </CardContent>
-            </Card>
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><BarChart/> Cohort Placement Analytics</CardTitle>
-                    <CardDescription>Anonymized job placement outcomes for your graduating class.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                   <ChartContainer config={chartConfig} className="h-[250px] w-full">
-                        <RechartsBarChart data={cohortChartData} margin={{ top: 20 }}>
-                            <CartesianGrid vertical={false} />
-                            <XAxis
-                                dataKey="path"
-                                tickLine={false}
-                                axisLine={false}
-                                tickMargin={8}
-                                className="text-xs"
-                            />
-                             <ChartTooltip
-                                cursor={false}
-                                content={<ChartTooltipContent hideLabel />}
-                            />
-                            <Bar dataKey="students" radius={8}>
-                            </Bar>
-                        </RechartsBarChart>
-                    </ChartContainer>
-                </CardContent>
-            </Card>
-       </div>
+
     </div>
   );
 }
+
