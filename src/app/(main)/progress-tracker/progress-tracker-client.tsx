@@ -4,7 +4,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus, HelpCircle, FileText, FlaskConical } from "lucide-react";
+import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus, HelpCircle, FileText, FlaskConical, BrainCircuit } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
 
 const masteryData = [
   {
@@ -136,7 +138,56 @@ export function ProgressTrackerClient() {
                 </div>
             </CardContent>
        </Card>
+       
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><BrainCircuit /> How Your Mastery Score is Calculated</CardTitle>
+                <CardDescription>Our algorithm combines multiple data points to create a holistic view of your understanding.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="step-a">
+                        <AccordionTrigger>Step A: Normalization & Recency</AccordionTrigger>
+                        <AccordionContent>
+                            All scores from quizzes, assignments, and practice sessions are standardized to a 0–100 scale. More recent activities are given a higher weight to reflect your current knowledge state.
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="step-b">
+                        <AccordionTrigger>Step B: Weighted Components</AccordionTrigger>
+                        <AccordionContent>
+                            <p>Your Mastery Score is a weighted average of different activities:</p>
+                            <ul className="list-disc pl-5 mt-2 text-muted-foreground">
+                                <li><strong>Latest quiz average:</strong> 40%</li>
+                                <li><strong>Practice accuracy (flashcards, drills):</strong> 25%</li>
+                                <li><strong>Assignment/lab performance:</strong> 20%</li>
+                                <li><strong>Engagement time & completion:</strong> 10%</li>
+                                <li><strong>Teacher/OSCE score (if available):</strong> 5%</li>
+                            </ul>
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="step-c">
+                        <AccordionTrigger>Step C: Forgetting Penalty</AccordionTrigger>
+                        <AccordionContent>
+                            To encourage continuous review, a small downward adjustment is applied if a topic hasn't been reviewed recently. The score's weight is reduced if you haven't interacted with the topic for over 30 days without a dedicated review session.
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="step-d">
+                        <AccordionTrigger>Step D: Error Type Classification</AccordionTrigger>
+                        <AccordionContent>
+                            <p>We use AI to categorize errors to provide targeted feedback:</p>
+                             <ul className="list-disc pl-5 mt-2 text-muted-foreground">
+                                <li><strong>Conceptual:</strong> Confusing core principles.</li>
+                                <li><strong>Procedural:</strong> Missing steps in a calculation or process.</li>
+                                <li><strong>Factual:</strong> Forgetting a key fact, like a dose or name.</li>
+                                <li><strong>Application:</strong> Unable to apply a concept to a case study.</li>
+                            </ul>
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+            </CardContent>
+        </Card>
 
     </div>
   );
 }
+
