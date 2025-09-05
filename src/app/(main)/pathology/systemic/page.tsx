@@ -35,6 +35,17 @@ function DetailSection({ title, children, icon: Icon }: { title: string, childre
 function DiseaseDetail({ disease }: { disease: Disease }) {
   return (
     <Tabs defaultValue="overview" className="w-full">
+        <div className="mb-4">
+            {disease.synonyms && <p className="text-sm text-muted-foreground italic">Also known as: {disease.synonyms}</p>}
+            <div className="flex flex-wrap gap-2 mt-2">
+                <Badge variant="outline">{disease.tags.organ}</Badge>
+                <Badge variant="outline">{disease.tags.system}</Badge>
+                <Badge variant="outline">{disease.tags.category}</Badge>
+                <Badge variant={disease.tags.level === 'Basic' ? 'secondary' : disease.tags.level === 'Intermediate' ? 'default' : 'destructive'}>
+                    {disease.tags.level}
+                </Badge>
+            </div>
+        </div>
       <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="pathogenesis">Pathogenesis</TabsTrigger>
