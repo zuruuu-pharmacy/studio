@@ -2043,5 +2043,124 @@ export const drugTreeData: DrugClass[] = [
         drugs: []
       }
     ]
-  }
+  },
+  {
+    name: "Endocrine Drugs",
+    pharmaFocus: "Sterile preparations (insulin), hormone assays, long-acting formulations.",
+    subclasses: [
+      {
+        name: "Antidiabetic drugs",
+        subclasses: [
+          {
+            name: "Insulins",
+            drugs: [
+              {
+                name: "Insulin Lispro",
+                classification: "Rapid-acting insulin",
+                moa: "Promotes cellular uptake of glucose and regulates carbohydrate, protein, and fat metabolism.",
+                therapeuticUses: "Type 1 and Type 2 diabetes mellitus.",
+                adrs: "Hypoglycemia, weight gain, lipodystrophy at injection site.",
+                contraindications: "During episodes of hypoglycemia.",
+                pharmaApplications: {
+                  dosageForms: "Solution for injection (vials, prefilled pens).",
+                  formulations: "Humalog (Brand).",
+                  storage: "Refrigerate until first use. Once in use, can be kept at room temperature for 28 days.",
+                },
+                analyticalMethods: {
+                  qualitative: "Immunoassay.",
+                  quantitative: "HPLC, bioassay.",
+                  pharmacopoeial: "USP, BP.",
+                },
+                specialNotes: "Should be administered 15 minutes before a meal or immediately after.",
+              },
+            ],
+          },
+          {
+            name: "Oral Hypoglycemics",
+            drugs: [
+                {
+                    name: "Metformin",
+                    classification: "Biguanide",
+                    moa: "Decreases hepatic glucose production, decreases intestinal absorption of glucose, and improves insulin sensitivity by increasing peripheral glucose uptake and utilization.",
+                    therapeuticUses: "First-line therapy for type 2 diabetes.",
+                    adrs: "Diarrhea, nausea, flatulence, lactic acidosis (rare but severe).",
+                    contraindications: "Severe renal dysfunction (eGFR < 30 mL/min/1.73m²), acute or chronic metabolic acidosis.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets (immediate-release, extended-release).",
+                        formulations: "Glucophage (Brand).",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "HPLC.",
+                        quantitative: "HPLC, titration.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Does not cause hypoglycemia when used as monotherapy. Should be temporarily discontinued before iodinated contrast procedures.",
+                },
+            ]
+          }
+        ]
+      },
+      {
+        name: "Thyroid drugs",
+        drugs: [
+            {
+                name: "Levothyroxine",
+                classification: "Thyroid hormone",
+                moa: "A synthetic form of the natural thyroid hormone, thyroxine (T4). It is converted to its active metabolite, T3, to exert its effects.",
+                therapeuticUses: "Hypothyroidism, pituitary TSH suppression.",
+                adrs: "Symptoms of hyperthyroidism if dose is too high (tachycardia, anxiety, weight loss).",
+                contraindications: "Acute MI, uncorrected adrenal insufficiency.",
+                pharmaApplications: {
+                    dosageForms: "Tablets, capsules, injection.",
+                    formulations: "Synthroid (Brand), Levoxyl.",
+                    storage: "Store at room temperature, protect from light and moisture.",
+                },
+                analyticalMethods: {
+                    qualitative: "HPLC.",
+                    quantitative: "HPLC.",
+                    pharmacopoeial: "USP, BP.",
+                },
+                specialNotes: "Narrow therapeutic index drug. Must be taken on an empty stomach, 30-60 minutes before breakfast. Many drug and food interactions affect its absorption.",
+            },
+        ]
+      },
+      {
+        name: "Corticosteroids",
+        drugs: [
+            {
+                name: "Prednisone",
+                classification: "Glucocorticoid",
+                moa: "A synthetic corticosteroid that has anti-inflammatory and immunosuppressant properties. It modifies the body's immune responses to diverse stimuli.",
+                therapeuticUses: "Wide range of inflammatory and autoimmune conditions (e.g., asthma, RA, IBD), and for immunosuppression after organ transplant.",
+                adrs: "Short-term: hyperglycemia, insomnia, mood changes. Long-term: Cushing's syndrome, osteoporosis, adrenal suppression, immunosuppression.",
+                contraindications: "Systemic fungal infections, live virus vaccinations.",
+                pharmaApplications: {
+                    dosageForms: "Tablets, oral solution.",
+                    formulations: "Deltasone (Brand).",
+                    storage: "Store at room temperature.",
+                },
+                analyticalMethods: {
+                    qualitative: "HPLC, TLC.",
+                    quantitative: "HPLC.",
+                    pharmacopoeial: "USP, BP.",
+                },
+                specialNotes: "A prodrug, converted to its active form prednisolone in the liver. Must be tapered off after long-term use to prevent adrenal crisis.",
+            },
+        ]
+      },
+      {
+        name: "Sex hormones",
+        drugs: [],
+      },
+      {
+        name: "Contraceptives",
+        drugs: [],
+      },
+      {
+        name: "Drugs for osteoporosis",
+        drugs: [],
+      }
+    ]
+  },
 ];
