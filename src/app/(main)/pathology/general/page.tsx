@@ -4,7 +4,7 @@
 import { BackButton } from "@/components/back-button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Microscope, ShieldAlert, Heart, GitBranch, Stethoscope, Dna, FileText, Bot, Book, Zap } from 'lucide-react';
+import { Microscope, ShieldAlert, Heart, GitBranch, Stethoscope, Dna, FileText, Bot, Book, Zap, Flame, Droplet } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -24,7 +24,7 @@ const generalPathologyTopics = [
     },
     {
         title: "Inflammation (Acute and Chronic)",
-        icon: Heart,
+        icon: Flame,
         overview: "Inflammation is the body's protective response to eliminate the initial cause of cell injury, clear out necrotic cells, and initiate tissue repair. It is divided into acute inflammation (rapid onset, short duration, characterized by neutrophils) and chronic inflammation (longer duration, involving lymphocytes and macrophages).",
         detailedNotes: "The five cardinal signs of acute inflammation are redness (rubor), swelling (tumor), heat (calor), pain (dolor), and loss of function (functio laesa). Key events include vasodilation, increased vascular permeability, and the migration of leukocytes from blood vessels to the site of injury (extravasation). Chemical mediators like histamine, prostaglandins, and cytokines orchestrate this process.",
         visualLearning: {
@@ -60,7 +60,7 @@ const generalPathologyTopics = [
     },
     {
         title: "Hemodynamic Disorders",
-        icon: Stethoscope,
+        icon: Droplet,
         overview: "This topic concerns diseases related to blood flow and the integrity of the circulatory system. It encompasses a spectrum of conditions from localized fluid imbalances like edema to systemic catastrophes like shock.",
         detailedNotes: "Key concepts include: Edema (excess fluid in interstitial spaces), Hyperemia (active increase in blood flow) vs. Congestion (passive decrease in blood outflow), Hemorrhage (extravasation of blood), Thrombosis (inappropriate clot formation), Embolism (intravascular solid, liquid, or gas mass carried by blood), Infarction (ischemic necrosis), and Shock (systemic hypoperfusion).",
          visualLearning: {
