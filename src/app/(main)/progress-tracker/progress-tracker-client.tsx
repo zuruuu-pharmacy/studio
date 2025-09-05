@@ -4,7 +4,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus, HelpCircle, FileText, FlaskConical, BrainCircuit, Book, Zap, ListOrdered, BookCopy } from "lucide-react";
+import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus, HelpCircle, FileText, FlaskConical, BrainCircuit, Book, Zap, ListOrdered, BookCopy, Bell } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -81,6 +81,12 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
+const mockNudges = [
+    { type: 'digest', title: "Daily Focus", description: "Top 3 topics to focus on today: Inflammation Pathways, Tablet Dissolution Rates, Alkaloid Identification.", icon: Lightbulb, color: "text-primary"},
+    { type: 'alert', title: "Mastery Alert: Pathology", description: "Your mastery score has dropped from 65% to 55%. A 30-minute review session is recommended.", icon: TrendingDown, color: "text-destructive"},
+    { type: 'milestone', title: "Milestone Reached!", description: "Congratulations! You've achieved 92% mastery in Pharmacology.", icon: Target, color: "text-green-500"},
+]
+
 
 export function ProgressTrackerClient() {
   const overallMastery = Math.round(masteryData.reduce((acc, item) => acc + item.masteryScore, 0) / masteryData.length);
@@ -148,35 +154,16 @@ export function ProgressTrackerClient() {
            </Card>
 
             <Card>
-                 <CardHeader><CardTitle className="flex items-center gap-2"><Lightbulb className="text-primary"/>AI Recommended Actions</CardTitle><CardDescription>Your personalized study plan based on identified weak areas.</CardDescription></CardHeader>
-                 <CardContent>
-                    {prioritizedWeakness.length > 0 ? (
-                        <div className="space-y-3">
-                        {prioritizedWeakness.slice(0, 2).map(item => (
-                            <Card key={item.subject} className="bg-background/70">
-                                <CardHeader className="p-4">
-                                     <CardTitle className="text-base flex justify-between items-center">
-                                        <span>{item.subject}</span>
-                                        <span className={cn("font-bold", getMasteryColor(item.masteryScore))}>{item.masteryScore}%</span>
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-4 pt-0">
-                                   <p className="text-sm text-muted-foreground mb-3">{recommendationMap[item.subject]?.rec || 'Review recent topics to improve your score.'}</p>
-                                   <div className="flex gap-2">
-                                    {(recommendationMap[item.subject]?.actions || []).map(action => (
-                                        <Button key={action.label} size="sm" variant="secondary" onClick={() => toast({title: "Action Sent!", description: action.toast})}>
-                                            <action.icon className="mr-2"/>{action.label}
-                                        </Button>
-                                    ))}
-                                   </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                        </div>
-                    ) : (
-                        <p className="text-sm text-muted-foreground">No specific weaknesses detected. Keep up the great work!</p>
-                    )}
-                 </CardContent>
+                <CardHeader><CardTitle className="flex items-center gap-2"><Bell className="text-primary"/>Notifications &amp; Nudges</CardTitle><CardDescription>Your AI-powered alerts and recommendations.</CardDescription></CardHeader>
+                <CardContent className="space-y-3">
+                    {mockNudges.map(nudge => (
+                        <Alert key={nudge.title}>
+                            <nudge.icon className={cn("h-4 w-4", nudge.color)} />
+                            <AlertTitle>{nudge.title}</AlertTitle>
+                            <AlertDescription>{nudge.description}</AlertDescription>
+                        </Alert>
+                    ))}
+                </CardContent>
             </Card>
 
         </div>
