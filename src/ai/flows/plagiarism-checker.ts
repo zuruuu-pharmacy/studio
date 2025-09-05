@@ -63,13 +63,16 @@ const prompt = ai.definePrompt({
 
 1.  **Analyze & OCR:** Read the document and extract all text.
 2.  **Citation Awareness:** You MUST differentiate between unoriginal text and properly cited text. If a passage is a direct match but is enclosed in quotation marks ("...") and has a clear in-text citation (e.g., Smith, 2021), it should NOT be flagged as plagiarism.
-3.  **Weighted Scoring:** You MUST calculate the 'overall_similarity_percentage' based on a weighted system:
+3.  **Handle Edge Cases:**
+    *   **Common Phrases & Jargon:** Do NOT flag common technical phrases or domain-specific jargon (e.g., "pharmacokinetic parameters include clearance...", "The patient was diagnosed with...").
+    *   **Methods/Recipes:** Treat standard procedural text (e.g., "The solution was heated to 100°C for 10 minutes.") with a lower penalty or recognize it as standard methodology.
+4.  **Weighted Scoring:** You MUST calculate the 'overall_similarity_percentage' based on a weighted system:
     -   **High Weight:** Verbatim (copy-paste) matches.
     -   **Moderate Weight:** Paraphrased or semantically similar matches.
     -   **Zero Weight:** Properly quoted and cited passages. Do not include these in the similarity score calculation.
-4.  **Identify Segments:** For each segment of potential plagiarism (verbatim or paraphrased), identify the 'original_text' and a plausible 'source' (e.g., "Wikipedia article on 'Beta-blockers'", "Journal of Pharmacology, 2021"). Assign a 'similarity_score' from 0 to 1 for that specific segment.
-5.  **Generate Remediation Suggestion:** For each flagged segment, you MUST provide a concise, actionable 'remediation_suggestion'. This should explain why it was flagged and offer a clear next step. For example: "This sentence is a verbatim match. To fix this, you should either put it in quotation marks and add a citation, or rephrase it entirely in your own words and then cite the source."
-6.  **Summarize:** Provide a final 'summary' of your findings. If similarity is high (>25%), recommend significant revisions. If moderate (10-25%), recommend a review. If low (<10%), confirm originality.
+5.  **Identify Segments:** For each segment of potential plagiarism (verbatim or paraphrased), identify the 'original_text' and a plausible 'source' (e.g., "Wikipedia article on 'Beta-blockers'", "Journal of Pharmacology, 2021"). Assign a 'similarity_score' from 0 to 1 for that specific segment.
+6.  **Generate Remediation Suggestion:** For each flagged segment, you MUST provide a concise, actionable 'remediation_suggestion'. This should explain why it was flagged and offer a clear next step. For example: "This sentence is a verbatim match. To fix this, you should either put it in quotation marks and add a citation, or rephrase it entirely in your own words and then cite the source."
+7.  **Summarize:** Provide a final 'summary' of your findings. If similarity is high (>25%), recommend significant revisions. If moderate (10-25%), recommend a review. If low (<10%), confirm originality.
 
 **Part 2: Grammar & Clarity Assistant**
 
