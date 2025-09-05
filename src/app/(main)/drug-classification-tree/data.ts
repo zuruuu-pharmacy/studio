@@ -222,7 +222,7 @@ export const drugTreeData: DrugClass[] = [
                 name: "Eszopiclone",
                 classification: "Non-benzodiazepine hypnotic (Z-drug), Cyclopyrrolone derivative",
                 moa: "Interacts with GABAA receptor complexes at binding domains located close to or allosterically coupled to benzodiazepine receptors.",
-                therapeuticUses: "Treatment of insomnia (improves sleep onset and maintenance).",
+                therapeuticUses: "Treatment of insomnia (improves sleep onset and sleep maintenance).",
                 adrs: "Unpleasant bitter/metallic taste, headache, dry mouth, somnolence.",
                 contraindications: "Known hypersensitivity.",
                 pharmaApplications: {
@@ -1443,6 +1443,160 @@ export const drugTreeData: DrugClass[] = [
       {
         name: "Ganglion Blockers",
         drugs: [],
+      },
+    ]
+  },
+  {
+    name: "Cardiovascular Drugs",
+    subclasses: [
+      {
+        name: "Antihypertensives",
+        subclasses: [
+          {
+            name: "ACE Inhibitors",
+            drugs: [
+              {
+                name: "Captopril",
+                classification: "ACE Inhibitor",
+                moa: "Inhibits Angiotensin-Converting Enzyme (ACE), preventing the conversion of angiotensin I to angiotensin II, a potent vasoconstrictor. This leads to vasodilation and reduced aldosterone secretion.",
+                therapeuticUses: "Hypertension, heart failure, post-myocardial infarction.",
+                adrs: "Dry cough, hyperkalemia, hypotension, angioedema (rare but serious).",
+                contraindications: "History of angioedema, bilateral renal artery stenosis, pregnancy.",
+                pharmaApplications: {
+                  dosageForms: "Tablets.",
+                  formulations: "Capoten (Brand).",
+                  storage: "Store at room temperature, protect from moisture.",
+                },
+                analyticalMethods: {
+                  qualitative: "HPLC, IR spectroscopy.",
+                  quantitative: "HPLC, Titration.",
+                  pharmacopoeial: "USP, BP.",
+                },
+                specialNotes: "First ACE inhibitor developed. Shorter half-life requires more frequent dosing compared to newer agents.",
+              },
+            ],
+          },
+          {
+            name: "ARBs",
+            drugs: [
+              {
+                name: "Losartan",
+                classification: "Angiotensin II Receptor Blocker (ARB)",
+                moa: "Selectively blocks the AT1 receptor, preventing angiotensin II from binding. This causes vasodilation and reduces aldosterone secretion, lowering blood pressure.",
+                therapeuticUses: "Hypertension, diabetic nephropathy, heart failure.",
+                adrs: "Dizziness, hyperkalemia. Lower incidence of cough compared to ACE inhibitors.",
+                contraindications: "Pregnancy, bilateral renal artery stenosis.",
+                pharmaApplications: {
+                  dosageForms: "Tablets.",
+                  formulations: "Cozaar (Brand).",
+                  storage: "Store at room temperature.",
+                },
+                analyticalMethods: {
+                  qualitative: "HPLC, Mass Spectrometry.",
+                  quantitative: "HPLC with UV detection.",
+                  pharmacopoeial: "USP, BP.",
+                },
+                specialNotes: "A good alternative for patients who cannot tolerate the cough associated with ACE inhibitors.",
+              },
+            ],
+          },
+          {
+            name: "Beta-blockers",
+            drugs: [
+              {
+                name: "Metoprolol",
+                classification: "Cardioselective Beta-1 Blocker",
+                moa: "Selectively blocks beta-1 adrenergic receptors in the heart, leading to decreased heart rate, myocardial contractility, and blood pressure.",
+                therapeuticUses: "Hypertension, angina, post-myocardial infarction, heart failure.",
+                adrs: "Fatigue, dizziness, bradycardia, hypotension.",
+                contraindications: "Severe bradycardia, heart block (2nd or 3rd degree), decompensated heart failure.",
+                pharmaApplications: {
+                  dosageForms: "Tablets (immediate-release: tartrate; extended-release: succinate), injection.",
+                  formulations: "Lopressor (tartrate), Toprol-XL (succinate).",
+                  storage: "Store at room temperature, protect from light.",
+                },
+                analyticalMethods: {
+                  qualitative: "HPLC.",
+                  quantitative: "HPLC.",
+                  pharmacopoeial: "USP, BP.",
+                },
+                specialNotes: "Cardioselectivity is dose-dependent; at higher doses, it can also block beta-2 receptors. The succinate salt (Toprol-XL) is approved for heart failure.",
+              },
+            ],
+          },
+          {
+            name: "Calcium Channel Blockers",
+            drugs: [
+               {
+                name: "Amlodipine",
+                classification: "Dihydropyridine Calcium Channel Blocker",
+                moa: "Inhibits the influx of calcium ions into vascular smooth muscle and cardiac muscle, causing peripheral arterial vasodilation and a reduction in blood pressure.",
+                therapeuticUses: "Hypertension, angina.",
+                adrs: "Peripheral edema, dizziness, flushing, headache, fatigue.",
+                contraindications: "Known hypersensitivity.",
+                pharmaApplications: {
+                  dosageForms: "Tablets.",
+                  formulations: "Norvasc (Brand).",
+                  storage: "Store at room temperature.",
+                },
+                analyticalMethods: {
+                  qualitative: "HPLC, IR spectroscopy.",
+                  quantitative: "HPLC with UV detection.",
+                  pharmacopoeial: "USP, BP.",
+                },
+                specialNotes: "Long half-life allows for once-daily dosing. Peripheral edema is a common side effect due to vasodilation.",
+              },
+            ],
+          },
+           {
+            name: "Diuretics",
+            drugs: [
+               {
+                name: "Hydrochlorothiazide",
+                classification: "Thiazide Diuretic",
+                moa: "Inhibits the sodium-chloride symporter in the distal convoluted tubule of the kidney, increasing the excretion of sodium, chloride, and water.",
+                therapeuticUses: "Hypertension, edema.",
+                adrs: "Hypokalemia, hyponatremia, hyperuricemia, hyperglycemia, dizziness.",
+                contraindications: "Anuria, hypersensitivity to sulfonamides.",
+                pharmaApplications: {
+                  dosageForms: "Tablets, capsules.",
+                  formulations: "Microzide (Brand).",
+                  storage: "Store at room temperature.",
+                },
+                analyticalMethods: {
+                  qualitative: "TLC, IR.",
+                  quantitative: "HPLC.",
+                  pharmacopoeial: "USP, BP.",
+                },
+                specialNotes: "Often used as a first-line agent for hypertension, frequently in combination with other antihypertensives.",
+              },
+            ],
+          },
+        ]
+      },
+      {
+        name: "Antianginal Drugs",
+        drugs: [
+            {
+                name: "Nitroglycerin",
+                classification: "Nitrate, Vasodilator",
+                moa: "Metabolized to nitric oxide (NO), which activates guanylate cyclase, increasing cGMP levels and leading to smooth muscle relaxation. This causes venous and arterial dilation, reducing myocardial oxygen demand.",
+                therapeuticUses: "Acute treatment and prophylaxis of angina pectoris.",
+                adrs: "Headache, dizziness, flushing, orthostatic hypotension.",
+                contraindications: "Concurrent use with PDE-5 inhibitors (e.g., sildenafil), severe anemia, increased intracranial pressure.",
+                pharmaApplications: {
+                  dosageForms: "Sublingual tablets, translingual spray, transdermal patch, ointment, IV infusion.",
+                  formulations: "Nitrostat (sublingual), Nitro-Dur (patch).",
+                  storage: "Sublingual tablets must be stored in the original amber glass container, protected from heat and moisture.",
+                },
+                analyticalMethods: {
+                  qualitative: "IR spectroscopy.",
+                  quantitative: "HPLC, Colorimetric methods.",
+                  pharmacopoeial: "USP, BP.",
+                },
+                specialNotes: "Tolerance can develop with continuous use, requiring a 'nitrate-free' interval (e.g., removing a patch overnight).",
+              },
+        ],
       },
     ]
   }
