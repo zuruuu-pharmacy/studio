@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
 
 
 const caseStudies = [
@@ -133,12 +134,26 @@ export default function PathologyCasesPage() {
             <Select><SelectTrigger className="w-full md:w-[180px]"><SelectValue placeholder="Case Type" /></SelectTrigger><SelectContent><SelectItem value="neoplastic">Neoplastic</SelectItem><SelectItem value="inflammatory">Inflammatory</SelectItem></SelectContent></Select>
         </CardContent>
        </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Your Progress</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4">
+            <div className="flex-1 space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">You have completed 12 of 50 cases.</p>
+              <Progress value={24} />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
       
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {caseStudies.map((study) => (
           <Dialog key={study.id}>
             <DialogTrigger asChild>
-                <Card className="shadow-lg hover:shadow-2xl transition rounded-2xl flex flex-col cursor-pointer">
+                <Card className="shadow-lg hover:shadow-primary/20 transition-shadow rounded-2xl flex flex-col cursor-pointer hover:scale-105 duration-300">
                     <CardHeader className="p-0">
                          <div className="relative h-40 w-full overflow-hidden rounded-t-2xl">
                            <Image src={study.imageUrl} alt={`Slide for ${study.title}`} layout="fill" objectFit="cover" />
@@ -180,6 +195,17 @@ export default function PathologyCasesPage() {
                         <p>{study.discussion}</p>
                     </DetailSection>
                     
+                     <DetailSection title="Practice Questions & Revision" icon={Zap}>
+                        <div className="space-y-2">
+                           <p className="font-semibold text-sm mb-2">{study.quiz[0].question}</p>
+                            <Alert className="text-sm"><AlertDescription><strong>Answer:</strong> {study.quiz[0].answer}</AlertDescription></Alert>
+                        </div>
+                         <div className="flex flex-wrap gap-2 mt-4">
+                             <Link href="/mcq-bank"><Button variant="outline" size="sm">More MCQs</Button></Link>
+                             <Link href="/flashcard-generator"><Button variant="outline" size="sm">Make Flashcards</Button></Link>
+                         </div>
+                    </DetailSection>
+
                     <DetailSection title="Community Discussion" icon={MessageCircle}>
                         <div className="p-4 text-center bg-muted/50 rounded-lg">
                             <p className="text-sm text-muted-foreground">Community discussion for this case is not yet active.</p>
@@ -195,20 +221,15 @@ export default function PathologyCasesPage() {
                     
                     <Card>
                         <CardHeader>
-                             <CardTitle className="text-lg flex items-center gap-2"><Zap/>Quiz</CardTitle>
+                             <CardTitle className="text-lg flex items-center gap-2"><Lightbulb/>AI Tutor</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="font-semibold text-sm mb-2">{study.quiz[0].question}</p>
-                             <div className="flex flex-col gap-2">
-                                {study.quiz[0].options.map(opt => <Button key={opt} variant="outline" size="sm">{opt}</Button>)}
-                            </div>
-                             <Alert className="mt-4 text-sm"><AlertDescription><strong>Answer:</strong> {study.quiz[0].answer}</AlertDescription></Alert>
+                             <Button onClick={handleAiAnalysis} className="w-full">
+                               <Bot className="mr-2"/>Explain this Case
+                            </Button>
                         </CardContent>
                     </Card>
 
-                    <Button onClick={handleAiAnalysis} className="w-full">
-                       <Bot className="mr-2"/>AI Tutor Mode
-                    </Button>
                     <Button onClick={() => toast({title: "Coming soon!"})} variant="outline" className="w-full">
                        <Download className="mr-2"/>Export as PDF
                     </Button>
