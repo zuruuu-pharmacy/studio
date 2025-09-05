@@ -4,7 +4,7 @@
 import { BackButton } from "@/components/back-button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Microscope, FileText, Plus, Zap, Notebook, CheckCircle, Lightbulb, Search, Filter, Stethoscope } from 'lucide-react';
+import { Microscope, FileText, Plus, Zap, Notebook, CheckCircle, Lightbulb, Search, Filter, Stethoscope, ZoomIn, ZoomOut, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import {
   Dialog,
@@ -19,46 +19,75 @@ import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 
 const caseStudies = [
     {
         id: "case1",
         title: "Case 01: A 65-year-old male with a lung mass",
-        history: "A 65-year-old male with a 40-pack-year smoking history presents with a chronic cough and hemoptysis.",
-        findings: "Chest X-ray reveals a 3 cm spiculated mass in the right upper lobe. Biopsy shows nests of malignant cells with keratin pearls and intercellular bridges.",
+        history: "A 65-year-old male with a 40-pack-year smoking history presents with a chronic cough, hemoptysis, and a 10-lb weight loss over the past 3 months. He denies fever or night sweats.",
+        specialty: "Pulmonary Pathology",
+        findings: "Chest X-ray reveals a 3 cm spiculated mass in the right upper lobe. Biopsy shows nests of malignant cells with abundant eosinophilic cytoplasm, keratin pearls, and distinct intercellular bridges.",
         diagnosis: "Squamous Cell Carcinoma of the lung.",
+        discussion: "The key histological features here are the keratin pearls and intercellular bridges, which are pathognomonic for squamous differentiation. The patient's extensive smoking history is the primary risk factor. This case highlights the classic presentation and morphology of one of the major types of lung cancer.",
         imageUrl: "https://picsum.photos/id/101/600/400",
         tags: {
             organ: "Lung",
             type: "Neoplastic",
-            difficulty: "Complex",
-        }
+            difficulty: "Classic",
+        },
+        quiz: [
+            {
+                question: "What is the most definitive histological feature for this diagnosis?",
+                options: ["Gland formation", "Keratin pearls", "Small blue cells", "Rosettes"],
+                answer: "Keratin pearls"
+            }
+        ]
     },
     {
         id: "case2",
         title: "Case 02: A 45-year-old female with joint pain",
-        history: "A 45-year-old female presents with symmetrical swelling and pain in the small joints of her hands and wrists, with morning stiffness lasting over an hour.",
-        findings: "Blood tests show elevated rheumatoid factor and anti-CCP antibodies. Synovial biopsy reveals pannus formation with dense lymphoplasmacytic infiltrates.",
+        history: "A 45-year-old female presents with symmetrical swelling and pain in the small joints of her hands and wrists (MCP, PIP joints), with morning stiffness lasting over an hour for the past 6 months.",
+        specialty: "Rheumatologic Pathology",
+        findings: "Blood tests show elevated rheumatoid factor and anti-CCP antibodies. Synovial biopsy reveals marked synovial hyperplasia with villous-like projections, dense lymphoplasmacytic infiltrates (some forming germinal centers), and fibrinoid necrosis. This destructive tissue is known as a pannus.",
         diagnosis: "Rheumatoid Arthritis.",
+        discussion: "This is a classic presentation of Rheumatoid Arthritis, an autoimmune disease. The key is the symmetrical small-joint arthritis and the specific serological markers. The histology showing pannus formation confirms the destructive nature of the inflammation, which eventually erodes cartilage and bone.",
         imageUrl: "https://picsum.photos/id/102/600/400",
         tags: {
             organ: "Joints",
             type: "Inflammatory",
             difficulty: "Moderate",
-        }
+        },
+        quiz: [
+             {
+                question: "The destructive, inflamed synovial tissue in this condition is known as:",
+                options: ["Tophi", "Osteophyte", "Pannus", "Granuloma"],
+                answer: "Pannus"
+            }
+        ]
     },
     {
         id: "case3",
         title: "Case 03: A 20-year-old male with an enlarged lymph node",
-        history: "A 20-year-old male presents with a painless, enlarging lymph node in his neck for the past two months, accompanied by fever and night sweats.",
-        findings: "Lymph node biopsy reveals large, binucleated cells with prominent eosinophilic nucleoli (Reed-Sternberg cells) in a background of lymphocytes, eosinophils, and histiocytes.",
+        history: "A 20-year-old male presents with a painless, enlarging lymph node in his neck for the past two months, accompanied by intermittent fever ('Pel-Ebstein fever') and night sweats.",
+        specialty: "Hematopathology",
+        findings: "Lymph node biopsy reveals effacement of the normal architecture by a mixed inflammatory infiltrate. Scattered among these are large, binucleated cells with prominent eosinophilic nucleoli, resembling 'owl eyes'. These are Reed-Sternberg cells. Immunohistochemistry shows these cells are positive for CD30 and CD15.",
         diagnosis: "Hodgkin Lymphoma (Nodular Sclerosis type).",
+        discussion: "The presence of Reed-Sternberg cells is diagnostic for Hodgkin Lymphoma. The mixed inflammatory background is characteristic. The specific subtype is determined by the overall architecture and cellular composition. The CD30+/CD15+ immunophenotype is classic.",
         imageUrl: "https://picsum.photos/id/103/600/400",
         tags: {
             organ: "Lymph Node",
             type: "Neoplastic",
             difficulty: "Classic",
-        }
+        },
+        quiz: [
+             {
+                question: "The diagnostic cell for Hodgkin Lymphoma is the:",
+                options: ["Plasma cell", "Myeloblast", "Reed-Sternberg cell", "Atypical lymphocyte"],
+                answer: "Reed-Sternberg cell"
+            }
+        ]
     },
 ];
 
@@ -133,36 +162,64 @@ export default function PathologyCasesPage() {
                     </CardContent>
                 </Card>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-4xl">
               <DialogHeader>
-                <DialogTitle>{study.title}</DialogTitle>
+                <DialogTitle className="text-xl">{study.title}</DialogTitle>
+                <DialogDescription>{study.specialty}</DialogDescription>
               </DialogHeader>
-              <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
-                 <DetailSection title="Clinical Vignette" icon={Stethoscope}>
-                   <p>{study.history}</p>
-                </DetailSection>
+              <div className="grid lg:grid-cols-5 gap-6 max-h-[80vh] overflow-y-auto pr-4">
+                 <div className="lg:col-span-3 space-y-4">
+                    <DetailSection title="Clinical Vignette" icon={Stethoscope}>
+                        <p>{study.history}</p>
+                    </DetailSection>
 
-                <DetailSection title="Histopathology Findings" icon={Microscope}>
-                   <p>{study.findings}</p>
-                   <div className="relative w-full aspect-video rounded-lg overflow-hidden my-2">
-                        <Image src={study.imageUrl} alt={`Slide for ${study.title}`} layout="fill" objectFit="cover" />
-                    </div>
-                </DetailSection>
+                    <DetailSection title="Histopathology" icon={Microscope}>
+                       <p>{study.findings}</p>
+                       <div className="relative w-full aspect-video rounded-lg overflow-hidden my-2 group bg-muted">
+                            <Image src={study.imageUrl} alt={`Slide for ${study.title}`} layout="fill" objectFit="cover" />
+                            <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                                <Button size="icon" variant="secondary"><ZoomIn/></Button>
+                                <Button size="icon" variant="secondary"><ZoomOut/></Button>
+                                <Button size="icon" variant="secondary"><MessageCircle/></Button>
+                            </div>
+                        </div>
+                    </DetailSection>
+                 </div>
+                 <div className="lg:col-span-2 space-y-4">
+                    <Alert variant="default" className="bg-green-500/10 border-green-500">
+                        <AlertTitle className="flex items-center gap-2 font-bold"><CheckCircle/>Final Diagnosis</AlertTitle>
+                        <AlertDescription>{study.diagnosis}</AlertDescription>
+                    </Alert>
+                    
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2"><Lightbulb/>Discussion & Key Points</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground">{study.discussion}</p>
+                        </CardContent>
+                    </Card>
 
-                <DetailSection title="Most Likely Diagnosis" icon={CheckCircle}>
-                   <p className="text-primary font-bold">{study.diagnosis}</p>
-                </DetailSection>
+                    <Card>
+                        <CardHeader>
+                             <CardTitle className="text-lg flex items-center gap-2"><Zap/>Quiz</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="font-semibold text-sm mb-2">{study.quiz[0].question}</p>
+                             <div className="flex flex-wrap gap-2">
+                                <Button variant="outline" size="sm">{study.quiz[0].options[0]}</Button>
+                                <Button variant="outline" size="sm">{study.quiz[0].options[1]}</Button>
+                                <Button variant="outline" size="sm">{study.quiz[0].options[2]}</Button>
+                                <Button variant="outline" size="sm">{study.quiz[0].options[3]}</Button>
+                            </div>
+                             <Alert className="mt-4 text-sm"><AlertDescription><strong>Answer:</strong> {study.quiz[0].answer}</AlertDescription></Alert>
+                        </CardContent>
+                    </Card>
 
-                <DetailSection title="Practice Questions & Revision" icon={Zap}>
-                    <div className="flex flex-wrap gap-2">
-                        <Link href="/mcq-bank"><Button variant="outline" size="sm">Case MCQs</Button></Link>
-                        <Link href="/flashcard-generator"><Button variant="outline" size="sm">Make Flashcards</Button></Link>
-                         <Button variant="outline" size="sm" onClick={handleAiAnalysis}>
-                           <Lightbulb className="mr-2"/>AI Analysis
-                        </Button>
-                         <Link href="/notes-organizer"><Button variant="secondary" size="sm"><Notebook className="mr-2"/>Add to My Notes</Button></Link>
-                    </div>
-                </DetailSection>
+                    <Button onClick={handleAiAnalysis} className="w-full">
+                       <Lightbulb className="mr-2"/>AI Analysis
+                    </Button>
+                 </div>
               </div>
             </DialogContent>
           </Dialog>
