@@ -228,14 +228,14 @@ const studentTools = [
     },
      {
         icon: Calculator,
-        label: "Drug Calculation Tool",
+        title: "Drug Calculation Tool",
         description: "Practice and verify patient-specific dosages.",
         href: "/dose-calculator",
         color: "text-green-500",
     },
     {
         icon: Replace,
-        label: "Unit Converter",
+        title: "Unit Converter",
         description: "Perform common clinical unit conversions.",
         href: "/unit-converter",
         color: "text-fuchsia-500",
