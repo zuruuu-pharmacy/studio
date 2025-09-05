@@ -59,7 +59,7 @@ const prompt = ai.definePrompt({
     -   **Moderate Weight:** Paraphrased or semantically similar matches.
     -   **Zero Weight:** Properly quoted and cited passages. Do not include these in the similarity score calculation.
 4.  **Identify Segments:** For each segment of potential plagiarism (verbatim or paraphrased), identify the 'original_text' and a plausible 'source' (e.g., "Wikipedia article on 'Beta-blockers'", "Journal of Pharmacology, 2021"). Assign a 'similarity_score' from 0 to 1 for that specific segment.
-5.  **Generate Remediation Suggestion:** For each flagged segment, provide a concise, actionable 'remediation_suggestion'.
+5.  **Generate Remediation Suggestion:** For each flagged segment, you MUST provide a concise, actionable 'remediation_suggestion'. This should explain why it was flagged and offer a clear next step. For example: "This sentence is a verbatim match. To fix this, you should either put it in quotation marks and add a citation, or rephrase it entirely in your own words and then cite the source."
 6.  **Summarize:** Provide a final 'summary' of your findings. If similarity is high (>25%), recommend significant revisions. If moderate (10-25%), recommend a review. If low (<10%), confirm originality.
 
 Respond ONLY in the structured JSON format defined by the schema.
