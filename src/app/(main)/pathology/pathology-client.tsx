@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { TestTube, Microscope, FileText, Dna, Award } from "lucide-react";
 import Link from "next/link";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 
 const pathologyModules = [
@@ -40,12 +41,15 @@ const pathologyModules = [
 ];
 
 const kpiData = [
-  { metric: "Student Engagement", kpi: "75% of students access the module weekly." },
-  { metric: "Concept Mastery", kpi: "Average score on spotter quizzes increases by 15% semester-over-semester." },
-  { metric: "Diagnostic Accuracy", kpi: "90% completion rate for all mandatory case studies with a passing grade." },
-  { metric: "Lab Report Interpretation", kpi: "Decrease in average time-to-diagnosis on virtual slide exercises." },
-  { metric: "Integration", kpi: "20% of pathology notes or flashcards are generated via the integrated AI tools." },
+  { metric: "Engagement", formula: "Avg. minutes/user/week in module", target: "≥120 min/wk" },
+  { metric: "Slide Interaction Rate", formula: "# unique slides opened ÷ # students", target: "≥5 slides/month/student" },
+  { metric: "Assessment Pass Rate", formula: "# students passing formative quizzes (≥70%) ÷ # attempts", target: "≥75%" },
+  { metric: "Case Completion Rate", formula: "# completed case studies ÷ # assigned", target: "≥80%" },
+  { metric: "Teacher Verification Time", formula: "Avg. hours to review & verify content", target: "<48 hours" },
+  { metric: "Sync Success Rate", formula: "Successful offline syncs ÷ total attempts", target: "≥98%" },
+  { metric: "Retention Lift", formula: "30-day flashcard retention improvement (pre/post)", target: "+20%" },
 ];
+
 
 export function PathologyClient() {
   return (
@@ -95,9 +99,24 @@ export function PathologyClient() {
                 </div>
                  <div>
                   <h4 className="font-semibold mb-2">Key Performance Indicators (KPIs)</h4>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    {kpiData.map(kpi => <li key={kpi.metric}><strong>{kpi.metric}:</strong> {kpi.kpi}</li>)}
-                  </ul>
+                  <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Metric</TableHead>
+                            <TableHead>Formula / Definition</TableHead>
+                            <TableHead>Target</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {kpiData.map((kpi) => (
+                        <TableRow key={kpi.metric}>
+                            <TableCell className="font-medium">{kpi.metric}</TableCell>
+                            <TableCell className="font-mono text-xs">{kpi.formula}</TableCell>
+                            <TableCell>{kpi.target}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
               </CardContent>
             </Card>
