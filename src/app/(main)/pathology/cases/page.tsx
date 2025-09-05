@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog"
 import Image from "next/image";
 import { toast } from "@/hooks/use-toast";
@@ -21,76 +22,15 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
+import { usePathology, type CaseStudy } from "@/contexts/pathology-context";
+import { useState } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
-
-const caseStudies = [
-    {
-        id: "case1",
-        title: "Case 01: A 65-year-old male with a lung mass",
-        history: "A 65-year-old male with a 40-pack-year smoking history presents with a chronic cough, hemoptysis, and a 10-lb weight loss over the past 3 months. He denies fever or night sweats.",
-        specialty: "Pulmonary Pathology",
-        findings: "Chest X-ray reveals a 3 cm spiculated mass in the right upper lobe. Biopsy shows nests of malignant cells with abundant eosinophilic cytoplasm, keratin pearls, and distinct intercellular bridges.",
-        diagnosis: "Squamous Cell Carcinoma of the lung.",
-        discussion: "The key histological features here are the keratin pearls and intercellular bridges, which are pathognomonic for squamous differentiation. The patient's extensive smoking history is the primary risk factor. This case highlights the classic presentation and morphology of one of the major types of lung cancer.",
-        imageUrl: "https://picsum.photos/id/101/600/400",
-        tags: {
-            organ: "🫁 Lung",
-            type: "🧪 Cancer",
-            difficulty: "🔥 Complex",
-        },
-        quiz: [
-            {
-                question: "What is the most definitive histological feature for this diagnosis?",
-                options: ["Gland formation", "Keratin pearls", "Small blue cells", "Rosettes"],
-                answer: "Keratin pearls"
-            }
-        ]
-    },
-    {
-        id: "case2",
-        title: "Case 02: A 45-year-old female with joint pain",
-        history: "A 45-year-old female presents with symmetrical swelling and pain in the small joints of her hands and wrists (MCP, PIP joints), with morning stiffness lasting over an hour for the past 6 months.",
-        specialty: "Rheumatologic Pathology",
-        findings: "Blood tests show elevated rheumatoid factor and anti-CCP antibodies. Synovial biopsy reveals marked synovial hyperplasia with villous-like projections, dense lymphoplasmacytic infiltrates (some forming germinal centers), and fibrinoid necrosis. This destructive tissue is known as a pannus.",
-        diagnosis: "Rheumatoid Arthritis.",
-        discussion: "This is a classic presentation of Rheumatoid Arthritis, an autoimmune disease. The key is the symmetrical small-joint arthritis and the specific serological markers. The histology showing pannus formation confirms the destructive nature of the inflammation, which eventually erodes cartilage and bone.",
-        imageUrl: "https://picsum.photos/id/102/600/400",
-        tags: {
-            organ: "🦴 Rheumatology",
-            type: "🧑‍⚕️ Autoimmune",
-            difficulty: "⭐ Classic",
-        },
-        quiz: [
-             {
-                question: "The destructive, inflamed synovial tissue in this condition is known as:",
-                options: ["Tophi", "Osteophyte", "Pannus", "Granuloma"],
-                answer: "Pannus"
-            }
-        ]
-    },
-    {
-        id: "case3",
-        title: "Case 03: A 20-year-old male with lymphadenopathy",
-        history: "A 20-year-old male presents with a painless, enlarging lymph node in his neck for the past two months, accompanied by intermittent fever ('Pel-Ebstein fever') and night sweats.",
-        specialty: "Hematopathology",
-        findings: "Lymph node biopsy reveals effacement of the normal architecture by a mixed inflammatory infiltrate. Scattered among these are large, binucleated cells with prominent eosinophilic nucleoli, resembling 'owl eyes'. These are Reed-Sternberg cells. Immunohistochemistry shows these cells are positive for CD30 and CD15.",
-        diagnosis: "Hodgkin Lymphoma (Nodular Sclerosis type).",
-        imageUrl: "https://picsum.photos/id/103/600/400",
-        tags: {
-            organ: "🧬 Hematology",
-            type: "🧪 Lymphoma",
-            difficulty: "⭐ Classic",
-        },
-        discussion: "The presence of Reed-Sternberg cells is diagnostic for Hodgkin Lymphoma. The mixed inflammatory background is characteristic. The specific subtype is determined by the overall architecture and cellular composition. The CD30+/CD15+ immunophenotype is classic.",
-        quiz: [
-             {
-                question: "The diagnostic cell for Hodgkin Lymphoma is the:",
-                options: ["Plasma cell", "Myeloblast", "Reed-Sternberg cell", "Atypical lymphocyte"],
-                answer: "Reed-Sternberg cell"
-            }
-        ]
-    },
-];
 
 function DetailSection({ title, children, icon: Icon }: { title: string, children: React.ReactNode, icon: React.ElementType }) {
     return (
@@ -103,14 +43,73 @@ function DetailSection({ title, children, icon: Icon }: { title: string, childre
     )
 }
 
-export default function PathologyCasesPage() {
+const newCaseSchema = z.object({
+  title: z.string().min(10, "Title must be at least 10 characters."),
+  history: z.string().min(20, "History must be detailed."),
+  specialty: z.string().min(3, "Specialty is required."),
+  findings: z.string().min(10, "Findings are required."),
+  diagnosis: z.string().min(5, "Diagnosis is required."),
+  discussion: z.string().min(20, "Discussion is required."),
+  imageUrl: z.string().url("Please enter a valid image URL.").optional().or(z.literal('')),
+  tags: z.object({
+    organ: z.string().min(1),
+    type: z.string().min(1),
+    difficulty: z.string().min(1),
+  }),
+  quiz: z.array(z.object({
+    question: z.string().min(5),
+    options: z.array(z.string()).length(4, "Must have 4 options."),
+    answer: z.string().min(1),
+  })).min(1, "At least one quiz question is required."),
+});
 
+type NewCaseValues = z.infer<typeof newCaseSchema>;
+
+export default function PathologyCasesPage() {
+  const { caseStudies, addCaseStudy } = usePathology();
+  const [isNewCaseModalOpen, setIsNewCaseModalOpen] = useState(false);
+
+  const newCaseForm = useForm<NewCaseValues>({
+    resolver: zodResolver(newCaseSchema),
+    defaultValues: {
+        title: "",
+        history: "",
+        specialty: "",
+        findings: "",
+        diagnosis: "",
+        discussion: "",
+        imageUrl: "",
+        tags: { organ: "", type: "", difficulty: "" },
+        quiz: [{ question: "", options: ["", "", "", ""], answer: "" }],
+    },
+  });
+
+  const { fields, append } = useFieldArray({
+    control: newCaseForm.control,
+    name: "quiz"
+  });
+  
   const handleAiAnalysis = () => {
     toast({
       title: "AI Analysis (Coming Soon)",
       description: "This feature will provide an AI-generated breakdown of the case, differential diagnoses, and key learning points."
     });
   };
+
+  const handleCreateCase = newCaseForm.handleSubmit((data) => {
+    const newCase: Omit<CaseStudy, 'id'> = {
+        ...data,
+        imageUrl: data.imageUrl || `https://picsum.photos/600/400?random=${Date.now()}`, // Fallback image
+        quiz: data.quiz.map(q => ({
+            ...q,
+            options: q.options.filter(o => o.trim() !== ''),
+        })),
+    };
+    addCaseStudy(newCase);
+    toast({ title: "Case Study Submitted!", description: "Your new case has been added to the library." });
+    newCaseForm.reset();
+    setIsNewCaseModalOpen(false);
+  });
 
   return (
     <div>
@@ -142,8 +141,8 @@ export default function PathologyCasesPage() {
         <CardContent>
           <div className="flex items-center gap-4">
             <div className="flex-1 space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">You have completed 12 of 50 cases.</p>
-              <Progress value={24} />
+              <p className="text-sm font-medium text-muted-foreground">You have completed 12 of {caseStudies.length} cases.</p>
+              <Progress value={(12 / caseStudies.length) * 100} />
             </div>
           </div>
         </CardContent>
@@ -153,7 +152,7 @@ export default function PathologyCasesPage() {
         {caseStudies.map((study) => (
           <Dialog key={study.id}>
             <DialogTrigger asChild>
-                <Card className="shadow-lg hover:shadow-primary/20 transition-shadow rounded-2xl flex flex-col cursor-pointer hover:scale-105 duration-300">
+                <Card className="shadow-lg hover:shadow-primary/20 transition-shadow rounded-2xl flex flex-col cursor-pointer hover:scale-105 duration-300 group">
                     <CardHeader className="p-0">
                          <div className="relative h-40 w-full overflow-hidden rounded-t-2xl">
                            <Image src={study.imageUrl} alt={`Slide for ${study.title}`} layout="fill" objectFit="cover" />
@@ -238,9 +237,54 @@ export default function PathologyCasesPage() {
             </DialogContent>
           </Dialog>
         ))}
-         <Card className="flex items-center justify-center border-2 border-dashed">
-            <Button variant="outline">➕ Submit a New Case</Button>
-        </Card>
+         <Dialog open={isNewCaseModalOpen} onOpenChange={setIsNewCaseModalOpen}>
+            <DialogTrigger asChild>
+                <Card className="flex items-center justify-center border-2 border-dashed min-h-64 hover:border-primary hover:text-primary transition">
+                    <div className="text-center">
+                        <Plus className="mx-auto h-12 w-12 text-muted-foreground" />
+                        <p className="mt-2 font-semibold">Submit a New Case</p>
+                    </div>
+                </Card>
+            </DialogTrigger>
+            <DialogContent className="max-w-3xl">
+                <DialogHeader>
+                    <DialogTitle>Submit a New Pathology Case</DialogTitle>
+                    <DialogDescription>Contribute to the case library by filling out the form below.</DialogDescription>
+                </DialogHeader>
+                 <Form {...newCaseForm}>
+                    <form onSubmit={handleCreateCase} className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
+                        <FormField name="title" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Case Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField name="specialty" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Specialty</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField name="history" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Clinical Vignette / History</FormLabel><FormControl><Textarea {...field} rows={4} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField name="findings" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Histopathology Findings</FormLabel><FormControl><Textarea {...field} rows={4} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField name="diagnosis" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Final Diagnosis</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField name="discussion" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Discussion</FormLabel><FormControl><Textarea {...field} rows={4} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField name="imageUrl" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Image URL (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        
+                        <div className="grid grid-cols-3 gap-4">
+                            <FormField name="tags.organ" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Organ</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField name="tags.type" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Type</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField name="tags.difficulty" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Difficulty</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        </div>
+
+                        <div>
+                            <Label>Quiz Question</Label>
+                             <Card className="p-4 mt-2 space-y-2">
+                                <FormField name="quiz.0.question" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Question</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField name="quiz.0.options.0" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Option 1</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField name="quiz.0.options.1" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Option 2</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField name="quiz.0.options.2" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Option 3</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField name="quiz.0.options.3" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Option 4</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField name="quiz.0.answer" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Correct Answer</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             </Card>
+                        </div>
+                        <DialogFooter>
+                            <Button type="submit">Submit Case</Button>
+                        </DialogFooter>
+                    </form>
+                </Form>
+            </DialogContent>
+         </Dialog>
       </div>
     </div>
   );

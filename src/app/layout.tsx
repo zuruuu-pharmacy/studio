@@ -9,6 +9,7 @@ import { OsceSessionsProvider } from '@/contexts/osce-sessions-context';
 import { DiscussionForumProvider } from '@/contexts/discussion-forum-context';
 import { PollsProvider } from '@/contexts/polls-context';
 import { AnimatePresence } from 'framer-motion';
+import { PathologyProvider } from '@/contexts/pathology-context';
 
 export const metadata: Metadata = {
   title: 'Zuruu AI Pharmacy',
@@ -34,7 +35,9 @@ export default function RootLayout({
               <OsceSessionsProvider>
                 <DiscussionForumProvider>
                   <PollsProvider>
-                    {children}
+                    <PathologyProvider>
+                        {children}
+                    </PathologyProvider>
                     <Toaster />
                   </PollsProvider>
                 </DiscussionForumProvider>
