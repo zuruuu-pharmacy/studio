@@ -58,7 +58,7 @@ const studentMenuItems = [
     { href: "/student-discussion-forum", label: "Discussion Forum", icon: MessageSquare },
     { href: "/student-polls", label: "Student Polls/Surveys", icon: ClipboardList },
     { href: "/clinical-case-simulator", label: "Clinical Case Simulator", icon: CaseSensitive },
-    { href: "/osce-viva-prep", label: "OSCE &amp; Viva Preparation", icon: FileHeart },
+    { href: "/osce-viva-prep", label: "OSCE & Viva Preparation", icon: FileHeart },
     { href: "/career-guidance", label: "Career Guidance", icon: Compass },
     { href: "/interaction-checker", label: "Interaction Simulator", icon: FlaskConical },
     { href: "/dose-calculator", label: "Drug Calculation Tool", icon: Calculator },
@@ -94,7 +94,7 @@ const studentMenuItems = [
         icon: Beaker,
     },
     {
-        label: "Pharma Games &amp; Puzzles",
+        label: "Pharma Games & Puzzles",
         href: "/pharma-games",
         icon: Puzzle,
     },
