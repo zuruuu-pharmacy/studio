@@ -294,7 +294,7 @@ export const systemicPathologyData: OrganSystem[] = [
                 imageHint: "dilated cardiomyopathy gross heart"
             },
             clinicalFeatures: "Presents with signs and symptoms of congestive heart failure (systolic dysfunction), such as dyspnea, orthopnea, and peripheral edema. Fatigue and weakness are common. Arrhythmias and embolic events can also occur.",
-            investigations: "Echocardiography is the primary diagnostic tool, showing left ventricular dilation and a severely reduced ejection fraction (typically <40%). ECG can show various abnormalities but is nonspecific.",
+            investigations: "Echocardiography is the primary diagnostic tool, showing left ventricular dilation and a severely reduced ejection fraction (typically &lt;40%). ECG can show various abnormalities but is nonspecific.",
             management: "Management focuses on standard heart failure therapy, including diuretics, ACE inhibitors/ARBs, beta-blockers, and aldosterone antagonists. In advanced cases, cardiac transplantation or a left ventricular assist device (LVAD) may be necessary. Always check current local and international heart failure guidelines.",
             complications: "Progressive heart failure, arrhythmias, thromboembolism, and sudden cardiac death.",
             prognosis: "Poor without treatment. With optimal medical therapy, survival has improved, but many patients eventually progress to end-stage heart failure.",
@@ -397,11 +397,11 @@ export const systemicPathologyData: OrganSystem[] = [
             pathogenesis: "Emphysema: Inhaled irritants cause chronic inflammation with an influx of neutrophils and macrophages. These cells release proteases (like elastase) that break down elastin in the alveolar walls, leading to irreversible airspace enlargement. Chronic Bronchitis: Irritants cause hypertrophy of submucosal glands in the large airways and an increase in goblet cells in small airways, leading to excessive mucus production.",
             morphology: {
                 gross: "Emphysema: Lungs are voluminous and pale. Centriacinar emphysema (most common in smokers) affects the upper lobes. Panacinar emphysema (seen in alpha-1 antitrypsin deficiency) affects the lower lobes. Chronic Bronchitis: The bronchial walls are thickened and the airways may be filled with mucus plugs.",
-                microscopic: "Emphysema: Abnormally large alveoli with destruction of the septal walls. Chronic Bronchitis: The Reid index (ratio of the thickness of the mucous gland layer to the thickness of the bronchial wall) is increased (>0.4).",
+                microscopic: "Emphysema: Abnormally large alveoli with destruction of the septal walls. Chronic Bronchitis: The Reid index (ratio of the thickness of the mucous gland layer to the thickness of the bronchial wall) is increased (&gt;0.4).",
                 imageHint: "emphysema lung gross"
             },
             clinicalFeatures: "Presents with a long history of progressively worsening shortness of breath (dyspnea), chronic cough, and sputum production. Patients may be 'pink puffers' (predominantly emphysema, thin, tachypneic) or 'blue bloaters' (predominantly bronchitis, cyanotic, edematous).",
-            investigations: "Spirometry is required for diagnosis, showing a reduced FEV1/FVC ratio (<0.7) that is not fully reversible with bronchodilators. Chest X-ray may show hyperinflation and flattened diaphragms.",
+            investigations: "Spirometry is required for diagnosis, showing a reduced FEV1/FVC ratio (&lt;0.7) that is not fully reversible with bronchodilators. Chest X-ray may show hyperinflation and flattened diaphragms.",
             management: "Smoking cessation is the single most important intervention. Bronchodilators (e.g., beta-agonists, anticholinergics) are the mainstay of symptomatic therapy. Inhaled corticosteroids may be used in patients with frequent exacerbations. Supplemental oxygen is used for chronic hypoxemia. Always check current local and international COPD guidelines (e.g., GOLD).",
             complications: "Acute exacerbations, respiratory failure, pulmonary hypertension, and cor pulmonale (right heart failure).",
             prognosis: "Progressive disease, but the rate of decline can be slowed by smoking cessation.",
@@ -431,7 +431,7 @@ export const systemicPathologyData: OrganSystem[] = [
                 imageHint: "asthma histology"
             },
             clinicalFeatures: "Episodic attacks of wheezing, cough (especially at night), and dyspnea, often triggered by allergens, cold air, or exercise. Symptoms are typically reversible, either spontaneously or with treatment.",
-            investigations: "Spirometry showing reversible airflow obstruction (i.e., an increase in FEV1 of >12% and >200 mL after bronchodilator administration) is the hallmark of diagnosis.",
+            investigations: "Spirometry showing reversible airflow obstruction (i.e., an increase in FEV1 of &gt;12% and &gt;200 mL after bronchodilator administration) is the hallmark of diagnosis.",
             management: "Management involves reliever medications for acute symptoms (e.g., short-acting beta-agonists like salbutamol) and controller medications to manage chronic inflammation (e.g., inhaled corticosteroids). Always check current local and international asthma guidelines (e.g., GINA).",
             complications: "Severe acute exacerbations (status asthmaticus), airway remodeling.",
             prognosis: "Excellent with proper management, but can be fatal if untreated.",
@@ -524,7 +524,7 @@ export const systemicPathologyData: OrganSystem[] = [
             etiology: [
                 "Cigarette smoking (overwhelmingly the most important risk factor)."
             ],
-            pathogenesis: "Chronic irritation of the bronchial epithelium from smoke leads to a sequence of adaptive and dysplastic changes: squamous metaplasia -> squamous dysplasia -> carcinoma in situ -> invasive carcinoma. This process is driven by the accumulation of genetic mutations in pathways controlling cell growth and differentiation.",
+            pathogenesis: "Chronic irritation of the bronchial epithelium from smoke leads to a sequence of adaptive and dysplastic changes: squamous metaplasia -&gt; squamous dysplasia -&gt; carcinoma in situ -&gt; invasive carcinoma. This process is driven by the accumulation of genetic mutations in pathways controlling cell growth and differentiation.",
             morphology: {
                 gross: "Typically arises as a central (hilar) mass that may project into the bronchial lumen, causing obstruction. The tumor is often firm, white-tan, and may show areas of central necrosis and cavitation.",
                 microscopic: "The defining features are keratinization (in the form of 'keratin pearls') and/or intercellular bridges between tumor cells. The cells are typically large with eosinophilic cytoplasm and hyperchromatic, irregular nuclei.",
@@ -833,7 +833,7 @@ export const systemicPathologyData: OrganSystem[] = [
             ],
             pathogenesis: "The central event is the death of hepatocytes, which triggers inflammation and the activation of hepatic stellate cells. Activated stellate cells are the primary source of collagen, leading to progressive fibrosis. Simultaneously, remaining hepatocytes attempt to regenerate, forming spherical nodules. The combination of fibrosis and nodule formation disrupts the normal vascular architecture, leading to portal hypertension.",
             morphology: {
-                gross: "The liver may be enlarged or shrunken, but it is always firm and nodular. Micronodular cirrhosis (<3 mm nodules) is typical of alcohol, while macronodular cirrhosis (>3 mm nodules) is often seen in viral hepatitis.",
+                gross: "The liver may be enlarged or shrunken, but it is always firm and nodular. Micronodular cirrhosis (&lt;3 mm nodules) is typical of alcohol, while macronodular cirrhosis (&gt;3 mm nodules) is often seen in viral hepatitis.",
                 microscopic: "The defining features are bridging fibrous septa that link portal tracts to each other and to central veins, and regenerative nodules of hepatocytes that lack the normal central vein.",
                 imageHint: "liver cirrhosis histology"
             },
@@ -875,7 +875,7 @@ export const systemicPathologyData: OrganSystem[] = [
             investigations: "Liver function tests (ALT, AST) are markedly elevated in acute hepatitis. Serologic testing for viral antigens (e.g., HBsAg, HCV RNA) and antibodies (e.g., anti-HBs, anti-HCV) is essential for diagnosis and determining the phase of infection.",
             management: "Acute hepatitis is managed supportively. Chronic HBV and HCV are treated with antiviral medications (e.g., direct-acting antivirals for HCV) with the goal of suppressing viral replication to prevent progression to cirrhosis and cancer. Always check current local and international guidelines.",
             complications: "Progression to cirrhosis and hepatocellular carcinoma (especially with chronic HBV and HCV), fulminant hepatic failure (rare).",
-            prognosis: "HAV/HEV: Excellent, no chronic state. HBV: Most adults clear the infection; chronic infection is more likely with perinatal transmission. HCV: High rate (>80%) of chronic infection, but now curable with modern antivirals.",
+            prognosis: "HAV/HEV: Excellent, no chronic state. HBV: Most adults clear the infection; chronic infection is more likely with perinatal transmission. HCV: High rate (&gt;80%) of chronic infection, but now curable with modern antivirals.",
            },
             {
                 title: "Colorectal Adenocarcinoma",
@@ -1184,7 +1184,7 @@ export const systemicPathologyData: OrganSystem[] = [
                         microscopic: "Light microscopy: Glomeruli appear virtually normal. Immunofluorescence: Negative for immune deposits. Electron Microscopy: This is the key diagnostic finding. It shows diffuse and uniform effacement (flattening) of the foot processes of the podocytes.",
                         imageHint: "minimal change disease electron microscopy"
                     },
-                    clinicalFeatures: "Presents with the abrupt onset of the nephrotic syndrome: massive proteinuria (>3.5 g/day), hypoalbuminemia, generalized edema, and hyperlipidemia. Blood pressure is usually normal, and renal function is preserved.",
+                    clinicalFeatures: "Presents with the abrupt onset of the nephrotic syndrome: massive proteinuria (&gt;3.5 g/day), hypoalbuminemia, generalized edema, and hyperlipidemia. Blood pressure is usually normal, and renal function is preserved.",
                     investigations: "Urinalysis showing massive proteinuria without significant hematuria. Serum albumin is low. Renal biopsy is usually not performed in children with a classic presentation, as they are treated empirically.",
                     management: "The disease is highly responsive to corticosteroids. Most children achieve complete remission. For relapsing or steroid-resistant cases, other immunosuppressive agents may be used. Always check current local and international guidelines.",
                     complications: "Increased risk of infection (due to loss of immunoglobulins in urine) and thromboembolism (due to loss of anticoagulant proteins).",
@@ -1272,7 +1272,7 @@ export const systemicPathologyData: OrganSystem[] = [
                         level: "Basic"
                     },
                     etiology: [
-                        "Escherichia coli (most common, >85% of cases).",
+                        "Escherichia coli (most common, &gt;85% of cases).",
                         "Other gram-negative rods (e.g., Proteus, Klebsiella).",
                         "Risk factors include urinary tract obstruction, vesicoureteral reflux, and catheterization."
                     ],
@@ -1314,7 +1314,7 @@ export const systemicPathologyData: OrganSystem[] = [
                         imageHint: "acute tubular necrosis histology"
                     },
                     clinicalFeatures: "Presents with acute kidney injury, characterized by a rapid rise in serum creatinine and a decrease in urine output (oliguria). The clinical course has three phases: 1. Initiation (the period of initial insult), 2. Maintenance (oliguria and uremia), and 3. Recovery (urine output increases, but tubules are still damaged, leading to electrolyte imbalances).",
-                    investigations: "Urinalysis shows muddy brown granular casts, a high fractional excretion of sodium (FENa > 2%), and urine osmolality that is similar to plasma.",
+                    investigations: "Urinalysis shows muddy brown granular casts, a high fractional excretion of sodium (FENa &gt; 2%), and urine osmolality that is similar to plasma.",
                     management: "Management is supportive. The underlying cause must be corrected (e.g., restore blood pressure, stop offending drug). Careful management of fluids and electrolytes is crucial. Dialysis may be required during the oliguric phase.",
                     complications: "Hyperkalemia, metabolic acidosis, uremia, fluid overload.",
                     prognosis: "Potentially reversible if the underlying cause is treated and the patient survives the acute phase. The tubular epithelium has a remarkable capacity for regeneration.",
@@ -1445,7 +1445,7 @@ level: "Classic"
 etiology: [
 "Parathyroid adenoma (~85% of cases).",
 "Primary hyperplasia (~10-15%).",
-"Parathyroid carcinoma (<1%)."
+"Parathyroid carcinoma (&lt;1%)."
 ],
 pathogenesis: "A somatic mutation in a single parathyroid chief cell leads to the clonal expansion and formation of a benign tumor (adenoma) that autonomously secretes PTH, irrespective of the serum calcium level. The excess PTH causes increased bone resorption, increased renal calcium reabsorption, and increased intestinal calcium absorption (via activation of Vitamin D), all leading to hypercalcemia.",
 morphology: {
@@ -1592,7 +1592,7 @@ gross: "The articular cartilage becomes softened, fibrillated, and eventually co
 microscopic: "Early changes include fibrillation and cracking of the cartilage surface. Later, there is a complete loss of cartilage and thickening of the subchondral bone plate.",
 imageHint: "osteoarthritis gross knee"
 },
-clinicalFeatures: "Presents with joint pain that worsens with use and is relieved by rest. Morning stiffness is minimal (<30 minutes). Commonly affects weight-bearing joints (knees, hips) and the small joints of the hands (DIP and PIP joints, forming Heberden's and Bouchard's nodes).",
+clinicalFeatures: "Presents with joint pain that worsens with use and is relieved by rest. Morning stiffness is minimal (&lt;30 minutes). Commonly affects weight-bearing joints (knees, hips) and the small joints of the hands (DIP and PIP joints, forming Heberden's and Bouchard's nodes).",
 investigations: "Diagnosis is primarily clinical and radiographic. X-rays show joint space narrowing, subchondral sclerosis, osteophytes, and cysts.",
 management: "Management is focused on symptom relief and maintaining function. This includes weight loss, physical therapy, and analgesics (e.g., paracetamol, NSAIDs). In end-stage disease, joint replacement surgery is highly effective. Always check current local and international OA guidelines.",
 complications: "Chronic pain, joint deformity, and loss of mobility.",
@@ -1622,7 +1622,7 @@ gross: "Affected joints are swollen and warm. The synovium is thickened, edemato
 microscopic: "The synovium shows a dense inflammatory infiltrate of lymphocytes and plasma cells (often forming lymphoid follicles), synovial cell hyperplasia, and increased vascularity. The pannus is seen invading the cartilage.",
 imageHint: "rheumatoid arthritis pannus histology"
 },
-clinicalFeatures: "Presents with a symmetric arthritis affecting multiple small joints (MCP, PIP joints of the hands, MTP joints of the feet). Characterized by prolonged morning stiffness (>1 hour) that improves with activity. Systemic symptoms like fatigue and low-grade fever are common.",
+clinicalFeatures: "Presents with a symmetric arthritis affecting multiple small joints (MCP, PIP joints of the hands, MTP joints of the feet). Characterized by prolonged morning stiffness (&gt;1 hour) that improves with activity. Systemic symptoms like fatigue and low-grade fever are common.",
 investigations: "Blood tests for Rheumatoid Factor (RF) and anti-CCP antibodies (more specific) are key. Inflammatory markers (ESR, CRP) are elevated. X-rays show joint space narrowing and marginal bony erosions.",
 management: "Early treatment with disease-modifying antirheumatic drugs (DMARDs), such as methotrexate, is crucial to prevent joint destruction. Biologic agents (e.g., anti-TNF inhibitors) are used for more severe disease. NSAIDs and corticosteroids are used for symptom control. Always check current local and international RA guidelines.",
 complications: "Joint destruction and deformity, rheumatoid nodules, vasculitis, and an increased risk of cardiovascular disease.",
@@ -1653,7 +1653,7 @@ gross: "Acute arthritis shows a swollen, red joint. Chronic tophaceous gout is c
 microscopic: "Synovial fluid analysis during an acute attack reveals numerous neutrophils and needle-shaped MSU crystals, which are negatively birefringent under polarized light. A tophus consists of a central core of urate crystals surrounded by macrophages, lymphocytes, and giant cells.",
 imageHint: "gout crystals polarized light"
 },
-clinicalFeatures: "Presents with a sudden onset of excruciatingly painful arthritis, most classically in the first metatarsophalangeal joint (podagra). The attacks are self-limited but recurrent.",
+clinicalFeatures: "Presents with a sudden onset of excruciatingly painful arthritis, most classically in the first metatarsalphalangeal joint (podagra). The attacks are self-limited but recurrent.",
 investigations: "Definitive diagnosis requires aspiration of synovial fluid and identification of MSU crystals. Serum uric acid level is usually elevated but can be normal during an acute attack.",
 management: "Acute attacks are treated with anti-inflammatory drugs like NSAIDs, colchicine, or corticosteroids. Long-term management to lower uric acid levels involves drugs like allopurinol (a xanthine oxidase inhibitor) or probenecid (a uricosuric agent). Always check current local and international gout guidelines.",
 complications: "Chronic tophaceous arthritis with joint destruction, and urate nephropathy.",
@@ -1783,7 +1783,7 @@ etiology: [
 "Primary (idiopathic) in about half of cases.",
 "Secondary to other conditions, such as autoimmune diseases (e.g., SLE), lymphoid neoplasms (e.g., CLL), or drugs (e.g., penicillin, methyldopa)."
 ],
-pathogenesis: "Warm AIHA (most common): Caused by IgG antibodies that bind to RBCs optimally at body temperature (37°C). These IgG-coated RBCs are then cleared from circulation by macrophages in the spleen (extravascular hemolysis). Cold AIHA: Caused by IgM antibodies that bind to RBCs only at cold temperatures (typically <30°C). The IgM antibody fixes complement, and hemolysis can occur either extravascularly in the liver or intravascularly.",
+pathogenesis: "Warm AIHA (most common): Caused by IgG antibodies that bind to RBCs optimally at body temperature (37°C). These IgG-coated RBCs are then cleared from circulation by macrophages in the spleen (extravascular hemolysis). Cold AIHA: Caused by IgM antibodies that bind to RBCs only at cold temperatures (typically &lt;30°C). The IgM antibody fixes complement, and hemolysis can occur either extravascularly in the liver or intravascularly.",
 morphology: {
 gross: "Patients may have splenomegaly (in warm AIHA) and jaundice.",
 microscopic: "The key finding on the peripheral blood smear in warm AIHA is the presence of spherocytes, which are small, dark, spherical RBCs that lack central pallor. They are formed when macrophages in the spleen remove portions of the IgG-coated RBC membrane.",
