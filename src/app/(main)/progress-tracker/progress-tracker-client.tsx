@@ -96,9 +96,9 @@ export function ProgressTrackerClient() {
         </CardHeader>
         <CardContent>
             <Alert>
-                <AlertTitle className="font-bold">Next Steps</AlertTitle>
+                <AlertTitle className="font-bold">Study Rebalancing Suggestion</AlertTitle>
                 <AlertDescription>
-                    You’re 80% ready for a hospital residency; complete one more clinical rotation and pass the BCPS certification to be fully prepared.
+                    Your progress in Pharmacology is strong, but your scores in Pharmaceutics are lagging. Consider allocating one more study session to Pharmaceutics this week to ensure you are prepared for the upcoming exam.
                 </AlertDescription>
             </Alert>
         </CardContent>
