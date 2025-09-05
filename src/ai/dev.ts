@@ -40,3 +40,4 @@ import '@/ai/flows/drug-card-flashcard-generator.ts';
 import '@/ai/flows/drug-card-quiz-generator.ts';
 import '@/ai/flows/drug-card-case-mcq-generator.ts';
 import '@/ai/flows/ai-assistant-helper.ts';
+import '@/ai/flows/virtual-lab-simulator.ts';
