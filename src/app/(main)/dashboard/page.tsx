@@ -305,7 +305,7 @@ const studentTools = [
     },
     {
         icon: Puzzle,
-        title: "Pharma Games &amp; Puzzles",
+        title: "Pharma Games & Puzzles",
         description: "Learn pharmacology concepts through interactive games and puzzles.",
         href: "/pharma-games",
         color: "text-pink-500",
@@ -405,7 +405,7 @@ export default function DashboardPage() {
           </h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
             {tools.map((tool) => (
-              <Card key={tool.title} className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col group">
+              <Card key={tool.href} className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col group">
                 <CardHeader className="flex flex-row items-start gap-4">
                   <div className={`p-3 bg-primary/10 rounded-lg ${tool.color}`}>
                     <tool.icon className="w-8 h-8" />
