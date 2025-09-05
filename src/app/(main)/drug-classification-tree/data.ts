@@ -318,7 +318,7 @@ export const drugTreeData: DrugClass[] = [
                     adrs: "Nausea, dry mouth, somnolence, QT prolongation at higher doses.",
                     contraindications: "Concomitant use with MAOIs, congenital long QT syndrome.",
                     pharmaApplications: {
-                        dosageForms: "Tablets, oral solution.",
+                        dosageForms: "Tablelets, oral solution.",
                         formulations: "Celexa (Brand).",
                         storage: "Store at room temperature.",
                     },
@@ -1599,5 +1599,90 @@ export const drugTreeData: DrugClass[] = [
         ],
       },
     ]
-  }
+  },
+  {
+    name: "Drugs Acting on Blood & Blood-forming Organs",
+    pharmaFocus: "bioassays, sterility testing, handling of biologics.",
+    subclasses: [
+      {
+        name: "Anticoagulants",
+        subclasses: [
+          {
+            name: "Heparins",
+            drugs: [
+              {
+                name: "Heparin",
+                classification: "Anticoagulant",
+                moa: "Binds to antithrombin III, accelerating its ability to inactivate thrombin, factor Xa, and other clotting factors, thus preventing clot formation.",
+                therapeuticUses: "Treatment and prevention of deep vein thrombosis (DVT) and pulmonary embolism (PE), acute coronary syndromes.",
+                adrs: "Bleeding, heparin-induced thrombocytopenia (HIT), osteoporosis (long-term use).",
+                contraindications: "Active bleeding, history of HIT, severe thrombocytopenia.",
+                pharmaApplications: {
+                  dosageForms: "Injection (IV, SC).",
+                  formulations: "Various generic formulations.",
+                  storage: "Store at room temperature. Do not freeze.",
+                },
+                analyticalMethods: {
+                  qualitative: "Protamine titration.",
+                  quantitative: "Activated partial thromboplastin time (aPTT) monitoring, anti-Xa assay.",
+                  pharmacopoeial: "USP, BP (assay based on anticoagulant activity).",
+                },
+                specialNotes: "Antidote is protamine sulfate. Requires regular monitoring (aPTT or anti-Xa).",
+              },
+            ]
+          },
+          {
+            name: "Oral Anticoagulants",
+            drugs: [
+                {
+                    name: "Warfarin",
+                    classification: "Vitamin K antagonist",
+                    moa: "Inhibits the synthesis of vitamin K-dependent clotting factors (II, VII, IX, X) and proteins C and S.",
+                    therapeuticUses: "Prevention and treatment of thromboembolic disorders (DVT, PE), stroke prevention in atrial fibrillation.",
+                    adrs: "Bleeding, skin necrosis (rare), purple toe syndrome (rare).",
+                    contraindications: "Pregnancy, active bleeding, recent surgery.",
+                    pharmaApplications: {
+                      dosageForms: "Tablets.",
+                      formulations: "Coumadin (Brand).",
+                      storage: "Store at room temperature, protect from light.",
+                    },
+                    analyticalMethods: {
+                      qualitative: "HPLC.",
+                      quantitative: "Prothrombin time (PT) / International Normalized Ratio (INR) monitoring.",
+                      pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Narrow therapeutic index, requiring frequent INR monitoring. Numerous drug and food (Vitamin K) interactions. Antidote is Vitamin K.",
+                },
+            ]
+          }
+        ]
+      },
+      {
+        name: "Antiplatelets",
+        drugs: [
+            {
+                name: "Aspirin",
+                classification: "NSAID, Antiplatelet",
+                moa: "Irreversibly inhibits COX-1 in platelets, preventing the synthesis of thromboxane A2, a potent platelet aggregator.",
+                therapeuticUses: "Primary and secondary prevention of cardiovascular events (MI, stroke).",
+                adrs: "GI bleeding, hemorrhagic stroke.",
+                contraindications: "Hypersensitivity, bleeding disorders.",
+                pharmaApplications: {
+                  dosageForms: "Tablets (typically low dose, e.g., 75mg, 81mg).",
+                  formulations: "Often enteric-coated to reduce GI irritation.",
+                  storage: "Store in a dry place.",
+                },
+                analyticalMethods: {
+                  qualitative: "Platelet aggregation tests.",
+                  quantitative: "VerifyNow assay.",
+                  pharmacopoeial: "USP, BP.",
+                },
+                specialNotes: "A cornerstone of cardiovascular prevention therapy.",
+            },
+        ],
+      },
+    ]
+  },
 ];
+
+    
