@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -66,12 +66,12 @@ function CompactOverlay({ item, onScan }: { item: { type: string, name: string, 
     
     return (
         <div 
-            className="absolute p-1 border-2 border-dashed border-white/50 rounded-lg"
+            className="absolute p-1 border-2 border-dashed border-white/50 rounded-lg group"
             style={item.stripPosition}
+             onClick={() => onScan(item.name, item.type)}
         >
             <Card 
-                className="bg-white/90 dark:bg-black/90 backdrop-blur-sm p-2 rounded-lg shadow-xl w-60 border-primary/50 flex gap-2"
-                 onClick={() => onScan(item.name, item.type)}
+                className="bg-white/90 dark:bg-black/90 backdrop-blur-sm p-2 rounded-lg shadow-xl w-60 border-primary/50 flex gap-2 cursor-pointer"
             >
                 <div className={cn("w-2 rounded-full", riskColors[item.risk] || 'bg-gray-400')}></div>
                 <div className="flex-1">
@@ -79,6 +79,7 @@ function CompactOverlay({ item, onScan }: { item: { type: string, name: string, 
                     <p className="text-xs text-muted-foreground">{drug.pharmaApplications.dosageForms}</p>
                     <p className="text-xs text-muted-foreground">{drug.classification}</p>
                 </div>
+                 <item.icon className="h-6 w-6 text-muted-foreground self-center mr-2"/>
             </Card>
         </div>
     );
@@ -192,6 +193,14 @@ export function ScanMedicineStripClient() {
                     </DialogHeader>
                     <div className="max-h-[70vh] overflow-y-auto pr-4 space-y-4">
                         
+                        {scannedItem.type === 'herb' && (
+                            <Alert>
+                                <AlertTriangle className="h-4 w-4"/>
+                                <AlertTitle>Possible Identification Only</AlertTitle>
+                                <AlertDescription>This identification is a suggestion. Always verify herb specimens with a qualified expert or reference text.</AlertDescription>
+                            </Alert>
+                        )}
+                        
                         {isHighRisk(scannedItem.drug.name) && (
                             <Alert variant="destructive">
                                 <AlertTriangle className="h-4 w-4"/>
@@ -218,6 +227,16 @@ export function ScanMedicineStripClient() {
                         
                         <DetailSection title="Mechanism of Action" content={scannedItem.drug.moa} icon={FlaskConical} />
 
+                        {scannedItem.type === 'herb' && (
+                            <Card>
+                                <CardHeader><CardTitle className="text-lg">Pharmacognosy Details</CardTitle></CardHeader>
+                                <CardContent className="space-y-4">
+                                   <DetailSection title="Active Constituents" content={scannedItem.drug.moa} icon={TestTube} />
+                                   <DetailSection title="Traditional Uses" content={scannedItem.drug.therapeuticUses} icon={Leaf} />
+                                </CardContent>
+                            </Card>
+                        )}
+
                         <Card>
                             <CardHeader><CardTitle className="text-lg">Clinical Information</CardTitle></CardHeader>
                             <CardContent className="space-y-4">
@@ -225,7 +244,7 @@ export function ScanMedicineStripClient() {
                                <DetailSection title="Major Adverse Drug Reactions (ADRs)" content={scannedItem.drug.adrs} icon={AlertTriangle} />
                                <DetailSection title="Contraindications & Precautions" content={scannedItem.drug.contraindications} icon={ShieldCheck} />
                                 <DetailSection title="Typical Dosing" content={"Dosing information not available in this mock data. A real implementation would show Adult, Pediatric, and Renal/Hepatic dosing here."} icon={User} />
-                               <DetailSection title="Major Interactions" content={"Interaction data not available in this mock data."} icon={GitCompareArrows} />
+                               <DetailSection title="Major Interactions" content={"Interaction data not available in this mock dataset."} icon={GitCompareArrows} />
                             </CardContent>
                         </Card>
 
