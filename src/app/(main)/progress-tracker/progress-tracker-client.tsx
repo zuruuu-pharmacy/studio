@@ -5,7 +5,7 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus, HelpCircle, FileText, FlaskConical, BrainCircuit, Book, Zap, ListOrdered, BookCopy, Bell, ArrowLeft } from "lucide-react";
+import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus, HelpCircle, FileText, FlaskConical, BrainCircuit, Book, Zap, ListOrdered, BookCopy, Bell, ArrowLeft, ShieldCheck } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -231,6 +231,7 @@ export function ProgressTrackerClient() {
                 <CardContent className="space-y-3">
                     {prioritizedWeakness.slice(0, 2).map(item => {
                         const rec = recommendationMap[item.subject];
+                        if (!rec) return null;
                         return (
                              <Alert key={item.subject}>
                                 <Lightbulb className="h-4 w-4" />
@@ -279,9 +280,9 @@ export function ProgressTrackerClient() {
             </CardContent>
         </Card>
 
-        <Accordion type="single" collapsible className="w-full">
-             <AccordionItem value="data-sources">
-                 <AccordionTrigger className="text-base text-muted-foreground">How is my Mastery Score Calculated?</AccordionTrigger>
+        <Accordion type="multiple" collapsible className="w-full space-y-4">
+             <AccordionItem value="data-sources" className="border-0">
+                 <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">How is my Mastery Score Calculated?</AccordionTrigger>
                  <AccordionContent>
                     <Card className="p-6">
                         <div className="space-y-4">
@@ -303,6 +304,23 @@ export function ProgressTrackerClient() {
                                     </ul>
                                 </div>
                              </div>
+                        </div>
+                    </Card>
+                 </AccordionContent>
+             </AccordionItem>
+             <AccordionItem value="privacy" className="border-0">
+                 <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">Privacy &amp; Data Governance</AccordionTrigger>
+                 <AccordionContent>
+                    <Card className="p-6">
+                        <div className="space-y-4">
+                            <h4 className="font-semibold mb-2 flex items-center gap-2"><ShieldCheck className="text-primary"/>Your Data, Your Control</h4>
+                            <p className="text-sm text-muted-foreground mb-2">We believe in transparent data practices. Your personal learning data is private by default and is only used to help you learn better.</p>
+                            <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
+                                <li><strong>Opt-In Sharing:</strong> Your individual progress is not shared with instructors unless you explicitly choose to. Aggregated, anonymized class data helps improve curriculum.</li>
+                                <li><strong>Data Control:</strong> You have the right to export or delete your learning history at any time.</li>
+                                <li><strong>Secure Storage:</strong> All learning data is stored securely with encryption at rest and in transit.</li>
+                                <li><strong>Audit Logs:</strong> Access to student data by administrators is logged and auditable for your protection.</li>
+                            </ul>
                         </div>
                     </Card>
                  </AccordionContent>
