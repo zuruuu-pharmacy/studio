@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI-powered plagiarism checker.
@@ -11,7 +12,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const PlagiarismInputSchema = z.object({
-  text: z.string().min(50, "Text must be at least 50 characters long.").describe("The text content to check for plagiarism."),
+  documentDataUri: z.string().describe("The document to check for plagiarism, as a data URI."),
 });
 export type PlagiarismInput = z.infer<typeof PlagiarismInputSchema>;
 
@@ -39,15 +40,13 @@ const prompt = ai.definePrompt({
   input: {schema: PlagiarismInputSchema},
   output: {schema: PlagiarismResultSchema},
   model: 'googleai/gemini-1.5-flash',
-  prompt: `You are an academic integrity AI tool. Your task is to analyze a given text for plagiarism against a simulated database of academic journals, websites, and textbooks.
+  prompt: `You are an academic integrity AI tool. Your task is to analyze a given document for plagiarism against a simulated database of academic journals, websites, and textbooks.
 
-**Input Text:**
-\`\`\`
-{{{text}}}
-\`\`\`
+**Input Document:**
+{{media url=documentDataUri}}
 
 **Instructions:**
-1.  **Analyze the Text:** Read the text and identify any segments that are highly similar to well-known external sources.
+1.  **Analyze the Document:** Perform OCR if necessary. Read the document and identify any segments that are highly similar to well-known external sources.
 2.  **Calculate Similarity:** For each identified segment, provide a 'similarity_score' between 0 and 1.
 3.  **Identify Sources:** For each segment, identify a plausible 'source'. Be specific where possible (e.g., "Wikipedia article on 'Beta-blockers'", "Goodman & Gilman's Pharmacological Basis of Therapeutics, 13th Ed.").
 4.  **Overall Score:** Calculate an 'overall_similarity_percentage' for the entire document. This should be a weighted average based on the length and severity of the matches.

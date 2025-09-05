@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useActionState, useEffect, useTransition } from "react";
+import { useActionState, useEffect, useTransition, useState, useRef } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -9,16 +9,24 @@ import { checkPlagiarism, type PlagiarismResult } from "@/ai/flows/plagiarism-ch
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ScanSearch, CheckCircle, AlertTriangle, ShieldCheck } from "lucide-react";
+import { Loader2, ScanSearch, CheckCircle, AlertTriangle, ShieldCheck, Upload } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 const formSchema = z.object({
-  text: z.string().min(50, "Text must be at least 50 characters to check for plagiarism."),
+  documentFile: z
+    .any()
+    .refine((files) => files?.length === 1, "A document file is required.")
+    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
+    .refine(
+      (files) => ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"].includes(files?.[0]?.type),
+      "Only .pdf, .docx, and .txt files are supported."
+    ),
 });
 type FormValues = z.infer<typeof formSchema>;
 
@@ -32,12 +40,19 @@ export function PlagiarismCheckerClient() {
   const [isPending, startTransition] = useTransition();
   const [state, formAction] = useActionState<PlagiarismResult | { error: string } | null, FormData>(
     async (previousState, formData) => {
-      const parsed = formSchema.safeParse(Object.fromEntries(formData));
-      if (!parsed.success) {
-        return { error: "Invalid input. Check the form field." };
+      const file = formData.get('documentFile') as File;
+      if (!file) {
+        return { error: "File not provided." };
       }
+
       try {
-        const result = await checkPlagiarism(parsed.data);
+         const documentDataUri = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+        const result = await checkPlagiarism({ documentDataUri });
         return result;
       } catch (e) {
         console.error(e);
@@ -50,8 +65,10 @@ export function PlagiarismCheckerClient() {
   const { toast } = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { text: "" },
+    defaultValues: { documentFile: undefined },
   });
+  const fileRef = form.register("documentFile");
+
 
   useEffect(() => {
     if (state?.error) {
@@ -61,7 +78,7 @@ export function PlagiarismCheckerClient() {
 
   const handleFormSubmit = form.handleSubmit((data) => {
     const formData = new FormData();
-    formData.append("text", data.text);
+    formData.append("documentFile", data.documentFile[0]);
     startTransition(() => formAction(formData));
   });
 
@@ -71,22 +88,23 @@ export function PlagiarismCheckerClient() {
         <Card>
           <CardHeader>
             <CardTitle>Submit Document</CardTitle>
-            <CardDescription>Paste your text into the box below.</CardDescription>
+            <CardDescription>Upload your document to check for plagiarism.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
               <form onSubmit={handleFormSubmit} className="space-y-4">
                 <FormField
                   control={form.control}
-                  name="text"
+                  name="documentFile"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Text to Check</FormLabel>
+                      <FormLabel>Document File (PDF, DOCX, TXT)</FormLabel>
                       <FormControl>
-                        <Textarea
-                          placeholder="Paste your essay, assignment, or abstract here..."
-                          rows={15}
-                          {...field}
+                        <Input
+                          type="file"
+                          accept=".pdf,.docx,.txt"
+                          {...fileRef}
+                          onChange={(e) => field.onChange(e.target.files)}
                         />
                       </FormControl>
                       <FormMessage />
