@@ -12,28 +12,28 @@ const pathologyModules = [
     title: "General Pathology",
     description: "Learn about the basic pathological processes like inflammation, neoplasia, and cellular injury.",
     href: "/pathology/general",
-    status: "Active",
+    status: "Coming Soon",
   },
   {
     icon: Dna,
     title: "Systemic Pathology",
     description: "Explore the pathology of specific organ systems, including cardiovascular, respiratory, and renal systems.",
     href: "/pathology/systemic",
-    status: "Active",
+    status: "Coming Soon",
   },
   {
     icon: TestTube,
     title: "Hematology & Blood Banking",
     description: "Study diseases of the blood and the principles of transfusion medicine.",
     href: "/pathology/hematology",
-    status: "Active",
+    status: "Coming Soon",
   },
   {
     icon: FileText,
     title: "Pathology Case Studies",
     description: "Review real-world case studies and analyze slides to build your diagnostic skills.",
     href: "/pathology/cases",
-    status: "Active",
+    status: "Coming Soon",
   },
 ];
 
