@@ -1247,6 +1247,7 @@ export const drugTreeData: DrugClass[] = [
   },
   {
     name: "Drugs Acting on the Autonomic Nervous System (ANS)",
+    pharmaFocus: "receptor binding assays, sterile preparations, formulation of eye drops.",
     subclasses: [
       {
         name: "Cholinergic Agonists & Antagonists",
@@ -1448,6 +1449,7 @@ export const drugTreeData: DrugClass[] = [
   },
   {
     name: "Cardiovascular Drugs",
+    pharmaFocus: "bioequivalence studies, sterile product formulation, dissolution testing.",
     subclasses: [
       {
         name: "Antihypertensives",
@@ -1598,6 +1600,18 @@ export const drugTreeData: DrugClass[] = [
               },
         ],
       },
+      {
+          name: "Antiarrhythmics",
+          drugs: [],
+      },
+      {
+          name: "Heart failure drugs",
+          drugs: [],
+      },
+      {
+          name: "Antihyperlipidemics",
+          drugs: [],
+      }
     ]
   },
   {
@@ -1681,6 +1695,103 @@ export const drugTreeData: DrugClass[] = [
             },
         ],
       },
+      { name: "Thrombolytics", drugs: [] },
+      { name: "Hematinics", drugs: [] },
+      { name: "Growth factors", drugs: [] },
+    ]
+  },
+  {
+    name: "Respiratory System Drugs",
+    pharmaFocus: "Inhaler device technology (MDI, DPI), particle size analysis, aerosol performance testing.",
+    subclasses: [
+      {
+        name: "Bronchodilators",
+        subclasses: [
+            {
+                name: "Beta-2 agonists",
+                drugs: [
+                    {
+                        name: "Salbutamol (Albuterol)",
+                        classification: "Short-acting beta-2 agonist (SABA)",
+                        moa: "Selectively stimulates beta-2 adrenergic receptors, leading to relaxation of bronchial smooth muscle and bronchodilation.",
+                        therapeuticUses: "Acute relief of bronchospasm in asthma and COPD.",
+                        adrs: "Tremor, tachycardia, palpitations.",
+                        contraindications: "Hypersensitivity.",
+                        pharmaApplications: {
+                            dosageForms: "Metered-dose inhaler (MDI), dry powder inhaler (DPI), nebulizer solution, tablets.",
+                            formulations: "Ventolin, ProAir.",
+                            storage: "Store at room temperature. Shake MDI before use.",
+                        },
+                        analyticalMethods: {
+                            qualitative: "HPLC.",
+                            quantitative: "HPLC, UV spectrophotometry.",
+                            pharmacopoeial: "USP, BP.",
+                        },
+                        specialNotes: "Known as a 'reliever' medication. Over-reliance indicates poor underlying asthma control.",
+                    },
+                ]
+            },
+            {
+                name: "Antimuscarinics",
+                drugs: [
+                     {
+                        name: "Ipratropium",
+                        classification: "Short-acting muscarinic antagonist (SAMA)",
+                        moa: "Blocks muscarinic cholinergic receptors in the bronchi, leading to bronchodilation.",
+                        therapeuticUses: "COPD, asthma (in combination with a SABA).",
+                        adrs: "Dry mouth, headache, dizziness.",
+                        contraindications: "Hypersensitivity to atropine or its derivatives.",
+                        pharmaApplications: {
+                            dosageForms: "Metered-dose inhaler, nebulizer solution.",
+                            formulations: "Atrovent HFA.",
+                            storage: "Store at room temperature.",
+                        },
+                        analyticalMethods: {
+                            qualitative: "HPLC, TLC.",
+                            quantitative: "HPLC.",
+                            pharmacopoeial: "USP, BP.",
+                        },
+                        specialNotes: "Has a slower onset than SABAs, often used in combination for severe asthma exacerbations.",
+                    },
+                ]
+            }
+        ]
+      },
+      {
+        name: "Anti-asthmatics",
+        subclasses: [
+            {
+                name: "Corticosteroids",
+                drugs: [
+                    {
+                        name: "Beclomethasone",
+                        classification: "Inhaled Corticosteroid (ICS)",
+                        moa: "Reduces inflammation in the airways by inhibiting multiple inflammatory cell types and decreasing the production of inflammatory mediators.",
+                        therapeuticUses: "Maintenance treatment of asthma.",
+                        adrs: "Oral candidiasis (thrush), dysphonia (hoarse voice).",
+                        contraindications: "Primary treatment of status asthmaticus.",
+                        pharmaApplications: {
+                            dosageForms: "Metered-dose inhaler (MDI).",
+                            formulations: "Qvar RediHaler.",
+                            storage: "Store at room temperature.",
+                        },
+                        analyticalMethods: {
+                            qualitative: "HPLC.",
+                            quantitative: "HPLC.",
+                            pharmacopoeial: "USP, BP.",
+                        },
+                        specialNotes: "Patients should be counseled to rinse their mouth after use to prevent thrush. This is a 'preventer' medication.",
+                    },
+                ]
+            },
+            {
+                name: "Leukotriene antagonists",
+                drugs: []
+            }
+        ]
+      },
+      { name: "Anti-tussives & Expectorants", drugs: [] },
+      { name: "Mucolytics", drugs: [] },
     ]
   },
 ];
