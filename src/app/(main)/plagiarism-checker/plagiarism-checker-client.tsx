@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ScanSearch, CheckCircle, AlertTriangle, ShieldCheck, Upload } from "lucide-react";
+import { Loader2, ScanSearch, CheckCircle, AlertTriangle, ShieldCheck, Upload, Lightbulb } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
@@ -162,7 +162,7 @@ export function PlagiarismCheckerClient() {
                     {state.segments.length > 0 ? (
                         <div className="space-y-4">
                             {state.segments.map((segment, index) => (
-                                <div key={index} className="p-4 border rounded-md">
+                                <div key={index} className="p-4 border rounded-md space-y-3">
                                     <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground">
                                         "{segment.original_text}"
                                     </blockquote>
@@ -172,6 +172,15 @@ export function PlagiarismCheckerClient() {
                                             {(segment.similarity_score * 100).toFixed(0)}% Match
                                         </Badge>
                                     </div>
+                                    {segment.remediation_suggestion && (
+                                         <Alert variant="default" className="bg-amber-500/10 border-amber-500/50">
+                                            <Lightbulb className="h-4 w-4 text-amber-600"/>
+                                            <AlertTitle className="text-amber-700">AI Suggestion</AlertTitle>
+                                            <AlertDescription>
+                                            {segment.remediation_suggestion}
+                                            </AlertDescription>
+                                        </Alert>
+                                    )}
                                 </div>
                             ))}
                         </div>
