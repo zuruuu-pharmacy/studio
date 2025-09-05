@@ -2163,4 +2163,48 @@ export const drugTreeData: DrugClass[] = [
       }
     ]
   },
+  {
+    name: "Chemotherapy (Antimicrobial & Anticancer Drugs)",
+    pharmaFocus: "Sterility testing, aseptic techniques, handling of cytotoxic agents, microbial assays.",
+    subclasses: [
+      {
+        name: "Antibiotics",
+        subclasses: [
+          {
+            name: "Penicillins",
+            drugs: [
+              {
+                name: "Amoxicillin",
+                classification: "Penicillin Antibiotic (Aminopenicillin)",
+                moa: "Inhibits the final transpeptidation step of peptidoglycan synthesis in bacterial cell walls by binding to penicillin-binding proteins (PBPs).",
+                therapeuticUses: "Common infections of the ear, nose, throat, skin, and urinary tract. H. pylori eradication.",
+                adrs: "Diarrhea, nausea, rash, hypersensitivity reactions.",
+                contraindications: "History of severe allergic reaction (e.g., anaphylaxis) to penicillins.",
+                pharmaApplications: {
+                  dosageForms: "Capsules, chewable tablets, powder for oral suspension.",
+                  formulations: "Amoxil (Brand). Often combined with clavulanic acid (Augmentin).",
+                  storage: "Store at room temperature. Reconstituted suspension should be refrigerated and discarded after 14 days.",
+                },
+                analyticalMethods: {
+                  qualitative: "HPLC, TLC.",
+                  quantitative: "Microbiological assay, HPLC.",
+                  pharmacopoeial: "USP, BP.",
+                },
+                specialNotes: "Beta-lactamase inhibitors like clavulanic acid are added to extend its spectrum against beta-lactamase producing bacteria.",
+              },
+            ],
+          },
+          { name: "Cephalosporins", drugs: [] },
+          { name: "Aminoglycosides", drugs: [] },
+          { name: "Macrolides", drugs: [] },
+          { name: "Fluoroquinolones", drugs: [] },
+          { name: "Tetracyclines", drugs: [] },
+        ]
+      },
+      { name: "Antifungals", drugs: [] },
+      { name: "Antivirals", drugs: [] },
+      { name: "Antiparasitics", drugs: [] },
+      { name: "Anticancer drugs", drugs: [] },
+    ]
+  },
 ];
