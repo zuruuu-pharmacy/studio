@@ -75,13 +75,9 @@ function CompactOverlay({ item, onScan }: { item: { type: string, name: string, 
             >
                 <div className={cn("w-2 rounded-full", riskColors[item.risk] || 'bg-gray-400')}></div>
                 <div className="flex-1 space-y-1">
-                    <p className="font-bold text-sm">{drug.name} ({drug.pharmaApplications.formulations})</p>
+                    <p className="font-bold text-sm">{drug.name}</p>
                     <p className="text-xs text-muted-foreground">{drug.classification}</p>
-                     <div className="flex gap-1 pt-1">
-                        <Button size="icon" className="h-6 w-6" variant="ghost" onClick={(e) => handleActionClick(e, "Interactions")}><GitCompareArrows/></Button>
-                        <Button size="icon" className="h-6 w-6" variant="ghost" onClick={(e) => handleActionClick(e, "Save")}><Save/></Button>
-                        <Button size="icon" className="h-6 w-6" variant="ghost" onClick={(e) => handleActionClick(e, "Quiz")}><HelpCircle/></Button>
-                    </div>
+                    <p className="text-xs text-muted-foreground">{drug.pharmaApplications.dosageForms.split(';')[0]}</p>
                 </div>
             </Card>
         </div>
@@ -196,14 +192,6 @@ export function ScanMedicineStripClient() {
                     </DialogHeader>
                     <div className="max-h-[70vh] overflow-y-auto pr-4 space-y-4">
                         
-                        {scannedItem.type === 'herb' && (
-                            <Alert>
-                                <AlertTriangle className="h-4 w-4"/>
-                                <AlertTitle>Possible Identification Only</AlertTitle>
-                                <AlertDescription>This identification is a suggestion. Always verify herb specimens with a qualified expert or reference text.</AlertDescription>
-                            </Alert>
-                        )}
-                        
                         {isHighRisk(scannedItem.drug.name) && (
                             <Alert variant="destructive">
                                 <AlertTriangle className="h-4 w-4"/>
@@ -212,15 +200,18 @@ export function ScanMedicineStripClient() {
                             </Alert>
                         )}
                         
+                        {scannedItem.type === 'herb' && (
+                            <Alert>
+                                <AlertTriangle className="h-4 w-4"/>
+                                <AlertTitle>Possible Identification Only</AlertTitle>
+                                <AlertDescription>This identification is a suggestion. Always verify herb specimens with a qualified expert or reference text.</AlertDescription>
+                            </Alert>
+                        )}
+
                         <Alert variant="default" className="border-blue-500/50 bg-blue-500/10">
                             <AlertTriangle className="h-4 w-4 text-blue-500" />
                             <AlertTitle className="text-blue-600">Clinical Disclaimer</AlertTitle>
                             <AlertDescription>Educational tool only — confirm with official formulary before clinical decisions.</AlertDescription>
-                        </Alert>
-
-                         <Alert>
-                            <AlertTitle className="flex items-center gap-2"><BookCopy className="h-4 w-4"/> Teaching Notes & Exam Highlights</AlertTitle>
-                            <AlertDescription>{scannedItem.drug.specialNotes}</AlertDescription>
                         </Alert>
                         
                         <Card>
@@ -235,29 +226,6 @@ export function ScanMedicineStripClient() {
                             </CardContent>
                         </Card>
                         
-                        <DetailSection title="Mechanism of Action" content={scannedItem.drug.moa} icon={FlaskConical} />
-
-                        {scannedItem.type === 'herb' && (
-                            <Card>
-                                <CardHeader><CardTitle className="text-lg">Pharmacognosy Details</CardTitle></CardHeader>
-                                <CardContent className="space-y-4">
-                                   <DetailSection title="Active Constituents" content={scannedItem.drug.moa} icon={TestTube} />
-                                   <DetailSection title="Traditional Uses" content={scannedItem.drug.therapeuticUses} icon={Leaf} />
-                                </CardContent>
-                            </Card>
-                        )}
-
-                        <Card>
-                            <CardHeader><CardTitle className="text-lg">Clinical Information</CardTitle></CardHeader>
-                            <CardContent className="space-y-4">
-                               <DetailSection title="Therapeutic Uses" content={scannedItem.drug.therapeuticUses} icon={Stethoscope} />
-                               <DetailSection title="Major Adverse Drug Reactions (ADRs)" content={scannedItem.drug.adrs} icon={AlertTriangle} />
-                               <DetailSection title="Contraindications & Precautions" content={scannedItem.drug.contraindications} icon={ShieldCheck} />
-                                <DetailSection title="Typical Dosing" content={"Dosing information not available in this mock data. A real implementation would show Adult, Pediatric, and Renal/Hepatic dosing here."} icon={User} />
-                               <DetailSection title="Major Interactions" content={"Interaction data not available in this mock dataset."} icon={GitCompareArrows} />
-                            </CardContent>
-                        </Card>
-
                          <Card>
                             <CardHeader><CardTitle className="text-lg">Pharmaceutical & Analytical Notes</CardTitle></CardHeader>
                             <CardContent className="space-y-4">
@@ -266,13 +234,38 @@ export function ScanMedicineStripClient() {
                                <DetailSection title="Analytical / QC Methods" content={`Qualitative: ${scannedItem.drug.analyticalMethods.qualitative}\nQuantitative: ${scannedItem.drug.analyticalMethods.quantitative}\nPharmacopoeial: ${scannedItem.drug.analyticalMethods.pharmacopoeial}`} icon={Microscope} />
                             </CardContent>
                         </Card>
+                         <Card>
+                            <CardHeader><CardTitle className="text-lg">Teaching & Exam Notes</CardTitle></CardHeader>
+                            <CardContent>
+                               <DetailSection title="Exam Highlights" content={scannedItem.drug.specialNotes} icon={BookCopy} />
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardHeader><CardTitle className="text-lg">Clinical Information</CardTitle></CardHeader>
+                            <CardContent className="space-y-4">
+                               <DetailSection title="Mechanism of Action" content={scannedItem.drug.moa} icon={FlaskConical} />
+                               {scannedItem.type === 'herb' && (
+                                    <>
+                                        <DetailSection title="Active Constituents" content={scannedItem.drug.moa} icon={TestTube} />
+                                        <DetailSection title="Traditional Uses" content={scannedItem.drug.therapeuticUses} icon={Leaf} />
+                                    </>
+                                )}
+                               <DetailSection title="Therapeutic Uses" content={scannedItem.drug.therapeuticUses} icon={Stethoscope} />
+                               <DetailSection title="Major Adverse Drug Reactions (ADRs)" content={scannedItem.drug.adrs} icon={AlertTriangle} />
+                               <DetailSection title="Contraindications & Precautions" content={scannedItem.drug.contraindications} icon={ShieldCheck} />
+                               <DetailSection title="Typical Dosing" content={"Dosing information not available in this mock data. A real implementation would show Adult, Pediatric, and Renal/Hepatic dosing here."} icon={User} />
+                               <DetailSection title="Major Interactions" content={"Interaction data not available in this mock dataset."} icon={GitCompareArrows} />
+                            </CardContent>
+                        </Card>
                         
                         <Card>
-                            <CardHeader><CardTitle className="text-lg">Pedagogical & App Actions</CardTitle></CardHeader>
+                            <CardHeader><CardTitle className="text-lg">Learning & App Actions</CardTitle></CardHeader>
                             <CardContent className="flex flex-wrap gap-2">
                                 <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will save the scan to your Notes Organizer."})}><Save className="mr-2"/>Save Study Note</Button>
                                 <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will add flashcards to your deck."})}><BookCopy className="mr-2"/>Make Flashcards</Button>
                                 <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will launch a quiz on this drug."})}><HelpCircle className="mr-2"/>Quiz Me</Button>
+                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will launch a simulated counseling session."})}><User className="mr-2"/>Counseling Mode</Button>
                                 <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will allow taking a snapshot of the AR view."})}><CameraIcon className="mr-2"/>Snapshot</Button>
                                 <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will read the card details aloud."})}><Volume2 className="mr-2"/>Read Aloud</Button>
                             </CardContent>
