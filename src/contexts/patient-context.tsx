@@ -65,7 +65,6 @@ export interface UserProfile {
   studentId?: string; // Specific to students
   patientHistoryId?: string; // Link to a patient history record
   bookmarkedPostIds?: string[]; // For discussion forum bookmarks
-  votedPollIds?: string[]; // For anonymous polls to prevent double voting
 }
 
 export interface PatientRecord {
@@ -85,7 +84,6 @@ interface PatientContextType {
   setLastPrescription: (prescription: ReadPrescriptionOutput) => void;
   clearLastPrescription: () => void;
   toggleBookmark: (postId: string) => void;
-  addVotedPoll: (pollId: string) => void;
 }
 
 interface PatientState {
@@ -258,29 +256,6 @@ export function PatientProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const addVotedPoll = (pollId: string) => {
-    setPatientState(prevState => {
-        if (!prevState.activeUser) return prevState;
-
-        const votedPollIds = new Set(prevState.activeUser.votedPollIds || []);
-        if (votedPollIds.has(pollId)) {
-            return prevState; // Already voted, no change
-        }
-        votedPollIds.add(pollId);
-
-         const updatedUser = {
-            ...prevState.activeUser,
-            votedPollIds: Array.from(votedPollIds),
-        };
-
-        return {
-            ...prevState,
-            activeUser: updatedUser,
-            users: prevState.users.map(u => u.id === updatedUser.id ? updatedUser : u),
-        };
-    });
-  }
-
 
   const contextValue = useMemo(() => ({ 
       patientState, 
@@ -293,7 +268,6 @@ export function PatientProvider({ children }: { children: ReactNode }) {
       setLastPrescription,
       clearLastPrescription,
       toggleBookmark,
-      addVotedPoll,
     }), [patientState]);
 
   return (

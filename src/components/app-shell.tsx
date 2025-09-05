@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, Combine, CalendarDays, FolderOpen, Replace, BookA, MessageSquare, ClipboardList, CalendarPlus, Compass, BarChart, MessageCircleQuestion } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, Combine, CalendarDays, FolderOpen, Replace, BookA, MessageSquare, ClipboardList, MessageCircleQuestion } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -148,13 +148,6 @@ const studentMenuItems = [
         description: "Generate a personalized study timetable for your subjects and exams.",
         href: "/study-planner",
         color: "text-indigo-500",
-    },
-     {
-        icon: CalendarPlus,
-        label: "Event Calendar",
-        description: "Track academic deadlines, campus activities, and personal study schedules.",
-        href: "/event-calendar",
-        color: "text-pink-500",
     },
      {
         icon: Leaf,

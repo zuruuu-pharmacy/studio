@@ -7,8 +7,6 @@ import { PatientProvider } from '@/contexts/patient-context';
 import { LectureNotesProvider } from '@/contexts/lecture-notes-context';
 import { OsceSessionsProvider } from '@/contexts/osce-sessions-context';
 import { DiscussionForumProvider } from '@/contexts/discussion-forum-context';
-import { PollsProvider } from '@/contexts/polls-context';
-import { EventCalendarProvider } from '@/contexts/event-calendar-context';
 import { AnimatePresence } from 'framer-motion';
 
 export const metadata: Metadata = {
@@ -34,12 +32,8 @@ export default function RootLayout({
             <LectureNotesProvider>
                 <OsceSessionsProvider>
                     <DiscussionForumProvider>
-                        <PollsProvider>
-                            <EventCalendarProvider>
-                                {children}
-                                <Toaster />
-                            </EventCalendarProvider>
-                        </PollsProvider>
+                        {children}
+                        <Toaster />
                     </DiscussionForumProvider>
                 </OsceSessionsProvider>
             </LectureNotesProvider>
