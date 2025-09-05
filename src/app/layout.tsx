@@ -9,6 +9,7 @@ import { OsceSessionsProvider } from '@/contexts/osce-sessions-context';
 import { DiscussionForumProvider } from '@/contexts/discussion-forum-context';
 import { PollsProvider } from '@/contexts/polls-context';
 import { EventCalendarProvider } from '@/contexts/event-calendar-context';
+import { AnimatePresence } from 'framer-motion';
 
 export const metadata: Metadata = {
   title: 'Zuruu AI Pharmacy',
