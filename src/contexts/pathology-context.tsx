@@ -267,7 +267,7 @@ const initialCaseStudies: Omit<CaseStudy, 'id'>[] = [
         tags: {
             organ: "🧠 Neurology",
             type: "Degenerative",
-            difficulty: "⭐ Classic",
+            difficulty: "⭐ Classic"
         },
         quiz: [
             {
@@ -550,6 +550,216 @@ const initialCaseStudies: Omit<CaseStudy, 'id'>[] = [
             }
         ],
         imageHint: "uterine fibroid histology"
+    },
+    {
+        title: "Case 26: A 25-year-old with abdominal pain and diarrhea",
+        history: "A 25-year-old presents with a 6-month history of intermittent, crampy right lower quadrant abdominal pain and non-bloody diarrhea. He has also developed painful skin nodules and joint pain.",
+        specialty: "Gastrointestinal Pathology",
+        findings: "Colonoscopy reveals patchy areas of inflammation with deep, linear ulcers, creating a 'cobblestone' appearance. The inflammation involves the terminal ileum and parts of the colon, with segments of normal mucosa in between ('skip lesions'). Biopsy shows transmural inflammation (involving the full thickness of the bowel wall) and non-caseating granulomas.",
+        diagnosis: "Crohn's Disease.",
+        discussion: "Crohn's disease is an inflammatory bowel disease characterized by skip lesions and transmural inflammation. The presence of non-caseating granulomas is highly characteristic, though not seen in all cases. Unlike ulcerative colitis, it can affect any part of the GI tract, from mouth to anus, and its complications include fistulas and strictures due to the transmural nature of the inflammation.",
+        tags: {
+            organ: "🩺 GI Tract",
+            type: "🧑‍⚕️ Autoimmune",
+            difficulty: "🔥 Complex",
+        },
+        quiz: [
+            {
+                question: "Which feature is most characteristic of Crohn's Disease compared to Ulcerative Colitis?",
+                options: ["Crypt abscesses", "Bloody diarrhea", "Continuous inflammation", "Transmural inflammation with skip lesions"],
+                answer: "Transmural inflammation with skip lesions"
+            }
+        ],
+        imageHint: "crohn's disease histology",
+    },
+    {
+        title: "Case 27: A 6-year-old with a rash and fever",
+        history: "A 6-year-old presents with a high fever for 5 days, a widespread rash, red 'strawberry' tongue, conjunctivitis, and swollen hands and feet. The child is irritable.",
+        specialty: "Pediatric/Cardiovascular Pathology",
+        findings: "Clinical diagnosis is the primary mode. Echocardiogram reveals coronary artery aneurysms. Pathologically, the disease involves a necrotizing vasculitis of medium-sized arteries, particularly the coronary arteries. The arterial wall shows an inflammatory infiltrate of lymphocytes, macrophages, and plasma cells.",
+        diagnosis: "Kawasaki Disease.",
+        discussion: "Kawasaki disease is an acute febrile vasculitis of childhood. The major concern is the development of coronary artery aneurysms, which can lead to thrombosis, myocardial infarction, and sudden death. Treatment with intravenous immunoglobulin (IVIG) and aspirin is crucial to reduce the risk of these cardiac complications.",
+        tags: {
+            organ: "❤️ Heart",
+            type: "Vasculitis",
+            difficulty: "🔥 Complex",
+        },
+        quiz: [
+            {
+                question: "What is the most serious potential complication of Kawasaki Disease?",
+                options: ["Liver failure", "Kidney failure", "Coronary artery aneurysms", "Aseptic meningitis"],
+                answer: "Coronary artery aneurysms"
+            }
+        ],
+        imageHint: "kawasaki disease vasculitis",
+    },
+    {
+        title: "Case 28: A 60-year-old with fatigue and bone pain",
+        history: "A 60-year-old man presents with increasing fatigue, bone pain (especially in the back), and recurrent bacterial infections over the past year. Lab tests show anemia and elevated serum creatinine.",
+        specialty: "Hematopathology",
+        findings: "Serum protein electrophoresis shows a monoclonal 'M-spike' of IgG. X-rays reveal multiple 'punched-out' lytic lesions in the skull and vertebral bodies. A bone marrow biopsy is hypercellular and shows sheets of plasma cells, many of which are atypical, with prominent nucleoli or binucleation.",
+        diagnosis: "Multiple Myeloma.",
+        discussion: "Multiple myeloma is a malignancy of plasma cells that accumulate in the bone marrow. The malignant plasma cells produce a monoclonal immunoglobulin (the M-protein), which can be detected in serum or urine. The disease causes bone destruction (lytic lesions), suppresses normal hematopoiesis (causing anemia and leukopenia), and can lead to renal failure through various mechanisms, including light chain cast nephropathy.",
+        tags: {
+            organ: "🧬 Hematology",
+            type: "🧪 Cancer",
+            difficulty: "🔥 Complex",
+        },
+        quiz: [
+            {
+                question: "The characteristic finding on serum protein electrophoresis in multiple myeloma is called a:",
+                options: ["Polyclonal gammopathy", "Beta-gamma bridge", "M-spike", "Alpha-1-antitrypsin peak"],
+                answer: "M-spike"
+            }
+        ],
+        imageHint: "multiple myeloma bone marrow",
+    },
+    {
+        title: "Case 29: A 24-year-old woman with a 'butterfly' rash",
+        history: "A 24-year-old woman presents with a rash over her cheeks and nose that worsens with sun exposure, along with fatigue, joint pain, and hair loss. Lab tests show proteinuria and a positive antinuclear antibody (ANA) test.",
+        specialty: "Rheumatologic Pathology",
+        findings: "A skin biopsy of the rash shows liquefactive degeneration of the basal epidermal layer and a perivascular lymphocytic infiltrate. A renal biopsy shows diffuse thickening of the glomerular capillary walls, creating a 'wire loop' appearance on light microscopy. Immunofluorescence microscopy reveals granular deposits of IgG and complement along the glomerular basement membrane ('full house' pattern).",
+        diagnosis: "Systemic Lupus Erythematosus (SLE) with lupus nephritis.",
+        discussion: "SLE is a prototypic autoimmune disease characterized by the production of autoantibodies, particularly ANAs. The deposition of immune complexes in various tissues causes widespread inflammation and damage. The malar 'butterfly' rash is classic. Renal involvement (lupus nephritis) is common and a major cause of morbidity. The 'full house' immunofluorescence pattern in the kidney is highly characteristic.",
+        tags: {
+            organ: "🦴 Rheumatology",
+            type: "🧑‍⚕️ Autoimmune",
+            difficulty: "🔥 Complex",
+        },
+        quiz: [
+            {
+                question: "The 'full house' pattern on immunofluorescence of a renal biopsy is most characteristic of which condition?",
+                options: ["Diabetic nephropathy", "Lupus nephritis", "Amyloidosis", "Minimal change disease"],
+                answer: "Lupus nephritis"
+            }
+        ],
+        imageHint: "lupus nephritis histology",
+    },
+    {
+        title: "Case 30: A 32-year-old woman with weakness and double vision",
+        history: "A 32-year-old woman presents with fluctuating muscle weakness that worsens with activity and improves with rest. Her symptoms are most prominent in the muscles of her eyes, causing drooping eyelids (ptosis) and double vision (diplopia) by the end of the day.",
+        specialty: "Neuropathology",
+        findings: "Blood tests are positive for antibodies against the acetylcholine receptor (AChR). Electromyography (EMG) shows a decremental response to repetitive nerve stimulation. A biopsy of a muscle is not typically needed for diagnosis but would show simplified postsynaptic membranes and a reduced number of AChRs.",
+        diagnosis: "Myasthenia Gravis.",
+        discussion: "Myasthenia gravis is an autoimmune disorder caused by autoantibodies that block or destroy nicotinic acetylcholine receptors at the neuromuscular junction. This impairs neuromuscular transmission, leading to the characteristic fluctuating, fatigable muscle weakness. The disease is often associated with abnormalities of the thymus gland (hyperplasia or thymoma).",
+        tags: {
+            organ: "🧠 Neurology",
+            type: "🧑‍⚕️ Autoimmune",
+            difficulty: "⭐ Classic",
+        },
+        quiz: [
+            {
+                question: "Myasthenia Gravis is caused by autoantibodies targeting what structure?",
+                options: ["Myelin sheath", "Voltage-gated calcium channels", "Acetylcholine receptors", "Dopamine receptors"],
+                answer: "Acetylcholine receptors"
+            }
+        ],
+        imageHint: "neuromuscular junction diagram",
+    },
+    {
+        title: "Case 31: A 42-year-old woman with a 'lumpy' breast",
+        history: "A 42-year-old premenopausal woman complains of cyclic breast pain and nodularity that is most prominent before her menstrual periods. On physical exam, there are ill-defined, rubbery thickenings in the upper outer quadrants of both breasts.",
+        specialty: "Breast Pathology",
+        findings: "A biopsy of a nodular area shows a combination of cysts of varying sizes (some with apocrine metaplasia), stromal fibrosis, and a proliferation of epithelial cells within the terminal duct lobular unit (adenosis). There is no cytologic or architectural atypia.",
+        diagnosis: "Fibrocystic Changes of the Breast.",
+        discussion: "Fibrocystic change is an extremely common, benign condition and represents an exaggerated physiological response of the breast tissue to cyclic hormonal changes. It is not a single disease but a spectrum of changes. It is important to distinguish nonproliferative changes (like simple cysts and fibrosis) from proliferative changes, some of which (proliferative disease with atypia) confer a small increased risk for subsequent breast cancer.",
+        tags: {
+            organ: "♀️ Gynecology",
+            type: "Benign/Physiologic",
+            difficulty: "⭐ Classic",
+        },
+        quiz: [
+            {
+                question: "Which of the following is NOT a component of nonproliferative fibrocystic change?",
+                options: ["Cyst formation", "Stromal fibrosis", "Atypical ductal hyperplasia", "Adenosis"],
+                answer: "Atypical ductal hyperplasia"
+            }
+        ],
+        imageHint: "fibrocystic breast change histology",
+    },
+    {
+        title: "Case 32: A 28-year-old with celiac disease",
+        history: "A 28-year-old presents with chronic diarrhea, bloating, and weight loss. She has a history of iron deficiency anemia. Serology is positive for anti-tissue transglutaminase (anti-tTG) IgA antibodies.",
+        specialty: "Gastrointestinal Pathology",
+        findings: "An upper endoscopy is performed, and biopsies are taken from the duodenum. The histology shows marked villous atrophy (blunting and flattening of the villi), crypt hyperplasia (elongation of the crypts), and a significant increase in intraepithelial lymphocytes.",
+        diagnosis: "Celiac Disease.",
+        discussion: "Celiac disease is an immune-mediated enteropathy triggered by the ingestion of gluten in genetically predisposed individuals. The immune response to gluten leads to damage of the small intestinal mucosa, primarily the duodenum and proximal jejunum. This results in malabsorption. The triad of villous atrophy, crypt hyperplasia, and increased intraepithelial lymphocytes is the classic histological picture.",
+        tags: {
+            organ: "🩺 GI Tract",
+            type: "🧑‍⚕️ Autoimmune",
+            difficulty: "⭐ Classic",
+        },
+        quiz: [
+            {
+                question: "What is the characteristic histological triad of celiac disease?",
+                options: ["Villous atrophy, crypt hyperplasia, increased intraepithelial lymphocytes", "Normal villi, crypt abscesses, granulomas", "Transmural inflammation, fissures, fibrosis", "Pseudomembranes, mucosal necrosis, 'volcano' lesions"],
+                answer: "Villous atrophy, crypt hyperplasia, increased intraepithelial lymphocytes"
+            }
+        ],
+        imageHint: "celiac disease histology",
+    },
+    {
+        title: "Case 33: A 66-year-old with weight loss and abdominal pain",
+        history: "A 66-year-old man with a long history of H. pylori gastritis presents with unintentional weight loss, vague upper abdominal pain, and early satiety.",
+        specialty: "Gastrointestinal Pathology",
+        findings: "Endoscopy reveals a large, ulcerated mass in the antrum of the stomach. Biopsy shows an infiltrative adenocarcinoma with two patterns: some areas show intestinal-type glands, while other areas consist of poorly cohesive, single cells with large mucin vacuoles pushing the nucleus to the periphery (signet-ring cells).",
+        diagnosis: "Gastric Adenocarcinoma (Mixed Intestinal and Diffuse types).",
+        discussion: "Gastric cancer is a major cause of cancer mortality worldwide. It is broadly divided into two main histologic types: intestinal-type, which is often associated with chronic H. pylori gastritis and forms glands; and diffuse-type, which is characterized by infiltrative signet-ring cells and is associated with a worse prognosis. Chronic H. pylori infection is the single most important risk factor for developing gastric adenocarcinoma.",
+        tags: {
+            organ: "🩺 GI Tract",
+            type: "🧪 Cancer",
+            difficulty: "🔥 Complex",
+        },
+        quiz: [
+            {
+                question: "A gastric adenocarcinoma composed of single cells with large mucin vacuoles is known as which type?",
+                options: ["Intestinal-type", "Signet-ring cell carcinoma (Diffuse-type)", "Carcinoid tumor", "Gastrointestinal stromal tumor (GIST)"],
+                answer: "Signet-ring cell carcinoma (Diffuse-type)"
+            }
+        ],
+        imageHint: "gastric adenocarcinoma histology",
+    },
+    {
+        title: "Case 34: A 30-year-old woman with muscle weakness and skin rash",
+        history: "A 30-year-old woman presents with a several-month history of progressive, symmetric proximal muscle weakness (difficulty climbing stairs, combing hair) and a distinctive skin rash. The rash includes a purplish discoloration of the upper eyelids (heliotrope rash) and reddish papules over her knuckles (Gottron's papules).",
+        specialty: "Rheumatologic Pathology",
+        findings: "Blood tests show elevated creatine kinase (CK) levels. A muscle biopsy is performed. Histology shows inflammation that is most pronounced around small blood vessels and at the periphery of muscle fascicles (perifascicular atrophy). The inflammatory infiltrate is composed of lymphocytes and plasma cells.",
+        diagnosis: "Dermatomyositis.",
+        discussion: "Dermatomyositis is an inflammatory myopathy characterized by the combination of muscle weakness and classic skin findings. The underlying pathology is thought to be an antibody-mediated attack on small blood vessels within the muscle, leading to microinfarcts and subsequent muscle fiber damage, particularly at the periphery of the fascicles. This perifascicular atrophy is a hallmark histological feature.",
+        tags: {
+            organ: "🦴 Rheumatology",
+            type: "🧑‍⚕️ Autoimmune",
+            difficulty: "🔥 Complex",
+        },
+        quiz: [
+            {
+                question: "The hallmark histological finding in a muscle biopsy from a patient with dermatomyositis is:",
+                options: ["Neurogenic atrophy", "Fiber type grouping", "Perifascicular atrophy", "Endomysial inflammation without atrophy"],
+                answer: "Perifascicular atrophy"
+            }
+        ],
+        imageHint: "dermatomyositis histology",
+    },
+    {
+        title: "Case 35: A 65-year-old man with fatigue and splenomegaly",
+        history: "A 65-year-old man presents with a 6-month history of fatigue, weight loss, and a feeling of abdominal fullness. On exam, he has massive splenomegaly. His white blood cell count is markedly elevated (150,000/µL).",
+        specialty: "Hematopathology",
+        findings: "The peripheral blood smear shows a dramatic increase in granulocytes in all stages of maturation, from myeloblasts to mature neutrophils, with a peak in myelocytes. The basophil count is also increased. A bone marrow biopsy is hypercellular with marked myeloid hyperplasia. Cytogenetic analysis reveals the t(9;22) translocation, also known as the Philadelphia chromosome.",
+        diagnosis: "Chronic Myeloid Leukemia (CML).",
+        discussion: "CML is a myeloproliferative neoplasm driven by the BCR-ABL1 fusion gene, created by the Philadelphia chromosome. This fusion gene encodes a constitutively active tyrosine kinase that drives the massive proliferation of granulocytic cells. The disease classically presents in a chronic phase, but without effective treatment, it will progress to an accelerated phase and ultimately a fatal blast crisis, which resembles acute leukemia.",
+        tags: {
+            organ: "🧬 Hematology",
+            type: "🧪 Cancer",
+            difficulty: "🔥 Complex",
+        },
+        quiz: [
+            {
+                question: "What is the pathognomonic cytogenetic finding in Chronic Myeloid Leukemia (CML)?",
+                options: ["Trisomy 21", "t(15;17)", "t(9;22) Philadelphia chromosome", "t(8;14)"],
+                answer: "t(9;22) Philadelphia chromosome"
+            }
+        ],
+        imageHint: "chronic myeloid leukemia smear",
     }
 ];
 
@@ -563,7 +773,7 @@ interface PathologyContextType {
 
 const PathologyContext = createContext<PathologyContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'pathology_data_v4'; // Bump version for new cases
+const LOCAL_STORAGE_KEY = 'pathology_data_v5'; // Bump version for new cases
 
 export function PathologyProvider({ children }: { children: ReactNode }) {
   const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([]);
