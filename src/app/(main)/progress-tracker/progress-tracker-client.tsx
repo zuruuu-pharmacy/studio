@@ -2,15 +2,40 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Briefcase, CheckCircle, Lightbulb, Target } from "lucide-react";
+import { BarChart, Briefcase, CheckCircle, Lightbulb, Target, Star } from "lucide-react";
 import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
+  TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/table"
+import { Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart as RechartsBarChart } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+
+const satisfactionChartData = [
+  { item: "Mentor Sessions", rating: 4.5 },
+  { item: "CV Workshop", rating: 4.2 },
+  { item: "Industry Talk", rating: 4.8 },
+  { item: "Licensing Seminar", rating: 4.1 },
+];
+
+const cohortChartData = [
+    { path: "Clinical", students: 45, color: "hsl(var(--chart-1))" },
+    { path: "Industry", students: 25, color: "hsl(var(--chart-2))"  },
+    { path: "Community", students: 20, color: "hsl(var(--chart-3))"  },
+    { path: "Regulatory", students: 10, color: "hsl(var(--chart-4))"  },
+];
+
+const chartConfig = {
+  students: {
+    label: "Students",
+  },
+} satisfies ChartConfig
 
 export function ProgressTrackerClient() {
   return (
@@ -78,6 +103,72 @@ export function ProgressTrackerClient() {
             </Alert>
         </CardContent>
        </Card>
+       
+       <div className="grid lg:grid-cols-2 gap-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Star/>Satisfaction Scores</CardTitle>
+                    <CardDescription>Average student feedback on career events.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ChartContainer config={{
+                        rating: {
+                            label: "Avg. Rating",
+                            color: "hsl(var(--chart-2))",
+                        }
+                    }} className="h-[250px] w-full">
+                        <RechartsBarChart
+                            data={satisfactionChartData}
+                            layout="vertical"
+                            margin={{ left: 10, right: 10, top: 10, bottom: 10 }}
+                        >
+                            <YAxis
+                                dataKey="item"
+                                type="category"
+                                tickLine={false}
+                                axisLine={false}
+                                tickMargin={10}
+                                width={110}
+                                className="text-xs"
+                            />
+                            <XAxis dataKey="rating" type="number" hide />
+                             <ChartTooltip
+                                cursor={false}
+                                content={<ChartTooltipContent hideLabel />}
+                            />
+                            <Bar dataKey="rating" layout="vertical" radius={5} fill="var(--color-rating)">
+                            </Bar>
+                        </RechartsBarChart>
+                    </ChartContainer>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><BarChart/> Cohort Placement Analytics</CardTitle>
+                    <CardDescription>Anonymized job placement outcomes for your graduating class.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                   <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                        <RechartsBarChart data={cohortChartData} margin={{ top: 20 }}>
+                            <CartesianGrid vertical={false} />
+                            <XAxis
+                                dataKey="path"
+                                tickLine={false}
+                                axisLine={false}
+                                tickMargin={8}
+                                className="text-xs"
+                            />
+                             <ChartTooltip
+                                cursor={false}
+                                content={<ChartTooltipContent hideLabel />}
+                            />
+                            <Bar dataKey="students" radius={8}>
+                            </Bar>
+                        </RechartsBarChart>
+                    </ChartContainer>
+                </CardContent>
+            </Card>
+       </div>
     </div>
   );
 }

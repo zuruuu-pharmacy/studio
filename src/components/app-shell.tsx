@@ -82,7 +82,7 @@ const studentMenuItems = [
     },
     {
         icon: BarChart,
-        label: "Progress Tracker",
+        label: "Analytics Dashboard",
         href: "/progress-tracker",
     },
     {
