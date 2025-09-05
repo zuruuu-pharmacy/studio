@@ -30,6 +30,7 @@ import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { motion } from "framer-motion";
 
 
 function DetailSection({ title, children, icon: Icon }: { title: string, children: React.ReactNode, icon: React.ElementType }) {
@@ -93,17 +94,19 @@ function NewCaseDialog({ onCaseSubmit }: { onCaseSubmit: (data: NewCaseValues) =
     setIsModalOpen(false);
   });
   
-  const questionCount = useMemo(() => newCaseForm.watch('quiz').length, [newCaseForm]);
+  const questionCount = newCaseForm.watch('quiz').length;
 
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <DialogTrigger asChild>
-        <Card className="flex items-center justify-center border-2 border-dashed min-h-64 hover:border-primary hover:text-primary transition cursor-pointer">
-          <div className="text-center">
-            <Plus className="mx-auto h-12 w-12 text-muted-foreground" />
-            <p className="mt-2 font-semibold">Submit a New Case</p>
-          </div>
-        </Card>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+            <Card className="flex items-center justify-center border-2 border-dashed min-h-64 hover:border-primary hover:text-primary transition cursor-pointer">
+              <div className="text-center">
+                <Plus className="mx-auto h-12 w-12 text-muted-foreground" />
+                <p className="mt-2 font-semibold">Submit a New Case</p>
+              </div>
+            </Card>
+          </motion.div>
       </DialogTrigger>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
@@ -206,22 +209,24 @@ export default function PathologyCasesPage() {
         {caseStudies.map((study) => (
           <Dialog key={study.id}>
             <DialogTrigger asChild>
-              <Card className="shadow-lg hover:shadow-primary/20 transition-shadow rounded-2xl flex flex-col cursor-pointer hover:scale-105 duration-300 group">
-                <CardHeader>
-                  {completedCases.has(study.id) && (
-                    <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1 z-10">
-                      <CheckCircle className="h-5 w-5" />
-                    </div>
-                  )}
-                  <CardTitle className="font-bold text-lg flex-grow">{study.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 pt-0 flex-grow flex flex-col">
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {Object.values(study.tags).filter(Boolean).map((tag, i) => <Badge key={i}>{tag}</Badge>)}
-                  </div>
-                  <Button className="mt-4 w-full mt-auto">View Case Details</Button>
-                </CardContent>
-              </Card>
+              <motion.div whileHover={{ scale: 1.03, y: -5 }} className="cursor-pointer">
+                  <Card className="shadow-lg hover:shadow-primary/20 transition-shadow rounded-2xl flex flex-col h-full group">
+                    <CardHeader>
+                      {completedCases.has(study.id) && (
+                        <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1 z-10">
+                          <CheckCircle className="h-5 w-5" />
+                        </div>
+                      )}
+                      <CardTitle className="font-bold text-lg flex-grow">{study.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6 pt-0 flex-grow flex flex-col">
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {Object.values(study.tags).filter(Boolean).map((tag, i) => <Badge key={i} variant="secondary">{tag}</Badge>)}
+                      </div>
+                      <Button className="mt-4 w-full mt-auto">View Case Details</Button>
+                    </CardContent>
+                  </Card>
+              </motion.div>
             </DialogTrigger>
             <DialogContent className="max-w-4xl">
               <DialogHeader>
