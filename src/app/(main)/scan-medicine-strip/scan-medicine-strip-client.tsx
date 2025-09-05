@@ -6,18 +6,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "@/hooks/use-toast";
-import { Camera, Loader2, Pill, FlaskConical, AlertTriangle, ScanLine, ShieldCheck, FileText, BookCopy, HelpCircle, Leaf, Barcode, CheckCircle, Flag, Save, TestTube, User, Stethoscope, GitCompareArrows, Archive, Microscope, Book, Package } from "lucide-react";
+import { Camera, Loader2, Pill, FlaskConical, AlertTriangle, ScanLine, ShieldCheck, FileText, BookCopy, HelpCircle, Leaf, Barcode, CheckCircle, Flag, Save, TestTube, User, Stethoscope, GitCompareArrows, Archive, Microscope, Book, Package, Volume2, Camera as CameraIcon } from "lucide-react";
 import { drugTreeData, Drug } from "@/app/(main)/drug-classification-tree/data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const MOCK_SCANNABLES = [
-    { type: 'drug', name: "Amoxicillin", stripPosition: { top: '20%', left: '15%' }, icon: Pill },
-    { type: 'drug', name: "Paracetamol", stripPosition: { top: '55%', left: '55%' }, icon: Pill },
-    { type: 'barcode', name: "Morphine", stripPosition: { top: '75%', left: '10%' }, icon: Barcode }, // Morphine is high-risk
-    { type: 'herb', name: "Strychnine", stripPosition: { top: '15%', left: '65%' }, icon: Leaf }, // Using Strychnine as a sample herb from data
+    { type: 'drug', name: "Amoxicillin", stripPosition: { top: '20%', left: '15%' }, icon: Pill, risk: 'amber' },
+    { type: 'drug', name: "Paracetamol", stripPosition: { top: '55%', left: '55%' }, icon: Pill, risk: 'green' },
+    { type: 'barcode', name: "Morphine", stripPosition: { top: '75%', left: '10%' }, icon: Barcode, risk: 'red' },
+    { type: 'herb', name: "Strychnine", stripPosition: { top: '15%', left: '65%' }, icon: Leaf, risk: 'red' },
 ];
+
+const riskColors: { [key: string]: string } = {
+    red: 'bg-red-500',
+    amber: 'bg-amber-500',
+    green: 'bg-green-500'
+}
 
 // Helper to find a drug by name in your data
 const findDrugDetails = (drugName: string): Drug | null => {
@@ -49,7 +55,7 @@ function DetailSection({ title, content, icon: Icon, className }: { title: strin
     );
 }
 
-function CompactOverlay({ item, onScan }: { item: { type: string, name: string, stripPosition: { top: string, left: string }, icon: React.ElementType }, onScan: (drugName: string, type: string) => void }) {
+function CompactOverlay({ item, onScan }: { item: { type: string, name: string, stripPosition: { top: string, left: string }, icon: React.ElementType, risk: string }, onScan: (drugName: string, type: string) => void }) {
     const drug = findDrugDetails(item.name);
     if (!drug) return null;
 
@@ -57,26 +63,24 @@ function CompactOverlay({ item, onScan }: { item: { type: string, name: string, 
         e.stopPropagation();
         toast({ title: "Coming Soon!", description: `${action} functionality will be implemented soon.`});
     };
-
+    
     return (
-        <Card 
-            className="absolute bg-white/90 dark:bg-black/90 backdrop-blur-sm p-3 rounded-lg shadow-xl w-64 border-primary/50"
+        <div 
+            className="absolute p-1 border-2 border-dashed border-white/50 rounded-lg"
             style={item.stripPosition}
         >
-            <div className="flex flex-col gap-2">
-                <div>
-                    <p className="font-bold">{drug.name} <span className="font-normal text-sm text-muted-foreground">({drug.pharmaApplications.formulations})</span></p>
+            <Card 
+                className="bg-white/90 dark:bg-black/90 backdrop-blur-sm p-2 rounded-lg shadow-xl w-60 border-primary/50 flex gap-2"
+                 onClick={() => onScan(item.name, item.type)}
+            >
+                <div className={cn("w-2 rounded-full", riskColors[item.risk] || 'bg-gray-400')}></div>
+                <div className="flex-1">
+                    <p className="font-bold text-sm">{drug.name}</p>
                     <p className="text-xs text-muted-foreground">{drug.pharmaApplications.dosageForms}</p>
                     <p className="text-xs text-muted-foreground">{drug.classification}</p>
                 </div>
-                 <div className="flex gap-1">
-                    <Button size="sm" variant="secondary" className="flex-1 text-xs h-7" onClick={() => onScan(item.name, item.type)}>Details</Button>
-                    <Button size="sm" variant="outline" className="flex-1 text-xs h-7" onClick={(e) => handleActionClick(e, 'Interactions')}>Interactions</Button>
-                    <Button size="sm" variant="outline" className="flex-1 text-xs h-7" onClick={(e) => handleActionClick(e, 'Save')}>Save</Button>
-                    <Button size="sm" variant="outline" className="flex-1 text-xs h-7" onClick={(e) => handleActionClick(e, 'Quiz')}>Quiz Me</Button>
-                </div>
-            </div>
-        </Card>
+            </Card>
+        </div>
     );
 }
 
@@ -126,7 +130,7 @@ export function ScanMedicineStripClient() {
   }
 
   const isHighRisk = (drugName?: string) => {
-    const highRiskDrugs = ["morphine", "warfarin", "insulin"];
+    const highRiskDrugs = ["morphine", "warfarin", "insulin", "strychnine"];
     return highRiskDrugs.includes(drugName?.toLowerCase() || '');
   }
   
@@ -145,7 +149,7 @@ export function ScanMedicineStripClient() {
           <CardTitle>Medicine Strip Scanner</CardTitle>
           <CardDescription>
             {hasCameraPermission 
-              ? "Live camera feed active. Tap a card's 'Details' button."
+              ? "Live camera feed active. Tap a card to see details."
               : "Enable your camera to scan medicine text, barcodes, or plant specimens."
             }
           </CardDescription>
@@ -166,7 +170,7 @@ export function ScanMedicineStripClient() {
               )}
                 {hasCameraPermission && (
                   <div className="absolute inset-0">
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-1/2 border-4 border-dashed border-white/50 rounded-lg pointer-events-none flex items-center justify-center">
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-1/2 pointer-events-none flex items-center justify-center">
                           <ScanLine className="h-16 w-16 text-white/50 animate-pulse"/>
                         </div>
                       {MOCK_SCANNABLES.map(item => (
@@ -235,12 +239,13 @@ export function ScanMedicineStripClient() {
                         </Card>
                         
                         <Card>
-                            <CardHeader><CardTitle className="text-lg">Pedagogical Actions</CardTitle></CardHeader>
+                            <CardHeader><CardTitle className="text-lg">Pedagogical & App Actions</CardTitle></CardHeader>
                             <CardContent className="flex flex-wrap gap-2">
-                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will save the scan to your Notes Organizer."})}>Save Study Note</Button>
-                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will add flashcards to your deck."})}>Make Flashcards</Button>
-                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will launch a quiz on this drug."})}>Quiz Me</Button>
-                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will schedule a revision block in your Study Planner."})}>Schedule Revision</Button>
+                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will save the scan to your Notes Organizer."})}><Save className="mr-2"/>Save Study Note</Button>
+                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will add flashcards to your deck."})}><BookCopy className="mr-2"/>Make Flashcards</Button>
+                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will launch a quiz on this drug."})}><HelpCircle className="mr-2"/>Quiz Me</Button>
+                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will allow taking a snapshot of the AR view."})}><CameraIcon className="mr-2"/>Snapshot</Button>
+                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will read the card details aloud."})}><Volume2 className="mr-2"/>Read Aloud</Button>
                             </CardContent>
                         </Card>
                     </div>
