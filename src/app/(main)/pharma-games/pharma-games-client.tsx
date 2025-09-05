@@ -19,28 +19,28 @@ const games = [
     icon: Pilcrow,
     title: "Pharma Crossword",
     description: "Solve puzzles with clues based on drug names, MOAs, and pharmacognosy.",
-    status: "Play Now",
+    status: "Coming Soon",
     href: "/pharma-games/crossword"
   },
   {
     icon: Search,
     title: "Word Search",
     description: "Find themed words for drug classes, herbal constituents, and medical abbreviations.",
-    status: "Play Now",
+    status: "Coming Soon",
     href: "/pharma-games/word-search"
   },
   {
     icon: Puzzle,
     title: "Flash Puzzle",
     description: "Drag and drop to match drugs to their mechanisms of action or plants to their constituents.",
-    status: "Play Now",
+    status: "Coming Soon",
     href: "/pharma-games/flash-puzzle"
   },
   {
     icon: Zap,
     title: "Rapid Fire Quiz",
     description: "Answer as many questions as you can in a 30-second streak challenge.",
-    status: "Play Now",
+    status: "Coming Soon",
     href: "/pharma-games/rapid-fire-quiz"
   },
 ];
