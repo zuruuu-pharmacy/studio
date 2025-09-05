@@ -11,16 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
-const organIcons: { [key: string]: React.ElementType } = {
-    "Cardiovascular System": Heart,
-    "Respiratory System": Wind,
-    "Nervous System": Brain,
-    "Gastrointestinal System": CircleEllipsis,
-    "Renal System": TestTube,
-    "Musculoskeletal System": Bone,
-};
-
-
 function DetailSection({ title, children, icon: Icon }: { title: string, children: React.ReactNode, icon: React.ElementType }) {
     return (
         <div className="mt-4">

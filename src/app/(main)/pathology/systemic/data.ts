@@ -1,5 +1,5 @@
 
-import { Stethoscope, Dna, FileText, Bot, Book, Zap, FlaskConical, GitBranch, Heart, Wind, Brain, Bone, CircleEllipsis, TestTube, Microscope } from 'lucide-react';
+import { Stethoscope, Dna, FileText, Bot, Book, Zap, FlaskConical, GitBranch, Heart, Wind, Brain, Bone, CircleEllipsis, TestTube, Microscope, Droplet } from 'lucide-react';
 
 export interface Disease {
   title: string;
@@ -112,6 +112,122 @@ export const systemicPathologyData: OrganSystem[] = [
         name: "Lung Tumors",
         diseases: []
       }
+    ]
+  },
+   {
+    system: "Gastrointestinal System",
+    icon: CircleEllipsis,
+    categories: [
+      {
+        name: "Esophageal Disorders",
+        diseases: []
+      },
+      {
+        name: "Gastric Pathology",
+        diseases: []
+      },
+       {
+        name: "Inflammatory Bowel Disease",
+        diseases: []
+      },
+      {
+        name: "Liver & Biliary Pathology",
+        diseases: []
+      }
+    ]
+  },
+   {
+    system: "Nervous System",
+    icon: Brain,
+    categories: [
+      {
+        name: "Cerebrovascular Disease",
+        diseases: []
+      },
+      {
+        name: "Neurodegenerative Diseases",
+        diseases: []
+      },
+       {
+        name: "CNS Tumors",
+        diseases: []
+      },
+      {
+        name: "Infections of the CNS",
+        diseases: []
+      }
+    ]
+  },
+  {
+    system: "Renal System",
+    icon: Droplet,
+    categories: [
+        {
+            name: "Glomerular Diseases",
+            diseases: []
+        },
+        {
+            name: "Tubulointerstitial Diseases",
+            diseases: []
+        },
+        {
+            name: "Renal Tumors",
+            diseases: []
+        }
+    ]
+  },
+  {
+    system: "Endocrine System",
+    icon: Dna,
+    categories: [
+        {
+            name: "Thyroid Pathology",
+            diseases: []
+        },
+        {
+            name: "Adrenal Pathology",
+            diseases: []
+        },
+        {
+            name: "Pancreatic Islet Pathology",
+            diseases: []
+        }
+    ]
+  },
+  {
+    system: "Musculoskeletal System",
+    icon: Bone,
+    categories: [
+        {
+            name: "Bone Tumors",
+            diseases: []
+        },
+        {
+            name: "Diseases of Joints",
+            diseases: []
+        },
+        {
+            name: "Soft Tissue Tumors",
+            diseases: []
+        }
+    ]
+  },
+  {
+    system: "Hematopoietic & Lymphoid Systems",
+    icon: TestTube,
+    categories: [
+        {
+            name: "Red Blood Cell Disorders",
+            diseases: []
+        },
+        {
+            name: "White Blood Cell Disorders (Benign)",
+            diseases: []
+        },
+        {
+            name: "Neoplasms of White Cells",
+            diseases: []
+        }
     ]
   }
 ];
