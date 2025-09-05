@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ScanSearch, CheckCircle, AlertTriangle, ShieldCheck, Upload, Lightbulb } from "lucide-react";
+import { Loader2, ScanSearch, CheckCircle, AlertTriangle, ShieldCheck, Upload, Lightbulb, Bot } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
@@ -159,6 +159,25 @@ export function PlagiarismCheckerClient() {
                 </Alert>
               </CardContent>
             </Card>
+
+            {state.writing_suggestions && state.writing_suggestions.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Bot /> AI Writing Assistant</CardTitle>
+                  <CardDescription>Suggestions to improve grammar, clarity, and style.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {state.writing_suggestions.map((item, index) => (
+                    <div key={index} className="p-3 border rounded-md">
+                        <Badge variant="secondary" className="mb-2">{item.type}</Badge>
+                        <p className="text-sm text-muted-foreground line-through">"{item.original_text}"</p>
+                        <p className="text-sm text-primary font-medium mt-1">"{item.suggestion}"</p>
+                        <p className="text-xs text-muted-foreground mt-2"><strong>Reason:</strong> {item.explanation}</p>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
 
             <Card>
                  <CardHeader>
