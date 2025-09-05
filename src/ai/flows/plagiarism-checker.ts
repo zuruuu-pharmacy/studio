@@ -41,7 +41,7 @@ const prompt = ai.definePrompt({
   input: {schema: PlagiarismInputSchema},
   output: {schema: PlagiarismResultSchema},
   model: 'googleai/gemini-1.5-flash',
-  prompt: `You are an academic integrity AI tool. Your task is to analyze a given document for plagiarism against a simulated database of sources.
+  prompt: `You are an academic integrity AI tool. Your task is to analyze a given document for plagiarism against a simulated database of sources and provide a weighted similarity score.
 
 **Source Pools to Check Against:**
 1.  **Open Web:** Publicly indexed websites, blogs, news articles.
@@ -52,13 +52,15 @@ const prompt = ai.definePrompt({
 {{media url=documentDataUri}}
 
 **Instructions:**
-1.  **Analyze the Document:** Perform OCR if necessary. Read the document and identify any segments that are highly similar to the simulated external sources.
-2.  **CRITICAL: Citation Awareness:** You MUST differentiate between unoriginal text and properly cited text. If a passage is a direct match but is enclosed in quotation marks ("...") and has a clear in-text citation (e.g., Smith, 2021), it should NOT be included in the 'segments' list and should not contribute heavily to the overall similarity score. Your summary can note that correctly quoted sections were found. Focus your flagging on text that is copied without attribution.
-3.  **Calculate Similarity:** For each identified segment of potential plagiarism, provide a 'similarity_score' between 0 and 1.
-4.  **Identify Sources:** For each segment, identify a plausible 'source' from one of the source pools. Be specific (e.g., "Wikipedia article on 'Beta-blockers'", "Journal of Pharmacology, 2021", "Student submission from PH-402, Fall 2023").
-5.  **Generate Remediation Suggestion:** For each flagged segment, provide a concise, actionable 'remediation_suggestion' for the student. For example: "This sentence is a verbatim match. Consider placing it in quotation marks and adding a citation, or rephrasing it in your own words." or "This idea is very similar to the source. Ensure you have cited the source correctly."
-6.  **Overall Score:** Calculate an 'overall_similarity_percentage' for the entire document. This should be a weighted average based on the length and severity of the matches, excluding properly cited material.
-7.  **Summarize:** Provide a concise 'summary' of your findings. If similarity is high (>25%), recommend significant revisions. If it is moderate (10-25%), recommend a review. If it is low (<10%), confirm originality.
+1.  **Analyze & OCR:** Read the document and extract all text.
+2.  **Citation Awareness:** You MUST differentiate between unoriginal text and properly cited text. If a passage is a direct match but is enclosed in quotation marks ("...") and has a clear in-text citation (e.g., Smith, 2021), it should NOT be flagged as plagiarism.
+3.  **Weighted Scoring:** You MUST calculate the 'overall_similarity_percentage' based on a weighted system:
+    -   **High Weight:** Verbatim (copy-paste) matches.
+    -   **Moderate Weight:** Paraphrased or semantically similar matches.
+    -   **Zero Weight:** Properly quoted and cited passages. Do not include these in the similarity score calculation.
+4.  **Identify Segments:** For each segment of potential plagiarism (verbatim or paraphrased), identify the 'original_text' and a plausible 'source' (e.g., "Wikipedia article on 'Beta-blockers'", "Journal of Pharmacology, 2021"). Assign a 'similarity_score' from 0 to 1 for that specific segment.
+5.  **Generate Remediation Suggestion:** For each flagged segment, provide a concise, actionable 'remediation_suggestion'.
+6.  **Summarize:** Provide a final 'summary' of your findings. If similarity is high (>25%), recommend significant revisions. If moderate (10-25%), recommend a review. If low (<10%), confirm originality.
 
 Respond ONLY in the structured JSON format defined by the schema.
 `,

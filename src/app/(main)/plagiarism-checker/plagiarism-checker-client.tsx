@@ -15,6 +15,7 @@ import { Loader2, ScanSearch, CheckCircle, AlertTriangle, ShieldCheck, Upload, L
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -34,6 +35,12 @@ const getSimilarityColor = (score: number) => {
     if (score > 25) return "bg-destructive text-destructive-foreground";
     if (score > 10) return "bg-amber-500 text-amber-foreground";
     return "bg-green-600 text-green-foreground";
+}
+
+const getSimilarityProgressColor = (score: number) => {
+    if (score > 25) return "bg-destructive";
+    if (score > 10) return "bg-amber-500";
+    return "bg-green-500";
 }
 
 export function PlagiarismCheckerClient() {
@@ -143,7 +150,16 @@ export function PlagiarismCheckerClient() {
                     <p className={`text-5xl font-bold ${state.overall_similarity_percentage > 25 ? 'text-destructive' : state.overall_similarity_percentage > 10 ? 'text-amber-500' : 'text-green-600'}`}>
                         {state.overall_similarity_percentage.toFixed(2)}%
                     </p>
-                    <Progress value={state.overall_similarity_percentage} className="mt-2" />
+                    <Progress 
+                      value={state.overall_similarity_percentage} 
+                      className="mt-2 h-3"
+                      children={
+                        <div
+                          className={cn("h-full", getSimilarityProgressColor(state.overall_similarity_percentage))}
+                          style={{ width: `${state.overall_similarity_percentage}%` }}
+                        />
+                      }
+                    />
                 </div>
                 <Alert variant={state.overall_similarity_percentage > 15 ? 'destructive' : 'default'}>
                     {state.overall_similarity_percentage > 15 ? <AlertTriangle className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
