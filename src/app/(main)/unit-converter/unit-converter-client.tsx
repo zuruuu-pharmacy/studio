@@ -237,7 +237,7 @@ export function UnitConverterClient() {
         </div>
       </CardContent>
        <CardFooter>
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion type="single" className="w-full">
             <AccordionItem value="item-1">
               <AccordionTrigger>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
