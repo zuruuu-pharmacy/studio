@@ -29,14 +29,12 @@ const formSchema = z.object({
     .refine(
       (files) =>
         [
-          "application/pdf",
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
           "text/plain",
           "image/jpeg",
           "image/png",
           "image/webp",
         ].includes(files?.[0]?.type),
-      "Only .pdf, .docx, .txt, and image files are supported."
+      "Only .txt and image files are supported."
     ),
 });
 type FormValues = z.infer<typeof formSchema>;
@@ -135,7 +133,7 @@ export function PlagiarismCheckerClient() {
         <Card>
           <CardHeader>
             <CardTitle>Submit Document</CardTitle>
-            <CardDescription>Upload your file. We’ll scan for overlap and help you fix issues before submission.</CardDescription>
+            <CardDescription>Upload your document to check for plagiarism.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -145,11 +143,11 @@ export function PlagiarismCheckerClient() {
                   name="documentFile"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Document File (PDF, DOCX, TXT, Image)</FormLabel>
+                      <FormLabel>Document File (TXT or Image)</FormLabel>
                       <FormControl>
                         <Input
                           type="file"
-                          accept=".pdf,.docx,.txt,image/*"
+                          accept=".txt,image/*"
                           {...fileRef}
                           onChange={(e) => field.onChange(e.target.files)}
                         />
