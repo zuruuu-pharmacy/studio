@@ -36,3 +36,6 @@ import '@/ai/flows/bsa-dose-calculator.ts';
 import '@/ai/flows/iv-rate-calculator.ts';
 import '@/ai/flows/compounding-calculator.ts';
 import '@/ai/flows/reference-generator.ts';
+import '@/ai/flows/drug-card-flashcard-generator.ts';
+import '@/ai/flows/drug-card-quiz-generator.ts';
+import '@/ai/flows/drug-card-case-mcq-generator.ts';

@@ -1,18 +1,54 @@
 
 "use client";
 
-import { useState, useMemo, Fragment } from "react";
+import { useState, useMemo, Fragment, useTransition } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { drugTreeData, type DrugClass, type Drug } from "./data";
-import { Search, Pill, ChevronsRight, FlaskConical, Stethoscope, AlertTriangle, ShieldCheck, Beaker, FileText, Star, BrainCircuit, Package, Archive, FolderOpen, FileHeart, HelpCircle, CaseSensitive, BookCopy, PackageOpen, Microscope, TestTube, Library } from "lucide-react";
+import { Search, Pill, ChevronsRight, FlaskConical, Stethoscope, AlertTriangle, ShieldCheck, Beaker, FileText, Star, BrainCircuit, Package, Archive, FolderOpen, FileHeart, HelpCircle, CaseSensitive, BookCopy, PackageOpen, Microscope, TestTube, Library, Sparkles, Loader2, X, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { generateFlashcardsFromDrug, type FlashcardGeneratorOutput } from "@/ai/flows/drug-card-flashcard-generator";
+import { generateQuiz, type QuizGeneratorOutput } from "@/ai/flows/drug-card-quiz-generator";
+import { generateCaseMcq, type CaseMcqGeneratorOutput } from "@/ai/flows/drug-card-case-mcq-generator";
+import { motion } from "framer-motion";
 
+// Learning Tools State & Components
+type LearningToolState = {
+  flashcards?: FlashcardGeneratorOutput;
+  quiz?: QuizGeneratorOutput;
+  caseMcq?: CaseMcqGeneratorOutput;
+  error?: string;
+  loading: 'flashcards' | 'quiz' | 'caseMcq' | null;
+}
+
+function Flashcard({ front, back }: { front: string; back: string }) {
+    const [isFlipped, setIsFlipped] = useState(false);
+    return (
+        <div className="w-full h-48 [perspective:1000px] cursor-pointer group" onClick={() => setIsFlipped(!isFlipped)}>
+            <motion.div
+                className="relative w-full h-full [transform-style:preserve-3d] transition-transform duration-500"
+                initial={false}
+                animate={{ rotateY: isFlipped ? 180 : 0 }}
+            >
+                <div className="absolute w-full h-full [backface-visibility:hidden] bg-card border rounded-lg flex items-center justify-center p-4 text-center">
+                    <p className="font-semibold">{front}</p>
+                </div>
+                <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-primary text-primary-foreground border rounded-lg flex items-center justify-center p-4 text-center">
+                    <p>{back}</p>
+                </div>
+            </motion.div>
+        </div>
+    );
+}
 
 // Section component for displaying details in the drug card
 function DetailSection({ title, content, icon: Icon }: { title: string, content?: string, icon: React.ElementType }) {
@@ -32,11 +68,108 @@ function DetailSection({ title, content, icon: Icon }: { title: string, content?
 
 // DrugCard component to display full details of a drug
 function DrugCard({ drug }: { drug: Drug }) {
-  const handleLearningToolClick = () => {
-    toast({
-      title: "Feature Coming Soon",
-      description: "AI-powered generation of study materials is under development.",
-    });
+  const [learningState, setLearningState] = useState<LearningToolState>({ loading: null });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const [isQuizSubmitted, setIsQuizSubmitted] = useState(false);
+  const [selectedQuizOption, setSelectedQuizOption] = useState<string | null>(null);
+
+  const handleLearningToolClick = async (tool: 'flashcards' | 'quiz' | 'caseMcq') => {
+    setIsModalOpen(true);
+    setLearningState({ loading: tool });
+    setIsQuizSubmitted(false);
+    setSelectedQuizOption(null);
+    try {
+        if (tool === 'flashcards') {
+            const result = await generateFlashcardsFromDrug({ drugName: drug.name, moa: drug.moa, brandNames: drug.pharmaApplications.formulations });
+            setLearningState({ flashcards: result, loading: null });
+        } else if (tool === 'quiz') {
+            const result = await generateQuiz({ drugName: drug.name, classification: drug.classification, uses: drug.therapeuticUses, adrs: drug.adrs });
+            setLearningState({ quiz: result, loading: null });
+        } else if (tool === 'caseMcq') {
+            const result = await generateCaseMcq({ drugName: drug.name, classification: drug.classification, uses: drug.therapeuticUses, adrs: drug.adrs, contraindications: drug.contraindications });
+            setLearningState({ caseMcq: result, loading: null });
+        }
+    } catch (e) {
+        console.error(e);
+        setLearningState({ error: `Failed to generate ${tool}. Please try again.`, loading: null });
+    }
+  }
+  
+  const handleQuizSubmit = () => {
+    if (selectedQuizOption !== null) {
+      setIsQuizSubmitted(true);
+    } else {
+      toast({ variant: 'destructive', title: "Please select an answer." });
+    }
+  };
+
+  const renderModalContent = () => {
+    if (learningState.loading) {
+        return <div className="flex flex-col items-center justify-center h-64 gap-2"><Loader2 className="h-8 w-8 animate-spin text-primary" /><p className="text-muted-foreground">Generating {learningState.loading}...</p></div>;
+    }
+    if (learningState.error) {
+        return <Alert variant="destructive"><AlertTitle>Error</AlertTitle><AlertDescription>{learningState.error}</AlertDescription></Alert>;
+    }
+    if (learningState.flashcards) {
+        return (
+            <div className="space-y-4">
+                {learningState.flashcards.flashcards.map((card, i) => <Flashcard key={i} front={card.front} back={card.back} />)}
+            </div>
+        );
+    }
+    if (learningState.quiz || learningState.caseMcq) {
+        const quizData = learningState.quiz || learningState.caseMcq;
+        if (!quizData) return null;
+        const isCorrect = isQuizSubmitted && selectedQuizOption && quizData.correct_answer.startsWith(selectedQuizOption.charAt(0));
+
+        return (
+            <div className="space-y-4">
+                {learningState.caseMcq && <p className="p-4 bg-muted/50 rounded-lg text-muted-foreground">{learningState.caseMcq.scenario}</p>}
+                <p className="font-semibold">{quizData.question}</p>
+                <RadioGroup onValueChange={setSelectedQuizOption} disabled={isQuizSubmitted}>
+                    {quizData.options.map((opt, i) => {
+                        const isThisOptionCorrect = quizData.correct_answer.startsWith(opt.charAt(0));
+                        const isThisOptionSelected = selectedQuizOption === opt;
+                        
+                        let optionClass = "";
+                        if (isQuizSubmitted) {
+                            if(isThisOptionCorrect) optionClass = "text-green-600 font-bold";
+                            else if (isThisOptionSelected && !isThisOptionCorrect) optionClass = "text-red-600 line-through";
+                        }
+                        
+                        return (
+                             <div key={i} className="flex items-center space-x-2">
+                                <RadioGroupItem value={opt} id={`opt-${i}`} />
+                                <Label htmlFor={`opt-${i}`} className={cn("font-normal", optionClass)}>
+                                    {opt}
+                                </Label>
+                             </div>
+                        );
+                    })}
+                </RadioGroup>
+                {!isQuizSubmitted ? (
+                    <Button onClick={handleQuizSubmit}>Check Answer</Button>
+                ) : (
+                    <Alert variant={isCorrect ? "default" : "destructive"} className={isCorrect ? "border-green-500 bg-green-500/10" : ""}>
+                        {isCorrect ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
+                        <AlertTitle>{isCorrect ? 'Correct!' : 'Incorrect'}</AlertTitle>
+                        <AlertDescription>
+                            <strong>Explanation:</strong> {quizData.explanation}
+                        </AlertDescription>
+                    </Alert>
+                )}
+            </div>
+        );
+    }
+    return null;
+  }
+  
+  const getModalTitle = () => {
+    if (learningState.flashcards) return `Flashcards for ${drug.name}`;
+    if (learningState.quiz) return `Quiz for ${drug.name}`;
+    if (learningState.caseMcq) return `Case MCQ for ${drug.name}`;
+    return "Learning Tool";
   }
 
   return (
@@ -83,18 +216,29 @@ function DrugCard({ drug }: { drug: Drug }) {
                     <div className="flex items-center gap-2"><FolderOpen/>Integration with Learning</div>
                 </AccordionTrigger>
                 <AccordionContent className="pt-4 space-y-3">
-                    <Button onClick={handleLearningToolClick} className="w-full justify-start" variant="outline" disabled>
+                    <Button onClick={() => handleLearningToolClick('flashcards')} className="w-full justify-start" variant="outline">
                         <FileHeart className="mr-2"/> Generate Flashcards (MOA + Brands)
                     </Button>
-                     <Button onClick={handleLearningToolClick} className="w-full justify-start" variant="outline" disabled>
+                     <Button onClick={() => handleLearningToolClick('quiz')} className="w-full justify-start" variant="outline">
                         <HelpCircle className="mr-2"/> Generate Quiz (Clinical Use & ADRs)
                     </Button>
-                     <Button onClick={handleLearningToolClick} className="w-full justify-start" variant="outline" disabled>
+                     <Button onClick={() => handleLearningToolClick('caseMcq')} className="w-full justify-start" variant="outline">
                         <CaseSensitive className="mr-2"/> Generate a Case-based MCQ
                     </Button>
                 </AccordionContent>
             </AccordionItem>
         </Accordion>
+        
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>{getModalTitle()}</DialogTitle>
+                </DialogHeader>
+                <div className="py-4">
+                    {renderModalContent()}
+                </div>
+            </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );
