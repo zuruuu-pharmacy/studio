@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { Download, CloudOff, BookOpen, CaseSensitive, History, Trash2, CheckCircle, WifiOff, FileDown, Award, Bug } from "lucide-react";
+import { Download, CloudOff, BookOpen, CaseSensitive, History, Trash2, CheckCircle, WifiOff, FileDown, Award, Bug, ShieldCheck } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -31,6 +31,16 @@ const qaChecklist = [
     "Quick re-check latency acceptable (<10s for a small re-scan).",
     "Access control, encryption, and delete flows validated.",
     "Validate thresholds and false positive rate against human review for fairness.",
+];
+
+const securityChecklist = [
+    "All downloaded content (notes, videos, quiz data) MUST be stored using AES-256 encryption on the local device.",
+    "Annotations and user-generated content must also be encrypted locally.",
+    "Encryption keys should be managed securely and tied to the user's session.",
+    "After a device restart or a set period of inactivity (e.g., 24 hours), the app MUST require the user to re-authenticate online before accessing downloaded content.",
+    "To prevent unauthorized access on a shared or lost device, the offline library MUST be protected by a secondary local authentication layer (device PIN/biometric or a separate app-specific PIN).",
+    "Patient case studies for offline use MUST have all personally identifiable information (PII) scrubbed or replaced with placeholders.",
+    "Display a clear warning message to the user before they download patient-related data for offline use, reminding them of their responsibility to protect sensitive information."
 ];
 
 
@@ -166,6 +176,24 @@ export function OfflineModeClient() {
                     <CardContent>
                         <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
                            {qaChecklist.map((item, i) => <li key={i}>{item}</li>)}
+                        </ul>
+                    </CardContent>
+                </Card>
+            </AccordionContent>
+        </AccordionItem>
+         <AccordionItem value="security" className="border-0">
+            <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">
+                Security & Privacy
+            </AccordionTrigger>
+            <AccordionContent>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><ShieldCheck/>Security & Privacy Rules</CardTitle>
+                        <CardDescription>Core principles for protecting user and patient data in offline mode.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ul className="list-disc list-inside space-y-3 text-sm text-muted-foreground">
+                           {securityChecklist.map((item, i) => <li key={i}>{item}</li>)}
                         </ul>
                     </CardContent>
                 </Card>
