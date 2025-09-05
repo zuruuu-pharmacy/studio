@@ -6,20 +6,21 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "@/hooks/use-toast";
-import { Camera, Loader2, Pill, FlaskConical, AlertTriangle, ScanLine } from "lucide-react";
-import { drugTreeData } from "@/app/(main)/drug-classification-tree/data";
+import { Camera, Loader2, Pill, FlaskConical, AlertTriangle, ScanLine, ShieldCheck, FileText, BookCopy, HelpCircle } from "lucide-react";
+import { drugTreeData, Drug } from "@/app/(main)/drug-classification-tree/data";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const MOCK_DRUGS_ON_STRIP = [
     { name: "Amoxicillin", stripPosition: { top: '30%', left: '20%' } },
     { name: "Paracetamol", stripPosition: { top: '50%', left: '60%' } },
-    { name: "Lisinopril", stripPosition: { top: '70%', left: '40%' } },
+    { name: "Morphine", stripPosition: { top: '70%', left: '40%' } }, // High-risk drug
 ];
 
 // Helper to find a drug by name in your data
-const findDrugDetails = (drugName: string) => {
+const findDrugDetails = (drugName: string): Drug | null => {
     for (const category of drugTreeData) {
         for (const subclass of category.subclasses || []) {
-            for (const subsubclass of subclass.subclasses || []) {
+             for (const subsubclass of subclass.subclasses || []) {
                  const drug = subsubclass.drugs?.find(d => d.name.toLowerCase() === drugName.toLowerCase());
                  if (drug) return drug;
             }
@@ -30,16 +31,30 @@ const findDrugDetails = (drugName: string) => {
     return null;
 }
 
+function DetailSection({ title, content, icon: Icon }: { title: string, content?: string, icon: React.ElementType }) {
+    if (!content) return null;
+    return (
+        <div className="space-y-1">
+            <h4 className="font-semibold text-base flex items-center gap-2 text-primary">
+                <Icon className="h-4 w-4" />
+                {title}
+            </h4>
+            <div className="pl-6 text-muted-foreground text-sm">
+                <p className="whitespace-pre-wrap">{content}</p>
+            </div>
+        </div>
+    );
+}
 
 export function ScanMedicineStripClient() {
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [scannedDrug, setScannedDrug] = useState<any | null>(null);
+  const [scannedDrug, setScannedDrug] = useState<Drug | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   
   useEffect(() => {
     return () => {
-        // Cleanup: stop video stream when component unmounts
         if (videoRef.current && videoRef.current.srcObject) {
             const stream = videoRef.current.srcObject as MediaStream;
             stream.getTracks().forEach(track => track.stop());
@@ -67,75 +82,100 @@ export function ScanMedicineStripClient() {
 
   const handleScan = (drugName: string) => {
     const details = findDrugDetails(drugName);
-    setScannedDrug(details);
+    if (details) {
+        setScannedDrug(details);
+        setIsModalOpen(true);
+    } else {
+        toast({ variant: "destructive", title: "Drug Not Found", description: `Could not find details for ${drugName}.`})
+    }
+  }
+
+  const isHighRisk = (drugName?: string) => {
+    const highRiskDrugs = ["morphine", "warfarin", "insulin"];
+    return highRiskDrugs.includes(drugName?.toLowerCase() || '');
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Medicine Strip Scanner</CardTitle>
-        <CardDescription>
-          {hasCameraPermission 
-            ? "Live camera feed active. Click on a detected medicine."
-            : "Enable your camera to start scanning."
-          }
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid md:grid-cols-2 gap-6">
-            <div className="relative w-full aspect-video bg-muted rounded-lg flex items-center justify-center overflow-hidden">
-                <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
-                {!hasCameraPermission && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50">
-                        {isLoading ? (
-                            <Loader2 className="h-12 w-12 text-white animate-spin"/>
-                        ) : (
-                            <Button onClick={enableCamera} size="lg">
-                                <Camera className="mr-2"/> Enable Camera
-                            </Button>
-                        )}
-                    </div>
-                )}
-                 {hasCameraPermission && (
-                    <div className="absolute inset-0">
-                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-1/2 border-4 border-dashed border-white/50 rounded-lg pointer-events-none flex items-center justify-center">
-                            <ScanLine className="h-16 w-16 text-white/50 animate-pulse"/>
-                         </div>
-                        {MOCK_DRUGS_ON_STRIP.map(drug => (
-                             <Button 
-                                key={drug.name} 
-                                variant="outline"
-                                className="absolute bg-white/80 hover:bg-white text-black text-xs h-auto p-1 rounded-sm" 
-                                style={drug.stripPosition}
-                                onClick={() => handleScan(drug.name)}
-                             >
-                                {drug.name}
-                            </Button>
-                        ))}
-                    </div>
-                 )}
-            </div>
-
-            <Card>
-                <CardHeader><CardTitle>Scanned Information</CardTitle></CardHeader>
-                <CardContent>
-                    {scannedDrug ? (
-                        <div className="space-y-4">
-                            <h3 className="text-xl font-bold flex items-center gap-2"><Pill className="text-primary"/> {scannedDrug.name}</h3>
-                            <p className="text-sm"><strong className="flex items-center gap-1"><FlaskConical className="h-4"/> MOA:</strong> {scannedDrug.moa}</p>
-                            <p className="text-sm"><strong className="flex items-center gap-1"><AlertTriangle className="h-4"/> ADRs:</strong> {scannedDrug.adrs}</p>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Medicine Strip Scanner</CardTitle>
+          <CardDescription>
+            {hasCameraPermission 
+              ? "Live camera feed active. Tap on a detected medicine."
+              : "Enable your camera to start scanning."
+            }
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="relative w-full aspect-video bg-muted rounded-lg flex items-center justify-center overflow-hidden">
+              <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+              {!hasCameraPermission && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50">
+                      {isLoading ? (
+                          <Loader2 className="h-12 w-12 text-white animate-spin"/>
+                      ) : (
+                          <Button onClick={enableCamera} size="lg">
+                              <Camera className="mr-2"/> Enable Camera
+                          </Button>
+                      )}
+                  </div>
+              )}
+                {hasCameraPermission && (
+                  <div className="absolute inset-0">
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-1/2 border-4 border-dashed border-white/50 rounded-lg pointer-events-none flex items-center justify-center">
+                          <ScanLine className="h-16 w-16 text-white/50 animate-pulse"/>
                         </div>
-                    ) : (
-                         <div className="text-center text-muted-foreground p-8">
-                            <p>Scanned drug information will appear here.</p>
-                         </div>
-                    )}
-                </CardContent>
-            </Card>
-        </div>
-      </CardContent>
-    </Card>
+                      {MOCK_DRUGS_ON_STRIP.map(drug => (
+                            <Button 
+                              key={drug.name} 
+                              variant="outline"
+                              className="absolute bg-white/80 hover:bg-white text-black text-xs h-auto p-1 rounded-sm shadow-lg" 
+                              style={drug.stripPosition}
+                              onClick={() => handleScan(drug.name)}
+                            >
+                              {drug.name}
+                          </Button>
+                      ))}
+                  </div>
+                )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-2xl">
+            {scannedDrug && (
+                <>
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl">{scannedDrug.name} ({scannedDrug.pharmaApplications.formulations})</DialogTitle>
+                        <DialogDescription>{scannedDrug.classification}</DialogDescription>
+                    </DialogHeader>
+                    <div className="max-h-[70vh] overflow-y-auto pr-4 space-y-4">
+                        {isHighRisk(scannedDrug.name) && (
+                            <Alert variant="destructive">
+                                <AlertTriangle className="h-4 w-4"/>
+                                <AlertTitle>High-Risk Medication</AlertTitle>
+                                <AlertDescription>Check dose & monitoring. Not for patient dosing without supervision.</AlertDescription>
+                            </Alert>
+                        )}
+                        <DetailSection title="Mechanism of Action" content={scannedDrug.moa} icon={FlaskConical} />
+                        <DetailSection title="Therapeutic Uses" content={scannedDrug.therapeuticUses} icon={Pill} />
+                        <DetailSection title="Adverse Drug Reactions" content={scannedDrug.adrs} icon={AlertTriangle} />
+                        <DetailSection title="Contraindications" content={scannedDrug.contraindications} icon={ShieldCheck} />
+                        <Card className="bg-muted/50">
+                            <CardHeader><CardTitle className="text-lg">Pedagogical Actions</CardTitle></CardHeader>
+                            <CardContent className="flex flex-wrap gap-2">
+                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will save the scan to your Notes Organizer."})}>Save Study Note</Button>
+                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will add flashcards to your deck."})}>Make Flashcards</Button>
+                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will launch a quiz on this drug."})}>Quiz Me</Button>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </>
+            )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
-
-    
