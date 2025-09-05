@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -5,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "@/hooks/use-toast";
-import { Camera, Loader2, Pill, FlaskConical, AlertTriangle, ScanLine, ShieldCheck, FileText, BookCopy, HelpCircle, Leaf, Barcode, CheckCircle, Flag, Save, TestTube, User, Stethoscope, GitCompareArrows } from "lucide-react";
+import { Camera, Loader2, Pill, FlaskConical, AlertTriangle, ScanLine, ShieldCheck, FileText, BookCopy, HelpCircle, Leaf, Barcode, CheckCircle, Flag, Save, TestTube, User, Stethoscope, GitCompareArrows, Archive, Microscope, Book, Package } from "lucide-react";
 import { drugTreeData, Drug } from "@/app/(main)/drug-classification-tree/data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 const MOCK_SCANNABLES = [
     { type: 'drug', name: "Amoxicillin", stripPosition: { top: '20%', left: '15%' }, icon: Pill },
@@ -193,14 +195,20 @@ export function ScanMedicineStripClient() {
                                 <AlertDescription>Check dose & monitoring. Not for patient dosing without supervision.</AlertDescription>
                             </Alert>
                         )}
+
+                         <Alert>
+                            <AlertTitle className="flex items-center gap-2"><BookCopy className="h-4 w-4"/> Teaching Notes & Exam Highlights</AlertTitle>
+                            <AlertDescription>{scannedItem.drug.specialNotes}</AlertDescription>
+                        </Alert>
                         
                         <Card>
-                            <CardHeader><CardTitle className="text-lg">Identification</CardTitle></CardHeader>
+                            <CardHeader><CardTitle className="text-lg">Identification & Recognition</CardTitle></CardHeader>
                             <CardContent className="space-y-3">
                                <DetailSection title="Generic Name" content={scannedItem.drug.name} icon={Pill} />
-                               <DetailSection title="Brand(s)" content={scannedItem.drug.pharmaApplications.formulations} icon={Pill} />
+                               <DetailSection title="Brand(s)" content={scannedItem.drug.pharmaApplications.formulations} icon={Package} />
                                <DetailSection title="Dosage Forms" content={scannedItem.drug.pharmaApplications.dosageForms} icon={Pill} />
                                <DetailSection title="Scan Info" content={`Source: ${getRecognitionSource(scannedItem.type).source} | Confidence: ${getRecognitionSource(scannedItem.type).confidence}`} icon={Barcode}/>
+                               <Button size="sm" variant="link" className="p-0 h-auto" onClick={() => toast({title: "Coming Soon!", description: "This will allow reporting incorrect information to admins."})}>Report incorrect info</Button>
                             </CardContent>
                         </Card>
                         
@@ -216,6 +224,15 @@ export function ScanMedicineStripClient() {
                                <DetailSection title="Major Interactions" content={"Interaction data not available in this mock data."} icon={GitCompareArrows} />
                             </CardContent>
                         </Card>
+
+                         <Card>
+                            <CardHeader><CardTitle className="text-lg">Pharmaceutical & Analytical Notes</CardTitle></CardHeader>
+                            <CardContent className="space-y-4">
+                               <DetailSection title="Storage & Stability" content={scannedItem.drug.pharmaApplications.storage} icon={Archive} />
+                               <DetailSection title="Therapeutic Alternatives" content={"Data on alternatives not available in this mock dataset."} icon={GitCompareArrows} />
+                               <DetailSection title="Analytical / QC Methods" content={`Qualitative: ${scannedItem.drug.analyticalMethods.qualitative}\nQuantitative: ${scannedItem.drug.analyticalMethods.quantitative}\nPharmacopoeial: ${scannedItem.drug.analyticalMethods.pharmacopoeial}`} icon={Microscope} />
+                            </CardContent>
+                        </Card>
                         
                         <Card>
                             <CardHeader><CardTitle className="text-lg">Pedagogical Actions</CardTitle></CardHeader>
@@ -223,6 +240,7 @@ export function ScanMedicineStripClient() {
                                 <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will save the scan to your Notes Organizer."})}>Save Study Note</Button>
                                 <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will add flashcards to your deck."})}>Make Flashcards</Button>
                                 <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will launch a quiz on this drug."})}>Quiz Me</Button>
+                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will schedule a revision block in your Study Planner."})}>Schedule Revision</Button>
                             </CardContent>
                         </Card>
                     </div>
