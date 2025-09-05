@@ -134,7 +134,7 @@ export function PlagiarismCheckerClient() {
         <Card>
           <CardHeader>
             <CardTitle>Submit Document</CardTitle>
-            <CardDescription>Upload your file or paste text. We’ll scan for overlap, suggest fixes, and help format citations.</CardDescription>
+            <CardDescription>Drag your assignment here or click to upload. We’ll scan for overlap and help you fix issues before submission.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -148,7 +148,7 @@ export function PlagiarismCheckerClient() {
                       <FormControl>
                         <Input
                           type="file"
-                          accept=".txt,.pdf,image/*"
+                          accept="text/plain,application/pdf,image/*"
                           {...fileRef}
                           onChange={(e) => field.onChange(e.target.files)}
                         />
