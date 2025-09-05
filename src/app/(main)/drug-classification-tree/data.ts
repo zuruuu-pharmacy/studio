@@ -155,7 +155,26 @@ export const drugTreeData: DrugClass[] = [
                         pharmacopoeial: "USP, BP.",
                     },
                     specialNotes: "Induces hepatic enzymes (CYP450), leading to many drug interactions. Narrow therapeutic index.",
-                }
+                },
+                 {
+                    name: "Thiopental",
+                    classification: "Barbiturate (ultra short-acting)",
+                    moa: "Potentiates GABA-A receptor activity, causing profound but brief CNS depression.",
+                    therapeuticUses: "Induction of anesthesia, management of refractory status epilepticus.",
+                    adrs: "Respiratory depression, hypotension, laryngospasm, extravasation injury.",
+                    contraindications: "Absence of suitable veins, status asthmaticus, porphyria.",
+                    pharmaApplications: {
+                        dosageForms: "Powder for injection (reconstituted).",
+                        formulations: "Pentothal (Brand).",
+                        storage: "Store powder at room temperature. Reconstituted solution is unstable.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "Colorimetric tests.",
+                        quantitative: "HPLC, GC-MS.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Rapid onset and redistribution from brain to other tissues determines its short duration of action.",
+                },
             ]
           },
            {
@@ -179,12 +198,70 @@ export const drugTreeData: DrugClass[] = [
                   pharmacopoeial: "USP, BP.",
                 },
                 specialNotes: "Should be taken immediately before bedtime. Can cause amnesia for events that occur after taking the drug.",
-              }
+              },
+               {
+                name: "Zaleplon",
+                classification: "Non-benzodiazepine hypnotic (Z-drug)",
+                moa: "Interacts with the GABAA-benzodiazepine receptor complex, primarily at the omega-1 subtype.",
+                therapeuticUses: "Short-term treatment of insomnia, particularly for difficulty falling asleep.",
+                adrs: "Dizziness, headache, somnolence, rebound insomnia.",
+                contraindications: "Known hypersensitivity, severe hepatic impairment.",
+                pharmaApplications: {
+                  dosageForms: "Capsules.",
+                  formulations: "Sonata (Brand).",
+                  storage: "Store at room temperature.",
+                },
+                analyticalMethods: {
+                  qualitative: "HPLC.",
+                  quantitative: "HPLC with UV detection.",
+                  pharmacopoeial: "USP.",
+                },
+                specialNotes: "Very short half-life (~1 hour), making it useful for middle-of-the-night awakenings.",
+              },
+               {
+                name: "Eszopiclone",
+                classification: "Non-benzodiazepine hypnotic (Z-drug), Cyclopyrrolone derivative",
+                moa: "Interacts with GABAA receptor complexes at binding domains located close to or allosterically coupled to benzodiazepine receptors.",
+                therapeuticUses: "Treatment of insomnia (improves sleep onset and maintenance).",
+                adrs: "Unpleasant bitter/metallic taste, headache, dry mouth, somnolence.",
+                contraindications: "Known hypersensitivity.",
+                pharmaApplications: {
+                  dosageForms: "Tablets.",
+                  formulations: "Lunesta (Brand).",
+                  storage: "Store at room temperature.",
+                },
+                analyticalMethods: {
+                  qualitative: "LC-MS.",
+                  quantitative: "HPLC, LC-MS/MS.",
+                  pharmacopoeial: "USP.",
+                },
+                specialNotes: "Approved for longer-term use than some other hypnotics. Can impair next-day driving ability.",
+              },
             ]
           },
           {
             name: "Melatonin receptor agonists",
-            drugs: []
+            drugs: [
+                 {
+                    name: "Ramelteon",
+                    classification: "Melatonin receptor agonist",
+                    moa: "Selective agonist at the MT1 and MT2 melatonin receptors within the suprachiasmatic nucleus (SCN) of the brain.",
+                    therapeuticUses: "Treatment of insomnia characterized by difficulty with sleep onset.",
+                    adrs: "Dizziness, somnolence, fatigue, nausea.",
+                    contraindications: "Fluvoxamine co-administration, known hypersensitivity.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets.",
+                        formulations: "Rozerem (Brand).",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "HPLC.",
+                        quantitative: "LC-MS/MS.",
+                        pharmacopoeial: "USP.",
+                    },
+                    specialNotes: "Not a controlled substance, as it has no potential for abuse or dependence.",
+                },
+            ],
           }
         ],
       },
@@ -214,6 +291,44 @@ export const drugTreeData: DrugClass[] = [
                     },
                     specialNotes: "May take 4-6 weeks to see full therapeutic effect. Carries a black box warning for increased suicidal thinking in young adults.",
                 },
+                 {
+                    name: "Fluoxetine",
+                    classification: "Selective Serotonin Reuptake Inhibitor (SSRI)",
+                    moa: "Inhibits CNS neuronal reuptake of serotonin (5-HT).",
+                    therapeuticUses: "Major depressive disorder, OCD, panic disorder, bulimia nervosa.",
+                    adrs: "Insomnia, nausea, headache, anxiety.",
+                    contraindications: "Concomitant use with MAOIs, pimozide, or thioridazine.",
+                    pharmaApplications: {
+                        dosageForms: "Capsules (including delayed-release), tablets, oral solution.",
+                        formulations: "Prozac (Brand), Sarafem.",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "IR spectroscopy, TLC.",
+                        quantitative: "HPLC.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Very long half-life of its active metabolite (norfluoxetine), which can lead to prolonged drug interactions.",
+                },
+                 {
+                    name: "Citalopram",
+                    classification: "Selective Serotonin Reuptake Inhibitor (SSRI)",
+                    moa: "Selectively inhibits the reuptake of serotonin from the synaptic cleft.",
+                    therapeuticUses: "Major depressive disorder.",
+                    adrs: "Nausea, dry mouth, somnolence, QT prolongation at higher doses.",
+                    contraindications: "Concomitant use with MAOIs, congenital long QT syndrome.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets, oral solution.",
+                        formulations: "Celexa (Brand).",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "HPLC.",
+                        quantitative: "HPLC with UV or fluorescence detection.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Dose-dependent risk of QT prolongation. Maximum recommended dose is 40 mg/day (20 mg/day in elderly or poor CYP2C19 metabolizers).",
+                },
             ],
           },
           {
@@ -237,7 +352,26 @@ export const drugTreeData: DrugClass[] = [
                         pharmacopoeial: "USP.",
                     },
                     specialNotes: "Can cause a significant discontinuation syndrome if stopped abruptly. Blood pressure should be monitored, especially with dose increases.",
-                }
+                },
+                 {
+                    name: "Duloxetine",
+                    classification: "Serotonin-Norepinephrine Reuptake Inhibitor (SNRI)",
+                    moa: "A potent inhibitor of serotonin and norepinephrine reuptake.",
+                    therapeuticUses: "Major depressive disorder, diabetic peripheral neuropathic pain, fibromyalgia, chronic musculoskeletal pain.",
+                    adrs: "Nausea, dry mouth, constipation, fatigue.",
+                    contraindications: "Concomitant use with MAOIs, uncontrolled narrow-angle glaucoma.",
+                    pharmaApplications: {
+                        dosageForms: "Delayed-release capsules.",
+                        formulations: "Cymbalta (Brand).",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "HPLC.",
+                        quantitative: "LC-MS/MS.",
+                        pharmacopoeial: "USP.",
+                    },
+                    specialNotes: "Should not be used in patients with substantial alcohol use or chronic liver disease due to risk of hepatotoxicity.",
+                },
             ],
           },
           {
@@ -261,7 +395,26 @@ export const drugTreeData: DrugClass[] = [
                         pharmacopoeial: "BP, USP.",
                     },
                     specialNotes: "High risk of toxicity in overdose due to cardiac effects. Use is limited by its side effect profile compared to newer agents.",
-                }
+                },
+                 {
+                    name: "Nortriptyline",
+                    classification: "Tricyclic Antidepressant (TCA), Secondary amine",
+                    moa: "Primarily inhibits the reuptake of norepinephrine, with less effect on serotonin. Less sedating and anticholinergic than amitriptyline.",
+                    therapeuticUses: "Depression, neuropathic pain, smoking cessation.",
+                    adrs: "Dry mouth, constipation, sedation (less than amitriptyline), orthostatic hypotension.",
+                    contraindications: "Acute recovery period after MI, co-administration with MAOIs.",
+                    pharmaApplications: {
+                        dosageForms: "Capsules, oral solution.",
+                        formulations: "Pamelor (Brand).",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "HPLC.",
+                        quantitative: "HPLC, GC-MS.",
+                        pharmacopoeial: "USP.",
+                    },
+                    specialNotes: "Active metabolite of amitriptyline. Therapeutic drug monitoring can be useful due to variability in metabolism.",
+                },
             ],
           },
           {
@@ -285,7 +438,7 @@ export const drugTreeData: DrugClass[] = [
                         pharmacopoeial: "BP.",
                     },
                     specialNotes: "Requires strict dietary restrictions (tyramine-free diet) to avoid hypertensive crisis. Numerous and potentially fatal drug interactions.",
-                }
+                },
             ],
           },
           {
@@ -454,20 +607,119 @@ export const drugTreeData: DrugClass[] = [
         pharmaFocus: "stability studies, impurity analysis, formulation challenges (oral vs transdermal).",
         subclasses: [
           {
-            name: "Dopamine precursors (Levodopa + Carbidopa)",
-            drugs: [],
+            name: "Dopamine precursors",
+            drugs: [
+                {
+                    name: "Levodopa/Carbidopa",
+                    classification: "Dopamine precursor/DOPA decarboxylase inhibitor",
+                    moa: "Levodopa is a precursor to dopamine. Carbidopa inhibits the peripheral decarboxylation of levodopa, allowing more levodopa to cross the blood-brain barrier for CNS effect.",
+                    therapeuticUses: "Parkinson's disease.",
+                    adrs: "Nausea, vomiting, orthostatic hypotension, dyskinesias (motor fluctuations), hallucinations.",
+                    contraindications: "Narrow-angle glaucoma, use of nonselective MAOIs.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets (immediate-release, extended-release), orally disintegrating tablets, intestinal gel.",
+                        formulations: "Sinemet (Brand), Rytary, Duopa.",
+                        storage: "Store at room temperature, protect from light and moisture.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "HPLC, IR.",
+                        quantitative: "HPLC with electrochemical or UV detection.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Effectiveness can wane over time ('wearing-off' phenomenon). High-protein meals can interfere with absorption.",
+                },
+            ],
           },
           {
-            name: "MAO-B inhibitors (Selegiline)",
-            drugs: [],
+            name: "MAO-B inhibitors",
+            drugs: [
+                {
+                    name: "Selegiline",
+                    classification: "Selective, irreversible MAO-B inhibitor",
+                    moa: "Inhibits the monoamine oxidase type B (MAO-B) enzyme, which breaks down dopamine in the brain, thereby increasing dopamine levels.",
+                    therapeuticUses: "Parkinson's disease (adjunctive therapy with levodopa/carbidopa).",
+                    adrs: "Nausea, dizziness, insomnia, confusion, hallucinations.",
+                    contraindications: "Use with meperidine, tramadol, methadone, TCAs, SSRIs due to risk of serotonin syndrome.",
+                    pharmaApplications: {
+                        dosageForms: "Capsules, tablets, orally disintegrating tablets, transdermal patch.",
+                        formulations: "Eldepryl (Brand), Zelapar.",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "HPLC.",
+                        quantitative: "LC-MS/MS.",
+                        pharmacopoeial: "USP.",
+                    },
+                    specialNotes: "At higher doses, loses its selectivity for MAO-B and can inhibit MAO-A, necessitating tyramine dietary restrictions.",
+                },
+            ],
           },
           {
-            name: "COMT inhibitors (Entacapone)",
-            drugs: [],
+            name: "COMT inhibitors",
+            drugs: [
+                 {
+                    name: "Entacapone",
+                    classification: "COMT inhibitor",
+                    moa: "Reversibly inhibits catechol-O-methyltransferase (COMT), reducing the peripheral breakdown of levodopa and increasing its plasma half-life.",
+                    therapeuticUses: "Adjunct to levodopa/carbidopa for 'wearing-off' episodes in Parkinson's disease.",
+                    adrs: "Dyskinesia, nausea, brownish-orange urine discoloration, diarrhea.",
+                    contraindications: "Known hypersensitivity.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets. Also available in combination with levodopa/carbidopa.",
+                        formulations: "Comtan (Brand), Stalevo (combination product).",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "HPLC.",
+                        quantitative: "HPLC with UV detection.",
+                        pharmacopoeial: "USP.",
+                    },
+                    specialNotes: "Must be administered with each dose of levodopa/carbidopa. May require a reduction in the levodopa dose.",
+                },
+            ],
           },
           {
-            name: "Alzheimer’s drugs (Donepezil, Memantine)",
-            drugs: [],
+            name: "Alzheimer’s drugs",
+            drugs: [
+                 {
+                    name: "Donepezil",
+                    classification: "Cholinesterase inhibitor",
+                    moa: "Reversibly inhibits acetylcholinesterase, the enzyme responsible for the breakdown of acetylcholine, thereby increasing acetylcholine levels in the brain.",
+                    therapeuticUses: "Mild, moderate, and severe Alzheimer's disease.",
+                    adrs: "Nausea, vomiting, diarrhea, insomnia, bradycardia.",
+                    contraindications: "Known hypersensitivity.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets, orally disintegrating tablets.",
+                        formulations: "Aricept (Brand).",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "HPLC.",
+                        quantitative: "LC-MS/MS.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Provides symptomatic treatment but does not alter the underlying course of the disease.",
+                },
+                 {
+                    name: "Memantine",
+                    classification: "NMDA receptor antagonist",
+                    moa: "Blocks N-methyl-D-aspartate (NMDA) receptors, protecting them from the excessive stimulation by glutamate that is thought to cause neurotoxicity in Alzheimer's disease.",
+                    therapeuticUses: "Moderate to severe Alzheimer's disease.",
+                    adrs: "Dizziness, headache, confusion, constipation.",
+                    contraindications: "Known hypersensitivity.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets, capsules (extended-release), oral solution.",
+                        formulations: "Namenda (Brand).",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "HPLC.",
+                        quantitative: "LC-MS/MS.",
+                        pharmacopoeial: "USP.",
+                    },
+                    specialNotes: "Often used in combination with a cholinesterase inhibitor like donepezil.",
+                },
+            ],
           },
         ]
       },
@@ -496,6 +748,25 @@ export const drugTreeData: DrugClass[] = [
                             pharmacopoeial: "USP, BP.",
                         },
                         specialNotes: "High risk of EPS. Monitor for neuroleptic malignant syndrome (NMS).",
+                    },
+                    {
+                        name: "Chlorpromazine",
+                        classification: "First-generation (typical) antipsychotic, Phenothiazine",
+                        moa: "Blocks postsynaptic dopamine D2 receptors in the mesolimbic system. Also has strong anticholinergic, antihistaminic, and alpha-adrenergic blocking effects.",
+                        therapeuticUses: "Schizophrenia, psychotic disorders, intractable hiccups, nausea/vomiting.",
+                        adrs: "Sedation, orthostatic hypotension, anticholinergic effects (dry mouth, constipation), EPS, photosensitivity.",
+                        contraindications: "Comatose states, large amounts of CNS depressants, bone marrow suppression.",
+                        pharmaApplications: {
+                            dosageForms: "Tablets, injection (IM/IV), suppositories.",
+                            formulations: "Thorazine (Brand).",
+                            storage: "Protect from light. Store at room temperature.",
+                        },
+                        analyticalMethods: {
+                            qualitative: "Colorimetric tests, TLC.",
+                            quantitative: "HPLC, spectrophotometry.",
+                            pharmacopoeial: "USP, BP.",
+                        },
+                        specialNotes: "Low-potency typical antipsychotic, so lower risk of EPS but higher risk of sedative and hypotensive effects compared to haloperidol.",
                     }
                 ]
             },
@@ -520,6 +791,44 @@ export const drugTreeData: DrugClass[] = [
                             pharmacopoeial: "USP, BP.",
                         },
                         specialNotes: "Monitor weight, glucose, and lipids regularly.",
+                    },
+                    {
+                        name: "Clozapine",
+                        classification: "Second-generation (atypical) antipsychotic",
+                        moa: "Weak D2 receptor antagonist but strong 5-HT2A antagonist. Also acts on various other receptors.",
+                        therapeuticUses: "Treatment-resistant schizophrenia, reducing suicidal behavior in schizophrenic patients.",
+                        adrs: "Agranulocytosis (potentially fatal), myocarditis, seizures, significant weight gain, sialorrhea (excessive salivation).",
+                        contraindications: "History of clozapine-induced agranulocytosis or myocarditis, uncontrolled epilepsy.",
+                        pharmaApplications: {
+                            dosageForms: "Tablets, orally disintegrating tablets.",
+                            formulations: "Clozaril (Brand).",
+                            storage: "Store at room temperature.",
+                        },
+                        analyticalMethods: {
+                            qualitative: "HPLC.",
+                            quantitative: "HPLC, LC-MS/MS for TDM.",
+                            pharmacopoeial: "USP, BP.",
+                        },
+                        specialNotes: "Requires mandatory absolute neutrophil count (ANC) monitoring due to the risk of agranulocytosis. Reserved for treatment failure with other antipsychotics.",
+                    },
+                    {
+                        name: "Risperidone",
+                        classification: "Second-generation (atypical) antipsychotic",
+                        moa: "Potent antagonist of serotonin 5-HT2A and dopamine D2 receptors.",
+                        therapeuticUses: "Schizophrenia, bipolar mania, irritability associated with autistic disorder.",
+                        adrs: "Hyperprolactinemia (leading to gynecomastia, galactorrhea), EPS (especially at higher doses), orthostatic hypotension.",
+                        contraindications: "Known hypersensitivity.",
+                        pharmaApplications: {
+                            dosageForms: "Tablets, orally disintegrating tablets, oral solution, long-acting injection.",
+                            formulations: "Risperdal (Brand), Risperdal Consta (injection).",
+                            storage: "Store at room temperature, protect from light.",
+                        },
+                        analyticalMethods: {
+                            qualitative: "HPLC.",
+                            quantitative: "HPLC, LC-MS/MS.",
+                            pharmacopoeial: "USP, BP.",
+                        },
+                        specialNotes: "Acts more like a typical antipsychotic at doses >6 mg/day due to strong D2 blockade, increasing EPS risk.",
                     }
                 ]
             }
@@ -530,16 +839,133 @@ export const drugTreeData: DrugClass[] = [
         pharmaFocus: "dissolution testing of tablets, abuse-deterrent formulations, chromatography analysis.",
         subclasses: [
           {
-            name: "Natural (Morphine, Codeine)",
-            drugs: [],
+            name: "Natural",
+            drugs: [
+                {
+                    name: "Morphine",
+                    classification: "Opioid Analgesic, Phenanthrene derivative",
+                    moa: "Acts as an agonist at mu-opioid receptors in the CNS, causing analgesia, sedation, and euphoria.",
+                    therapeuticUses: "Severe acute and chronic pain.",
+                    adrs: "Respiratory depression, constipation, sedation, nausea, vomiting, dependence.",
+                    contraindications: "Severe respiratory depression, acute or severe bronchial asthma, paralytic ileus.",
+                    pharmaApplications: {
+                        dosageForms: "Oral solution, tablets (IR, ER), injection (IV, IM, SC, epidural).",
+                        formulations: "MS Contin (ER tablet), Kadian (ER capsule), Duramorph (injection).",
+                        storage: "Controlled substance. Store securely at room temperature, protect from light.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "Colorimetric tests (Marquis reagent), GC-MS.",
+                        quantitative: "HPLC, LC-MS.",
+                        pharmacopoeial: "USP, BP (Titration for assay).",
+                    },
+                    specialNotes: "The gold standard against which other opioids are compared. Has an active metabolite (morphine-6-glucuronide) that can accumulate in renal failure.",
+                },
+                 {
+                    name: "Codeine",
+                    classification: "Opioid Analgesic, Antitussive",
+                    moa: "A prodrug that is metabolized to morphine by the CYP2D6 enzyme. Acts as a weak agonist at mu-opioid receptors.",
+                    therapeuticUses: "Mild to moderate pain, cough suppression.",
+                    adrs: "Constipation, nausea, drowsiness. Risk of respiratory depression in ultra-rapid metabolizers.",
+                    contraindications: "Post-tonsillectomy pain in children, ultra-rapid CYP2D6 metabolizers.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets (often in combination with paracetamol), oral solution.",
+                        formulations: "Tylenol with Codeine.",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "TLC, GC-MS.",
+                        quantitative: "HPLC.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Genetic variability in CYP2D6 can lead to either lack of efficacy (poor metabolizers) or toxicity (ultra-rapid metabolizers).",
+                },
+            ],
           },
           {
-            name: "Semi-synthetic (Oxycodone, Hydromorphone)",
-            drugs: [],
+            name: "Semi-synthetic",
+            drugs: [
+                {
+                    name: "Oxycodone",
+                    classification: "Semi-synthetic Opioid Analgesic",
+                    moa: "Binds to mu-opioid receptors to produce analgesia.",
+                    therapeuticUses: "Moderate to severe pain.",
+                    adrs: "Constipation, nausea, somnolence, dizziness, high abuse potential.",
+                    contraindications: "Significant respiratory depression, acute or severe bronchial asthma.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets (IR, ER), capsules (IR), oral solution. Also in combination with paracetamol.",
+                        formulations: "OxyContin (ER tablet), Roxicodone (IR tablet), Percocet (combo).",
+                        storage: "Controlled substance. Store securely at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "Immunoassay, GC-MS.",
+                        quantitative: "LC-MS/MS, HPLC.",
+                        pharmacopoeial: "USP.",
+                    },
+                    specialNotes: "OxyContin formulation was a major focus of opioid crisis litigation due to its high abuse potential.",
+                },
+                 {
+                    name: "Hydromorphone",
+                    classification: "Semi-synthetic Opioid Analgesic",
+                    moa: "Potent agonist at the mu-opioid receptor.",
+                    therapeuticUses: "Severe pain.",
+                    adrs: "Respiratory depression, sedation, constipation. High risk of overdose due to potency.",
+                    contraindications: "Opioid-naive patients (for high-potency formulations), respiratory depression.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets (IR, ER), oral liquid, injection, suppositories.",
+                        formulations: "Dilaudid (Brand).",
+                        storage: "Controlled substance. Store securely at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "GC-MS.",
+                        quantitative: "LC-MS/MS.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Significantly more potent than morphine (approx. 5-7 times on a mg basis). High risk of medication errors.",
+                },
+            ],
           },
           {
-            name: "Synthetic (Fentanyl, Tramadol)",
-            drugs: [],
+            name: "Synthetic",
+            drugs: [
+                {
+                    name: "Fentanyl",
+                    classification: "Synthetic Opioid Analgesic",
+                    moa: "Extremely potent, selective agonist of the mu-opioid receptor.",
+                    therapeuticUses: "Severe pain (transdermal patch for chronic pain), procedural anesthesia (injection).",
+                    adrs: "Respiratory depression, muscle rigidity (especially chest wall), bradycardia.",
+                    contraindications: "Management of acute or postoperative pain (transdermal patch), opioid-naive patients.",
+                    pharmaApplications: {
+                        dosageForms: "Injection, transdermal patch, buccal film, sublingual tablet, nasal spray.",
+                        formulations: "Duragesic (patch), Actiq (lozenge), Sublimaze (injection).",
+                        storage: "Controlled substance. Store and dispose of patches carefully to prevent accidental exposure.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "LC-MS/MS.",
+                        quantitative: "LC-MS/MS.",
+                        pharmacopoeial: "USP.",
+                    },
+                    specialNotes: "Approximately 100 times more potent than morphine. Illicit fentanyl is a major driver of overdose deaths.",
+                },
+                 {
+                    name: "Tramadol",
+                    classification: "Atypical Synthetic Opioid Analgesic",
+                    moa: "Weak mu-opioid receptor agonist. Also inhibits the reuptake of serotonin and norepinephrine.",
+                    therapeuticUses: "Moderate to moderately severe pain.",
+                    adrs: "Dizziness, nausea, constipation, somnolence. Lowers seizure threshold.",
+                    contraindications: "Use in children <12 years, significant respiratory depression.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets (IR, ER), capsules.",
+                        formulations: "Ultram (Brand).",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "GC-MS.",
+                        quantitative: "HPLC, LC-MS/MS.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Risk of serotonin syndrome when combined with other serotonergic drugs. Lower abuse potential than traditional opioids but still present.",
+                },
+            ],
           },
         ]
       },
@@ -553,15 +979,35 @@ export const drugTreeData: DrugClass[] = [
         pharmaFocus: "assay techniques, OTC vs controlled formulations.",
         subclasses: [
           {
-            name: "Cerebral stimulants (Caffeine, Theophylline)",
-            drugs: [],
+            name: "Cerebral stimulants",
+            drugs: [
+                {
+                    name: "Caffeine",
+                    classification: "Methylxanthine, CNS Stimulant",
+                    moa: "Antagonizes adenosine receptors in the brain, leading to increased alertness. Also inhibits phosphodiesterase.",
+                    therapeuticUses: "Increase alertness, treatment of apnea of prematurity in neonates.",
+                    adrs: "Insomnia, nervousness, tachycardia, gastrointestinal upset.",
+                    contraindications: "Known hypersensitivity.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets, injection. Widely available in beverages and OTC products.",
+                        formulations: "No-Doz (OTC), Cafcit (injection for apnea).",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "TLC.",
+                        quantitative: "HPLC, UV-Vis spectrophotometry.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Tolerance can develop with chronic use. Abrupt cessation can cause withdrawal headaches.",
+                },
+            ],
           },
           {
-            name: "Medullary stimulants (Nikethamide)",
+            name: "Medullary stimulants",
             drugs: [],
           },
            {
-            name: "Spinal stimulants (Strychnine – historical, not clinical now)",
+            name: "Spinal stimulants",
             drugs: [],
           },
         ]
@@ -573,15 +1019,83 @@ export const drugTreeData: DrugClass[] = [
             {
                 name: "General anesthetics",
                 subclasses: [
-                    { name: "IV (Propofol, Thiopental)", drugs: [] },
-                    { name: "Inhalational (Isoflurane, Sevoflurane)", drugs: [] },
+                    { 
+                        name: "IV Anesthetics", 
+                        drugs: [
+                            {
+                                name: "Propofol",
+                                classification: "Intravenous general anesthetic",
+                                moa: "Potentiates GABAA receptor activity, causing global CNS depression.",
+                                therapeuticUses: "Induction and maintenance of anesthesia, sedation in ICU.",
+                                adrs: "Hypotension, apnea, injection site pain, propofol infusion syndrome (rare).",
+                                contraindications: "Hypersensitivity to propofol, egg, or soy products.",
+                                pharmaApplications: {
+                                    dosageForms: "Emulsion for injection.",
+                                    formulations: "Diprivan (Brand).",
+                                    storage: "Store at room temperature. Aseptic technique is critical as the lipid emulsion supports microbial growth.",
+                                },
+                                analyticalMethods: {
+                                    qualitative: "GC-MS.",
+                                    quantitative: "HPLC.",
+                                    pharmacopoeial: "USP, BP.",
+                                },
+                                specialNotes: "Rapid onset and short duration of action. Milky white appearance.",
+                            },
+                        ] 
+                    },
+                    { 
+                        name: "Inhalational Anesthetics", 
+                        drugs: [
+                             {
+                                name: "Isoflurane",
+                                classification: "Inhalational general anesthetic",
+                                moa: "Exact mechanism unknown, but thought to enhance inhibitory channel activity (GABA, glycine) and inhibit excitatory channel activity (NMDA, nicotinic).",
+                                therapeuticUses: "Induction and maintenance of general anesthesia.",
+                                adrs: "Hypotension (vasodilation), respiratory depression, pungent odor can irritate airways.",
+                                contraindications: "Known or suspected susceptibility to malignant hyperthermia.",
+                                pharmaApplications: {
+                                    dosageForms: "Liquid for inhalation (vaporized).",
+                                    formulations: "Forane (Brand).",
+                                    storage: "Store in airtight containers, protected from light.",
+                                },
+                                analyticalMethods: {
+                                    qualitative: "Gas Chromatography (GC).",
+                                    quantitative: "GC with Flame Ionization Detector (FID).",
+                                    pharmacopoeial: "USP, BP.",
+                                },
+                                specialNotes: "Low blood:gas partition coefficient allows for relatively rapid induction and recovery.",
+                            },
+                        ] 
+                    },
                 ]
             },
             {
                 name: "Local anesthetics",
                 subclasses: [
-                    { name: "Ester type (Procaine)", drugs: [] },
-                    { name: "Amide type (Lidocaine, Bupivacaine)", drugs: [] },
+                    { 
+                        name: "Amide type", 
+                        drugs: [
+                             {
+                                name: "Lidocaine",
+                                classification: "Local Anesthetic (Amide type), Class IB Antiarrhythmic",
+                                moa: "Blocks voltage-gated sodium channels, preventing the initiation and conduction of nerve impulses.",
+                                therapeuticUses: "Local or regional anesthesia, treatment of ventricular arrhythmias.",
+                                adrs: "CNS effects (drowsiness, tinnitus, seizures at high doses), cardiac effects (hypotension, bradycardia).",
+                                contraindications: "Adams-Stokes syndrome, severe heart block, hypersensitivity to amide anesthetics.",
+                                pharmaApplications: {
+                                    dosageForms: "Injection, topical patch, gel, ointment, oral solution.",
+                                    formulations: "Xylocaine (Brand), Lidoderm (patch).",
+                                    storage: "Store at room temperature.",
+                                },
+                                analyticalMethods: {
+                                    qualitative: "TLC, IR.",
+                                    quantitative: "HPLC, GC.",
+                                    pharmacopoeial: "USP, BP.",
+                                },
+                                specialNotes: "Metabolized by the liver. Often formulated with epinephrine to prolong duration of action and reduce systemic absorption.",
+                            },
+                        ] 
+                    },
                 ]
             }
         ]
@@ -593,23 +1107,121 @@ export const drugTreeData: DrugClass[] = [
     pharmaFocus: "titrimetric assay (Aspirin), impurity profile, HPLC methods.",
     subclasses: [
         {
-            name: "Non-opioid analgesics (Paracetamol, Aspirin)",
-            drugs: [],
+            name: "Non-opioid analgesics",
+            drugs: [
+                {
+                    name: "Paracetamol (Acetaminophen)",
+                    classification: "Analgesic, Antipyretic",
+                    moa: "Not fully elucidated. Thought to inhibit COX enzymes in the CNS. Weak peripheral anti-inflammatory effect.",
+                    therapeuticUses: "Pain, fever.",
+                    adrs: "Generally well-tolerated at therapeutic doses. Hepatotoxicity in overdose.",
+                    contraindications: "Severe liver disease, hypersensitivity.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets, capsules, oral suspension, suppositories, IV injection.",
+                        formulations: "Tylenol (US Brand), Panadol (International Brand).",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "Colorimetric test with o-cresol.",
+                        quantitative: "UV-Vis spectrophotometry, HPLC.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Overdose is treated with N-acetylcysteine (NAC). Lacks significant anti-inflammatory properties.",
+                },
+                {
+                    name: "Aspirin",
+                    classification: "NSAID, Salicylate",
+                    moa: "Irreversibly inhibits COX-1 and COX-2 enzymes, preventing prostaglandin and thromboxane synthesis.",
+                    therapeuticUses: "Pain, fever, inflammation. Low dose for antiplatelet effect (prevention of MI/stroke).",
+                    adrs: "GI upset, bleeding, tinnitus, Reye's syndrome in children.",
+                    contraindications: "Hypersensitivity, children with viral illness, bleeding disorders.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets (chewable, enteric-coated, buffered), suppositories.",
+                        formulations: "Bayer (Brand), Ecotrin (enteric-coated).",
+                        storage: "Store in a dry place to prevent hydrolysis to salicylic and acetic acid.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "Ferric chloride test for salicylate.",
+                        quantitative: "Acid-base titration after hydrolysis.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Enteric coating is a key formulation strategy to reduce GI side effects.",
+                },
+            ],
         },
         {
-            name: "Traditional NSAIDs (Ibuprofen, Diclofenac)",
-            drugs: [],
+            name: "Traditional NSAIDs",
+            drugs: [
+                {
+                    name: "Ibuprofen",
+                    classification: "NSAID, Propionic acid derivative",
+                    moa: "Reversibly inhibits COX-1 and COX-2 enzymes.",
+                    therapeuticUses: "Pain, fever, inflammation (e.g., arthritis).",
+                    adrs: "GI upset, risk of GI bleeding, renal impairment, increased cardiovascular risk.",
+                    contraindications: "Aspirin allergy, perioperative pain in CABG surgery.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets, capsules, oral suspension, IV injection.",
+                        formulations: "Advil (Brand), Motrin (Brand).",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "HPLC.",
+                        quantitative: "HPLC, titration.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Available over-the-counter (OTC) at lower strengths.",
+                },
+                {
+                    name: "Diclofenac",
+                    classification: "NSAID, Acetic acid derivative",
+                    moa: "Reversibly inhibits COX-1 and COX-2 enzymes.",
+                    therapeuticUses: "Pain, inflammation (arthritis), migraine.",
+                    adrs: "GI upset, increased cardiovascular risk (higher than some other NSAIDs), renal impairment.",
+                    contraindications: "Aspirin allergy, perioperative pain in CABG surgery.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets (IR, ER), capsules, topical gel, injection.",
+                        formulations: "Voltaren (Brand), Cataflam.",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "HPLC.",
+                        quantitative: "HPLC.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Topical formulations (gel) are used to minimize systemic side effects for localized pain.",
+                },
+            ],
         },
         {
-            name: "COX-2 inhibitors (Celecoxib)",
-            drugs: [],
+            name: "COX-2 inhibitors",
+            drugs: [
+                {
+                    name: "Celecoxib",
+                    classification: "Selective COX-2 inhibitor NSAID",
+                    moa: "Selectively inhibits the COX-2 enzyme, which is induced during inflammation, sparing the COX-1 enzyme that protects the GI mucosa.",
+                    therapeuticUses: "Osteoarthritis, rheumatoid arthritis, acute pain.",
+                    adrs: "Increased risk of cardiovascular events (MI, stroke), renal impairment. Lower risk of GI bleeding than traditional NSAIDs.",
+                    contraindications: "Aspirin or sulfa allergy, perioperative pain in CABG surgery.",
+                    pharmaApplications: {
+                        dosageForms: "Capsules.",
+                        formulations: "Celebrex (Brand).",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "HPLC.",
+                        quantitative: "HPLC, LC-MS/MS.",
+                        pharmacopoeial: "USP.",
+                    },
+                    specialNotes: "Developed to reduce GI toxicity, but cardiovascular risks became a major concern for the class.",
+                },
+            ],
         },
         {
             name: "Disease-modifying antirheumatic drugs (DMARDs)",
             drugs: [],
         },
         {
-            name: "Anti-gout drugs (Allopurinol, Febuxostat, Colchicine)",
+            name: "Anti-gout drugs",
             drugs: [],
         },
     ],
