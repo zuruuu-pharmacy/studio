@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { Download, CloudOff, BookOpen, CaseSensitive, History, Trash2, CheckCircle, WifiOff, FileDown, Award, Bug, ShieldCheck, Settings, BarChart } from "lucide-react";
+import { Download, CloudOff, BookOpen, CaseSensitive, History, Trash2, CheckCircle, WifiOff, FileDown, Award, Bug, ShieldCheck, Settings, BarChart, Milestone } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -24,9 +24,7 @@ const kpiData = [
 
 const qaChecklist = [
     { category: 'Downloads', test: 'Download single PDF note file.', expected: 'File downloads successfully, progress bar shows, notification on complete.' },
-    { category: 'Downloads', test: 'Attempt to download a 2GB video on mobile data.', expected: 'App shows “Large File” warning, requires confirmation to proceed.' },
     { category: 'Sync', test: 'Make 5 annotations offline, then reconnect.', expected: 'App detects connection, initiates sync, all 5 annotations upload successfully.' },
-    { category: 'Sync', test: 'Answer a quiz offline, close app, reconnect later.', expected: 'On next app open with internet, cached answers are synced.' },
     { category: 'Storage', test: 'Download files until 95% of allocated cache is full.', expected: '“Low Storage” warning appears. Subsequent downloads are blocked.' },
     { category: 'Conflict Resolution', test: 'Modify a note\'s annotation offline, while a collaborator modifies the same one online.', expected: 'On sync, conflict resolution pop-up appears with “Keep Local”/“Keep Server” options.' },
     { category: 'Performance', test: 'Load an offline-cached 100-page PDF.', expected: 'PDF renders in under 2 seconds.' },
@@ -55,6 +53,12 @@ const analyticsPoints = [
     "Data is queued locally on the device and synced in batches to a secure analytics backend when an internet connection is available to minimize battery and data usage.",
     "The admin dashboard will feature charts visualizing this data, such as a 'Weekly Offline Activity' chart showing total downloads and average session length per day."
 ];
+
+const rolloutPlan = [
+    { phase: "Phase 1: MVP", focus: "Notes & Quizzes", description: "Core functionality to download lecture notes and attempt quizzes offline. Syncing is basic (last-write-wins).", metrics: "Adoption Rate > 10%; Sync Success > 98%" },
+    { phase: "Phase 2: Rich Media & Study Tools", focus: "Videos & Flashcards", description: "Enable downloading of video lectures and flashcard decks. Introduce selective download by topic.", metrics: "Video download rate > 30%; Offline session length > 10 mins" },
+    { phase: "Phase 3: Advanced Sync & Admin Tools", focus: "Annotations & Controls", description: "Implement offline annotations, conflict resolution sync logic, and teacher controls for content expiry.", metrics: "CSAT score > 4.0; Reduction in sync conflicts by 50%" },
+]
 
 
 export function OfflineModeClient() {
@@ -176,9 +180,44 @@ export function OfflineModeClient() {
                 </Card>
             </AccordionContent>
         </AccordionItem>
+         <AccordionItem value="rollout" className="border-0">
+            <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">
+                Phased Rollout Plan
+            </AccordionTrigger>
+            <AccordionContent>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Milestone/>Feature Rollout Plan</CardTitle>
+                        <CardDescription>A phased approach to launching Offline Mode, starting with an MVP.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Phase</TableHead>
+                                    <TableHead>Focus</TableHead>
+                                    <TableHead>Description</TableHead>
+                                    <TableHead>Success Metrics</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {rolloutPlan.map(phase => (
+                                    <TableRow key={phase.phase}>
+                                        <TableCell className="font-semibold">{phase.phase}</TableCell>
+                                        <TableCell>{phase.focus}</TableCell>
+                                        <TableCell>{phase.description}</TableCell>
+                                        <TableCell>{phase.metrics}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            </AccordionContent>
+        </AccordionItem>
         <AccordionItem value="qa-checklist" className="border-0">
             <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">
-                Testing & QA Checklist
+                Testing & QA Plan
             </AccordionTrigger>
             <AccordionContent>
                 <Card>
@@ -198,7 +237,7 @@ export function OfflineModeClient() {
                             <TableBody>
                                 {qaChecklist.map((item, i) => (
                                     <TableRow key={i}>
-                                        <TableCell><Badge variant="outline">{item.category}</Badge></TableCell>
+                                        <TableCell>{item.category}</TableCell>
                                         <TableCell>{item.test}</TableCell>
                                         <TableCell>{item.expected}</TableCell>
                                     </TableRow>
