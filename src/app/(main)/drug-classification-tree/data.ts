@@ -2207,4 +2207,80 @@ export const drugTreeData: DrugClass[] = [
       { name: "Anticancer drugs", drugs: [] },
     ]
   },
+  {
+    name: "Drugs Acting on the Immune System",
+    pharmaFocus: "Handling of biologics, sterile preparation, cold chain storage.",
+    subclasses: [
+      {
+        name: "Immunosuppressants",
+        drugs: [
+          {
+            name: "Cyclosporine",
+            classification: "Calcineurin Inhibitor",
+            moa: "Forms a complex with cyclophilin, which then inhibits calcineurin, a phosphatase that dephosphorylates NF-AT. This prevents the transcription of IL-2 and other cytokines, inhibiting T-cell activation.",
+            therapeuticUses: "Prophylaxis of organ transplant rejection, rheumatoid arthritis, psoriasis.",
+            adrs: "Nephrotoxicity, hypertension, neurotoxicity, hyperlipidemia, hirsutism, gingival hyperplasia.",
+            contraindications: "Hypersensitivity. Use with caution in renal impairment.",
+            pharmaApplications: {
+              dosageForms: "Capsules (modified and non-modified), oral solution, injection.",
+              formulations: "Sandimmune (non-modified), Neoral/Gengraf (modified, greater bioavailability).",
+              storage: "Store at room temperature, protect from light.",
+            },
+            analyticalMethods: {
+              qualitative: "HPLC, LC-MS.",
+              quantitative: "Immunoassay, HPLC, LC-MS/MS for Therapeutic Drug Monitoring (TDM).",
+              pharmacopoeial: "USP, BP.",
+            },
+            specialNotes: "Narrow therapeutic index drug requiring TDM. Modified (Neoral) and non-modified (Sandimmune) formulations are not bioequivalent and cannot be used interchangeably.",
+          },
+          {
+            name: "Tacrolimus",
+            classification: "Calcineurin Inhibitor, Macrolide",
+            moa: "Binds to the immunophilin FKBP-12, and this complex inhibits calcineurin. This blocks T-cell signal transduction and IL-2 transcription.",
+            therapeuticUses: "Prophylaxis of organ transplant rejection (liver, kidney, heart).",
+            adrs: "Nephrotoxicity, neurotoxicity (tremor, headache), hypertension, hyperglycemia, hyperkalemia.",
+            contraindications: "Hypersensitivity to tacrolimus or polyoxyl 60 hydrogenated castor oil (used in IV formulation).",
+            pharmaApplications: {
+              dosageForms: "Capsules (IR, ER), granules for oral suspension, injection.",
+              formulations: "Prograf (IR), Astagraf XL (ER), Envarsus XR (ER).",
+              storage: "Store at room temperature.",
+            },
+            analyticalMethods: {
+              qualitative: "LC-MS.",
+              quantitative: "LC-MS/MS for Therapeutic Drug Monitoring (TDM).",
+              pharmacopoeial: "USP, BP.",
+            },
+            specialNotes: "Narrow therapeutic index drug requiring TDM. More potent than cyclosporine. Many drug interactions via CYP3A4.",
+          },
+          {
+            name: "Sirolimus",
+            classification: "mTOR Inhibitor, Macrolide",
+            moa: "Binds to FKBP-12, but this complex inhibits the mammalian Target of Rapamycin (mTOR) instead of calcineurin. This blocks signal transduction pathways involved in T-cell proliferation.",
+            therapeuticUses: "Prophylaxis of organ rejection in kidney transplant patients.",
+            adrs: "Hyperlipidemia, myelosuppression (thrombocytopenia, leukopenia), delayed wound healing, mouth ulcers.",
+            contraindications: "Hypersensitivity.",
+            pharmaApplications: {
+              dosageForms: "Tablets, oral solution.",
+              formulations: "Rapamune (Brand).",
+              storage: "Store at room temperature, protect from light.",
+            },
+            analyticalMethods: {
+              qualitative: "LC-MS.",
+              quantitative: "LC-MS/MS for Therapeutic Drug Monitoring (TDM).",
+              pharmacopoeial: "USP.",
+            },
+            specialNotes: "Synergistic with calcineurin inhibitors, but co-administration can increase risk of toxicity. Requires TDM.",
+          },
+        ],
+      },
+      {
+        name: "Immunostimulants",
+        drugs: [],
+      },
+      {
+        name: "Biologics & Monoclonal Antibodies",
+        drugs: [],
+      },
+    ],
+  },
 ];
