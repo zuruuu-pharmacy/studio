@@ -6,14 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "@/hooks/use-toast";
-import { Camera, Loader2, Pill, FlaskConical, AlertTriangle, ScanLine, ShieldCheck, FileText, BookCopy, HelpCircle } from "lucide-react";
+import { Camera, Loader2, Pill, FlaskConical, AlertTriangle, ScanLine, ShieldCheck, FileText, BookCopy, HelpCircle, Leaf, Barcode } from "lucide-react";
 import { drugTreeData, Drug } from "@/app/(main)/drug-classification-tree/data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
-const MOCK_DRUGS_ON_STRIP = [
-    { name: "Amoxicillin", stripPosition: { top: '30%', left: '20%' } },
-    { name: "Paracetamol", stripPosition: { top: '50%', left: '60%' } },
-    { name: "Morphine", stripPosition: { top: '70%', left: '40%' } }, // High-risk drug
+const MOCK_SCANNABLES = [
+    { type: 'drug', name: "Amoxicillin", stripPosition: { top: '30%', left: '20%' }, icon: Pill },
+    { type: 'drug', name: "Paracetamol", stripPosition: { top: '50%', left: '60%' }, icon: Pill },
+    { type: 'barcode', name: "Morphine", stripPosition: { top: '70%', left: '15%' }, icon: Barcode }, // Morphine is high-risk
+    { type: 'herb', name: "Strychnine", stripPosition: { top: '25%', left: '70%' }, icon: Leaf }, // Using Strychnine as a sample herb from data
 ];
 
 // Helper to find a drug by name in your data
@@ -70,7 +71,7 @@ export function ScanMedicineStripClient() {
         videoRef.current.srcObject = stream;
       }
       setHasCameraPermission(true);
-      toast({ title: "Camera Enabled", description: "Point your camera at a medicine strip." });
+      toast({ title: "Camera Enabled", description: "Point your camera at a scannable item." });
     } catch (error) {
       console.error("Error accessing camera:", error);
       toast({ variant: "destructive", title: "Camera Access Denied", description: "Please enable camera permissions in your browser settings." });
@@ -102,8 +103,8 @@ export function ScanMedicineStripClient() {
           <CardTitle>Medicine Strip Scanner</CardTitle>
           <CardDescription>
             {hasCameraPermission 
-              ? "Live camera feed active. Tap on a detected medicine."
-              : "Enable your camera to start scanning."
+              ? "Live camera feed active. Tap on a detected item (pill, barcode, herb)."
+              : "Enable your camera to scan medicine text, barcodes, or herbs."
             }
           </CardDescription>
         </CardHeader>
@@ -126,17 +127,21 @@ export function ScanMedicineStripClient() {
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-1/2 border-4 border-dashed border-white/50 rounded-lg pointer-events-none flex items-center justify-center">
                           <ScanLine className="h-16 w-16 text-white/50 animate-pulse"/>
                         </div>
-                      {MOCK_DRUGS_ON_STRIP.map(drug => (
-                            <Button 
-                              key={drug.name} 
+                      {MOCK_SCANNABLES.map(item => {
+                          const Icon = item.icon;
+                          return (
+                             <Button 
+                              key={item.name} 
                               variant="outline"
-                              className="absolute bg-white/80 hover:bg-white text-black text-xs h-auto p-1 rounded-sm shadow-lg" 
-                              style={drug.stripPosition}
-                              onClick={() => handleScan(drug.name)}
+                              className="absolute bg-white/80 hover:bg-white text-black h-auto p-2 rounded-lg shadow-lg flex flex-col items-center gap-1" 
+                              style={item.stripPosition}
+                              onClick={() => handleScan(item.name)}
                             >
-                              {drug.name}
+                                <Icon className="h-6 w-6 text-primary"/>
+                                <span className="text-xs font-semibold">{item.name}</span>
                           </Button>
-                      ))}
+                          )
+                      })}
                   </div>
                 )}
           </div>
