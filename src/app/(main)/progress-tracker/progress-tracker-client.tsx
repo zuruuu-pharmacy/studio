@@ -1,10 +1,11 @@
 
 "use client";
 
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus, HelpCircle, FileText, FlaskConical, BrainCircuit, Book, Zap, ListOrdered, BookCopy, Bell } from "lucide-react";
+import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus, HelpCircle, FileText, FlaskConical, BrainCircuit, Book, Zap, ListOrdered, BookCopy, Bell, ArrowLeft } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -28,28 +29,44 @@ const masteryData = [
     masteryScore: 92,
     trend: "positive",
     dataDensity: "High",
-    lastActivity: "Quiz: Antihypertensives"
+    lastActivity: "Quiz: Antihypertensives",
+    topics: [
+        { name: "Autonomic Nervous System", score: 95 },
+        { name: "Cardiovascular Drugs", score: 91 },
+        { name: "Drug Interactions", score: 45, error: 'application' },
+        { name: "Metabolism & Excretion", score: 88 },
+    ]
   },
   {
     subject: "Pharmaceutics",
     masteryScore: 68,
     trend: "positive",
     dataDensity: "Medium",
-    lastActivity: "Lab: Tablet Dissolution"
+    lastActivity: "Lab: Tablet Dissolution",
+     topics: [
+        { name: "Dosage Form Design", score: 75 },
+        { name: "Tablet Dissolution", score: 55, error: 'procedural' },
+        { name: "Biopharmaceutics", score: 71 },
+    ]
   },
   {
     subject: "Pharmacognosy",
     masteryScore: 75,
     trend: "neutral",
     dataDensity: "High",
-    lastActivity: "Practice: Alkaloids"
+    lastActivity: "Practice: Alkaloids",
+    topics: []
   },
   {
     subject: "Pathology",
     masteryScore: 55,
     trend: "negative",
     dataDensity: "Low",
-    lastActivity: "Assignment: Inflammation"
+    lastActivity: "Assignment: Inflammation",
+     topics: [
+        { name: "Inflammation Pathways", score: 40, error: 'conceptual' },
+        { name: "Cell Injury", score: 65 },
+    ]
   },
 ];
 
@@ -67,12 +84,25 @@ const getMasteryColor = (score: number) => {
   return "text-red-500";
 };
 
+const getMasteryColorMuted = (score: number) => {
+  if (score >= 85) return "bg-green-500/10";
+  if (score >= 60) return "bg-amber-500/10";
+  return "bg-red-500/10";
+};
+
+
 const getTrendIcon = (trend: string) => {
     switch (trend) {
         case 'positive': return <TrendingUp className="h-5 w-5 text-green-500"/>;
         case 'negative': return <TrendingDown className="h-5 w-5 text-red-500"/>;
         default: return <Minus className="h-5 w-5 text-muted-foreground"/>;
     }
+}
+
+const errorTypeMap: {[key: string]: string} = {
+    application: "Application Error",
+    procedural: "Procedural Error",
+    conceptual: "Conceptual Error"
 }
 
 const chartConfig = {
@@ -82,13 +112,31 @@ const chartConfig = {
 } satisfies ChartConfig
 
 const mockNudges = [
-    { type: 'digest', title: "Daily Focus", description: "Top 3 topics to focus on today: Inflammation Pathways, Tablet Dissolution Rates, Alkaloid Identification.", icon: Lightbulb, color: "text-primary"},
+    { type: 'digest', title: "Daily Focus", description: "Top 3 topics to focus on today: Inflammation Pathways, Tablet Dissolution Rates, Drug Interactions.", icon: Lightbulb, color: "text-primary"},
     { type: 'alert', title: "Mastery Alert: Pathology", description: "Your mastery score has dropped from 65% to 55%. A 30-minute review session is recommended.", icon: TrendingDown, color: "text-destructive"},
     { type: 'milestone', title: "Milestone Reached!", description: "Congratulations! You've achieved 92% mastery in Pharmacology.", icon: Target, color: "text-green-500"},
 ]
 
+const recommendationMap: {[key: string]: { rec: string, actions: { label: string, icon: React.ElementType, toast: string }[] }} = {
+      "Pathology": {
+          rec: "Focus on conceptual understanding of inflammation pathways.",
+          actions: [
+              { label: "Review Summary", icon: BookCopy, toast: "A summary for Pathology has been opened." },
+              { label: "Start 10 MCQs", icon: Zap, toast: "A 10-question drill for Pathology has been created in the MCQ Bank." },
+          ]
+      },
+       "Pharmaceutics": {
+          rec: "Practice procedural calculations for dissolution rates.",
+          actions: [
+              { label: "Calculation Drills", icon: Zap, toast: "A calculation drill for Pharmaceutics has been opened." },
+              { label: "Schedule Lab Sim", icon: FlaskConical, toast: "A lab simulation has been added to your Study Planner." },
+          ]
+      }
+}
 
 export function ProgressTrackerClient() {
+  const [selectedSubject, setSelectedSubject] = useState<typeof masteryData[0] | null>(null);
+
   const overallMastery = Math.round(masteryData.reduce((acc, item) => acc + item.masteryScore, 0) / masteryData.length);
   const strongSubjects = masteryData.filter(s => s.masteryScore >= 85);
   const moderateSubjects = masteryData.filter(s => s.masteryScore >= 60 && s.masteryScore < 85);
@@ -109,21 +157,46 @@ export function ProgressTrackerClient() {
   
   const prioritizedWeakness = [...weakSubjects, ...moderateSubjects].sort((a,b) => a.masteryScore - b.masteryScore);
 
-  const recommendationMap: {[key: string]: { rec: string, actions: { label: string, icon: React.ElementType, toast: string }[] }} = {
-      "Pathology": {
-          rec: "Focus on conceptual understanding of inflammation pathways.",
-          actions: [
-              { label: "Review Summary", icon: BookCopy, toast: "A summary for Pathology has been opened." },
-              { label: "Start 10 MCQs", icon: Zap, toast: "A 10-question drill for Pathology has been created in the MCQ Bank." },
-          ]
-      },
-       "Pharmaceutics": {
-          rec: "Practice procedural calculations for dissolution rates.",
-          actions: [
-              { label: "Calculation Drills", icon: Zap, toast: "A calculation drill for Pharmaceutics has been opened." },
-              { label: "Schedule Lab Sim", icon: FlaskConical, toast: "A lab simulation has been added to your Study Planner." },
-          ]
-      }
+  if(selectedSubject) {
+    return (
+      <div>
+        <Button onClick={() => setSelectedSubject(null)} variant="outline" className="mb-4">
+          <ArrowLeft className="mr-2"/> Back to Overview
+        </Button>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">Topic Breakdown: {selectedSubject.subject}</CardTitle>
+            <CardDescription>Mastery scores for topics within {selectedSubject.subject}. Click a weak area to take action.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {selectedSubject.topics.length > 0 ? (
+                 <div className="space-y-3">
+                    {selectedSubject.topics.map(topic => (
+                      <Card key={topic.name} className={cn("p-4", getMasteryColorMuted(topic.score))}>
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="font-semibold">{topic.name}</p>
+                            {topic.error && <p className="text-xs text-muted-foreground">Common error type: {errorTypeMap[topic.error]}</p>}
+                          </div>
+                          <div className="flex items-center gap-4">
+                             <span className={cn("text-2xl font-bold", getMasteryColor(topic.score))}>{topic.score}%</span>
+                             <Button size="sm" onClick={() => toast({title: "Action Started!", description: "A practice session would launch here."})}>
+                               Start Now
+                             </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                 </div>
+            ) : (
+                <div className="text-center text-muted-foreground p-8">
+                    <p>No specific topic data available for this subject yet.</p>
+                </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
 
@@ -154,39 +227,53 @@ export function ProgressTrackerClient() {
            </Card>
 
             <Card>
-                <CardHeader><CardTitle className="flex items-center gap-2"><Bell className="text-primary"/>Notifications &amp; Nudges</CardTitle><CardDescription>Your AI-powered alerts and recommendations.</CardDescription></CardHeader>
+                <CardHeader><CardTitle className="flex items-center gap-2"><Bell className="text-primary"/>AI Recommended Actions</CardTitle><CardDescription>Your prioritized list of what to study next.</CardDescription></CardHeader>
                 <CardContent className="space-y-3">
-                    {mockNudges.map(nudge => (
-                        <Alert key={nudge.title}>
-                            <nudge.icon className={cn("h-4 w-4", nudge.color)} />
-                            <AlertTitle>{nudge.title}</AlertTitle>
-                            <AlertDescription>{nudge.description}</AlertDescription>
-                        </Alert>
-                    ))}
+                    {prioritizedWeakness.slice(0, 2).map(item => {
+                        const rec = recommendationMap[item.subject];
+                        return (
+                             <Alert key={item.subject}>
+                                <Lightbulb className="h-4 w-4" />
+                                <AlertTitle className="font-bold">{item.subject} (Score: {item.masteryScore}%)</AlertTitle>
+                                <AlertDescription>
+                                    <p>{rec.rec}</p>
+                                     <div className="flex gap-2 mt-2">
+                                        {rec.actions.map(action => (
+                                            <Button key={action.label} size="sm" variant="secondary" onClick={() => toast({title: "Action Triggered", description: action.toast})}>
+                                                <action.icon className="mr-2"/>{action.label}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                </AlertDescription>
+                            </Alert>
+                        )
+                    })}
                 </CardContent>
             </Card>
 
         </div>
         
         <Card>
-            <CardHeader><CardTitle>Detailed Subject Mastery</CardTitle><CardDescription>A breakdown of your performance in each subject.</CardDescription></CardHeader>
+            <CardHeader><CardTitle>Detailed Subject Mastery</CardTitle><CardDescription>A breakdown of your performance in each subject. Click a tile to drill down.</CardDescription></CardHeader>
             <CardContent>
                 <div className="grid md:grid-cols-2 gap-4">
                     {masteryData.map(item => (
-                        <Card key={item.subject} className="p-4 bg-muted/50">
-                            <div className="flex justify-between items-center mb-2">
-                                <p className="font-semibold">{item.subject}</p>
-                                <div className="flex items-center gap-2">
-                                    <span className={cn("text-2xl font-bold", getMasteryColor(item.masteryScore))}>{item.masteryScore}%</span>
-                                    {getTrendIcon(item.trend)}
+                        <button key={item.subject} onClick={() => setSelectedSubject(item)} className="text-left w-full">
+                            <Card className="p-4 bg-muted/50 hover:bg-muted transition">
+                                <div className="flex justify-between items-center mb-2">
+                                    <p className="font-semibold">{item.subject}</p>
+                                    <div className="flex items-center gap-2">
+                                        <span className={cn("text-2xl font-bold", getMasteryColor(item.masteryScore))}>{item.masteryScore}%</span>
+                                        {getTrendIcon(item.trend)}
+                                    </div>
                                 </div>
-                            </div>
-                            <Progress value={item.masteryScore} />
-                            <div className="flex justify-between items-center text-xs text-muted-foreground mt-2">
-                                <span>Data Density: <Badge variant="outline">{item.dataDensity}</Badge></span>
-                                <span>Last Activity: {item.lastActivity}</span>
-                            </div>
-                        </Card>
+                                <Progress value={item.masteryScore} />
+                                <div className="flex justify-between items-center text-xs text-muted-foreground mt-2">
+                                    <span>Data Density: <Badge variant="outline">{item.dataDensity}</Badge></span>
+                                    <span>Last Activity: {item.lastActivity}</span>
+                                </div>
+                            </Card>
+                        </button>
                     ))}
                 </div>
             </CardContent>
@@ -198,16 +285,17 @@ export function ProgressTrackerClient() {
                  <AccordionContent>
                     <Card className="p-6">
                         <div className="space-y-4">
-                            <p className="text-muted-foreground">Your Mastery Score is a dynamic metric computed from various learning activities across the portal. Here’s a brief overview:</p>
-                             <div className="grid md:grid-cols-2 gap-4">
+                             <div className="grid md:grid-cols-2 gap-6">
                                 <div>
-                                    <h4 className="font-semibold mb-2">Data Sources</h4>
+                                    <h4 className="font-semibold mb-2 flex items-center gap-2"><Database className="text-primary"/>Data Sources</h4>
+                                    <p className="text-sm text-muted-foreground mb-2">Your Mastery Score is a dynamic metric computed from various learning activities across the portal:</p>
                                     <ul className="list-disc list-inside space-y-1 text-sm">
                                         {dataSources.map(ds => <li key={ds.name} className="flex items-center gap-2"><ds.icon className="text-primary"/>{ds.name}</li>)}
                                     </ul>
                                 </div>
                                  <div>
-                                    <h4 className="font-semibold mb-2">Algorithm Highlights</h4>
+                                    <h4 className="font-semibold mb-2 flex items-center gap-2"><BrainCircuit className="text-primary"/>Algorithm Highlights</h4>
+                                     <p className="text-sm text-muted-foreground mb-2">The score is calculated using a weighted average with time decay:</p>
                                     <ul className="list-disc list-inside space-y-1 text-sm">
                                         <li><strong>Recency Matters:</strong> More recent quiz scores and activities are weighted more heavily.</li>
                                         <li><strong>Component Weighting:</strong> Different activities contribute differently (e.g., quizzes have more weight than flashcard practice).</li>
