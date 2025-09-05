@@ -11,7 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import { AlertCircle, FileCheck, FileWarning, Globe, School, Trash2, PlusCircle, Save, Bug } from 'lucide-react';
+import { AlertCircle, FileCheck, FileWarning, Globe, School, Trash2, PlusCircle, Save, Bug, Award } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 
@@ -31,6 +31,15 @@ const qaChecklist = [
     "Access control, encryption, and delete flows validated.",
     "Validate thresholds and false positive rate against human review for fairness.",
 ];
+
+const kpiList = [
+    "% of students using pre-check before submission.",
+    "Reduction in flagged cases escalated to integrity office.",
+    "Time saved for instructors in preliminary screening.",
+    "Student improvement: percentage of students who reduce similarity after remediation.",
+    "False positive rate (target < 5%) on paraphrase detection.",
+];
+
 
 export function PolicyAdminClient() {
   const [thresholds, setThresholds] = useState({ medium: 11, high: 25 });
@@ -179,7 +188,25 @@ export function PolicyAdminClient() {
         </CardContent>
       </Card>
 
-      <Accordion type="single" collapsible className="w-full">
+      <Accordion type="multiple" className="w-full space-y-2">
+        <AccordionItem value="kpis" className="border-0">
+            <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">
+                Product Metrics & KPIs
+            </AccordionTrigger>
+            <AccordionContent>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Award/>Success Metrics & KPIs</CardTitle>
+                        <CardDescription>How we measure the effectiveness and success of this tool.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
+                           {kpiList.map((item, i) => <li key={i}>{item}</li>)}
+                        </ul>
+                    </CardContent>
+                </Card>
+            </AccordionContent>
+        </AccordionItem>
         <AccordionItem value="qa-checklist" className="border-0">
             <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">
                 Testing & QA Checklist
