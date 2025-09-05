@@ -30,14 +30,12 @@ const formSchema = z.object({
       (files) =>
         [
           "text/plain",
+          "application/pdf",
           "image/jpeg",
           "image/png",
           "image/webp",
-          "application/pdf",
-          "application/msword",
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         ].includes(files?.[0]?.type),
-      "Only .txt, .pdf, .doc, .docx and image files are supported."
+      "Only .txt, .pdf, and image files are supported."
     ),
 });
 type FormValues = z.infer<typeof formSchema>;
@@ -136,7 +134,7 @@ export function PlagiarismCheckerClient() {
         <Card>
           <CardHeader>
             <CardTitle>Submit Document</CardTitle>
-            <CardDescription>Upload your document to check for plagiarism.</CardDescription>
+            <CardDescription>Upload your file or paste text. We’ll scan for overlap, suggest fixes, and help format citations.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -146,11 +144,11 @@ export function PlagiarismCheckerClient() {
                   name="documentFile"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Document File (.txt, .pdf, .doc, .docx, image)</FormLabel>
+                      <FormLabel>Document File (.txt, .pdf, image)</FormLabel>
                       <FormControl>
                         <Input
                           type="file"
-                          accept=".txt,.pdf,.doc,.docx,image/*"
+                          accept=".txt,.pdf,image/*"
                           {...fileRef}
                           onChange={(e) => field.onChange(e.target.files)}
                         />
@@ -174,7 +172,7 @@ export function PlagiarismCheckerClient() {
           <div className="flex justify-center items-center h-full">
             <div className="text-center space-y-2">
               <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
-              <p className="text-muted-foreground">We’re checking your document — this may take up to 90s (longer for scanned pages)...</p>
+              <p className="text-muted-foreground">We’re checking your document — this may take up to 90s (longer for scanned pages).</p>
             </div>
           </div>
         )}
