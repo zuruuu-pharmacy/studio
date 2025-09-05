@@ -5,7 +5,7 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus, HelpCircle, FileText, FlaskConical, BrainCircuit, Book, Zap, ListOrdered, BookCopy, Bell, ArrowLeft, ShieldCheck } from "lucide-react";
+import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus, HelpCircle, FileText, FlaskConical, BrainCircuit, Book, Zap, ListOrdered, BookCopy, Bell, ArrowLeft, ShieldCheck, ShieldQuestion } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -61,12 +61,20 @@ const masteryData = [
     subject: "Pathology",
     masteryScore: 55,
     trend: "negative",
-    dataDensity: "Low",
+    dataDensity: "Medium",
     lastActivity: "Assignment: Inflammation",
      topics: [
         { name: "Inflammation Pathways", score: 40, error: 'conceptual' },
         { name: "Cell Injury", score: 65 },
     ]
+  },
+   {
+    subject: "Biochemistry",
+    masteryScore: 0,
+    trend: "neutral",
+    dataDensity: "Low",
+    lastActivity: "N/A",
+    topics: []
   },
 ];
 
@@ -115,6 +123,7 @@ const mockNudges = [
     { type: 'digest', title: "Daily Focus", description: "Top 3 topics to focus on today: Inflammation Pathways, Tablet Dissolution Rates, Drug Interactions.", icon: Lightbulb, color: "text-primary"},
     { type: 'alert', title: "Mastery Alert: Pathology", description: "Your mastery score has dropped from 65% to 55%. A 30-minute review session is recommended.", icon: TrendingDown, color: "text-destructive"},
     { type: 'milestone', title: "Milestone Reached!", description: "Congratulations! You've achieved 92% mastery in Pharmacology.", icon: Target, color: "text-green-500"},
+    { type: 'discrepancy', title: "Confidence Gap Alert", description: "Your self-reported confidence in 'Drug Interactions' is high, but your quiz scores are low. Let's review this topic.", icon: ShieldQuestion, color: "text-amber-500"},
 ]
 
 const recommendationMap: {[key: string]: { rec: string, actions: { label: string, icon: React.ElementType, toast: string }[] }} = {
@@ -131,16 +140,22 @@ const recommendationMap: {[key: string]: { rec: string, actions: { label: string
               { label: "Calculation Drills", icon: Zap, toast: "A calculation drill for Pharmaceutics has been opened." },
               { label: "Schedule Lab Sim", icon: FlaskConical, toast: "A lab simulation has been added to your Study Planner." },
           ]
+      },
+      "Biochemistry": {
+          rec: "There isn't enough data to calculate a mastery score. Take a short diagnostic quiz to get started.",
+          actions: [
+               { label: "Start Diagnostic Quiz", icon: Zap, toast: "A diagnostic quiz for Biochemistry has been launched." },
+          ]
       }
 }
 
 export function ProgressTrackerClient() {
   const [selectedSubject, setSelectedSubject] = useState<typeof masteryData[0] | null>(null);
 
-  const overallMastery = Math.round(masteryData.reduce((acc, item) => acc + item.masteryScore, 0) / masteryData.length);
+  const overallMastery = Math.round(masteryData.filter(s => s.dataDensity !== 'Low').reduce((acc, item) => acc + item.masteryScore, 0) / masteryData.filter(s => s.dataDensity !== 'Low').length);
   const strongSubjects = masteryData.filter(s => s.masteryScore >= 85);
   const moderateSubjects = masteryData.filter(s => s.masteryScore >= 60 && s.masteryScore < 85);
-  const weakSubjects = masteryData.filter(s => s.masteryScore < 60);
+  const weakSubjects = masteryData.filter(s => s.masteryScore < 60 && s.dataDensity !== 'Low');
 
   const distributionData = [
     { status: 'Strong', count: strongSubjects.length, fill: 'var(--color-strong)' },
@@ -155,7 +170,7 @@ export function ProgressTrackerClient() {
     weak: { label: "Weak", color: "hsl(var(--chart-1))" },
   } satisfies ChartConfig;
   
-  const prioritizedWeakness = [...weakSubjects, ...moderateSubjects].sort((a,b) => a.masteryScore - b.masteryScore);
+  const prioritizedWeakness = [...weakSubjects, ...moderateSubjects, ...masteryData.filter(s => s.dataDensity === 'Low')].sort((a,b) => a.masteryScore - b.masteryScore);
 
   if(selectedSubject) {
     return (
@@ -232,10 +247,11 @@ export function ProgressTrackerClient() {
                     {prioritizedWeakness.slice(0, 2).map(item => {
                         const rec = recommendationMap[item.subject];
                         if (!rec) return null;
+                        const scoreText = item.dataDensity === 'Low' ? "Not enough data" : `Score: ${item.masteryScore}%`;
                         return (
                              <Alert key={item.subject}>
                                 <Lightbulb className="h-4 w-4" />
-                                <AlertTitle className="font-bold">{item.subject} (Score: {item.masteryScore}%)</AlertTitle>
+                                <AlertTitle className="font-bold">{item.subject} ({scoreText})</AlertTitle>
                                 <AlertDescription>
                                     <p>{rec.rec}</p>
                                      <div className="flex gap-2 mt-2">
@@ -249,6 +265,18 @@ export function ProgressTrackerClient() {
                             </Alert>
                         )
                     })}
+                     <Alert variant="default" className="bg-amber-500/10 border-amber-500/50">
+                        <ShieldQuestion className="h-4 w-4 text-amber-600"/>
+                        <AlertTitle className="font-bold text-amber-700">Confidence Gap Alert: Drug Interactions</AlertTitle>
+                        <AlertDescription>
+                           Your self-reported confidence is high, but your quiz scores are low. Let's review this topic.
+                           <div className="flex gap-2 mt-2">
+                              <Button size="sm" variant="secondary" onClick={() => toast({title: "Action Triggered", description: "Review launched."})}>
+                                <BookCopy className="mr-2"/>Review Summary
+                              </Button>
+                           </div>
+                        </AlertDescription>
+                    </Alert>
                 </CardContent>
             </Card>
 
@@ -259,16 +287,28 @@ export function ProgressTrackerClient() {
             <CardContent>
                 <div className="grid md:grid-cols-2 gap-4">
                     {masteryData.map(item => (
-                        <button key={item.subject} onClick={() => setSelectedSubject(item)} className="text-left w-full">
+                        <button key={item.subject} onClick={() => {
+                            if (item.dataDensity === 'Low') {
+                                toast({ title: 'Not Enough Data', description: 'Take a diagnostic quiz in this subject to get started.'});
+                            } else {
+                                setSelectedSubject(item);
+                            }
+                        }} className={cn("text-left w-full", item.dataDensity === 'Low' && 'cursor-not-allowed opacity-70')}>
                             <Card className="p-4 bg-muted/50 hover:bg-muted transition">
                                 <div className="flex justify-between items-center mb-2">
                                     <p className="font-semibold">{item.subject}</p>
                                     <div className="flex items-center gap-2">
-                                        <span className={cn("text-2xl font-bold", getMasteryColor(item.masteryScore))}>{item.masteryScore}%</span>
-                                        {getTrendIcon(item.trend)}
+                                        {item.dataDensity === 'Low' ? (
+                                            <span className="text-lg font-bold text-muted-foreground">N/A</span>
+                                        ) : (
+                                            <>
+                                                <span className={cn("text-2xl font-bold", getMasteryColor(item.masteryScore))}>{item.masteryScore}%</span>
+                                                {getTrendIcon(item.trend)}
+                                            </>
+                                        )}
                                     </div>
                                 </div>
-                                <Progress value={item.masteryScore} />
+                                <Progress value={item.dataDensity === 'Low' ? 0 : item.masteryScore} />
                                 <div className="flex justify-between items-center text-xs text-muted-foreground mt-2">
                                     <span>Data Density: <Badge variant="outline">{item.dataDensity}</Badge></span>
                                     <span>Last Activity: {item.lastActivity}</span>
