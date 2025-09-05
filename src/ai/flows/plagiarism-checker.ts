@@ -51,8 +51,8 @@ const prompt = ai.definePrompt({
 1.  **Analyze the Text:** Read the text and identify any segments that are highly similar to well-known external sources.
 2.  **Calculate Similarity:** For each identified segment, provide a 'similarity_score' between 0 and 1.
 3.  **Identify Sources:** For each segment, identify a plausible 'source'. Be specific where possible (e.g., "Wikipedia article on 'Beta-blockers'", "Goodman & Gilman's Pharmacological Basis of Therapeutics, 13th Ed.").
-4.  **Overall Score:** Calculate an 'overall_similarity_percentage' for the entire document.
-5.  **Summarize:** Provide a concise 'summary' of your findings. If similarity is high, recommend revisions. If it is low, confirm originality.
+4.  **Overall Score:** Calculate an 'overall_similarity_percentage' for the entire document. This should be a weighted average based on the length and severity of the matches.
+5.  **Summarize:** Provide a concise 'summary' of your findings. If similarity is high (>25%), recommend significant revisions. If it is moderate (10-25%), recommend a review. If it is low (<10%), confirm originality.
 
 Respond ONLY in the structured JSON format defined by the schema.
 `,
