@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { Download, CloudOff, BookOpen, CaseSensitive, History, Trash2, CheckCircle, WifiOff, FileDown, Award, Bug, ShieldCheck, Settings, BarChart, Milestone } from "lucide-react";
+import { Download, CloudOff, BookOpen, CaseSensitive, History, Trash2, CheckCircle, WifiOff, FileDown, Award, Bug, ShieldCheck, Settings, BarChart, Milestone, Users, Globe } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -302,8 +302,69 @@ export function OfflineModeClient() {
                 </Card>
             </AccordionContent>
         </AccordionItem>
+         <AccordionItem value="accessibility" className="border-0">
+            <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">
+                Accessibility & Localization
+            </AccordionTrigger>
+            <AccordionContent>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Globe/>Accessibility & Localization</CardTitle>
+                        <CardDescription>Ensuring the feature is usable by everyone, everywhere.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ul className="list-disc list-inside space-y-3 text-sm text-muted-foreground">
+                            <li><strong>Font Caching:</strong> Core UI fonts must be cached for offline use to ensure consistent readability.</li>
+                            <li><strong>Language Packs:</strong> On first login, the user's selected language pack (e.g., English, Urdu) for UI elements is downloaded and cached.</li>
+                            <li><strong>RTL Support:</strong> All offline UI components must respect and flip correctly for Right-to-Left languages.</li>
+                            <li><strong>Screen Reader Compatibility:</strong> All offline interactive elements (buttons, inputs, downloaded content viewers) must have proper ARIA labels and roles.</li>
+                        </ul>
+                    </CardContent>
+                </Card>
+            </AccordionContent>
+        </AccordionItem>
+         <AccordionItem value="scenarios" className="border-0">
+            <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">
+                Real-Life Scenarios
+            </AccordionTrigger>
+            <AccordionContent>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Users/>Real-Life Scenarios</CardTitle>
+                        <CardDescription>How different users interact with the offline mode in practice.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                         <Accordion type="multiple" className="w-full" defaultValue={['s1']}>
+                            <AccordionItem value="s1">
+                                <AccordionTrigger>Student in a rural area preparing for an exam.</AccordionTrigger>
+                                <AccordionContent className="p-4 text-sm text-muted-foreground space-y-2">
+                                    <p><strong>1. Preparation (in city with Wi-Fi):</strong> User navigates to Offline Mode, sees a list of their subjects. They tap "Download All" for "Pharmacology".</p>
+                                    <p><strong>2. Offline Study:</strong> At home with no internet, they open the app. A small banner "Offline Mode" is visible. They access the downloaded notes and quizzes. They take a quiz, and their answers are saved locally with a timestamp.</p>
+                                    <p><strong>3. Reconnecting:</strong> Back in the city, they open the app. It detects the connection, and a "Syncing..." notification appears. The quiz results are uploaded, and their mastery score on the dashboard updates.</p>
+                                </AccordionContent>
+                            </AccordionItem>
+                             <AccordionItem value="s2">
+                                <AccordionTrigger>Commuter downloading videos before a bus ride.</AccordionTrigger>
+                                <AccordionContent className="p-4 text-sm text-muted-foreground space-y-2">
+                                    <p><strong>1. Pre-trip Download:</strong> At home, the user goes to the MOA Animation Library and downloads three videos.</p>
+                                    <p><strong>2. On the Bus:</strong> With no stable internet, they open the app's offline library, go to the 'Videos' tab, and watch the downloaded animations without buffering.</p>
+                                </AccordionContent>
+                            </AccordionItem>
+                             <AccordionItem value="s3">
+                                <AccordionTrigger>Faculty assigning offline OSCE prep quiz.</AccordionTrigger>
+                                <AccordionContent className="p-4 text-sm text-muted-foreground space-y-2">
+                                    <p><strong>1. Assignment:</strong> The faculty member creates a new quiz and checks the "Disable Offline Attempts" box in the settings.</p>
+                                    <p><strong>2. Student Experience:</strong> A student downloads the quiz for offline study. When they try to take it offline, they see a message: "This is a timed assessment and must be completed with an active internet connection."</p>
+                                </AccordionContent>
+                            </AccordionItem>
+                         </Accordion>
+                    </CardContent>
+                </Card>
+            </AccordionContent>
+        </AccordionItem>
       </Accordion>
 
     </div>
   );
 }
+
