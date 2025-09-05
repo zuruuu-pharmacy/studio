@@ -4,7 +4,8 @@
 import { BackButton } from "@/components/back-button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Microscope, FileText, Plus } from 'lucide-react';
+import { Microscope, FileText, Plus, Zap, Notebook } from 'lucide-react';
+import Link from 'next/link';
 import {
   Dialog,
   DialogContent,
@@ -41,6 +42,17 @@ const caseStudies = [
         imageUrl: "https://picsum.photos/id/103/600/400"
     },
 ];
+
+function DetailSection({ title, children }: { title: string, children: React.ReactNode }) {
+    return (
+        <div className="mt-4">
+            <h4 className="font-semibold text-base mb-2 flex items-center gap-2">{title}</h4>
+            <div className="pl-7 text-muted-foreground text-sm space-y-2 border-l-2 border-primary/20 ml-2.5 pl-4 pb-2">
+              {children}
+            </div>
+        </div>
+    )
+}
 
 export default function PathologyCasesPage() {
   return (
@@ -82,6 +94,15 @@ export default function PathologyCasesPage() {
                   <h3 className="font-semibold">Most Likely Diagnosis:</h3>
                   <p className="text-primary font-bold">{study.diagnosis}</p>
                 </div>
+                 <DetailSection title="Practice Questions & Revision">
+                    <div className="flex flex-wrap gap-2">
+                        <Link href="/mcq-bank"><Button variant="outline" size="sm">MCQs</Button></Link>
+                        <Link href="/flashcard-generator"><Button variant="outline" size="sm">Flashcards</Button></Link>
+                    </div>
+                </DetailSection>
+                 <DetailSection title="Personal Notes">
+                    <Link href="/notes-organizer"><Button variant="secondary" size="sm">Add Note</Button></Link>
+                </DetailSection>
               </div>
             </DialogContent>
           </Dialog>

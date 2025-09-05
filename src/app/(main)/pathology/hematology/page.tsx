@@ -4,7 +4,9 @@
 import { BackButton } from "@/components/back-button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Droplet, TestTube, Microscope, CheckCircle } from 'lucide-react';
+import { Droplet, TestTube, Microscope, CheckCircle, Video, Zap, Notebook, Mic } from 'lucide-react';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const hematologyTopics = [
     {
@@ -29,6 +31,17 @@ const hematologyTopics = [
     }
 ];
 
+function DetailSection({ title, children }: { title: string, children: React.ReactNode }) {
+    return (
+        <div className="mt-4">
+            <h4 className="font-semibold text-base mb-2 flex items-center gap-2">{title}</h4>
+            <div className="pl-7 text-muted-foreground text-sm space-y-2 border-l-2 border-primary/20 ml-2.5 pl-4 pb-2">
+              {children}
+            </div>
+        </div>
+    )
+}
+
 export default function HematologyPage() {
   return (
     <div>
@@ -51,8 +64,32 @@ export default function HematologyPage() {
                     {topic.title}
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="px-6 pb-4">
+                <AccordionContent className="px-6 pb-4 space-y-4">
                   <p className="text-muted-foreground">{topic.content}</p>
+                   <div className="flex justify-between items-start">
+                        <div></div>
+                        <Link href="/text-to-speech">
+                            <Button variant="ghost" size="sm" className="ml-4">
+                                <Mic className="mr-2"/>Listen
+                            </Button>
+                        </Link>
+                    </div>
+                  <DetailSection title="Visual Learning">
+                      <div className="flex flex-wrap gap-2">
+                          <Link href="/moa-animations"><Button variant="outline"><Microscope className="mr-2"/>Virtual Microscope</Button></Link>
+                          <Link href="/moa-animations"><Button variant="outline"><Video className="mr-2"/>3D Animation</Button></Link>
+                      </div>
+                  </DetailSection>
+                  <DetailSection title="Practice Questions & Revision">
+                      <div className="flex flex-wrap gap-2">
+                          <Link href="/mcq-bank"><Button variant="outline" size="sm">MCQs</Button></Link>
+                          <Link href="/flashcard-generator"><Button variant="outline" size="sm">Flashcards</Button></Link>
+                          <Link href="/clinical-case-simulator"><Button variant="outline" size="sm">Case Simulation</Button></Link>
+                      </div>
+                  </DetailSection>
+                  <DetailSection title="Personal Notes">
+                      <Link href="/notes-organizer"><Button variant="secondary" size="sm">Add Note</Button></Link>
+                  </DetailSection>
                 </AccordionContent>
               </AccordionItem>
             ))}
