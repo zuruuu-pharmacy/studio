@@ -531,25 +531,25 @@ const initialCaseStudies: Omit<CaseStudy, 'id'>[] = [
         imageHint: "wilms tumor histology"
     },
     {
-        title: "Case 25: A 45-year-old woman with a 'string of pearls' on ultrasound",
-        history: "A 45-year-old woman presents with heavy menstrual bleeding and pelvic pain. She is found to have an enlarged uterus on physical exam.",
-        specialty: "Gynecologic Pathology",
-        findings: "An ultrasound shows a large, well-circumscribed, whorled mass within the myometrium of the uterus. A hysterectomy is performed. Gross examination confirms a firm, white, whorled tumor. Microscopically, the tumor is composed of interlacing bundles of bland, uniform smooth muscle cells with eosinophilic cytoplasm and elongated, 'cigar-shaped' nuclei. There is no significant atypia, necrosis, or mitotic activity.",
-        diagnosis: "Leiomyoma (Fibroid).",
-        discussion: "Leiomyomas are benign tumors of smooth muscle, and they are extremely common in the uterus. The characteristic gross appearance is a white, whorled, and firm mass. The microscopic features of interlacing bundles of bland smooth muscle cells are diagnostic. It is crucial to assess for features of malignancy (atypia, mitotic activity, necrosis) to rule out its malignant counterpart, leiomyosarcoma.",
+        title: "Case 25: A 45-year-old woman with a 'lumpy' breast",
+        history: "A 45-year-old premenopausal woman complains of cyclic breast pain and nodularity that is most prominent before her menstrual periods. On physical exam, there are ill-defined, rubbery thickenings in the upper outer quadrants of both breasts.",
+        specialty: "Breast Pathology",
+        findings: "A biopsy of a nodular area shows a combination of cysts of varying sizes (some with apocrine metaplasia), stromal fibrosis, and a proliferation of epithelial cells within the terminal duct lobular unit (adenosis). There is no cytologic or architectural atypia.",
+        diagnosis: "Fibrocystic Changes of the Breast.",
+        discussion: "Fibrocystic change is an extremely common, benign condition and represents an exaggerated physiological response of the breast tissue to cyclic hormonal changes. It is not a single disease but a spectrum of changes. It is important to distinguish nonproliferative changes (like simple cysts and fibrosis) from proliferative changes, some of which (proliferative disease with atypia) confer a small increased risk for subsequent breast cancer.",
         tags: {
             organ: "♀️ Gynecology",
-            type: "Benign Tumor",
-            difficulty: "⭐ Classic"
+            type: "Benign/Physiologic",
+            difficulty: "⭐ Classic",
         },
         quiz: [
             {
-                question: "Leiomyomas are benign tumors derived from what type of tissue?",
-                options: ["Epithelium", "Fibrous tissue", "Smooth muscle", "Adipose tissue"],
-                answer: "Smooth muscle"
+                question: "Which of the following is NOT a component of nonproliferative fibrocystic change?",
+                options: ["Cyst formation", "Stromal fibrosis", "Atypical ductal hyperplasia", "Adenosis"],
+                answer: "Atypical ductal hyperplasia"
             }
         ],
-        imageHint: "uterine fibroid histology"
+        imageHint: "fibrocystic breast change histology",
     },
     {
         title: "Case 26: A 25-year-old with abdominal pain and diarrhea",
