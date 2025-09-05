@@ -1041,6 +1041,25 @@ export const drugTreeData: DrugClass[] = [
                                 },
                                 specialNotes: "Rapid onset and short duration of action. Milky white appearance.",
                             },
+                             {
+                                name: "Thiopental",
+                                classification: "Barbiturate (ultra short-acting)",
+                                moa: "Potentiates GABA-A receptor activity, causing profound but brief CNS depression.",
+                                therapeuticUses: "Induction of anesthesia, management of refractory status epilepticus.",
+                                adrs: "Respiratory depression, hypotension, laryngospasm, extravasation injury.",
+                                contraindications: "Absence of suitable veins, status asthmaticus, porphyria.",
+                                pharmaApplications: {
+                                    dosageForms: "Powder for injection (reconstituted).",
+                                    formulations: "Pentothal (Brand).",
+                                    storage: "Store powder at room temperature. Reconstituted solution is unstable.",
+                                },
+                                analyticalMethods: {
+                                    qualitative: "Colorimetric tests.",
+                                    quantitative: "HPLC, GC-MS.",
+                                    pharmacopoeial: "USP, BP.",
+                                },
+                                specialNotes: "Rapid onset and redistribution from brain to other tissues determines its short duration of action.",
+                            },
                         ] 
                     },
                     { 
@@ -1226,4 +1245,205 @@ export const drugTreeData: DrugClass[] = [
         },
     ],
   },
+  {
+    name: "Drugs Acting on the Autonomic Nervous System (ANS)",
+    subclasses: [
+      {
+        name: "Cholinergic Agonists & Antagonists",
+        subclasses: [
+          {
+            name: "Direct-acting agonists",
+            drugs: [
+              {
+                name: "Pilocarpine",
+                classification: "Cholinergic agonist (muscarinic)",
+                moa: "Directly stimulates muscarinic receptors, leading to effects like miosis (pupil constriction) and increased salivation and sweat.",
+                therapeuticUses: "Glaucoma (to reduce intraocular pressure), xerostomia (dry mouth).",
+                adrs: "Sweating, nausea, blurred vision, bradycardia.",
+                contraindications: "Acute iritis, uncontrolled asthma.",
+                pharmaApplications: {
+                  dosageForms: "Eye drops, tablets.",
+                  formulations: "Salagen (tablets), Isopto Carpine (eye drops).",
+                  storage: "Store at room temperature.",
+                },
+                analyticalMethods: {
+                  qualitative: "TLC.",
+                  quantitative: "HPLC, titration.",
+                  pharmacopoeial: "USP, BP.",
+                },
+                specialNotes: "A miotic agent that constricts the pupil.",
+              },
+            ],
+          },
+          {
+            name: "Antimuscarinics (Antagonists)",
+            drugs: [
+              {
+                name: "Atropine",
+                classification: "Anticholinergic, Antimuscarinic",
+                moa: "Competitively blocks acetylcholine at muscarinic receptors, leading to effects opposite of the parasympathetic nervous system.",
+                therapeuticUses: "Symptomatic bradycardia, preoperative medication to reduce secretions, antidote for organophosphate poisoning.",
+                adrs: "Dry mouth, blurred vision, tachycardia, urinary retention, constipation, confusion (anticholinergic toxidrome).",
+                contraindications: "Narrow-angle glaucoma, myasthenia gravis.",
+                pharmaApplications: {
+                  dosageForms: "Injection (IV, IM), eye drops.",
+                  formulations: "AtroPen (autoinjector).",
+                  storage: "Store at room temperature, protect from light.",
+                },
+                analyticalMethods: {
+                  qualitative: "TLC, Vitali-Morin reaction.",
+                  quantitative: "HPLC, Titration.",
+                  pharmacopoeial: "USP, BP.",
+                },
+                specialNotes: "Classic anticholinergic. Mnemonic for overdose: 'Hot as a hare, blind as a bat, dry as a bone, red as a beet, mad as a hatter'.",
+              },
+            ],
+          },
+        ]
+      },
+      {
+        name: "Adrenergic Agonists (Sympathomimetics)",
+        drugs: [
+            {
+              name: "Adrenaline (Epinephrine)",
+              classification: "Adrenergic agonist (alpha and beta)",
+              moa: "Acts on alpha-1, beta-1, and beta-2 adrenergic receptors. Causes vasoconstriction (alpha), increased heart rate and contractility (beta-1), and bronchodilation (beta-2).",
+              therapeuticUses: "Anaphylaxis, cardiac arrest, severe asthma attacks.",
+              adrs: "Tachycardia, hypertension, anxiety, tremor, arrhythmias.",
+              contraindications: "No absolute contraindications in a life-threatening situation like anaphylaxis.",
+              pharmaApplications: {
+                dosageForms: "Injection (IV, IM, SC), auto-injector.",
+                formulations: "EpiPen (auto-injector).",
+                storage: "Protect from light. Do not refrigerate.",
+              },
+              analyticalMethods: {
+                qualitative: "Colorimetric tests.",
+                quantitative: "HPLC with electrochemical detection.",
+                pharmacopoeial: "USP, BP.",
+              },
+              specialNotes: "The drug of choice for anaphylactic shock.",
+            },
+            {
+              name: "Salbutamol (Albuterol)",
+              classification: "Selective beta-2 adrenergic agonist",
+              moa: "Selectively stimulates beta-2 adrenergic receptors in the lungs, causing relaxation of bronchial smooth muscle and subsequent bronchodilation.",
+              therapeuticUses: "Asthma (acute relief of bronchospasm), COPD.",
+              adrs: "Tremor, tachycardia, palpitations, nervousness.",
+              contraindications: "Known hypersensitivity.",
+              pharmaApplications: {
+                dosageForms: "Metered-dose inhaler (MDI), dry powder inhaler (DPI), nebulizer solution, tablets, syrup.",
+                formulations: "Ventolin (Brand), ProAir (Brand).",
+                storage: "Store at room temperature. Shake inhalers well.",
+              },
+              analyticalMethods: {
+                qualitative: "HPLC.",
+                quantitative: "HPLC, UV spectrophotometry.",
+                pharmacopoeial: "USP, BP.",
+              },
+              specialNotes: "Considered a 'reliever' medication in asthma. Overuse can indicate poor asthma control.",
+            },
+        ],
+      },
+      {
+        name: "Adrenergic Antagonists",
+         subclasses: [
+          {
+            name: "Alpha Blockers",
+            drugs: [
+               {
+                  name: "Prazosin",
+                  classification: "Alpha-1 adrenergic antagonist",
+                  moa: "Selectively blocks postsynaptic alpha-1 adrenergic receptors, leading to vasodilation of both arteries and veins and a fall in blood pressure.",
+                  therapeuticUses: "Hypertension, benign prostatic hyperplasia (BPH).",
+                  adrs: "First-dose hypotension (syncope), dizziness, headache, drowsiness.",
+                  contraindications: "Known hypersensitivity.",
+                  pharmaApplications: {
+                    dosageForms: "Capsules.",
+                    formulations: "Minipress (Brand).",
+                    storage: "Store at room temperature, protect from light.",
+                  },
+                  analyticalMethods: {
+                    qualitative: "HPLC.",
+                    quantitative: "HPLC.",
+                    pharmacopoeial: "USP.",
+                  },
+                  specialNotes: "The 'first-dose effect' can be minimized by starting with a low dose at bedtime.",
+                },
+            ]
+          },
+          {
+            name: "Beta Blockers",
+            drugs: [
+                {
+                  name: "Propranolol",
+                  classification: "Non-selective beta-adrenergic antagonist",
+                  moa: "Blocks both beta-1 and beta-2 adrenergic receptors, leading to decreased heart rate, contractility, and blood pressure. Also causes bronchoconstriction.",
+                  therapeuticUses: "Hypertension, angina, arrhythmias, migraine prophylaxis, performance anxiety.",
+                  adrs: "Bradycardia, fatigue, bronchospasm (in asthmatics), masking of hypoglycemia symptoms.",
+                  contraindications: "Asthma, COPD, sinus bradycardia, heart block.",
+                  pharmaApplications: {
+                    dosageForms: "Tablets (IR, ER), oral solution, injection.",
+                    formulations: "Inderal (Brand).",
+                    storage: "Store at room temperature.",
+                  },
+                  analyticalMethods: {
+                    qualitative: "HPLC.",
+                    quantitative: "HPLC, UV spectrophotometry.",
+                    pharmacopoeial: "USP, BP.",
+                  },
+                  specialNotes: "Non-selective nature limits its use in patients with respiratory conditions. It is lipophilic and crosses the blood-brain barrier, which is why it's used for migraine and anxiety.",
+                },
+            ]
+          },
+        ]
+      },
+      {
+        name: "Neuromuscular Blockers",
+        drugs: [
+            {
+              name: "Succinylcholine",
+              classification: "Depolarizing neuromuscular blocker",
+              moa: "Acts as an acetylcholine (ACh) receptor agonist, causing persistent depolarization of the motor endplate, which leads to muscle paralysis.",
+              therapeuticUses: "Rapid sequence intubation (RSI), short procedures requiring muscle relaxation.",
+              adrs: "Muscle fasciculations, hyperkalemia, myalgia, potential trigger for malignant hyperthermia.",
+              contraindications: "History of malignant hyperthermia, severe burns, major trauma, neuromuscular disease (due to hyperkalemia risk).",
+              pharmaApplications: {
+                dosageForms: "Injection.",
+                formulations: "Anectine (Brand).",
+                storage: "Must be refrigerated.",
+              },
+              analyticalMethods: {
+                qualitative: "Specific enzyme assays for pseudocholinesterase activity.",
+                quantitative: "LC-MS/MS for determination in biological fluids.",
+                pharmacopoeial: "USP, BP.",
+              },
+              specialNotes: "Very rapid onset and short duration of action due to breakdown by plasma pseudocholinesterase.",
+            },
+            {
+              name: "Pancuronium",
+              classification: "Non-depolarizing neuromuscular blocker (long-acting)",
+              moa: "Acts as a competitive antagonist at nicotinic ACh receptors at the motor endplate, preventing ACh from binding and causing muscle paralysis.",
+              therapeuticUses: "To provide skeletal muscle relaxation during surgery.",
+              adrs: "Tachycardia, hypertension, prolonged muscle weakness.",
+              contraindications: "Known hypersensitivity.",
+              pharmaApplications: {
+                dosageForms: "Injection.",
+                formulations: "Pavulon (Brand).",
+                storage: "Store in refrigerator.",
+              },
+              analyticalMethods: {
+                qualitative: "HPLC.",
+                quantitative: "HPLC.",
+                pharmacopoeial: "USP, BP.",
+              },
+              specialNotes: "Action can be reversed by acetylcholinesterase inhibitors like neostigmine.",
+            },
+        ],
+      },
+      {
+        name: "Ganglion Blockers",
+        drugs: [],
+      },
+    ]
+  }
 ];
