@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart as RechartsBarChart } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { toast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 
 const masteryData = [
@@ -139,24 +140,24 @@ const chartConfig = {
 } satisfies ChartConfig
 
 
-const recommendationMap: {[key: string]: { rec: string, actions: { label: string, icon: React.ElementType, toast: string }[] }} = {
+const recommendationMap: {[key: string]: { rec: string, actions: { label: string, icon: React.ElementType, href: string }[] }} = {
       "Drug Interactions": {
           rec: "Error type: Application. Focus on applying knowledge to patient cases.",
           actions: [
-              { label: "30-min case set (10 MCQs)", icon: Zap, toast: "A new case set on Drug Interactions has been assigned." },
-              { label: "Watch 12-min video", icon: BookCopy, toast: "An interaction framework video has been added to your queue." },
+              { label: "30-min case set (10 MCQs)", icon: Zap, href: "/osce-viva-prep" },
+              { label: "Watch 12-min video", icon: BookCopy, href: "/moa-animations" },
           ]
       },
        "Tablet Dissolution": {
           rec: "Error type: Procedural. Reinforce the steps and calculations.",
           actions: [
-              { label: "Lab Walkthrough", icon: FlaskConical, toast: "The dissolution lab simulation has been scheduled." },
+              { label: "Lab Walkthrough", icon: FlaskConical, href: "/virtual-lab-simulator" },
           ]
       },
       "Plant ID": {
           rec: "Error type: Factual. Reinforce memorization of key identifiers.",
           actions: [
-               { label: "10 Flashcards + Spotter", icon: Zap, toast: "A new flashcard deck for Plant ID has been created." },
+               { label: "10 Flashcards + Spotter", icon: Zap, href: "/flashcard-generator" },
           ]
       }
 }
@@ -172,6 +173,7 @@ const qaChecklist = [
 
 export function ProgressTrackerClient() {
   const [selectedSubject, setSelectedSubject] = useState<typeof masteryData[0] | null>(null);
+  const router = useRouter();
 
   const overallMastery = 72;
   const strongSubjects = masteryData.filter(s => s.masteryScore >= 85);
@@ -216,7 +218,7 @@ export function ProgressTrackerClient() {
                           </div>
                           <div className="flex items-center gap-4">
                              <span className={cn("text-2xl font-bold", getMasteryColor(topic.score))}>{topic.score}%</span>
-                             <Button size="sm" onClick={() => toast({title: "Action Started!", description: "A practice session would launch here."})}>
+                             <Button size="sm" onClick={() => router.push('/mcq-bank')}>
                                Start Now
                              </Button>
                           </div>
@@ -284,7 +286,7 @@ export function ProgressTrackerClient() {
                                     <p>{rec.rec}</p>
                                      <div className="flex gap-2 mt-2">
                                         {rec.actions.map(action => (
-                                            <Button key={action.label} size="sm" variant="secondary" onClick={() => toast({title: "Action Triggered", description: action.toast})}>
+                                            <Button key={action.label} size="sm" variant="secondary" onClick={() => router.push(action.href)}>
                                                 <action.icon className="mr-2"/>{action.label}
                                             </Button>
                                         ))}
@@ -299,7 +301,7 @@ export function ProgressTrackerClient() {
                         <AlertDescription>
                            Your score in "Drug Interactions" dropped from 72% to 45% this week. A 30-minute remediation is recommended.
                            <div className="flex gap-2 mt-2">
-                              <Button size="sm" variant="secondary" onClick={() => toast({title: "Action Triggered", description: "Review launched."})}>
+                              <Button size="sm" variant="secondary" onClick={() => router.push('/osce-viva-prep')}>
                                 <BookCopy className="mr-2"/>Start Now
                               </Button>
                            </div>
