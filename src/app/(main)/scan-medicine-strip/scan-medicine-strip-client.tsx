@@ -6,16 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "@/hooks/use-toast";
-import { Camera, Loader2, Pill, FlaskConical, AlertTriangle, ScanLine, ShieldCheck, FileText, BookCopy, HelpCircle, Leaf, Barcode, CheckCircle, Flag } from "lucide-react";
+import { Camera, Loader2, Pill, FlaskConical, AlertTriangle, ScanLine, ShieldCheck, FileText, BookCopy, HelpCircle, Leaf, Barcode, CheckCircle, Flag, Save, TestTube } from "lucide-react";
 import { drugTreeData, Drug } from "@/app/(main)/drug-classification-tree/data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import Image from "next/image";
 
 const MOCK_SCANNABLES = [
-    { type: 'drug', name: "Amoxicillin", stripPosition: { top: '30%', left: '20%' }, icon: Pill },
-    { type: 'drug', name: "Paracetamol", stripPosition: { top: '50%', left: '60%' }, icon: Pill },
-    { type: 'barcode', name: "Morphine", stripPosition: { top: '70%', left: '15%' }, icon: Barcode }, // Morphine is high-risk
-    { type: 'herb', name: "Strychnine", stripPosition: { top: '25%', left: '70%' }, icon: Leaf }, // Using Strychnine as a sample herb from data
+    { type: 'drug', name: "Amoxicillin", stripPosition: { top: '20%', left: '15%' }, icon: Pill },
+    { type: 'drug', name: "Paracetamol", stripPosition: { top: '55%', left: '55%' }, icon: Pill },
+    { type: 'barcode', name: "Morphine", stripPosition: { top: '75%', left: '10%' }, icon: Barcode }, // Morphine is high-risk
+    { type: 'herb', name: "Strychnine", stripPosition: { top: '15%', left: '65%' }, icon: Leaf }, // Using Strychnine as a sample herb from data
 ];
 
 // Helper to find a drug by name in your data
@@ -47,6 +47,38 @@ function DetailSection({ title, content, icon: Icon }: { title: string, content?
         </div>
     );
 }
+
+function CompactOverlay({ item, onScan }: { item: { type: string, name: string, stripPosition: { top: string, left: string }, icon: React.ElementType }, onScan: (drugName: string, type: string) => void }) {
+    const drug = findDrugDetails(item.name);
+    if (!drug) return null;
+
+    const handleActionClick = (e: React.MouseEvent, action: string) => {
+        e.stopPropagation();
+        toast({ title: "Coming Soon!", description: `${action} functionality will be implemented soon.`});
+    };
+
+    return (
+        <Card 
+            className="absolute bg-white/90 dark:bg-black/90 backdrop-blur-sm p-3 rounded-lg shadow-xl w-64 border-primary/50"
+            style={item.stripPosition}
+        >
+            <div className="flex flex-col gap-2">
+                <div>
+                    <p className="font-bold">{drug.name} <span className="font-normal text-sm text-muted-foreground">({drug.pharmaApplications.formulations})</span></p>
+                    <p className="text-xs text-muted-foreground">{drug.pharmaApplications.dosageForms}</p>
+                    <p className="text-xs text-muted-foreground">{drug.classification}</p>
+                </div>
+                 <div className="flex gap-1">
+                    <Button size="sm" variant="secondary" className="flex-1 text-xs h-7" onClick={() => onScan(item.name, item.type)}>Details</Button>
+                    <Button size="sm" variant="outline" className="flex-1 text-xs h-7" onClick={(e) => handleActionClick(e, 'Interactions')}>Interactions</Button>
+                    <Button size="sm" variant="outline" className="flex-1 text-xs h-7" onClick={(e) => handleActionClick(e, 'Save')}>Save</Button>
+                    <Button size="sm" variant="outline" className="flex-1 text-xs h-7" onClick={(e) => handleActionClick(e, 'Quiz')}>Quiz Me</Button>
+                </div>
+            </div>
+        </Card>
+    );
+}
+
 
 export function ScanMedicineStripClient() {
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
@@ -112,7 +144,7 @@ export function ScanMedicineStripClient() {
           <CardTitle>Medicine Strip Scanner</CardTitle>
           <CardDescription>
             {hasCameraPermission 
-              ? "Live camera feed active. Tap on a detected item (pill, barcode, herb)."
+              ? "Live camera feed active. Tap a card's 'Details' button."
               : "Enable your camera to scan medicine text, barcodes, or plant specimens."
             }
           </CardDescription>
@@ -136,21 +168,9 @@ export function ScanMedicineStripClient() {
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-1/2 border-4 border-dashed border-white/50 rounded-lg pointer-events-none flex items-center justify-center">
                           <ScanLine className="h-16 w-16 text-white/50 animate-pulse"/>
                         </div>
-                      {MOCK_SCANNABLES.map(item => {
-                          const Icon = item.icon;
-                          return (
-                             <Button 
-                              key={item.name} 
-                              variant="outline"
-                              className="absolute bg-white/80 hover:bg-white text-black h-auto p-2 rounded-lg shadow-lg flex flex-col items-center gap-1" 
-                              style={item.stripPosition}
-                              onClick={() => handleScan(item.name, item.type)}
-                            >
-                                <Icon className="h-6 w-6 text-primary"/>
-                                <span className="text-xs font-semibold">{item.name}</span>
-                          </Button>
-                          )
-                      })}
+                      {MOCK_SCANNABLES.map(item => (
+                          <CompactOverlay key={item.name} item={item} onScan={handleScan} />
+                      ))}
                   </div>
                 )}
           </div>
