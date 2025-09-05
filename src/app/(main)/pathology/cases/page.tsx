@@ -153,6 +153,42 @@ function NewCaseDialog({ onCaseSubmit }: { onCaseSubmit: (data: NewCaseValues) =
 
 export default function PathologyCasesPage() {
   const { caseStudies, addCaseStudy, completedCases, toggleCaseCompletion } = usePathology();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [organFilter, setOrganFilter] = useState("All");
+  const [difficultyFilter, setDifficultyFilter] = useState("All");
+  const [typeFilter, setTypeFilter] = useState("All");
+
+  const filterOptions = useMemo(() => {
+    const organs = new Set<string>();
+    const difficulties = new Set<string>();
+    const types = new Set<string>();
+    caseStudies.forEach(c => {
+      organs.add(c.tags.organ);
+      difficulties.add(c.tags.difficulty);
+      types.add(c.tags.type);
+    });
+    return {
+      organs: Array.from(organs),
+      difficulties: Array.from(difficulties),
+      types: Array.from(types),
+    };
+  }, [caseStudies]);
+  
+  const filteredCases = useMemo(() => {
+    const lowercasedSearch = searchTerm.toLowerCase();
+    return caseStudies.filter(study => {
+        const matchesSearch = searchTerm === "" || 
+                              study.title.toLowerCase().includes(lowercasedSearch) || 
+                              study.history.toLowerCase().includes(lowercasedSearch) ||
+                              study.diagnosis.toLowerCase().includes(lowercasedSearch);
+        const matchesOrgan = organFilter === "All" || study.tags.organ === organFilter;
+        const matchesDifficulty = difficultyFilter === "All" || study.tags.difficulty === difficultyFilter;
+        const matchesType = typeFilter === "All" || study.tags.type === typeFilter;
+
+        return matchesSearch && matchesOrgan && matchesDifficulty && matchesType;
+    });
+  }, [caseStudies, searchTerm, organFilter, difficultyFilter, typeFilter]);
+
   
   const handleCreateCase = (data: NewCaseValues) => {
     const newCase: Omit<CaseStudy, 'id'> = {
@@ -183,11 +219,25 @@ export default function PathologyCasesPage() {
         <CardContent className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-grow">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input placeholder="Search by disease, organ, or keyword..." className="pl-10" />
+            <Input 
+              placeholder="Search by disease, organ, or keyword..." 
+              className="pl-10" 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
-          <Select><SelectTrigger className="w-full md:w-[180px]"><SelectValue placeholder="Organ System" /></SelectTrigger><SelectContent><SelectItem value="lung">Lung</SelectItem><SelectItem value="heart">Heart</SelectItem></SelectContent></Select>
-          <Select><SelectTrigger className="w-full md:w-[180px]"><SelectValue placeholder="Difficulty" /></SelectTrigger><SelectContent><SelectItem value="classic">Classic</SelectItem><SelectItem value="complex">Complex</SelectItem></SelectContent></Select>
-          <Select><SelectTrigger className="w-full md:w-[180px]"><SelectValue placeholder="Case Type" /></SelectTrigger><SelectContent><SelectItem value="neoplastic">Neoplastic</SelectItem><SelectItem value="inflammatory">Inflammatory</SelectItem></SelectContent></Select>
+          <Select value={organFilter} onValueChange={setOrganFilter}>
+            <SelectTrigger className="w-full md:w-[180px]"><SelectValue /></SelectTrigger>
+            <SelectContent><SelectItem value="All">All Organ Systems</SelectItem>{filterOptions.organs.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
+          </Select>
+          <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
+            <SelectTrigger className="w-full md:w-[180px]"><SelectValue /></SelectTrigger>
+            <SelectContent><SelectItem value="All">All Difficulties</SelectItem>{filterOptions.difficulties.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+          </Select>
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger className="w-full md:w-[180px]"><SelectValue /></SelectTrigger>
+            <SelectContent><SelectItem value="All">All Case Types</SelectItem>{filterOptions.types.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+          </Select>
         </CardContent>
       </Card>
 
@@ -206,7 +256,7 @@ export default function PathologyCasesPage() {
       </Card>
       
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {caseStudies.map((study) => (
+        {filteredCases.map((study) => (
           <Dialog key={study.id}>
             <DialogTrigger asChild>
               <motion.div whileHover={{ scale: 1.03, y: -5 }} className="cursor-pointer">
