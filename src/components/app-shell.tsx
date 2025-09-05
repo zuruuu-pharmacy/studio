@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, Combine, CalendarDays, FolderOpen, Replace, BookA, MessageSquare, ClipboardList, MessageCircleQuestion, Compass, Search, BarChart } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, Combine, CalendarDays, FolderOpen, Replace, BookA, MessageSquare, ClipboardList, MessageCircleQuestion, Compass, Search, BarChart, Camera } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -57,6 +57,7 @@ const studentMenuItems = [
     { href: "/ai-assistant", label: "AI Assistant Helper", icon: MessageCircleQuestion },
     { href: "/patient-history", label: "My Health History", icon: User },
     { href: "/patients", label: "View Patient Cases", icon: Users },
+    { href: "/scan-medicine-strip", label: "AR Medicine Scanner", icon: Camera },
     { href: "/student-discussion-forum", label: "Student Discussion Forum", icon: MessageSquare },
     { href: "/student-polls", label: "Student Polls/Surveys", icon: ClipboardList },
      {
@@ -295,3 +296,5 @@ export function AppShell({ children }: { children: ReactNode }) {
     </SidebarProvider>
   );
 }
+
+    

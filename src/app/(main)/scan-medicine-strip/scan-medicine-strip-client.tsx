@@ -1,0 +1,141 @@
+
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { toast } from "@/hooks/use-toast";
+import { Camera, Loader2, Pill, FlaskConical, AlertTriangle, ScanLine } from "lucide-react";
+import { drugTreeData } from "@/app/(main)/drug-classification-tree/data";
+
+const MOCK_DRUGS_ON_STRIP = [
+    { name: "Amoxicillin", stripPosition: { top: '30%', left: '20%' } },
+    { name: "Paracetamol", stripPosition: { top: '50%', left: '60%' } },
+    { name: "Lisinopril", stripPosition: { top: '70%', left: '40%' } },
+];
+
+// Helper to find a drug by name in your data
+const findDrugDetails = (drugName: string) => {
+    for (const category of drugTreeData) {
+        for (const subclass of category.subclasses || []) {
+            for (const subsubclass of subclass.subclasses || []) {
+                 const drug = subsubclass.drugs?.find(d => d.name.toLowerCase() === drugName.toLowerCase());
+                 if (drug) return drug;
+            }
+            const drug = subclass.drugs?.find(d => d.name.toLowerCase() === drugName.toLowerCase());
+            if (drug) return drug;
+        }
+    }
+    return null;
+}
+
+
+export function ScanMedicineStripClient() {
+  const [hasCameraPermission, setHasCameraPermission] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [scannedDrug, setScannedDrug] = useState<any | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  
+  useEffect(() => {
+    return () => {
+        // Cleanup: stop video stream when component unmounts
+        if (videoRef.current && videoRef.current.srcObject) {
+            const stream = videoRef.current.srcObject as MediaStream;
+            stream.getTracks().forEach(track => track.stop());
+        }
+    };
+  }, []);
+
+  const enableCamera = async () => {
+    setIsLoading(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+      setHasCameraPermission(true);
+      toast({ title: "Camera Enabled", description: "Point your camera at a medicine strip." });
+    } catch (error) {
+      console.error("Error accessing camera:", error);
+      toast({ variant: "destructive", title: "Camera Access Denied", description: "Please enable camera permissions in your browser settings." });
+      setHasCameraPermission(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleScan = (drugName: string) => {
+    const details = findDrugDetails(drugName);
+    setScannedDrug(details);
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Medicine Strip Scanner</CardTitle>
+        <CardDescription>
+          {hasCameraPermission 
+            ? "Live camera feed active. Click on a detected medicine."
+            : "Enable your camera to start scanning."
+          }
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid md:grid-cols-2 gap-6">
+            <div className="relative w-full aspect-video bg-muted rounded-lg flex items-center justify-center overflow-hidden">
+                <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+                {!hasCameraPermission && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50">
+                        {isLoading ? (
+                            <Loader2 className="h-12 w-12 text-white animate-spin"/>
+                        ) : (
+                            <Button onClick={enableCamera} size="lg">
+                                <Camera className="mr-2"/> Enable Camera
+                            </Button>
+                        )}
+                    </div>
+                )}
+                 {hasCameraPermission && (
+                    <div className="absolute inset-0">
+                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-1/2 border-4 border-dashed border-white/50 rounded-lg pointer-events-none flex items-center justify-center">
+                            <ScanLine className="h-16 w-16 text-white/50 animate-pulse"/>
+                         </div>
+                        {MOCK_DRUGS_ON_STRIP.map(drug => (
+                             <Button 
+                                key={drug.name} 
+                                variant="outline"
+                                className="absolute bg-white/80 hover:bg-white text-black text-xs h-auto p-1 rounded-sm" 
+                                style={drug.stripPosition}
+                                onClick={() => handleScan(drug.name)}
+                             >
+                                {drug.name}
+                            </Button>
+                        ))}
+                    </div>
+                 )}
+            </div>
+
+            <Card>
+                <CardHeader><CardTitle>Scanned Information</CardTitle></CardHeader>
+                <CardContent>
+                    {scannedDrug ? (
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-bold flex items-center gap-2"><Pill className="text-primary"/> {scannedDrug.name}</h3>
+                            <p className="text-sm"><strong className="flex items-center gap-1"><FlaskConical className="h-4"/> MOA:</strong> {scannedDrug.moa}</p>
+                            <p className="text-sm"><strong className="flex items-center gap-1"><AlertTriangle className="h-4"/> ADRs:</strong> {scannedDrug.adrs}</p>
+                        </div>
+                    ) : (
+                         <div className="text-center text-muted-foreground p-8">
+                            <p>Scanned drug information will appear here.</p>
+                         </div>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+    
