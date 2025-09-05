@@ -184,6 +184,9 @@ export default function PathologyCasesPage() {
                             </div>
                         </div>
                     </DetailSection>
+                     <DetailSection title="Discussion & Key Points" icon={Lightbulb}>
+                        <p>{study.discussion}</p>
+                    </DetailSection>
                  </div>
                  <div className="lg:col-span-2 space-y-4">
                     <Alert variant="default" className="bg-green-500/10 border-green-500">
@@ -193,24 +196,12 @@ export default function PathologyCasesPage() {
                     
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg flex items-center gap-2"><Lightbulb/>Discussion & Key Points</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm text-muted-foreground">{study.discussion}</p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
                              <CardTitle className="text-lg flex items-center gap-2"><Zap/>Quiz</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <p className="font-semibold text-sm mb-2">{study.quiz[0].question}</p>
                              <div className="flex flex-wrap gap-2">
-                                <Button variant="outline" size="sm">{study.quiz[0].options[0]}</Button>
-                                <Button variant="outline" size="sm">{study.quiz[0].options[1]}</Button>
-                                <Button variant="outline" size="sm">{study.quiz[0].options[2]}</Button>
-                                <Button variant="outline" size="sm">{study.quiz[0].options[3]}</Button>
+                                {study.quiz[0].options.map(opt => <Button key={opt} variant="outline" size="sm">{opt}</Button>)}
                             </div>
                              <Alert className="mt-4 text-sm"><AlertDescription><strong>Answer:</strong> {study.quiz[0].answer}</AlertDescription></Alert>
                         </CardContent>
