@@ -4,7 +4,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus } from "lucide-react";
+import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus, HelpCircle, FileText, FlaskConical } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -42,6 +42,14 @@ const masteryData = [
     dataDensity: "Low",
   },
 ];
+
+const dataSources = [
+    { name: 'Quizzes & MCQs', icon: HelpCircle },
+    { name: 'Assignments & Labs', icon: FileText },
+    { name: 'Practice Sessions', icon: Lightbulb },
+    { name: 'OSCE / Viva Practice Logs', icon: CheckCircle },
+    { name: 'Virtual Lab Simulations', icon: FlaskConical },
+]
 
 const getMasteryColor = (score: number) => {
   if (score >= 85) return "text-green-500";
@@ -112,7 +120,23 @@ export function ProgressTrackerClient() {
         </CardContent>
        </Card>
 
+        <Card>
+            <CardHeader>
+            <CardTitle className="flex items-center gap-2"><Database/>Data Sources</CardTitle>
+            <CardDescription>Your Mastery Score is calculated using data from all your interactions across the portal.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                    {dataSources.map((source) => (
+                        <div key={source.name} className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
+                            <source.icon className="h-5 w-5 text-primary"/>
+                            <span className="font-medium text-muted-foreground">{source.name}</span>
+                        </div>
+                    ))}
+                </div>
+            </CardContent>
+       </Card>
+
     </div>
   );
 }
-
