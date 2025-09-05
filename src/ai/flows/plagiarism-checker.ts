@@ -52,10 +52,11 @@ const prompt = ai.definePrompt({
 
 **Instructions:**
 1.  **Analyze the Document:** Perform OCR if necessary. Read the document and identify any segments that are highly similar to the simulated external sources.
-2.  **Calculate Similarity:** For each identified segment, provide a 'similarity_score' between 0 and 1.
-3.  **Identify Sources:** For each segment, identify a plausible 'source' from one of the source pools. Be specific (e.g., "Wikipedia article on 'Beta-blockers'", "Journal of Pharmacology, 2021", "Student submission from PH-402, Fall 2023").
-4.  **Overall Score:** Calculate an 'overall_similarity_percentage' for the entire document. This should be a weighted average based on the length and severity of the matches.
-5.  **Summarize:** Provide a concise 'summary' of your findings. If similarity is high (>25%), recommend significant revisions. If it is moderate (10-25%), recommend a review. If it is low (<10%), confirm originality.
+2.  **CRITICAL: Citation Awareness:** You MUST differentiate between unoriginal text and properly cited text. If a passage is a direct match but is enclosed in quotation marks ("...") and has a clear in-text citation (e.g., Smith, 2021), it should NOT be included in the 'segments' list and should not contribute heavily to the overall similarity score. Your summary can note that correctly quoted sections were found. Focus your flagging on text that is copied without attribution.
+3.  **Calculate Similarity:** For each identified segment of potential plagiarism, provide a 'similarity_score' between 0 and 1.
+4.  **Identify Sources:** For each segment, identify a plausible 'source' from one of the source pools. Be specific (e.g., "Wikipedia article on 'Beta-blockers'", "Journal of Pharmacology, 2021", "Student submission from PH-402, Fall 2023").
+5.  **Overall Score:** Calculate an 'overall_similarity_percentage' for the entire document. This should be a weighted average based on the length and severity of the matches, excluding properly cited material.
+6.  **Summarize:** Provide a concise 'summary' of your findings. If similarity is high (>25%), recommend significant revisions. If it is moderate (10-25%), recommend a review. If it is low (<10%), confirm originality.
 
 Respond ONLY in the structured JSON format defined by the schema.
 `,
