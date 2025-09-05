@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { Download, CloudOff, BookOpen, CaseSensitive, History, Trash2, CheckCircle, WifiOff, FileDown, Award, Bug, ShieldCheck } from "lucide-react";
+import { Download, CloudOff, BookOpen, CaseSensitive, History, Trash2, CheckCircle, WifiOff, FileDown, Award, Bug, ShieldCheck, Settings } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -41,6 +41,13 @@ const securityChecklist = [
     "To prevent unauthorized access on a shared or lost device, the offline library MUST be protected by a secondary local authentication layer (device PIN/biometric or a separate app-specific PIN).",
     "Patient case studies for offline use MUST have all personally identifiable information (PII) scrubbed or replaced with placeholders.",
     "Display a clear warning message to the user before they download patient-related data for offline use, reminding them of their responsibility to protect sensitive information."
+];
+
+const adminFeatures = [
+    "Marking content as offline-eligible: In the main content library, teachers see an 'Available Offline' toggle next to each resource. Toggling it on adds the content to the offline cache for students.",
+    "Setting expiry times: When marking content as offline-eligible, an optional 'Expiry Date' field appears. If set, the content will be automatically deleted from student devices after this date.",
+    "Locking quiz offline attempts: For summative assessments, a 'Disable Offline Attempts' checkbox is available in the quiz settings to prevent students from taking it without an internet connection.",
+    "Viewing sync status of class: An admin dashboard shows a table of students, their last sync time, and a status icon (green for recent, amber for >24h, red for >72h).",
 ];
 
 
@@ -194,6 +201,24 @@ export function OfflineModeClient() {
                     <CardContent>
                         <ul className="list-disc list-inside space-y-3 text-sm text-muted-foreground">
                            {securityChecklist.map((item, i) => <li key={i}>{item}</li>)}
+                        </ul>
+                    </CardContent>
+                </Card>
+            </AccordionContent>
+        </AccordionItem>
+         <AccordionItem value="admin-features" className="border-0">
+            <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">
+                Teacher & Admin Features
+            </AccordionTrigger>
+            <AccordionContent>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Settings/>Teacher & Admin Features</CardTitle>
+                        <CardDescription>How faculty and administrators will manage offline content and monitor its usage.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ul className="list-disc list-inside space-y-3 text-sm text-muted-foreground">
+                           {adminFeatures.map((item, i) => <li key={i}>{item}</li>)}
                         </ul>
                     </CardContent>
                 </Card>
