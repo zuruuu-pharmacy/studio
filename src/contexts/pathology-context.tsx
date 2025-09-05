@@ -98,14 +98,17 @@ const initialCaseStudies: CaseStudy[] = [
 interface PathologyContextType {
   caseStudies: CaseStudy[];
   addCaseStudy: (caseStudy: Omit<CaseStudy, 'id'>) => void;
+  completedCases: Set<string>;
+  toggleCaseCompletion: (caseId: string) => void;
 }
 
 const PathologyContext = createContext<PathologyContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'pathology_cases_v1';
+const LOCAL_STORAGE_KEY = 'pathology_data_v2'; // Bump version for progress
 
 export function PathologyProvider({ children }: { children: ReactNode }) {
   const [caseStudies, setCaseStudies] = useState<CaseStudy[]>(initialCaseStudies);
+  const [completedCases, setCompletedCases] = useState<Set<string>>(new Set());
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -113,12 +116,15 @@ export function PathologyProvider({ children }: { children: ReactNode }) {
       const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (savedData) {
         const parsedData = JSON.parse(savedData);
-        if (Array.isArray(parsedData) && parsedData.length > 0) {
-            setCaseStudies(parsedData);
+        if (Array.isArray(parsedData.cases) && parsedData.cases.length > 0) {
+            setCaseStudies(parsedData.cases);
+        }
+        if (Array.isArray(parsedData.completed)) {
+            setCompletedCases(new Set(parsedData.completed));
         }
       }
     } catch (error) {
-      console.error("Failed to load pathology cases from localStorage", error);
+      console.error("Failed to load pathology data from localStorage", error);
     }
     setIsLoaded(true);
   }, []);
@@ -126,12 +132,16 @@ export function PathologyProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if(isLoaded) {
         try {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(caseStudies));
+            const dataToSave = {
+                cases: caseStudies,
+                completed: Array.from(completedCases)
+            };
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataToSave));
         } catch (error) {
-            console.error("Failed to save pathology cases to localStorage", error);
+            console.error("Failed to save pathology data to localStorage", error);
         }
     }
-  }, [caseStudies, isLoaded]);
+  }, [caseStudies, completedCases, isLoaded]);
 
   const addCaseStudy = (caseStudy: Omit<CaseStudy, 'id'>) => {
     const newCase: CaseStudy = {
@@ -140,8 +150,20 @@ export function PathologyProvider({ children }: { children: ReactNode }) {
     };
     setCaseStudies(prevCases => [newCase, ...prevCases]);
   };
+
+  const toggleCaseCompletion = (caseId: string) => {
+    setCompletedCases(prev => {
+        const newSet = new Set(prev);
+        if (newSet.has(caseId)) {
+            newSet.delete(caseId);
+        } else {
+            newSet.add(caseId);
+        }
+        return newSet;
+    });
+  };
   
-  const contextValue = useMemo(() => ({ caseStudies, addCaseStudy }), [caseStudies]);
+  const contextValue = useMemo(() => ({ caseStudies, addCaseStudy, completedCases, toggleCaseCompletion }), [caseStudies, completedCases]);
 
   return (
     <PathologyContext.Provider value={contextValue}>

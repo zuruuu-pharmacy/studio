@@ -66,7 +66,7 @@ const newCaseSchema = z.object({
 type NewCaseValues = z.infer<typeof newCaseSchema>;
 
 export default function PathologyCasesPage() {
-  const { caseStudies, addCaseStudy } = usePathology();
+  const { caseStudies, addCaseStudy, completedCases, toggleCaseCompletion } = usePathology();
   const [isNewCaseModalOpen, setIsNewCaseModalOpen] = useState(false);
 
   const newCaseForm = useForm<NewCaseValues>({
@@ -111,6 +111,8 @@ export default function PathologyCasesPage() {
     setIsNewCaseModalOpen(false);
   });
 
+  const progressPercentage = caseStudies.length > 0 ? (completedCases.size / caseStudies.length) * 100 : 0;
+
   return (
     <div>
       <BackButton />
@@ -141,8 +143,8 @@ export default function PathologyCasesPage() {
         <CardContent>
           <div className="flex items-center gap-4">
             <div className="flex-1 space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">You have completed 12 of {caseStudies.length} cases.</p>
-              <Progress value={(12 / caseStudies.length) * 100} />
+              <p className="text-sm font-medium text-muted-foreground">You have completed {completedCases.size} of {caseStudies.length} cases.</p>
+              <Progress value={progressPercentage} />
             </div>
           </div>
         </CardContent>
@@ -156,6 +158,11 @@ export default function PathologyCasesPage() {
                     <CardHeader className="p-0">
                          <div className="relative h-40 w-full overflow-hidden rounded-t-2xl">
                            <Image src={study.imageUrl} alt={`Slide for ${study.title}`} layout="fill" objectFit="cover" />
+                            {completedCases.has(study.id) && (
+                              <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
+                                <CheckCircle className="h-5 w-5"/>
+                              </div>
+                            )}
                         </div>
                     </CardHeader>
                     <CardContent className="p-6 flex-grow flex flex-col">
@@ -228,6 +235,10 @@ export default function PathologyCasesPage() {
                             </Button>
                         </CardContent>
                     </Card>
+
+                    <Button onClick={() => toggleCaseCompletion(study.id)} variant={completedCases.has(study.id) ? "destructive" : "default"} className="w-full">
+                      {completedCases.has(study.id) ? 'Mark as Incomplete' : 'Mark as Complete'}
+                    </Button>
 
                     <Button onClick={() => toast({title: "Coming soon!"})} variant="outline" className="w-full">
                        <Download className="mr-2"/>Export as PDF
