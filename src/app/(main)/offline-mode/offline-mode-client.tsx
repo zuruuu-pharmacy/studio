@@ -22,6 +22,17 @@ const kpiData = [
   { metric: "User Satisfaction (CSAT/NPS)", formula: "Feedback from targeted surveys on this feature", target: "CSAT > 4.2/5" },
 ];
 
+const qaChecklist = [
+    "Upload various formats (PDF, DOCX, PPT, TXT).",
+    "OCR accuracy across scanned handwritten pages.",
+    "Correct detection of quoted + cited passages.",
+    "Paraphrase detection sensitivity: assess true positives/false positives.",
+    "Highlighting correctly maps to original page & offsets.",
+    "Quick re-check latency acceptable (<10s for a small re-scan).",
+    "Access control, encryption, and delete flows validated.",
+    "Validate thresholds and false positive rate against human review for fairness.",
+];
+
 
 export function OfflineModeClient() {
   const [isOffline, setIsOffline] = useState(false);
@@ -108,47 +119,57 @@ export function OfflineModeClient() {
         </CardContent>
       </Card>
       
-      <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="item-1">
-          <AccordionTrigger>Product Goals & KPIs</AccordionTrigger>
-          <AccordionContent>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Award /> Goals & Success Metrics</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h3 className="font-semibold">Primary Goals</h3>
-                  <ul className="list-disc list-inside text-muted-foreground text-sm">
-                    <li><strong className="text-foreground">Accessibility:</strong> Enable learning for students in low-connectivity areas.</li>
-                    <li><strong className="text-foreground">Engagement:</strong> Allow studying during commutes or power outages.</li>
-                    <li><strong className="text-foreground">Outcomes:</strong> Drive better results by increasing total study time.</li>
-                  </ul>
-                </div>
-                <div>
-                    <h3 className="font-semibold">Key Performance Indicators (KPIs)</h3>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Metric</TableHead>
-                                <TableHead>Formula / Definition</TableHead>
-                                <TableHead>Target</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {kpiData.map(kpi => (
-                                <TableRow key={kpi.metric}>
-                                    <TableCell>{kpi.metric}</TableCell>
-                                    <TableCell className="font-mono text-xs">{kpi.formula}</TableCell>
-                                    <TableCell>{kpi.target}</TableCell>
+      <Accordion type="multiple" className="w-full space-y-2">
+        <AccordionItem value="kpis" className="border-0">
+            <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">
+                Product Metrics & KPIs
+            </AccordionTrigger>
+            <AccordionContent>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Award/>Success Metrics & KPIs</CardTitle>
+                        <CardDescription>How we measure the effectiveness and success of this feature.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Metric</TableHead>
+                                    <TableHead>Formula / Definition</TableHead>
+                                    <TableHead>Target</TableHead>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-              </CardContent>
-            </Card>
-          </AccordionContent>
+                            </TableHeader>
+                            <TableBody>
+                                {kpiData.map(kpi => (
+                                    <TableRow key={kpi.metric}>
+                                        <TableCell>{kpi.metric}</TableCell>
+                                        <TableCell className="font-mono text-xs">{kpi.formula}</TableCell>
+                                        <TableCell>{kpi.target}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="qa-checklist" className="border-0">
+            <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">
+                Testing & QA Checklist
+            </AccordionTrigger>
+            <AccordionContent>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Bug/>Quality Assurance Checklist</CardTitle>
+                        <CardDescription>Key validation points for ensuring tool reliability and fairness.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
+                           {qaChecklist.map((item, i) => <li key={i}>{item}</li>)}
+                        </ul>
+                    </CardContent>
+                </Card>
+            </AccordionContent>
         </AccordionItem>
       </Accordion>
 
