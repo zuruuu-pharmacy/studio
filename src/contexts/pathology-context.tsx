@@ -119,7 +119,7 @@ const initialCaseStudies: Omit<CaseStudy, 'id'>[] = [
         discussion: "Ulcerative colitis is an inflammatory bowel disease characterized by continuous inflammation limited to the colon and rectum. The key features are the continuous pattern of involvement and the superficial inflammation (mucosa/submucosa). This is in contrast to Crohn's disease, which can affect any part of the GI tract in a discontinuous ('skip-lesion') pattern and is typically transmural.",
         tags: {
             organ: "🩺 GI Tract",
-            type: "炎症性 Autoimmune",
+            type: "Autoimmune",
             difficulty: "🔥 Complex"
         },
         quiz: [
@@ -413,7 +413,7 @@ const initialCaseStudies: Omit<CaseStudy, 'id'>[] = [
         discussion: "Diverticulosis, the presence of diverticula, is common in older individuals in Western countries. Diverticulitis occurs when these diverticula become obstructed or perforate, leading to inflammation and infection. The pathology is essentially a localized perforation with a resulting pericolic abscess or inflammation. Complications can include abscess formation, fistula, or free perforation leading to peritonitis.",
         tags: {
             organ: "🩺 GI Tract",
-            type: "炎症性 Inflammatory",
+            type: "Inflammatory",
             difficulty: "🔥 Complex"
         },
         quiz: [
@@ -445,6 +445,111 @@ const initialCaseStudies: Omit<CaseStudy, 'id'>[] = [
             }
         ],
         imageHint: "prostate adenocarcinoma histology"
+    },
+    {
+        title: "Case 21: A 48-year-old IV drug user with fever",
+        history: "A 48-year-old man with a history of intravenous heroin use presents with a high fever, chills, and a new heart murmur. He also has tender nodules on his fingertips (Osler's nodes) and small, non-tender macules on his palms (Janeway lesions).",
+        specialty: "Cardiovascular Pathology",
+        findings: "Blood cultures are positive for Staphylococcus aureus. An echocardiogram reveals a large, mobile vegetation on the tricuspid valve. Pathological examination of a valve at autopsy would show large, friable vegetations composed of fibrin, inflammatory cells, and bacterial colonies, causing destruction of the valve leaflet.",
+        diagnosis: "Infective Endocarditis (Acute).",
+        discussion: "Infective endocarditis, especially in IV drug users, commonly affects the right-sided heart valves like the tricuspid. Staphylococcus aureus is a frequent causative agent of acute, rapidly destructive endocarditis. The vegetations can embolize, leading to septic infarcts in distant organs. The peripheral stigmata like Osler's nodes and Janeway lesions are classic, though not always present.",
+        tags: {
+            organ: "❤️ Heart",
+            type: "🦠 Infectious",
+            difficulty: "🔥 Complex"
+        },
+        quiz: [
+            {
+                question: "In intravenous drug users, which heart valve is most commonly affected by infective endocarditis?",
+                options: ["Mitral valve", "Aortic valve", "Tricuspid valve", "Pulmonic valve"],
+                answer: "Tricuspid valve"
+            }
+        ],
+        imageHint: "infective endocarditis valve"
+    },
+    {
+        title: "Case 22: A 68-year-old hospitalized patient with diarrhea",
+        history: "A 68-year-old man was hospitalized for pneumonia and treated with a 10-day course of clindamycin. Three days after completing the antibiotic course, he develops profuse, watery, foul-smelling diarrhea, abdominal cramping, and fever.",
+        specialty: "Gastrointestinal Pathology",
+        findings: "Stool testing is positive for Clostridioides difficile toxins A and B. Colonoscopy reveals yellow-white plaques and pseudomembranes loosely adherent to the colonic mucosa. Biopsy of these pseudomembranes shows an exudate of fibrin, mucin, and neutrophils erupting from the surface of the colonic crypts, resembling a 'volcano' lesion.",
+        diagnosis: "Pseudomembranous Colitis (due to C. difficile infection).",
+        discussion: "C. difficile-associated diarrhea is a major healthcare-associated infection, often precipitated by antibiotic use that disrupts the normal gut flora. The toxins produced by C. diff cause cytoskeletal damage, leading to epithelial cell death and the formation of characteristic pseudomembranes. The 'volcano' or 'mushroom cloud' appearance on biopsy is classic.",
+        tags: {
+            organ: "🩺 GI Tract",
+            type: "🦠 Infectious",
+            difficulty: "🔥 Complex"
+        },
+        quiz: [
+            {
+                question: "The formation of pseudomembranes in this condition is directly caused by what?",
+                options: ["Bacterial invasion of the mucosa", "Ischemic injury", "Bacterial toxins causing epithelial necrosis", "An autoimmune reaction"],
+                answer: "Bacterial toxins causing epithelial necrosis"
+            }
+        ],
+        imageHint: "pseudomembranous colitis histology"
+    },
+    {
+        title: "Case 23: A 40-year-old with pruritic, purple papules",
+        history: "A 40-year-old woman presents with an intensely itchy rash on her wrists and ankles that has been present for several weeks. She also notes lacy white streaks inside her cheeks.",
+        specialty: "Dermatopathology",
+        findings: "The skin lesions are polygonal, flat-topped, purple papules (the '6 Ps': Pruritic, Polygonal, Planar, Purple, Papules, and Plaques). The oral lesions are reticular white lines (Wickham's striae). A skin biopsy shows hyperkeratosis, a wedge-shaped hypergranulosis, and a dense, band-like lymphocytic infiltrate at the dermoepidermal junction that obscures it. Sawtooth-shaped rete ridges and colloid bodies are also seen.",
+        diagnosis: "Lichen Planus.",
+        discussion: "Lichen planus is a chronic inflammatory disorder of the skin and mucous membranes. The diagnosis is often made clinically but confirmed with biopsy. The key histological features are the band-like (lichenoid) lymphocytic infiltrate and the damage to the basal cell layer of the epidermis. It is thought to be a T-cell mediated autoimmune disease.",
+        tags: {
+            organ: "🔬 Skin",
+            type: "🧑‍⚕️ Autoimmune",
+            difficulty: "⭐ Classic"
+        },
+        quiz: [
+            {
+                question: "The characteristic pattern of inflammation in a skin biopsy of lichen planus is described as:",
+                options: ["Perivascular", "Nodular", "Lichenoid (band-like)", "Diffuse"],
+                answer: "Lichenoid (band-like)"
+            }
+        ],
+        imageHint: "lichen planus histology"
+    },
+    {
+        title: "Case 24: A 3-year-old boy with a large abdominal mass",
+        history: "A 3-year-old boy is brought to the pediatrician by his mother, who felt a large, smooth mass in his abdomen while bathing him. The child is otherwise asymptomatic.",
+        specialty: "Pediatric Pathology",
+        findings: "An abdominal ultrasound and CT scan confirm a large, well-circumscribed mass arising from the right kidney. A nephrectomy is performed. The tumor is composed of three main components: primitive small blue cells (blastema), immature tubules (epithelium), and a spindled stroma. This is the classic triphasic histology.",
+        diagnosis: "Wilms Tumor (Nephroblastoma).",
+        discussion: "Wilms tumor is the most common primary renal tumor of childhood. The classic triphasic histology, containing blastemal, epithelial, and stromal elements, recapitulates the development of the normal kidney (nephrogenesis). Most cases are sporadic, but some are associated with genetic syndromes (e.g., WAGR syndrome, Beckwith-Wiedemann syndrome). Prognosis is generally very good with modern multi-modal therapy.",
+        tags: {
+            organ: "💧 Renal",
+            type: "🧪 Cancer",
+            difficulty: "🔥 Complex"
+        },
+        quiz: [
+            {
+                question: "The classic histology of a Wilms tumor is described as:",
+                options: ["Monomorphic", "Biphasic", "Triphasic", "Pleomorphic"],
+                answer: "Triphasic"
+            }
+        ],
+        imageHint: "wilms tumor histology"
+    },
+    {
+        title: "Case 25: A 45-year-old woman with a 'string of pearls' on ultrasound",
+        history: "A 45-year-old woman presents with heavy menstrual bleeding and pelvic pain. She is found to have an enlarged uterus on physical exam.",
+        specialty: "Gynecologic Pathology",
+        findings: "An ultrasound shows a large, well-circumscribed, whorled mass within the myometrium of the uterus. A hysterectomy is performed. Gross examination confirms a firm, white, whorled tumor. Microscopically, the tumor is composed of interlacing bundles of bland, uniform smooth muscle cells with eosinophilic cytoplasm and elongated, 'cigar-shaped' nuclei. There is no significant atypia, necrosis, or mitotic activity.",
+        diagnosis: "Leiomyoma (Fibroid).",
+        discussion: "Leiomyomas are benign tumors of smooth muscle, and they are extremely common in the uterus. The characteristic gross appearance is a white, whorled, and firm mass. The microscopic features of interlacing bundles of bland smooth muscle cells are diagnostic. It is crucial to assess for features of malignancy (atypia, mitotic activity, necrosis) to rule out its malignant counterpart, leiomyosarcoma.",
+        tags: {
+            organ: "♀️ Gynecology",
+            type: "Benign Tumor",
+            difficulty: "⭐ Classic"
+        },
+        quiz: [
+            {
+                question: "Leiomyomas are benign tumors derived from what type of tissue?",
+                options: ["Epithelium", "Fibrous tissue", "Smooth muscle", "Adipose tissue"],
+                answer: "Smooth muscle"
+            }
+        ],
+        imageHint: "uterine fibroid histology"
     }
 ];
 
