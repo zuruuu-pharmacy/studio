@@ -68,17 +68,25 @@ function CompactOverlay({ item, onScan }: { item: { type: string, name: string, 
         <div 
             className="absolute p-1 border-2 border-dashed border-white/50 rounded-lg group"
             style={item.stripPosition}
-             onClick={() => onScan(item.name, item.type)}
         >
             <Card 
-                className="bg-white/90 dark:bg-black/90 backdrop-blur-sm p-2 rounded-lg shadow-xl w-64 border-primary/50 flex gap-2 cursor-pointer"
+                className="bg-white/90 dark:bg-black/90 backdrop-blur-sm p-2 rounded-lg shadow-xl w-64 border-primary/50 flex flex-col gap-2 cursor-pointer"
+                 onClick={() => onScan(item.name, item.type)}
             >
-                <div className={cn("w-2 rounded-full", riskColors[item.risk] || 'bg-gray-400')}></div>
-                <div className="flex-1 space-y-1">
-                    <p className="font-bold text-sm">{drug.name}</p>
-                    <p className="text-xs text-muted-foreground">{drug.classification}</p>
-                    <p className="text-xs text-muted-foreground">{drug.pharmaApplications.dosageForms.split(';')[0]}</p>
+                <div className="flex gap-2">
+                    <div className={cn("w-2 rounded-full", riskColors[item.risk] || 'bg-gray-400')}></div>
+                    <div className="flex-1 space-y-1">
+                        <p className="font-bold text-sm">{drug.name}</p>
+                        <p className="text-xs text-muted-foreground">{drug.classification}</p>
+                        <p className="text-xs text-muted-foreground">{drug.pharmaApplications.dosageForms.split(';')[0]}</p>
+                    </div>
                 </div>
+                 <div className="flex gap-1 justify-around">
+                    <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={(e) => handleActionClick(e, 'Details')}>Details</Button>
+                    <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={(e) => handleActionClick(e, 'Interactions')}>Interactions</Button>
+                    <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={(e) => handleActionClick(e, 'Save')}>Save</Button>
+                    <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={(e) => handleActionClick(e, 'Quiz')}>Quiz</Button>
+                 </div>
             </Card>
         </div>
     );
@@ -136,7 +144,7 @@ export function ScanMedicineStripClient() {
   
   const getRecognitionSource = (type: string) => {
       switch(type) {
-          case 'barcode': return { source: 'Barcode Scan via GS1 Database', confidence: '98%' };
+          case 'barcode': return { source: 'UMT Verified Formulary & GS1 Database', confidence: '98%' };
           case 'herb': return { source: 'Plant Recognition Model', confidence: '72%' };
           default: return { source: 'OCR Text Recognition', confidence: '95%' };
       }
@@ -222,7 +230,14 @@ export function ScanMedicineStripClient() {
                                <DetailSection title="Dosage Forms" content={scannedItem.drug.pharmaApplications.dosageForms} icon={Pill} />
                                <DetailSection title="Scan Info" content={`Source: ${getRecognitionSource(scannedItem.type).source} | Confidence: ${getRecognitionSource(scannedItem.type).confidence}`} icon={Barcode}/>
                                <DetailSection title="Batch / Expiry" content={"Not detected on packaging."} icon={Calendar}/>
-                               <Button size="sm" variant="link" className="p-0 h-auto" onClick={() => toast({title: "Coming Soon!", description: "This will allow reporting incorrect information to admins."})}>Report Suspect Packaging</Button>
+                               <Button size="sm" variant="link" className="p-0 h-auto" onClick={() => toast({title: "Coming Soon!", description: "This will allow reporting incorrect information to admins."})}>Report Incorrect Info</Button>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardHeader><CardTitle className="text-lg">Faculty Teaching Notes & Exam Highlights</CardTitle></CardHeader>
+                            <CardContent>
+                               <DetailSection title="Key Points" content={scannedItem.drug.specialNotes} icon={BookCopy} />
                             </CardContent>
                         </Card>
                         
@@ -232,12 +247,6 @@ export function ScanMedicineStripClient() {
                                <DetailSection title="Storage & Stability" content={scannedItem.drug.pharmaApplications.storage} icon={Archive} />
                                <DetailSection title="Therapeutic Alternatives" content={"Data on alternatives not available in this mock dataset."} icon={GitCompareArrows} />
                                <DetailSection title="Analytical / QC Methods" content={`Qualitative: ${scannedItem.drug.analyticalMethods.qualitative}\nQuantitative: ${scannedItem.drug.analyticalMethods.quantitative}\nPharmacopoeial: ${scannedItem.drug.analyticalMethods.pharmacopoeial}`} icon={Microscope} />
-                            </CardContent>
-                        </Card>
-                         <Card>
-                            <CardHeader><CardTitle className="text-lg">Teaching & Exam Notes</CardTitle></CardHeader>
-                            <CardContent>
-                               <DetailSection title="Exam Highlights" content={scannedItem.drug.specialNotes} icon={BookCopy} />
                             </CardContent>
                         </Card>
 
