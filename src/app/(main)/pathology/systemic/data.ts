@@ -827,6 +827,38 @@ export const systemicPathologyData: OrganSystem[] = [
             complications: "Increased intracranial pressure, herniation, hydrocephalus.",
             prognosis: "Poor, with high rates of mortality and severe disability.",
           },
+          { 
+            title: "Subarachnoid Hemorrhage",
+            overview: "Subarachnoid hemorrhage (SAH) is bleeding into the subarachnoid space, the area between the arachnoid and pia mater. The most common cause of non-traumatic SAH is the rupture of a saccular (berry) aneurysm in a cerebral artery.",
+            learningObjectives: [
+                "Define SAH and identify ruptured berry aneurysm as the most common cause.",
+                "Describe the typical location of berry aneurysms (branch points in the circle of Willis).",
+                "Recognize the classic clinical presentation of a 'thunderclap' headache.",
+                "Understand the major complications, including vasospasm and hydrocephalus."
+            ],
+            tags: {
+                organ: "Brain",
+                system: "Nervous System",
+                category: "Vascular",
+                level: "Advanced"
+            },
+            etiology: [
+                "Rupture of a saccular (berry) aneurysm (~85% of cases).",
+                "Arteriovenous malformation (AVM) rupture.",
+                "Trauma (most common cause of SAH overall, but typically considered separately)."
+            ],
+            pathogenesis: "Saccular aneurysms are thin-walled outpouchings of arteries, typically occurring at branch points in the circle of Willis. They lack a normal medial layer, making them prone to rupture, especially in the setting of hypertension. Rupture releases arterial blood directly into the cerebrospinal fluid (CSF).",
+            morphology: {
+                gross: "Blood is seen in the subarachnoid space, particularly at the base of the brain, tracking along the sulci. The ruptured aneurysm may be identified.",
+                microscopic: "Not a primary diagnostic modality. Shows blood within the subarachnoid space.",
+                imageHint: "subarachnoid hemorrhage CT scan"
+            },
+            clinicalFeatures: "Presents with the sudden onset of an excruciatingly severe headache, often described as the 'worst headache of my life' (thunderclap headache). This may be accompanied by vomiting, neck stiffness (meningismus), and loss of consciousness.",
+            investigations: "A non-contrast CT scan of the head is the first-line investigation and will show hyperdense blood in the sulci and cisterns. If the CT is negative but clinical suspicion is high, a lumbar puncture is performed to look for xanthochromia (yellow discoloration of the CSF from bilirubin). CT angiography is then used to identify the ruptured aneurysm.",
+            management: "Immediate management involves securing the airway and controlling blood pressure. The aneurysm must be secured to prevent re-bleeding, either by neurosurgical clipping or endovascular coiling. Nimodipine (a calcium channel blocker) is used to prevent cerebral vasospasm, a major delayed complication. Always check current local and international SAH guidelines.",
+            complications: "Re-bleeding (high mortality), cerebral vasospasm (leading to delayed ischemia), hydrocephalus, seizures.",
+            prognosis: "High mortality and morbidity, even with treatment.",
+          },
         ]
       },
       {
@@ -894,6 +926,36 @@ export const systemicPathologyData: OrganSystem[] = [
                 management: "Treatment is symptomatic and supportive. Cholinesterase inhibitors (e.g., donepezil) and NMDA receptor antagonists (e.g., memantine) can provide modest benefit. Newer anti-amyloid monoclonal antibodies have been approved but have significant side effects and unclear clinical benefit. Always check current local and international guidelines.",
                 complications: "Progressive dependence, aspiration pneumonia, immobility.",
                 prognosis: "Incurable and progressive, with an average survival of 8-10 years after diagnosis.",
+            },
+            {
+                title: "Huntington's Disease",
+                overview: "Huntington's disease is an autosomal dominant neurodegenerative disorder characterized by a combination of progressive movement disorders (chorea), cognitive decline, and psychiatric disturbances. It is caused by an expansion of a CAG trinucleotide repeat in the huntingtin (HTT) gene.",
+                learningObjectives: [
+                    "Understand the autosomal dominant inheritance pattern and genetic basis (CAG repeat expansion).",
+                    "Identify the characteristic atrophy of the caudate nucleus and putamen.",
+                    "Recognize chorea as the hallmark movement disorder.",
+                    "Appreciate the concept of anticipation in genetic counseling."
+                ],
+                tags: {
+                    organ: "Brain",
+                    system: "Nervous System",
+                    category: "Genetic",
+                    level: "Advanced"
+                },
+                etiology: [
+                    "Expansion of a CAG (glutamine) trinucleotide repeat in the HTT gene on chromosome 4."
+                ],
+                pathogenesis: "The expanded CAG repeat results in a mutant huntingtin protein with a long polyglutamine tract. This mutant protein is prone to misfolding and aggregation, forming intranuclear inclusions that are toxic to neurons, particularly the medium spiny neurons of the striatum (caudate and putamen).",
+                morphology: {
+                    gross: "Pronounced atrophy of the caudate nucleus and putamen. This can lead to a 'boxcar' appearance of the lateral ventricles on imaging.",
+                    microscopic: "Severe loss of medium spiny neurons in the striatum. Intranuclear inclusions of mutant huntingtin protein can be seen.",
+                    imageHint: "huntington's disease brain atrophy"
+                },
+                clinicalFeatures: "Typically presents in mid-life (30s-40s). The hallmark is chorea, an involuntary, jerky, dance-like movement. Over time, this progresses to parkinsonism and dystonia. Cognitive decline leads to dementia, and psychiatric symptoms like depression and psychosis are common.",
+                investigations: "Genetic testing to confirm the number of CAG repeats in the HTT gene is diagnostic.",
+                management: "There is no cure or disease-modifying therapy. Management is symptomatic and supportive, including medications to control chorea (e.g., tetrabenazine) and psychiatric symptoms. Genetic counseling is critical for affected families. Always check current local and international guidelines.",
+                complications: "Progressive disability, swallowing difficulties leading to aspiration pneumonia, and suicide.",
+                prognosis: "Relentlessly progressive, with death typically occurring 15 to 20 years after onset.",
             },
         ]
       }
@@ -967,6 +1029,37 @@ export const systemicPathologyData: OrganSystem[] = [
                     complications: "End-stage renal disease requiring dialysis or transplantation.",
                     prognosis: "Progressive, but the rate of decline can be significantly slowed with good management of blood sugar and blood pressure.",
                 },
+                 {
+                    title: "Membranous Nephropathy",
+                    overview: "Membranous nephropathy is a common cause of nephrotic syndrome in adults. It is an autoimmune disease characterized by the deposition of immune complexes along the subepithelial side of the glomerular basement membrane, leading to basement membrane thickening and podocyte injury.",
+                    learningObjectives: [
+                        "Recognize membranous nephropathy as a common cause of adult nephrotic syndrome.",
+                        "Understand the pathogenesis involving antibodies against the phospholipase A2 receptor (PLA2R).",
+                        "Identify the characteristic 'spike and dome' appearance on silver stain.",
+                        "Describe the typical granular immunofluorescence pattern."
+                    ],
+                    tags: {
+                        organ: "Kidney",
+                        system: "Renal System",
+                        category: "Autoimmune",
+                        level: "Advanced"
+                    },
+                    etiology: [
+                        "Primary (idiopathic) in about 85% of cases, associated with autoantibodies to the PLA2R on podocytes.",
+                        "Secondary to other conditions, such as drugs (NSAIDs), infections (Hepatitis B), and other autoimmune diseases (lupus)."
+                    ],
+                    pathogenesis: "In the primary form, circulating antibodies bind to the PLA2R antigen on the surface of podocytes. This in-situ formation of immune complexes activates the complement system, leading to the formation of the membrane attack complex (C5b-C9), which injures the podocytes and disrupts the glomerular filtration barrier, causing proteinuria.",
+                    morphology: {
+                        gross: "Kidneys may appear normal or slightly enlarged and pale.",
+                        microscopic: "Light microscopy shows diffuse, uniform thickening of the glomerular basement membrane (GBM) without significant hypercellularity. Silver stain (Jones stain) highlights new basement membrane material laid down between the immune deposits, creating a characteristic 'spike and dome' pattern. Immunofluorescence shows granular deposits of IgG and C3 along the capillary walls.",
+                        imageHint: "membranous nephropathy spike and dome"
+                    },
+                    clinicalFeatures: "Presents with the insidious onset of nephrotic syndrome (heavy proteinuria, edema, hypoalbuminemia). Can also present with non-nephrotic proteinuria.",
+                    investigations: "Urinalysis, serum albumin, and lipid profile confirm nephrotic syndrome. Serology for PLA2R antibodies is highly specific for primary membranous nephropathy. Renal biopsy is often required for definitive diagnosis.",
+                    management: "Management depends on the risk of progression. Low-risk patients may be managed with supportive care (ACE inhibitors, statins). High-risk patients require immunosuppressive therapy, such as cyclophosphamide and corticosteroids, or rituximab. Always check current local and international guidelines.",
+                    complications: "Thromboembolism, progressive renal failure.",
+                    prognosis: "Variable. About one-third of patients undergo spontaneous remission, one-third remain proteinuric but stable, and one-third progress to end-stage renal disease.",
+                }
             ]
         },
         {
@@ -1004,6 +1097,37 @@ export const systemicPathologyData: OrganSystem[] = [
                     complications: "Sepsis, papillary necrosis, pyonephrosis (pus filling the renal pelvis), and perinephric abscess. Recurrent infections can lead to chronic pyelonephritis and renal scarring.",
                     prognosis: "Excellent with prompt and appropriate antibiotic therapy.",
                 },
+                 {
+                    title: "Acute Tubular Necrosis (ATN)",
+                    overview: "Acute tubular necrosis is the most common cause of acute kidney injury (AKI). It is characterized by the destruction of renal tubular epithelial cells, most often due to ischemia or nephrotoxins.",
+                    learningObjectives: [
+                        "Define ATN and recognize it as the leading cause of AKI.",
+                        "Differentiate between ischemic and nephrotoxic ATN.",
+                        "Describe the key histologic features, including tubular cell necrosis and muddy brown casts.",
+                        "Understand the clinical phases of ATN (initiation, maintenance, recovery)."
+                    ],
+                    tags: {
+                        organ: "Kidney",
+                        system: "Renal System",
+                        category: "Other",
+                        level: "Intermediate"
+                    },
+                    etiology: [
+                        "Ischemic: Prolonged hypotension or hypovolemia (e.g., from major surgery, sepsis, hemorrhage).",
+                        "Nephrotoxic: Direct toxicity from drugs (e.g., aminoglycosides, cisplatin), contrast agents, or endogenous substances (e.g., myoglobin in rhabdomyolysis)."
+                    ],
+                    pathogenesis: "Ischemia leads to loss of cell polarity, detachment of tubular cells from the basement membrane, and obstruction of the tubular lumen by casts, all of which decrease GFR. Nephrotoxins cause direct cellular injury and necrosis. In both cases, the injury leads to a sharp decline in renal function.",
+                    morphology: {
+                        gross: "Kidneys are often swollen and pale.",
+                        microscopic: "Shows necrosis and sloughing of tubular epithelial cells, particularly in the proximal convoluted tubule and the thick ascending limb. The tubules are often dilated and contain characteristic granular, pigmented 'muddy brown' casts. The interstitium is edematous.",
+                        imageHint: "acute tubular necrosis histology"
+                    },
+                    clinicalFeatures: "Presents with acute kidney injury, characterized by a rapid rise in serum creatinine and a decrease in urine output (oliguria). The clinical course has three phases: 1. Initiation (the period of initial insult), 2. Maintenance (oliguria and uremia), and 3. Recovery (urine output increases, but tubules are still damaged, leading to electrolyte imbalances).",
+                    investigations: "Urinalysis shows muddy brown granular casts, a high fractional excretion of sodium (FENa > 2%), and urine osmolality that is similar to plasma.",
+                    management: "Management is supportive. The underlying cause must be corrected (e.g., restore blood pressure, stop offending drug). Careful management of fluids and electrolytes is crucial. Dialysis may be required during the oliguric phase.",
+                    complications: "Hyperkalemia, metabolic acidosis, uremia, fluid overload.",
+                    prognosis: "Potentially reversible if the underlying cause is treated and the patient survives the acute phase. The tubular epithelium has a remarkable capacity for regeneration.",
+                }
             ]
         }
     ]
@@ -1033,6 +1157,7 @@ export const systemicPathologyData: OrganSystem[] = [
                     etiology: [
                         "Autoimmune, with a strong genetic predisposition (associated with certain HLA types)."
                     ],
+
                     pathogenesis: "The central defect is a failure of self-tolerance, leading to the production of several autoantibodies. The most important is Thyroid-Stimulating Immunoglobulin (TSI), an IgG antibody that binds to and activates the TSH receptor on thyroid follicular cells, mimicking the action of TSH and causing chronic, unregulated overproduction of thyroid hormones.",
                     morphology: {
                         gross: "The thyroid gland is diffusely and symmetrically enlarged. The parenchyma is soft and has a 'beefy-red' appearance.",
@@ -1074,6 +1199,74 @@ export const systemicPathologyData: OrganSystem[] = [
                     management: "Treatment involves lifelong thyroid hormone replacement therapy with levothyroxine. Always check current local and international hypothyroidism guidelines.",
                     complications: "Increased risk of other autoimmune diseases and a small increased risk of developing B-cell non-Hodgkin lymphoma of the thyroid.",
                     prognosis: "Excellent with hormone replacement therapy.",
+                },
+                { 
+                    title: "Papillary Thyroid Carcinoma",
+                    overview: "Papillary thyroid carcinoma (PTC) is the most common form of thyroid cancer. It is known for its excellent prognosis and characteristic nuclear features, which are key to its diagnosis.",
+                    learningObjectives: [
+                        "Recognize PTC as the most common thyroid malignancy.",
+                        "Identify prior radiation exposure as a major risk factor.",
+                        "Describe the pathognomonic nuclear features ('Orphan Annie eyes', grooves, pseudoinclusions).",
+                        "Understand that prognosis is generally excellent."
+                    ],
+                    tags: {
+                        organ: "Thyroid",
+                        system: "Endocrine System",
+                        category: "Neoplastic",
+                        level: "Classic"
+                    },
+                    etiology: [
+                        "Exposure to ionizing radiation, particularly in childhood.",
+                        "Genetic mutations in the MAPK pathway (e.g., BRAF mutations, RET/PTC rearrangements)."
+                    ],
+                    pathogenesis: "Mutations that activate the MAPK signaling pathway are central to the development of PTC. These mutations lead to uncontrolled cell growth and proliferation.",
+                    morphology: {
+                        gross: "Tumors can be solitary or multifocal, and may appear well-circumscribed or infiltrative. They are often solid, gray-white, and may have cystic or papillary areas.",
+                        microscopic: "The diagnosis is based on nuclear features, not the papillary architecture. The key features are: 1. Enlarged, overlapping nuclei with finely dispersed, optically clear chromatin ('Orphan Annie eye' nuclei). 2. Nuclear grooves (longitudinal invaginations of the nuclear membrane). 3. Intranuclear cytoplasmic pseudoinclusions. Psammoma bodies (concentrically calcified structures) are also common.",
+                        imageHint: "papillary thyroid carcinoma histology"
+                    },
+                    clinicalFeatures: "Usually presents as a painless, palpable thyroid nodule or a mass in the neck due to lymph node metastasis. May be discovered incidentally on imaging.",
+                    investigations: "Ultrasound is used to characterize the nodule. Fine-needle aspiration (FNA) cytology is the primary diagnostic tool and is often sufficient for diagnosis due to the characteristic nuclear features.",
+                    management: "Treatment typically involves total or near-total thyroidectomy, followed by radioiodine ablation for higher-risk patients. Patients require lifelong thyroid hormone suppression therapy. Always check current local and international thyroid cancer guidelines.",
+                    complications: "Metastasis to cervical lymph nodes is common but does not significantly worsen the excellent prognosis. Distant metastases (e.g., to lung) are rare.",
+                    prognosis: "Excellent, with a 10-year survival rate exceeding 95%.",
+                },
+            ]
+        },
+        {
+            name: "Parathyroid Pathology",
+            diseases: [
+                {
+                    title: "Primary Hyperparathyroidism",
+                    overview: "Primary hyperparathyroidism is a condition characterized by the excessive, unregulated secretion of parathyroid hormone (PTH), leading to hypercalcemia. It is most commonly caused by a benign parathyroid adenoma.",
+                    learningObjectives: [
+                        "Define primary hyperparathyroidism and its relation to hypercalcemia.",
+                        "Identify parathyroid adenoma as the most common cause.",
+                        "Recognize the clinical manifestations summarized as 'bones, stones, groans, and psychiatric overtones'.",
+                        "Interpret the key laboratory findings of high PTH and high calcium."
+                    ],
+                    tags: {
+                        organ: "Parathyroid",
+                        system: "Endocrine System",
+                        category: "Neoplastic",
+                        level: "Classic"
+                    },
+                    etiology: [
+                        "Parathyroid adenoma (~85% of cases).",
+                        "Primary hyperplasia (~10-15%).",
+                        "Parathyroid carcinoma (<1%)."
+                    ],
+                    pathogenesis: "A somatic mutation in a single parathyroid chief cell leads to the clonal expansion and formation of a benign tumor (adenoma) that autonomously secretes PTH, irrespective of the serum calcium level. The excess PTH causes increased bone resorption, increased renal calcium reabsorption, and increased intestinal calcium absorption (via activation of Vitamin D), all leading to hypercalcemia.",
+                    morphology: {
+                        gross: "A parathyroid adenoma is typically a single, encapsulated, soft, tan-to-reddish-brown nodule. The remaining parathyroid glands are usually normal or shrunken due to feedback inhibition.",
+                        microscopic: "The adenoma is composed of uniform, polygonal chief cells arranged in sheets, with a delicate vascular network. A key feature is the absence of adipose tissue within the adenoma, which is normally present in an adult parathyroid gland.",
+                        imageHint: "parathyroid adenoma histology"
+                    },
+                    clinicalFeatures: "Many patients are asymptomatic and diagnosed on routine blood tests. Symptomatic patients can present with the classic mnemonic 'painful bones (osteitis fibrosa cystica), renal stones, abdominal groans (pancreatitis, peptic ulcers), and psychiatric overtones (depression, lethargy)'.",
+                    investigations: "The key laboratory finding is an elevated serum calcium level with a simultaneously elevated or inappropriately normal PTH level.",
+                    management: "Surgical removal of the adenomatous gland (parathyroidectomy) is the definitive treatment. Always check current local and international guidelines.",
+                    complications: "Osteoporosis, kidney stones, pancreatitis.",
+                    prognosis: "Excellent after successful surgery.",
                 },
             ]
         }
@@ -1148,6 +1341,36 @@ export const systemicPathologyData: OrganSystem[] = [
                     complications: "Metastasis to lungs, bone, and bone marrow.",
                     prognosis: "With aggressive multimodal therapy, long-term survival is around 70% for patients with localized disease.",
                 },
+                { 
+                    title: "Chondrosarcoma",
+                    overview: "Chondrosarcoma is a malignant tumor that produces cartilage. It is the second most common primary malignant tumor of bone after osteosarcoma and typically affects adults over the age of 40.",
+                    learningObjectives: [
+                        "Define chondrosarcoma as a cartilage-producing malignancy.",
+                        "Recognize its predilection for the axial skeleton (pelvis, ribs, shoulder).",
+                        "Describe the histologic features, including grading based on cellularity and atypia.",
+                        "Understand that it is largely resistant to chemotherapy and radiation."
+                    ],
+                    tags: {
+                        organ: "Bone",
+                        system: "Musculoskeletal System",
+                        category: "Neoplastic",
+                        level: "Advanced"
+                    },
+                    etiology: [
+                        "Can arise de novo (primary) or from a pre-existing benign cartilage tumor like an enchondroma or osteochondroma (secondary)."
+                    ],
+                    pathogenesis: "Involves mutations in genes like IDH1 and IDH2. The tumor cells are malignant chondrocytes that produce an abnormal cartilaginous matrix.",
+                    morphology: {
+                        gross: "A large, bulky tumor made up of gray-white, translucent, glistening nodules of cartilage. The tumor often erodes through the cortex.",
+                        microscopic: "The diagnosis and grade depend on cellularity, cytologic atypia, and mitotic activity. Low-grade tumors have mildly increased cellularity and minimal atypia. High-grade tumors are highly cellular with severe pleomorphism and frequent mitoses. The key is to find malignant chondrocytes within a cartilaginous matrix.",
+                        imageHint: "chondrosarcoma histology"
+                    },
+                    clinicalFeatures: "Presents as a painful, progressively enlarging mass. Typically affects the central skeleton (pelvis, shoulder, ribs) more often than the long bones.",
+                    investigations: "X-ray shows a lytic lesion with characteristic 'rings and arcs' or 'popcorn' calcifications, representing calcification of the cartilaginous matrix. Biopsy is required for diagnosis.",
+                    management: "Wide surgical excision is the mainstay of treatment. Most chondrosarcomas are resistant to chemotherapy and radiation therapy. Always check current local and international sarcoma guidelines.",
+                    complications: "Local recurrence after inadequate excision, metastasis (especially high-grade tumors).",
+                    prognosis: "Highly dependent on the histologic grade. Low-grade tumors have an excellent prognosis with surgery alone, while high-grade tumors have a high risk of metastasis and a poor prognosis.",
+                },
             ]
         },
         {
@@ -1184,6 +1407,67 @@ export const systemicPathologyData: OrganSystem[] = [
                     complications: "Chronic pain, joint deformity, and loss of mobility.",
                     prognosis: "A progressive condition, but many patients can be managed effectively with conservative measures.",
                 },
+                 { 
+                    title: "Rheumatoid Arthritis",
+                    overview: "Rheumatoid arthritis (RA) is a chronic, systemic autoimmune disease that primarily affects the joints, leading to a symmetric, inflammatory, destructive polyarthritis. It can also have numerous extra-articular manifestations.",
+                    learningObjectives: [
+                        "Define RA as a systemic autoimmune disease.",
+                        "Understand the role of autoantibodies (RF and anti-CCP) and T-cell mediated inflammation.",
+                        "Describe the formation of a pannus and its destructive effects on cartilage and bone.",
+                        "Recognize the classic clinical presentation of symmetric arthritis with morning stiffness."
+                    ],
+                    tags: {
+                        organ: "Joints",
+                        system: "Musculoskeletal System",
+                        category: "Autoimmune",
+                        level: "Classic"
+                    },
+                    etiology: [
+                        "Autoimmune, with a strong genetic predisposition (HLA-DR4) combined with environmental triggers (e.g., smoking)."
+                    ],
+                    pathogenesis: "RA is initiated by the activation of CD4+ T-cells, which respond to an unknown antigen. These T-cells produce cytokines that activate macrophages and other inflammatory cells in the synovium. B-cells are also activated, producing autoantibodies like Rheumatoid Factor (RF) and anti-citrullinated protein antibodies (anti-CCP). This chronic inflammation leads to synovial hyperplasia and the formation of a pannus, a mass of inflamed synovial tissue, inflammatory cells, and fibroblasts that grows over the articular cartilage and erodes the underlying bone.",
+                    morphology: {
+                        gross: "Affected joints are swollen and warm. The synovium is thickened, edematous, and hyperplastic, with finger-like projections (villi). The pannus erodes the cartilage and bone, leading to joint space narrowing and bony erosions. In late stages, fibrous or bony ankylosis (fusion of the joint) can occur, causing permanent deformity.",
+                        microscopic: "The synovium shows a dense inflammatory infiltrate of lymphocytes and plasma cells (often forming lymphoid follicles), synovial cell hyperplasia, and increased vascularity. The pannus is seen invading the cartilage.",
+                        imageHint: "rheumatoid arthritis pannus histology"
+                    },
+                    clinicalFeatures: "Presents with a symmetric arthritis affecting multiple small joints (MCP, PIP joints of the hands, MTP joints of the feet). Characterized by prolonged morning stiffness (>1 hour) that improves with activity. Systemic symptoms like fatigue and low-grade fever are common.",
+                    investigations: "Blood tests for Rheumatoid Factor (RF) and anti-CCP antibodies (more specific) are key. Inflammatory markers (ESR, CRP) are elevated. X-rays show joint space narrowing and marginal bony erosions.",
+                    management: "Early treatment with disease-modifying antirheumatic drugs (DMARDs), such as methotrexate, is crucial to prevent joint destruction. Biologic agents (e.g., anti-TNF inhibitors) are used for more severe disease. NSAIDs and corticosteroids are used for symptom control. Always check current local and international RA guidelines.",
+                    complications: "Joint destruction and deformity, rheumatoid nodules, vasculitis, and an increased risk of cardiovascular disease.",
+                    prognosis: "A chronic, progressive disease, but modern therapies have significantly improved outcomes and can induce remission.",
+                },
+                 { 
+                    title: "Gout",
+                    overview: "Gout is a metabolic disease characterized by recurrent episodes of acute inflammatory arthritis due to the deposition of monosodium urate (MSU) crystals in joints and soft tissues. It is caused by chronic hyperuricemia.",
+                    learningObjectives: [
+                        "Define gout and its relationship to hyperuricemia.",
+                        "Describe the mechanism of MSU crystal-induced inflammation, involving the inflammasome.",
+                        "Recognize the characteristic appearance of needle-shaped, negatively birefringent crystals.",
+                        "Differentiate between acute gouty arthritis and chronic tophaceous gout."
+                    ],
+                    tags: {
+                        organ: "Joints",
+                        system: "Musculoskeletal System",
+                        category: "Metabolic",
+                        level: "Classic"
+                    },
+                    etiology: [
+                        "Primary gout (most common): Due to an unknown enzyme defect or underexcretion of uric acid by the kidneys.",
+                        "Secondary gout: Due to conditions that increase uric acid production (e.g., leukemia, chemotherapy) or decrease its excretion (e.g., renal failure, diuretics)."
+                    ],
+                    pathogenesis: "When serum uric acid levels are elevated, MSU crystals can precipitate in and around joints. These crystals are phagocytosed by macrophages, which triggers the activation of the NLRP3 inflammasome, leading to the production of interleukin-1β (IL-1β) and a massive neutrophilic inflammatory response, causing the acute arthritis.",
+                    morphology: {
+                        gross: "Acute arthritis shows a swollen, red joint. Chronic tophaceous gout is characterized by the formation of tophi, which are large aggregates of MSU crystals surrounded by a foreign-body giant cell reaction. Tophi commonly occur in the ear helix, joints, and tendons.",
+                        microscopic: "Synovial fluid analysis during an acute attack reveals numerous neutrophils and needle-shaped MSU crystals, which are negatively birefringent under polarized light. A tophus consists of a central core of urate crystals surrounded by macrophages, lymphocytes, and giant cells.",
+                        imageHint: "gout crystals polarized light"
+                    },
+                    clinicalFeatures: "Presents with a sudden onset of excruciatingly painful arthritis, most classically in the first metatarsophalangeal joint (podagra). The attacks are self-limited but recurrent.",
+                    investigations: "Definitive diagnosis requires aspiration of synovial fluid and identification of MSU crystals. Serum uric acid level is usually elevated but can be normal during an acute attack.",
+                    management: "Acute attacks are treated with anti-inflammatory drugs like NSAIDs, colchicine, or corticosteroids. Long-term management to lower uric acid levels involves drugs like allopurinol (a xanthine oxidase inhibitor) or probenecid (a uricosuric agent). Always check current local and international gout guidelines.",
+                    complications: "Chronic tophaceous arthritis with joint destruction, and urate nephropathy.",
+                    prognosis: "Excellent with proper long-term management.",
+                }
             ]
         }
     ]
@@ -1257,6 +1541,37 @@ export const systemicPathologyData: OrganSystem[] = [
                     management: "Management is supportive and focuses on preventing crises. This includes hydration, pain management, and hydroxyurea (which increases levels of fetal hemoglobin, HbF, an inhibitor of sickling). Blood transfusions are used for severe anemia or complications. Always check current local and international guidelines.",
                     complications: "Acute chest syndrome, stroke, aplastic crisis (with parvovirus B19 infection), renal failure.",
                     prognosis: "A chronic, lifelong illness, but advances in care have significantly improved life expectancy.",
+                },
+                 {
+                    title: "Autoimmune Hemolytic Anemia (AIHA)",
+                    overview: "Autoimmune hemolytic anemia is a group of disorders caused by autoantibodies that target red blood cells (RBCs), leading to their premature destruction (hemolysis). It is classified based on the thermal properties of the autoantibody (warm vs. cold).",
+                    learningObjectives: [
+                        "Define AIHA as antibody-mediated RBC destruction.",
+                        "Differentiate between warm and cold AIHA based on the antibody type and clinical presentation.",
+                        "Understand the diagnostic role of the direct antiglobulin test (DAT or Coombs test).",
+                        "Recognize spherocytes on a peripheral blood smear."
+                    ],
+                    tags: {
+                        organ: "Blood",
+                        system: "Hematopoietic & Lymphoid Systems",
+                        category: "Autoimmune",
+                        level: "Advanced"
+                    },
+                    etiology: [
+                        "Primary (idiopathic) in about half of cases.",
+                        "Secondary to other conditions, such as autoimmune diseases (e.g., SLE), lymphoid neoplasms (e.g., CLL), or drugs (e.g., penicillin, methyldopa)."
+                    ],
+                    pathogenesis: "Warm AIHA (most common): Caused by IgG antibodies that bind to RBCs optimally at body temperature (37°C). These IgG-coated RBCs are then cleared from circulation by macrophages in the spleen (extravascular hemolysis). Cold AIHA: Caused by IgM antibodies that bind to RBCs only at cold temperatures (typically <30°C). The IgM antibody fixes complement, and hemolysis can occur either extravascularly in the liver or intravascularly.",
+                    morphology: {
+                        gross: "Patients may have splenomegaly (in warm AIHA) and jaundice.",
+                        microscopic: "The key finding on the peripheral blood smear in warm AIHA is the presence of spherocytes, which are small, dark, spherical RBCs that lack central pallor. They are formed when macrophages in the spleen remove portions of the IgG-coated RBC membrane.",
+                        imageHint: "spherocytes blood smear"
+                    },
+                    clinicalFeatures: "Presents with a variable degree of anemia, from mild to life-threatening. Jaundice and splenomegaly are common. In cold AIHA, patients may experience acrocyanosis (bluish discoloration of fingertips and toes) on exposure to cold.",
+                    investigations: "The direct antiglobulin test (DAT or Coombs test) is the cornerstone of diagnosis; it detects antibodies directly on the surface of the patient's RBCs. Other findings include signs of hemolysis: elevated LDH, elevated indirect bilirubin, and low haptoglobin.",
+                    management: "Corticosteroids are the first-line treatment for warm AIHA. For refractory cases, splenectomy or other immunosuppressants (e.g., rituximab) may be used. For cold AIHA, the mainstay is avoiding cold exposure. Always check current local and international guidelines.",
+                    complications: "Severe anemia, thromboembolism.",
+                    prognosis: "Variable, depending on the underlying cause and response to treatment.",
                 },
             ]
         },
