@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { Download, CloudOff, BookOpen, CaseSensitive, History, Trash2, CheckCircle, WifiOff, FileDown, Award, Bug, ShieldCheck, Settings, BarChart, Milestone, Users, Globe } from "lucide-react";
+import { Download, CloudOff, BookOpen, CaseSensitive, History, Trash2, CheckCircle, WifiOff, FileDown, Award, Bug, ShieldCheck, Settings, BarChart, Milestone, Users, Globe, BookCopy, Mic, ShieldAlert } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -16,7 +16,7 @@ const kpiData = [
   { metric: "Feature Adoption Rate", formula: "(# students using offline mode) / (Total # students)", target: "> 40% within 1st semester" },
   { metric: "Content Download Rate", formula: "(# of downloaded items) / (# of available items)", target: "Core subjects > 70%" },
   { metric: "Offline Session Length", formula: "Avg. time spent in offline mode per session", target: "> 15 minutes" },
-  { metric: "Sync Success Rate", formula: "Successful syncs / Total sync attempts", target: "> 99.5%" },
+  { metric: "Sync Success Rate", formula: "Successful syncs ÷ total sync attempts", target: "> 99.5%" },
   { metric: "Cache Hit Ratio", formula: "(Offline content loads) / (Total content loads)", target: "Monitor correlation with grades" },
   { metric: "Storage Usage", formula: "Avg. MB used per student for offline data", target: "Stay below 500MB avg." },
   { metric: "User Satisfaction (CSAT/NPS)", formula: "Feedback from targeted surveys on this feature", target: "CSAT > 4.2/5" },
@@ -362,9 +362,60 @@ export function OfflineModeClient() {
                 </Card>
             </AccordionContent>
         </AccordionItem>
+        <AccordionItem value="acceptance" className="border-0">
+            <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">Acceptance Criteria</AccordionTrigger>
+            <AccordionContent>
+                <Card>
+                    <CardHeader><CardTitle className="flex items-center gap-2"><CheckCircle/>Acceptance Criteria</CardTitle><CardDescription>Criteria that must be met for this feature to be considered "Done".</CardDescription></CardHeader>
+                    <CardContent>
+                        <ul className="list-disc list-inside space-y-3 text-sm text-muted-foreground">
+                            <li><strong>UI Complete:</strong> All UI components described in the wireframes are implemented and responsive.</li>
+                            <li><strong>Core Download:</strong> Users can successfully download at least three different content types (e.g., PDF, Video, Quiz data).</li>
+                            <li><strong>Offline Access:</strong> All downloaded content is fully accessible and functional when the device is in airplane mode.</li>
+                            <li><strong>Basic Sync:</strong> Local changes (quiz attempts, annotations) are successfully synced to the server upon reconnection with a success rate of >99%.</li>
+                            <li><strong>Storage Management:</strong> Users can view their storage usage and successfully clear the cache.</li>
+                        </ul>
+                    </CardContent>
+                </Card>
+            </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="microcopy" className="border-0">
+            <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">Microcopy Library</AccordionTrigger>
+            <AccordionContent>
+                <Card>
+                     <CardHeader><CardTitle className="flex items-center gap-2"><BookCopy/>Microcopy &amp; UX Writing</CardTitle><CardDescription>A central library of all user-facing text for consistency.</CardDescription></CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader><TableRow><TableHead>Type</TableHead><TableHead>Key</TableHead><TableHead>Text</TableHead></TableRow></TableHeader>
+                            <TableBody>
+                                <TableRow><TableCell>Button</TableCell><TableCell>DOWNLOAD_SINGLE</TableCell><TableCell>"Download Note"</TableCell></TableRow>
+                                <TableRow><TableCell>Button</TableCell><TableCell>DOWNLOAD_ALL</TableCell><TableCell>"Download All for [Subject]"</TableCell></TableRow>
+                                <TableRow><TableCell>Toast</TableCell><TableCell>DOWNLOAD_SUCCESS</TableCell><TableCell>"Success! [Item Name] is now available offline."</TableCell></TableRow>
+                                <TableRow><TableCell>Toast</TableCell><TableCell>SYNC_FAILED</TableCell><TableCell>"Sync Failed. Please check your connection and try again."</TableCell></TableRow>
+                                <TableRow><TableCell>Alert</TableCell><TableCell>STORAGE_WARNING</TableCell><TableCell>"Low Storage. You have less than 100MB remaining. Please clear some space to download more content."</TableCell></TableRow>
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="action_plan" className="border-0">
+            <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">7-Day Action Plan</AccordionTrigger>
+            <AccordionContent>
+                <Card>
+                    <CardHeader><CardTitle className="flex items-center gap-2"><ShieldAlert/>First Week Action Plan</CardTitle><CardDescription>High-priority deliverables for the product team.</CardDescription></CardHeader>
+                    <CardContent>
+                        <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                            <li><strong>Finalize Data Models:</strong> The backend team must finalize the data schemas for notes, quizzes, and videos to ensure they support offline caching and sync versioning.</li>
+                            <li><strong>Build Core UI Components:</strong> The frontend team must build the main UI components for the "Download Content" and "Cached Data Management" sections based on the wireframes.</li>
+                            <li><strong>Setup Basic Service Worker:</strong> Implement the initial service worker to handle basic caching of the application shell and static assets to provide a reliable offline foundation.</li>
+                        </ol>
+                    </CardContent>
+                </Card>
+            </AccordionContent>
+        </AccordionItem>
       </Accordion>
 
     </div>
   );
 }
-
