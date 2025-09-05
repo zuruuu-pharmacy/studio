@@ -11,12 +11,25 @@ import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import { AlertCircle, FileCheck, FileWarning, Globe, School, Trash2, PlusCircle, Save } from 'lucide-react';
+import { AlertCircle, FileCheck, FileWarning, Globe, School, Trash2, PlusCircle, Save, Bug } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+
 
 const mockFlaggedSubmissions = [
   { student: 'Ali Ahmed', assignment: 'Pharmacology Essay', score: 42, date: '2024-05-20', status: 'Pending Review' },
   { student: 'Fatima Khan', assignment: 'Pharmaceutics Lab Report', score: 18, date: '2024-05-19', status: 'Reviewed' },
   { student: 'Zainab Omar', assignment: 'Final Year Project Thesis', score: 27, date: '2024-05-18', status: 'Pending Review' },
+];
+
+const qaChecklist = [
+    "Upload various formats (PDF, DOCX, PPT, TXT).",
+    "OCR accuracy across scanned handwritten pages.",
+    "Correct detection of quoted + cited passages.",
+    "Paraphrase detection sensitivity: assess true positives/false positives.",
+    "Highlighting correctly maps to original page & offsets.",
+    "Quick re-check latency acceptable (<10s for a small re-scan).",
+    "Access control, encryption, and delete flows validated.",
+    "Validate thresholds and false positive rate against human review for fairness.",
 ];
 
 export function PolicyAdminClient() {
@@ -165,6 +178,27 @@ export function PolicyAdminClient() {
             </Table>
         </CardContent>
       </Card>
+
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="qa-checklist" className="border-0">
+            <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">
+                Testing & QA Checklist
+            </AccordionTrigger>
+            <AccordionContent>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Bug/>Quality Assurance Checklist</CardTitle>
+                        <CardDescription>Key validation points for ensuring tool reliability and fairness.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
+                           {qaChecklist.map((item, i) => <li key={i}>{item}</li>)}
+                        </ul>
+                    </CardContent>
+                </Card>
+            </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 }
