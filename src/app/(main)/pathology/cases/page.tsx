@@ -4,7 +4,7 @@
 import { BackButton } from "@/components/back-button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Microscope, FileText, Plus, Zap, Notebook, CheckCircle, Lightbulb, Search, Filter, Stethoscope, ZoomIn, ZoomOut, MessageCircle } from 'lucide-react';
+import { Microscope, FileText, Plus, Zap, Notebook, CheckCircle, Lightbulb, Search, Filter, Stethoscope, ZoomIn, ZoomOut, MessageCircle, GitCompareArrows, Download, Bot } from 'lucide-react';
 import Link from 'next/link';
 import {
   Dialog,
@@ -57,7 +57,7 @@ const caseStudies = [
         tags: {
             organ: "🦴 Rheumatology",
             type: "🧑‍⚕️ Autoimmune",
-            difficulty: "",
+            difficulty: "⭐ Classic",
         },
         quiz: [
              {
@@ -78,7 +78,7 @@ const caseStudies = [
         tags: {
             organ: "🧬 Hematology",
             type: "🧪 Lymphoma",
-            difficulty: "",
+            difficulty: "⭐ Classic",
         },
         discussion: "The presence of Reed-Sternberg cells is diagnostic for Hodgkin Lymphoma. The mixed inflammatory background is characteristic. The specific subtype is determined by the overall architecture and cellular composition. The CD30+/CD15+ immunophenotype is classic.",
         quiz: [
@@ -139,9 +139,13 @@ export default function PathologyCasesPage() {
           <Dialog key={study.id}>
             <DialogTrigger asChild>
                 <Card className="shadow-lg hover:shadow-2xl transition rounded-2xl flex flex-col cursor-pointer">
+                    <CardHeader className="p-0">
+                         <div className="relative h-40 w-full overflow-hidden rounded-t-2xl">
+                           <Image src={study.imageUrl} alt={`Slide for ${study.title}`} layout="fill" objectFit="cover" />
+                        </div>
+                    </CardHeader>
                     <CardContent className="p-6 flex-grow flex flex-col">
-                        <h2 className="font-bold text-lg">{study.title}</h2>
-                        <p className="text-gray-600 mt-2 text-sm flex-grow">{study.history}</p>
+                        <h2 className="font-bold text-lg flex-grow">{study.title}</h2>
                         <div className="flex flex-wrap gap-2 mt-3">
                            {Object.values(study.tags).filter(Boolean).map((tag, i) => <Badge key={i}>{tag}</Badge>)}
                         </div>
@@ -171,8 +175,16 @@ export default function PathologyCasesPage() {
                             </div>
                         </div>
                     </DetailSection>
-                     <DetailSection title="Discussion & Key Points" icon={Lightbulb}>
+                    
+                    <DetailSection title="Diagnostic Flow & Discussion" icon={GitCompareArrows}>
                         <p>{study.discussion}</p>
+                    </DetailSection>
+                    
+                    <DetailSection title="Community Discussion" icon={MessageCircle}>
+                        <div className="p-4 text-center bg-muted/50 rounded-lg">
+                            <p className="text-sm text-muted-foreground">Community discussion for this case is not yet active.</p>
+                            <Link href="/student-discussion-forum"><Button variant="link" size="sm">Go to Forum</Button></Link>
+                        </div>
                     </DetailSection>
                  </div>
                  <div className="lg:col-span-2 space-y-4">
@@ -187,7 +199,7 @@ export default function PathologyCasesPage() {
                         </CardHeader>
                         <CardContent>
                             <p className="font-semibold text-sm mb-2">{study.quiz[0].question}</p>
-                             <div className="flex flex-wrap gap-2">
+                             <div className="flex flex-col gap-2">
                                 {study.quiz[0].options.map(opt => <Button key={opt} variant="outline" size="sm">{opt}</Button>)}
                             </div>
                              <Alert className="mt-4 text-sm"><AlertDescription><strong>Answer:</strong> {study.quiz[0].answer}</AlertDescription></Alert>
@@ -195,7 +207,10 @@ export default function PathologyCasesPage() {
                     </Card>
 
                     <Button onClick={handleAiAnalysis} className="w-full">
-                       <Lightbulb className="mr-2"/>AI Analysis
+                       <Bot className="mr-2"/>AI Tutor Mode
+                    </Button>
+                    <Button onClick={() => toast({title: "Coming soon!"})} variant="outline" className="w-full">
+                       <Download className="mr-2"/>Export as PDF
                     </Button>
                  </div>
               </div>
