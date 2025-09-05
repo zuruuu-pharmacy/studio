@@ -761,19 +761,141 @@ export const systemicPathologyData: OrganSystem[] = [
     categories: [
       {
         name: "Cerebrovascular Disease",
-        diseases: []
+        diseases: [
+           { 
+            title: "Ischemic Stroke",
+            overview: "Ischemic stroke is characterized by a sudden loss of blood circulation to an area of the brain, resulting in a corresponding loss of neurologic function. It is most commonly caused by thrombosis of a cerebral artery on a background of atherosclerosis or by an embolus from the heart or carotid arteries.",
+            learningObjectives: [
+                "Differentiate between thrombotic and embolic ischemic stroke.",
+                "Describe the process of liquefactive necrosis in the brain.",
+                "Recognize the time-dependent microscopic changes after an ischemic event.",
+                "Understand the concept of the ischemic penumbra and the rationale for thrombolytic therapy."
+            ],
+            tags: {
+                organ: "Brain",
+                system: "Nervous System",
+                category: "Vascular",
+                level: "Intermediate"
+            },
+            etiology: [
+                "Thrombosis due to atherosclerosis of cerebral arteries (common at carotid bifurcation, middle cerebral artery).",
+                "Embolism from the heart (atrial fibrillation), carotid artery plaques, or paradoxical emboli.",
+                "Small vessel disease (lacunar infarcts) associated with hypertension and diabetes."
+            ],
+            pathogenesis: "Cessation of blood flow deprives neurons of glucose and oxygen, leading to ATP depletion and failure of ion pumps. This results in an influx of calcium, activation of destructive enzymes, and the generation of free radicals. The core of the infarct undergoes irreversible necrosis within minutes, while the surrounding area (penumbra) is potentially salvageable if blood flow is restored quickly.",
+            morphology: {
+                gross: "12-24 hours: The brain tissue appears pale, soft, and swollen. 8-10 days: The tissue becomes gelatinous and friable. Months later: A fluid-filled cystic cavity forms.",
+                microscopic: "12-24 hours: Red neurons (eosinophilic cytoplasm, pyknotic nuclei) appear. 24-72 hours: Neutrophilic infiltration. 3-5 days: Macrophages (microglia) begin to phagocytose necrotic debris. Weeks to months: The necrotic tissue is removed, leaving a cavity surrounded by reactive astrocytes (gliosis). This process is termed liquefactive necrosis.",
+                imageHint: "ischemic stroke histology"
+            },
+            clinicalFeatures: "Sudden onset of focal neurologic deficits corresponding to the area of the brain affected (e.g., contralateral hemiparesis, aphasia, visual field defects).",
+            investigations: "Non-contrast CT scan of the head is the first step to rule out hemorrhage. Diffusion-weighted MRI is the most sensitive test for detecting acute ischemia. CT angiography may be used to identify vessel occlusion.",
+            management: "Acute management focuses on 'time is brain'. Thrombolytic therapy with Alteplase (tPA) can be given within a 3 to 4.5-hour window. Mechanical thrombectomy can be performed for large vessel occlusions. Secondary prevention includes antiplatelet agents, statins, and management of risk factors. Always check current local and international stroke guidelines.",
+            complications: "Cerebral edema, hemorrhagic transformation of the infarct, seizures, permanent neurologic disability.",
+            prognosis: "Highly variable and depends on the size and location of the stroke, the patient's age, and the timeliness of treatment.",
+          },
+          { 
+            title: "Intracerebral Hemorrhage",
+            overview: "Intracerebral hemorrhage is bleeding directly into the brain parenchyma. It is most commonly caused by the rupture of small, intraparenchymal vessels damaged by chronic hypertension.",
+            learningObjectives: [
+                "Identify chronic hypertension as the leading cause of intracerebral hemorrhage.",
+                "Recognize the common locations for hypertensive hemorrhages.",
+                "Describe the pathology of Charcot-Bouchard microaneurysms.",
+                "Differentiate clinically and radiologically from ischemic stroke."
+            ],
+            tags: {
+                organ: "Brain",
+                system: "Nervous System",
+                category: "Vascular",
+                level: "Advanced"
+            },
+            etiology: [
+                "Hypertension (most common cause).",
+                "Cerebral amyloid angiopathy (common in the elderly).",
+                "Rupture of an arteriovenous malformation (AVM) or cavernoma.",
+                "Tumors."
+            ],
+            pathogenesis: "Chronic hypertension leads to hyaline arteriolosclerosis of small penetrating arteries and arterioles. This weakens the vessel walls and can lead to the formation of minute aneurysms (Charcot-Bouchard microaneurysms), which are prone to rupture.",
+            morphology: {
+                gross: "A fresh hemorrhage appears as a solid clot of blood that compresses the surrounding brain parenchyma. Over time, the clot is broken down and resorbed, leaving a slit-like, orange-brown cavity.",
+                microscopic: "Shows a central core of clotted blood with surrounding brain tissue showing edema and neuronal injury. Eventually, hemosiderin-laden macrophages and reactive astrocytes are seen at the periphery.",
+                imageHint: "intracerebral hemorrhage gross brain"
+            },
+            clinicalFeatures: "Presents with the abrupt onset of focal neurologic deficits, often accompanied by headache, vomiting, and a decreased level of consciousness. Symptoms progress over minutes to hours as the hematoma expands.",
+            investigations: "Non-contrast CT scan of the head is the diagnostic test of choice, showing a hyperdense (white) area of acute blood.",
+            management: "Management is primarily supportive. Key goals are to control blood pressure aggressively to prevent hematoma expansion and to manage intracranial pressure. Surgical evacuation may be considered for some large or superficially located hematomas. Always check current local and international guidelines.",
+            complications: "Increased intracranial pressure, herniation, hydrocephalus.",
+            prognosis: "Poor, with high rates of mortality and severe disability.",
+          },
+        ]
       },
       {
         name: "Neurodegenerative Diseases",
-        diseases: []
-      },
-       {
-        name: "CNS Tumors",
-        diseases: []
-      },
-      {
-        name: "Infections of the CNS",
-        diseases: []
+        diseases: [
+            {
+                title: "Parkinson's Disease",
+                overview: "Parkinson's disease is a progressive neurodegenerative disorder characterized by the loss of dopaminergic neurons in the substantia nigra pars compacta. This leads to the classic motor symptoms of bradykinesia, rigidity, resting tremor, and postural instability.",
+                learningObjectives: [
+                    "Identify the loss of dopaminergic neurons in the substantia nigra as the key pathology.",
+                    "Recognize the Lewy body as the characteristic histologic finding.",
+                    "Correlate the dopamine deficiency with the cardinal motor symptoms.",
+                    "Understand the principles of dopamine replacement therapy."
+                ],
+                tags: {
+                    organ: "Brain",
+                    system: "Nervous System",
+                    category: "Degenerative",
+                    level: "Classic"
+                },
+                etiology: [
+                    "Most cases are idiopathic (sporadic).",
+                    "Genetic mutations (e.g., in SNCA, LRRK2, Parkin) account for a minority of cases."
+                ],
+                pathogenesis: "The pathogenesis involves the misfolding and aggregation of the protein alpha-synuclein, which forms the major component of Lewy bodies. It is thought that these aggregates are toxic to neurons, leading to the progressive death of dopaminergic neurons in the substantia nigra.",
+                morphology: {
+                    gross: "Pallor of the substantia nigra and locus ceruleus due to the loss of pigmented, dopaminergic neurons.",
+                    microscopic: "The key findings are: 1. Loss of dopaminergic neurons in the substantia nigra pars compacta. 2. The presence of Lewy bodies, which are intracytoplasmic, eosinophilic, round inclusions with a dense core and a pale halo.",
+                    imageHint: "parkinson's lewy body histology"
+                },
+                clinicalFeatures: "The classic triad is resting tremor ('pill-rolling'), rigidity ('cogwheel' or 'lead-pipe'), and bradykinesia (slowness of movement). Postural instability develops later. Non-motor symptoms like constipation, REM sleep behavior disorder, and cognitive decline are also common.",
+                investigations: "Diagnosis is primarily clinical, based on the characteristic motor signs.",
+                management: "Symptomatic treatment is aimed at replacing dopamine. Levodopa (a dopamine precursor), combined with a peripheral decarboxylase inhibitor (carbidopa), is the most effective treatment. Other options include dopamine agonists and MAO-B inhibitors. Always check current local and international guidelines.",
+                complications: "Motor fluctuations ('on-off' phenomena), dyskinesias, dementia, falls.",
+                prognosis: "Progressive disease, but treatment can significantly improve quality of life for many years.",
+            },
+            {
+                title: "Alzheimer's Disease",
+                overview: "Alzheimer's Disease is the most common cause of dementia in the elderly, characterized by a progressive decline in memory, cognitive function, and the ability to perform daily activities. The definitive diagnosis relies on the histopathological findings of amyloid plaques and neurofibrillary tangles.",
+                learningObjectives: [
+                    "Identify Alzheimer's as the leading cause of dementia.",
+                    "Describe the two hallmark pathological lesions: Aβ plaques and tau tangles.",
+                    "Understand the role of amyloid-beta and tau in pathogenesis.",
+                    "Recognize the clinical progression from memory loss to global cognitive decline."
+                ],
+                tags: {
+                    organ: "Brain",
+                    system: "Nervous System",
+                    category: "Degenerative",
+                    level: "Classic"
+                },
+                etiology: [
+                    "Mostly sporadic (late-onset). Age is the most important risk factor.",
+                    "Early-onset familial cases are associated with mutations in genes like APP, PSEN1, and PSEN2.",
+                    "The APOE ε4 allele is a major genetic risk factor for late-onset disease."
+                ],
+                pathogenesis: "The amyloid cascade hypothesis posits that the accumulation of amyloid-beta (Aβ) peptides, derived from the abnormal processing of amyloid precursor protein (APP), is the initiating event. Aβ aggregates form extracellular plaques, which are believed to be neurotoxic. This process also leads to the hyperphosphorylation of the microtubule-associated protein tau, which then aggregates intracellularly to form neurofibrillary tangles, causing further neuronal dysfunction and death.",
+                morphology: {
+                    gross: "Diffuse cortical atrophy with widening of the cerebral sulci and narrowing of the gyri, most prominent in the temporal and parietal lobes. The ventricles may be enlarged (hydrocephalus ex vacuo).",
+                    microscopic: "The two diagnostic findings are: 1. Neuritic (senile) plaques: Extracellular deposits of a central amyloid-beta core surrounded by dystrophic neurites. 2. Neurofibrillary tangles: Intracytoplasmic bundles of filaments composed of hyperphosphorylated tau protein.",
+                    imageHint: "alzheimer's plaque tangle histology"
+                },
+                clinicalFeatures: "Presents with an insidious onset of memory impairment, especially for recent events. This is followed by a slow but progressive decline in other cognitive domains, such as language (aphasia), motor skills (apraxia), and recognition (agnosia), eventually leading to profound dementia.",
+                investigations: "Diagnosis is largely clinical. Neuropsychological testing can quantify the cognitive deficits. MRI shows cortical atrophy. PET scans can detect amyloid plaques. Cerebrospinal fluid (CSF) analysis may show low Aβ42 and high tau levels.",
+                management: "Treatment is symptomatic and supportive. Cholinesterase inhibitors (e.g., donepezil) and NMDA receptor antagonists (e.g., memantine) can provide modest benefit. Newer anti-amyloid monoclonal antibodies have been approved but have significant side effects and unclear clinical benefit. Always check current local and international guidelines.",
+                complications: "Progressive dependence, aspiration pneumonia, immobility.",
+                prognosis: "Incurable and progressive, with an average survival of 8-10 years after diagnosis.",
+            },
+        ]
       }
     ]
   },
@@ -783,15 +905,106 @@ export const systemicPathologyData: OrganSystem[] = [
     categories: [
         {
             name: "Glomerular Diseases",
-            diseases: []
+            diseases: [
+                { 
+                    title: "Minimal Change Disease",
+                    overview: "Minimal change disease is the most common cause of nephrotic syndrome in children. It is characterized by normal-appearing glomeruli on light microscopy but diffuse effacement (flattening) of podocyte foot processes on electron microscopy.",
+                    learningObjectives: [
+                        "Recognize minimal change disease as the leading cause of nephrotic syndrome in children.",
+                        "Describe the classic presentation of nephrotic syndrome.",
+                        "Understand the key pathologic finding of podocyte foot process effacement.",
+                        "Appreciate the excellent response to corticosteroid therapy."
+                    ],
+                    tags: {
+                        organ: "Kidney",
+                        system: "Renal System",
+                        category: "Other",
+                        level: "Classic"
+                    },
+                    etiology: [
+                        "Idiopathic (most cases).",
+                        "May be associated with respiratory infections, immunizations, or certain drugs (e.g., NSAIDs)."
+                    ],
+                    pathogenesis: "Thought to be caused by a primary disorder of T-cells, which produce a circulating factor that injures podocytes, leading to the flattening of their foot processes and massive proteinuria. The exact factor has not been identified.",
+                    morphology: {
+                        gross: "Kidneys appear normal.",
+                        microscopic: "Light microscopy: Glomeruli appear virtually normal. Immunofluorescence: Negative for immune deposits. Electron Microscopy: This is the key diagnostic finding. It shows diffuse and uniform effacement (flattening) of the foot processes of the podocytes.",
+                        imageHint: "minimal change disease electron microscopy"
+                    },
+                    clinicalFeatures: "Presents with the abrupt onset of the nephrotic syndrome: massive proteinuria (>3.5 g/day), hypoalbuminemia, generalized edema, and hyperlipidemia. Blood pressure is usually normal, and renal function is preserved.",
+                    investigations: "Urinalysis showing massive proteinuria without significant hematuria. Serum albumin is low. Renal biopsy is usually not performed in children with a classic presentation, as they are treated empirically.",
+                    management: "The disease is highly responsive to corticosteroids. Most children achieve complete remission. For relapsing or steroid-resistant cases, other immunosuppressive agents may be used. Always check current local and international guidelines.",
+                    complications: "Increased risk of infection (due to loss of immunoglobulins in urine) and thromboembolism (due to loss of anticoagulant proteins).",
+                    prognosis: "Excellent. Despite relapses, the long-term prognosis is very good, and progression to chronic renal failure is rare.",
+                },
+                { 
+                    title: "Diabetic Nephropathy",
+                    overview: "Diabetic nephropathy is a major complication of both Type 1 and Type 2 diabetes mellitus and is the leading cause of end-stage renal disease (ESRD) worldwide. It is characterized by a series of pathologic changes in the glomeruli, tubules, and renal vasculature.",
+                    learningObjectives: [
+                        "Identify diabetes as the leading cause of ESRD.",
+                        "Describe the key histologic lesions, including mesangial expansion and Kimmelstiel-Wilson nodules.",
+                        "Understand the progression from microalbuminuria to overt proteinuria and renal failure.",
+                        "Recognize the importance of glycemic and blood pressure control in prevention."
+                    ],
+                    tags: {
+                        organ: "Kidney",
+                        system: "Renal System",
+                        category: "Metabolic",
+                        level: "Intermediate"
+                    },
+                    etiology: [
+                        "Type 1 and Type 2 Diabetes Mellitus."
+                    ],
+                    pathogenesis: "Chronic hyperglycemia is the primary driver of damage. It leads to the non-enzymatic glycosylation of proteins, forming advanced glycation end-products (AGEs) that cause cross-linking of collagen and other proteins. Hyperglycemia also activates protein kinase C and other pathways that promote the production of cytokines and growth factors, leading to glomerular hypertrophy, mesangial expansion, and fibrosis.",
+                    morphology: {
+                        gross: "Kidneys may be enlarged initially, but become shrunken and granular in later stages.",
+                        microscopic: "The earliest change is thickening of the glomerular basement membrane (GBM). This is followed by diffuse expansion of the mesangial matrix. The pathognomonic lesion is the Kimmelstiel-Wilson nodule, which is a nodular, PAS-positive deposit of matrix in the mesangium. Other findings include hyaline arteriolosclerosis of both afferent and efferent arterioles.",
+                        imageHint: "diabetic nephropathy kimmelstiel-wilson"
+                    },
+                    clinicalFeatures: "The first clinical sign is the development of microalbuminuria (small amounts of albumin in the urine). This can progress to overt proteinuria (nephrotic-range) and a gradual decline in the glomerular filtration rate (GFR), eventually leading to end-stage renal disease.",
+                    investigations: "Annual screening for microalbuminuria in all diabetic patients is crucial. Serum creatinine and eGFR are monitored to track renal function.",
+                    management: "Strict glycemic control (monitoring HbA1c) and aggressive blood pressure control (using ACE inhibitors or ARBs, which are renoprotective) are the cornerstones of management to slow disease progression. Always check current local and international diabetes guidelines.",
+                    complications: "End-stage renal disease requiring dialysis or transplantation.",
+                    prognosis: "Progressive, but the rate of decline can be significantly slowed with good management of blood sugar and blood pressure.",
+                },
+            ]
         },
         {
             name: "Tubulointerstitial Diseases",
-            diseases: []
-        },
-        {
-            name: "Renal Tumors",
-            diseases: []
+            diseases: [
+                { 
+                    title: "Acute Pyelonephritis",
+                    overview: "Acute pyelonephritis is an infection of the kidney parenchyma and renal pelvis. It is a common complication of an ascending urinary tract infection, most frequently caused by E. coli.",
+                    learningObjectives: [
+                        "Define acute pyelonephritis and its typical cause.",
+                        "Describe the route of infection (ascending vs. hematogenous).",
+                        "Recognize the key histologic feature: neutrophilic infiltration of the tubules and interstitium.",
+                        "Differentiate clinically from lower urinary tract infection (cystitis)."
+                    ],
+                    tags: {
+                        organ: "Kidney",
+                        system: "Renal System",
+                        category: "Infectious",
+                        level: "Basic"
+                    },
+                    etiology: [
+                        "Escherichia coli (most common, >85% of cases).",
+                        "Other gram-negative rods (e.g., Proteus, Klebsiella).",
+                        "Risk factors include urinary tract obstruction, vesicoureteral reflux, and catheterization."
+                    ],
+                    pathogenesis: "Most cases result from an ascending infection from the lower urinary tract. Bacteria colonize the urethra, ascend to the bladder, and then travel up the ureters to the kidney. Vesicoureteral reflux, a condition where urine flows backward from the bladder to the ureters, is a major predisposing factor.",
+                    morphology: {
+                        gross: "The kidney may be enlarged. There are often discrete, yellowish, raised abscesses visible on the cortical surface.",
+                        microscopic: "The characteristic finding is a patchy interstitial inflammation with a dense infiltrate of neutrophils. Neutrophils are also seen within the lumina of renal tubules, forming 'neutrophil casts' or 'pus casts'.",
+                        imageHint: "acute pyelonephritis histology"
+                    },
+                    clinicalFeatures: "Presents with the sudden onset of fever, chills, and flank pain (costovertebral angle tenderness). Often accompanied by symptoms of cystitis, such as dysuria, frequency, and urgency.",
+                    investigations: "Urinalysis shows pyuria (WBCs), bacteriuria, and, most importantly, white blood cell casts, which are diagnostic of renal involvement.",
+                    management: "Treatment consists of appropriate antibiotics based on urine culture and sensitivity results. Always check current local and international UTI guidelines.",
+                    complications: "Sepsis, papillary necrosis, pyonephrosis (pus filling the renal pelvis), and perinephric abscess. Recurrent infections can lead to chronic pyelonephritis and renal scarring.",
+                    prognosis: "Excellent with prompt and appropriate antibiotic therapy.",
+                },
+            ]
         }
     ]
   },
@@ -801,15 +1014,68 @@ export const systemicPathologyData: OrganSystem[] = [
     categories: [
         {
             name: "Thyroid Pathology",
-            diseases: []
-        },
-        {
-            name: "Adrenal Pathology",
-            diseases: []
-        },
-        {
-            name: "Pancreatic Islet Pathology",
-            diseases: []
+            diseases: [
+                { 
+                    title: "Graves' Disease",
+                    overview: "Graves' disease is an autoimmune disorder that is the most common cause of endogenous hyperthyroidism. It is characterized by the production of autoantibodies that stimulate the TSH receptor, leading to uncontrolled thyroid hormone production.",
+                    learningObjectives: [
+                        "Define Graves' disease as an autoimmune cause of hyperthyroidism.",
+                        "Understand the role of TSH receptor antibodies (TSI).",
+                        "Describe the classic clinical triad: thyrotoxicosis, ophthalmopathy, and dermopathy.",
+                        "Recognize the key histologic features of diffuse hyperplasia."
+                    ],
+                    tags: {
+                        organ: "Thyroid",
+                        system: "Endocrine System",
+                        category: "Autoimmune",
+                        level: "Classic"
+                    },
+                    etiology: [
+                        "Autoimmune, with a strong genetic predisposition (associated with certain HLA types)."
+                    ],
+                    pathogenesis: "The central defect is a failure of self-tolerance, leading to the production of several autoantibodies. The most important is Thyroid-Stimulating Immunoglobulin (TSI), an IgG antibody that binds to and activates the TSH receptor on thyroid follicular cells, mimicking the action of TSH and causing chronic, unregulated overproduction of thyroid hormones.",
+                    morphology: {
+                        gross: "The thyroid gland is diffusely and symmetrically enlarged. The parenchyma is soft and has a 'beefy-red' appearance.",
+                        microscopic: "The follicles are lined by tall, crowded columnar epithelial cells that project into the follicular lumen, forming small papillae. The colloid within the follicles is pale and scalloped at the margins, reflecting active resorption. A lymphocytic infiltrate is present in the stroma.",
+                        imageHint: "graves' disease histology"
+                    },
+                    clinicalFeatures: "Presents with signs of hyperthyroidism (thyrotoxicosis): heat intolerance, weight loss despite increased appetite, palpitations, anxiety, and tremor. The classic extrathyroidal manifestations are: 1. Infiltrative ophthalmopathy (exophthalmos) due to inflammation and edema of the extraocular muscles and retro-orbital tissues. 2. Pretibial myxedema (a localized, infiltrative dermopathy).",
+                    investigations: "Laboratory tests show high levels of free T4 and T3, with a suppressed TSH level. The presence of TSH receptor antibodies (TSI) is diagnostic.",
+                    management: "Treatment options include: 1. Beta-blockers for symptomatic control. 2. Antithyroid drugs (e.g., methimazole, propylthiouracil) to block hormone synthesis. 3. Radioiodine ablation to destroy thyroid tissue. 4. Thyroidectomy (surgical removal). Always check current local and international hyperthyroidism guidelines.",
+                    complications: "Thyroid storm (a life-threatening exacerbation of hyperthyroidism), atrial fibrillation, heart failure.",
+                    prognosis: "Manageable with treatment, but often requires lifelong therapy or results in permanent hypothyroidism after ablation or surgery.",
+                },
+                { 
+                    title: "Hashimoto's Thyroiditis",
+                    overview: "Hashimoto's thyroiditis is an autoimmune disease that is the most common cause of hypothyroidism in areas of the world where iodine levels are sufficient. It is characterized by the gradual destruction of the thyroid gland by a combination of cell-mediated and antibody-mediated immune processes.",
+                    learningObjectives: [
+                        "Recognize Hashimoto's thyroiditis as the most common cause of hypothyroidism in developed countries.",
+                        "Describe the autoimmune pathogenesis involving both T-cells and autoantibodies.",
+                        "Identify the key histologic features: lymphocytic infiltrate, germinal centers, and Hürthle cell metaplasia.",
+                        "Understand the clinical course from euthyroidism to hypothyroidism."
+                    ],
+                    tags: {
+                        organ: "Thyroid",
+                        system: "Endocrine System",
+                        category: "Autoimmune",
+                        level: "Classic"
+                    },
+                    etiology: [
+                        "Autoimmune, with a strong genetic predisposition."
+                    ],
+                    pathogenesis: "The pathogenesis involves a breakdown of self-tolerance to thyroid autoantigens. This leads to: 1. CD8+ cytotoxic T-cell-mediated killing of thyroid follicular cells. 2. Cytokine-mediated cell death (e.g., via IFN-γ). 3. Antibody-dependent cell-mediated cytotoxicity. Autoantibodies against thyroglobulin and thyroid peroxidase are present and are useful diagnostic markers.",
+                    morphology: {
+                        gross: "The thyroid is diffusely and symmetrically enlarged, though it can be atrophic in later stages. The cut surface is pale, gray-tan, and firm.",
+                        microscopic: "The key features are: 1. A dense, widespread lymphocytic infiltrate, often with well-formed germinal centers. 2. Destruction of thyroid follicles. 3. The remaining follicular cells often show Hürthle cell (or oncocytic) metaplasia, characterized by abundant, eosinophilic, granular cytoplasm.",
+                        imageHint: "hashimoto thyroiditis histology"
+                    },
+                    clinicalFeatures: "Presents with gradual thyroid failure, preceded by a period of goiter without functional abnormality. Symptoms of hypothyroidism include fatigue, cold intolerance, weight gain, constipation, and dry skin.",
+                    investigations: "Laboratory tests show a low free T4 level with an elevated TSH level (primary hypothyroidism). The presence of anti-thyroid peroxidase (anti-TPO) and/or anti-thyroglobulin antibodies is highly suggestive of the diagnosis.",
+                    management: "Treatment involves lifelong thyroid hormone replacement therapy with levothyroxine. Always check current local and international hypothyroidism guidelines.",
+                    complications: "Increased risk of other autoimmune diseases and a small increased risk of developing B-cell non-Hodgkin lymphoma of the thyroid.",
+                    prognosis: "Excellent with hormone replacement therapy.",
+                },
+            ]
         }
     ]
   },
@@ -819,15 +1085,106 @@ export const systemicPathologyData: OrganSystem[] = [
     categories: [
         {
             name: "Bone Tumors",
-            diseases: []
+            diseases: [
+                { 
+                    title: "Osteosarcoma",
+                    overview: "Osteosarcoma is the most common primary malignant tumor of bone. It is a bone-producing mesenchymal tumor that most frequently arises in the metaphysis of long bones, particularly around the knee, in adolescents and young adults.",
+                    learningObjectives: [
+                        "Identify osteosarcoma as the most common primary bone cancer.",
+                        "Recognize its typical patient demographic (adolescents) and location (around the knee).",
+                        "Describe the key histologic feature: production of osteoid (unmineralized bone) by malignant tumor cells.",
+                        "Understand the characteristic 'sunburst' appearance and Codman's triangle on X-ray."
+                    ],
+                    tags: {
+                        organ: "Bone",
+                        system: "Musculoskeletal System",
+                        category: "Neoplastic",
+                        level: "Advanced"
+                    },
+                    etiology: [
+                        "Most are sporadic.",
+                        "Associated with genetic conditions like hereditary retinoblastoma (RB1 gene mutations) and Li-Fraumeni syndrome (TP53 gene mutations).",
+                        "Can arise in the setting of prior radiation or Paget's disease of bone in older adults."
+                    ],
+                    pathogenesis: "Driven by complex genetic alterations, including mutations in the RB1 and TP53 tumor suppressor genes, which lead to the uncontrolled proliferation of malignant osteoblasts.",
+                    morphology: {
+                        gross: "The tumor is typically a large, gritty, gray-white mass that arises in the metaphysis, destroying the cortex and forming a soft tissue mass. It often shows areas of hemorrhage and cystic change.",
+                        microscopic: "The diagnostic hallmark is the production of malignant osteoid (a pink, amorphous extracellular material) by the anaplastic tumor cells. The tumor cells are pleomorphic, with large, hyperchromatic nuclei.",
+                        imageHint: "osteosarcoma histology"
+                    },
+                    clinicalFeatures: "Presents with bone pain, which may be worse at night, and a progressively enlarging, tender mass. Pathologic fracture can occur.",
+                    investigations: "X-ray shows a destructive mass, often with a 'sunburst' pattern of periosteal reaction and lifting of the cortex to form a Codman's triangle. MRI is used to define the extent of the tumor. Biopsy is required for diagnosis.",
+                    management: "Current standard of care is neoadjuvant chemotherapy (chemotherapy before surgery) followed by limb-sparing surgical resection and then further adjuvant chemotherapy. Always check current local and international sarcoma guidelines.",
+                    complications: "Metastasis, most commonly to the lungs.",
+                    prognosis: "With modern multi-agent chemotherapy and surgery, the long-term survival rate is approximately 60-70%.",
+                },
+                 { 
+                    title: "Ewing Sarcoma",
+                    overview: "Ewing sarcoma is a malignant small round blue cell tumor of bone and soft tissue that primarily affects children and young adults. It is characterized by a specific chromosomal translocation, most commonly t(11;22).",
+                    learningObjectives: [
+                        "Recognize Ewing sarcoma as a 'small round blue cell tumor' of childhood.",
+                        "Identify its characteristic chromosomal translocation t(11;22).",
+                        "Describe the classic 'onion-skin' periosteal reaction on X-ray.",
+                        "Understand the importance of immunohistochemistry (CD99 positivity) for diagnosis."
+                    ],
+                    tags: {
+                        organ: "Bone",
+                        system: "Musculoskeletal System",
+                        category: "Neoplastic",
+                        level: "Advanced"
+                    },
+                    etiology: [
+                        "Specific chromosomal translocation, t(11;22)(q24;q12), which creates an EWS-FLI1 fusion gene that acts as an aberrant transcription factor."
+                    ],
+                    pathogenesis: "The EWS-FLI1 fusion protein drives oncogenesis by altering the expression of numerous downstream genes involved in cell proliferation, survival, and differentiation.",
+                    morphology: {
+                        gross: "Typically arises in the diaphysis of long bones (like the femur) or in the flat bones of the pelvis. It is a soft, tan-white tumor that often invades the cortex and forms a large soft tissue mass.",
+                        microscopic: "Composed of sheets of uniform, small round blue cells with scant, clear cytoplasm. Homer-Wright rosettes (tumor cells arranged around a central fibrillary space) may be present. Immunohistochemistry showing strong membrane positivity for CD99 is a key diagnostic feature.",
+                        imageHint: "ewing sarcoma histology"
+                    },
+                    clinicalFeatures: "Presents as a painful, enlarging mass. Systemic symptoms like fever and leukocytosis can be present, mimicking an infection.",
+                    investigations: "X-ray often shows a destructive lytic tumor with a characteristic 'onion-skin' layered periosteal reaction. Biopsy is essential for diagnosis. Molecular testing for the t(11;22) translocation is confirmatory.",
+                    management: "Treatment involves a combination of multi-agent chemotherapy, surgery, and/or radiation therapy. Always check current local and international sarcoma guidelines.",
+                    complications: "Metastasis to lungs, bone, and bone marrow.",
+                    prognosis: "With aggressive multimodal therapy, long-term survival is around 70% for patients with localized disease.",
+                },
+            ]
         },
         {
             name: "Diseases of Joints",
-            diseases: []
-        },
-        {
-            name: "Soft Tissue Tumors",
-            diseases: []
+            diseases: [
+                { 
+                    title: "Osteoarthritis",
+                    overview: "Osteoarthritis (OA) is the most common type of joint disease, characterized by the progressive degeneration and loss of articular cartilage, leading to pain and loss of function. It is primarily a disease of 'wear and tear' and aging.",
+                    learningObjectives: [
+                        "Define osteoarthritis as a degenerative, non-inflammatory joint disease.",
+                        "Understand the central role of articular cartilage breakdown in its pathogenesis.",
+                        "Recognize the key pathologic features, including eburnation, osteophytes, and subchondral cysts.",
+                        "Differentiate OA clinically and pathologically from rheumatoid arthritis."
+                    ],
+                    tags: {
+                        organ: "Joints",
+                        system: "Musculoskeletal System",
+                        category: "Degenerative",
+                        level: "Classic"
+                    },
+                    etiology: [
+                        "Primary (idiopathic): Related to aging and mechanical stress.",
+                        "Secondary: Due to a predisposing condition like trauma, congenital deformity, or other forms of arthritis."
+                    ],
+                    pathogenesis: "OA is driven by a combination of mechanical stress and biochemical changes. Chondrocytes, the cells of cartilage, initially attempt to repair damage but eventually fail. They produce degradative enzymes (like metalloproteinases) that break down the cartilage matrix. This leads to a vicious cycle of cartilage erosion, exposure of the underlying bone, and secondary inflammatory changes.",
+                    morphology: {
+                        gross: "The articular cartilage becomes softened, fibrillated, and eventually completely worn away, exposing the underlying subchondral bone, which becomes polished and ivory-like (eburnation). Bony outgrowths (osteophytes) form at the margins of the joint. Small fractures in the subchondral bone can lead to the formation of subchondral cysts.",
+                        microscopic: "Early changes include fibrillation and cracking of the cartilage surface. Later, there is a complete loss of cartilage and thickening of the subchondral bone plate.",
+                        imageHint: "osteoarthritis gross knee"
+                    },
+                    clinicalFeatures: "Presents with joint pain that worsens with use and is relieved by rest. Morning stiffness is minimal (<30 minutes). Commonly affects weight-bearing joints (knees, hips) and the small joints of the hands (DIP and PIP joints, forming Heberden's and Bouchard's nodes).",
+                    investigations: "Diagnosis is primarily clinical and radiographic. X-rays show joint space narrowing, subchondral sclerosis, osteophytes, and cysts.",
+                    management: "Management is focused on symptom relief and maintaining function. This includes weight loss, physical therapy, and analgesics (e.g., paracetamol, NSAIDs). In end-stage disease, joint replacement surgery is highly effective. Always check current local and international OA guidelines.",
+                    complications: "Chronic pain, joint deformity, and loss of mobility.",
+                    prognosis: "A progressive condition, but many patients can be managed effectively with conservative measures.",
+                },
+            ]
         }
     ]
   },
@@ -837,16 +1194,168 @@ export const systemicPathologyData: OrganSystem[] = [
     categories: [
         {
             name: "Red Blood Cell Disorders",
-            diseases: []
-        },
-        {
-            name: "White Blood Cell Disorders (Benign)",
-            diseases: []
+            diseases: [
+                { 
+                    title: "Iron Deficiency Anemia",
+                    overview: "Iron deficiency anemia is the most common type of anemia worldwide. It results from insufficient iron to support normal red blood cell production, leading to the formation of small (microcytic) and pale (hypochromic) red blood cells.",
+                    learningObjectives: [
+                        "Identify iron deficiency as the most common cause of anemia.",
+                        "List the major causes of iron deficiency.",
+                        "Describe the classic peripheral blood smear findings of microcytic, hypochromic anemia.",
+                        "Interpret key iron studies (ferritin, iron, TIBC)."
+                    ],
+                    tags: {
+                        organ: "Blood",
+                        system: "Hematopoietic & Lymphoid Systems",
+                        category: "Metabolic",
+                        level: "Basic"
+                    },
+                    etiology: [
+                        "Chronic blood loss (e.g., from GI tract, menstruation).",
+                        "Inadequate dietary intake.",
+                        "Malabsorption (e.g., celiac disease).",
+                        "Increased demand (e.g., pregnancy, infancy)."
+                    ],
+                    pathogenesis: "Iron is an essential component of heme, which is part of hemoglobin. When iron stores are depleted, hemoglobin synthesis is impaired. The body produces red blood cells that are smaller than normal and contain less hemoglobin, leading to anemia.",
+                    morphology: {
+                        gross: "N/A.",
+                        microscopic: "Peripheral blood smear shows microcytic (low MCV), hypochromic (low MCH/MCHC) red blood cells with increased central pallor. Anisopoikilocytosis (variation in size and shape) is also present.",
+                        imageHint: "iron deficiency anemia smear"
+                    },
+                    clinicalFeatures: "Presents with general symptoms of anemia: fatigue, weakness, shortness of breath on exertion, and pallor. Specific signs of iron deficiency include pica (craving for non-food items like ice), koilonychia (spoon-shaped nails), and glossitis.",
+                    investigations: "CBC shows low hemoglobin and low MCV. Iron studies are key: low serum ferritin (reflecting depleted iron stores), low serum iron, high total iron-binding capacity (TIBC), and low transferrin saturation.",
+                    management: "Treatment involves identifying and correcting the underlying cause of iron loss and repleting iron stores with oral iron supplementation (e.g., ferrous sulfate). Always check current local and international anemia guidelines.",
+                    complications: "In severe cases, can lead to high-output heart failure.",
+                    prognosis: "Excellent with correction of the underlying cause and iron replacement.",
+                },
+                 { 
+                    title: "Sickle Cell Anemia",
+                    overview: "Sickle cell anemia is an autosomal recessive genetic disorder caused by a point mutation in the beta-globin gene, leading to the production of an abnormal hemoglobin, HbS. Under deoxygenated conditions, HbS polymerizes, causing red blood cells to deform into a rigid, sickle shape.",
+                    learningObjectives: [
+                        "Understand the genetic basis of sickle cell anemia (autosomal recessive, point mutation).",
+                        "Describe the process of HbS polymerization and red cell sickling.",
+                        "Relate sickling to the two major pathological consequences: chronic hemolysis and vaso-occlusion.",
+                        "Recognize the key clinical manifestations, such as painful vaso-occlusive crises."
+                    ],
+                    tags: {
+                        organ: "Blood",
+                        system: "Hematopoietic & Lymphoid Systems",
+                        category: "Genetic",
+                        level: "Intermediate"
+                    },
+                    etiology: [
+                        "Homozygous inheritance of the sickle cell mutation in the beta-globin gene (glutamic acid is replaced by valine at the 6th position)."
+                    ],
+                    pathogenesis: "Deoxygenation causes HbS molecules to aggregate into long, rigid polymers that distort the RBC into a sickle shape. These sickled cells are less deformable, leading to obstruction of small blood vessels (vaso-occlusion) and ischemic tissue damage. They are also fragile and are rapidly destroyed in the spleen, leading to a chronic hemolytic anemia.",
+                    morphology: {
+                        gross: "Patients may show signs of chronic hemolysis (jaundice, gallstones) and vaso-occlusion (splenic atrophy, bone infarcts).",
+                        microscopic: "Peripheral blood smear shows characteristic sickle-shaped red blood cells and target cells. Howell-Jolly bodies (nuclear remnants in RBCs) are seen due to functional asplenia.",
+                        imageHint: "sickle cell anemia smear"
+                    },
+                    clinicalFeatures: "Presents with chronic hemolytic anemia and recurrent, painful vaso-occlusive crises, often affecting the bones, chest, and abdomen. Other manifestations include acute chest syndrome, stroke, and an increased susceptibility to infections with encapsulated organisms (due to splenic dysfunction).",
+                    investigations: "Diagnosis is made by hemoglobin electrophoresis, which shows a predominance of HbS. A sickling test can demonstrate the phenomenon in vitro.",
+                    management: "Management is supportive and focuses on preventing crises. This includes hydration, pain management, and hydroxyurea (which increases levels of fetal hemoglobin, HbF, an inhibitor of sickling). Blood transfusions are used for severe anemia or complications. Always check current local and international guidelines.",
+                    complications: "Acute chest syndrome, stroke, aplastic crisis (with parvovirus B19 infection), renal failure.",
+                    prognosis: "A chronic, lifelong illness, but advances in care have significantly improved life expectancy.",
+                },
+            ]
         },
         {
             name: "Neoplasms of White Cells",
-            diseases: []
+            diseases: [
+                { 
+                    title: "Acute Lymphoblastic Leukemia (ALL)",
+                    overview: "Acute lymphoblastic leukemia is a malignant neoplasm of immature lymphoid cells (lymphoblasts). It is the most common cancer of childhood, with a peak incidence between 2 and 5 years of age.",
+                    learningObjectives: [
+                        "Define ALL as a malignancy of lymphoblasts.",
+                        "Recognize its bimodal age distribution (childhood peak and smaller adult peak).",
+                        "Describe the typical clinical presentation related to bone marrow failure.",
+                        "Understand the importance of immunophenotyping to distinguish B-cell ALL from T-cell ALL."
+                    ],
+                    tags: {
+                        organ: "Bone Marrow",
+                        system: "Hematopoietic & Lymphoid Systems",
+                        category: "Neoplastic",
+                        level: "Advanced"
+                    },
+                    etiology: [
+                        "Most cases are idiopathic.",
+                        "Associated with certain genetic syndromes like Down syndrome."
+                    ],
+                    pathogenesis: "Caused by the clonal proliferation of a transformed hematopoietic stem cell that is committed to the lymphoid lineage. The accumulation of these non-functional blasts in the bone marrow suppresses normal hematopoiesis, leading to anemia, thrombocytopenia, and neutropenia.",
+                    morphology: {
+                        gross: "Patients may have hepatosplenomegaly and lymphadenopathy.",
+                        microscopic: "The bone marrow is hypercellular and packed with lymphoblasts. These are typically small cells with scant cytoplasm, fine chromatin, and inconspicuous nucleoli. The peripheral blood smear also shows circulating blasts.",
+                        imageHint: "acute lymphoblastic leukemia smear"
+                    },
+                    clinicalFeatures: "Presents with an abrupt onset of symptoms related to bone marrow failure: fatigue (anemia), bleeding/bruising (thrombocytopenia), and fever/infections (neutropenia). Bone pain is also common. T-cell ALL can present with a large mediastinal mass.",
+                    investigations: "CBC shows anemia, thrombocytopenia, and a variable white cell count with circulating blasts. Bone marrow biopsy is required for diagnosis. Immunophenotyping by flow cytometry is crucial to confirm the lymphoid lineage (e.g., TdT positivity) and determine if it is B-cell or T-cell ALL.",
+                    management: "Treatment involves intensive multi-agent chemotherapy with different phases (induction, consolidation, maintenance). Prophylactic treatment to the CNS is also given. Always check current local and international ALL treatment protocols.",
+                    complications: "Infection, bleeding, tumor lysis syndrome during chemotherapy.",
+                    prognosis: "Prognosis is excellent in children, with cure rates over 90%. It is less favorable in adults.",
+                },
+                { 
+                    title: "Chronic Lymphocytic Leukemia (CLL)",
+                    overview: "Chronic lymphocytic leukemia is a low-grade B-cell neoplasm characterized by the progressive accumulation of mature-appearing but functionally incompetent lymphocytes. It is the most common leukemia of adults in the Western world.",
+                    learningObjectives: [
+                        "Recognize CLL as a common, indolent leukemia of the elderly.",
+                        "Describe the characteristic immunophenotype of the malignant B-cells.",
+                        "Identify 'smudge cells' on a peripheral blood smear.",
+                        "Understand the clinical course, from asymptomatic lymphocytosis to complications like immunosuppression."
+                    ],
+                    tags: {
+                        organ: "Bone Marrow",
+                        system: "Hematopoietic & Lymphoid Systems",
+                        category: "Neoplastic",
+                        level: "Intermediate"
+                    },
+                    etiology: [
+                        "Unknown."
+                    ],
+                    pathogenesis: "The disease results from the clonal proliferation of mature B-cells that are resistant to apoptosis, leading to their gradual accumulation in the blood, bone marrow, and lymph nodes.",
+                    morphology: {
+                        gross: "Patients often have generalized lymphadenopathy and hepatosplenomegaly.",
+                        microscopic: "Peripheral blood smear shows a marked lymphocytosis with small, mature-looking lymphocytes with scant cytoplasm and clumped 'soccer ball' chromatin. 'Smudge cells' (fragile lymphocytes that are disrupted during slide preparation) are characteristic. Bone marrow is infiltrated by these lymphocytes.",
+                        imageHint: "cll smudge cell smear"
+                    },
+                    clinicalFeatures: "Often discovered incidentally on a routine CBC showing lymphocytosis. Many patients are asymptomatic for years. When symptoms occur, they include fatigue, weight loss, and enlarged lymph nodes. Patients are immunosuppressed and are at increased risk for infections.",
+                    investigations: "Diagnosis is made by flow cytometry of the peripheral blood, which shows a clonal population of B-cells co-expressing CD5 and CD23, in addition to other B-cell markers like CD19 and CD20.",
+                    management: "Asymptomatic, early-stage disease is often managed with a 'watch and wait' approach. Treatment is initiated for symptomatic or advanced disease and may include chemotherapy, monoclonal antibodies (e.g., rituximab), or targeted therapies (e.g., BTK inhibitors like ibrutinib). Always check current local and international CLL guidelines.",
+                    complications: "Transformation to a more aggressive lymphoma (Richter's transformation), autoimmune hemolytic anemia, and infections.",
+                    prognosis: "Highly variable. Some patients have a very indolent course and may never require treatment, while others have more aggressive disease. Prognostic markers like IgHV mutation status and cytogenetic abnormalities (e.g., del17p) are important.",
+                },
+                 {
+                    title: "Hodgkin Lymphoma",
+                    overview: "Hodgkin lymphoma is a lymphoid neoplasm characterized by the presence of a unique tumor cell, the Reed-Sternberg (RS) cell, within a mixed inflammatory background. It typically arises in a single lymph node or chain of nodes and spreads in a contiguous, predictable fashion.",
+                    learningObjectives: [
+                        "Identify the Reed-Sternberg cell as the diagnostic hallmark of Hodgkin lymphoma.",
+                        "Differentiate Hodgkin lymphoma from non-Hodgkin lymphomas based on clinical and pathological features.",
+                        "Recognize the different classical subtypes (e.g., Nodular Sclerosis).",
+                        "Understand the excellent prognosis with modern therapy."
+                    ],
+                    tags: {
+                        organ: "Lymph Node",
+                        system: "Hematopoietic & Lymphoid Systems",
+                        category: "Neoplastic",
+                        level: "Classic"
+                    },
+                    etiology: [
+                        "Largely unknown, but linked to Epstein-Barr virus (EBV) infection in a subset of cases."
+                    ],
+                    pathogenesis: "The Reed-Sternberg cell is a large, malignant B-lymphocyte that has lost its normal B-cell gene expression program. These rare tumor cells secrete cytokines that attract a large number of non-neoplastic inflammatory cells, which make up the bulk of the tumor mass.",
+                    morphology: {
+                        gross: "Painless enlargement of lymph nodes, most commonly in the cervical or mediastinal regions.",
+                        microscopic: "The diagnostic cell is the Reed-Sternberg cell: a very large cell with multiple nuclei or a single bilobed nucleus, each containing a large, eosinophilic, inclusion-like nucleolus ('owl eyes'). These cells are scattered within a background of reactive lymphocytes, eosinophils, and plasma cells. In the Nodular Sclerosis subtype (the most common), the lymph node is divided into nodules by bands of collagen.",
+                        imageHint: "hodgkin lymphoma reed sternberg"
+                    },
+                    clinicalFeatures: "Presents with painless lymphadenopathy. 'B symptoms' (fever, night sweats, weight loss) can be present and have prognostic significance. Pruritus (itching) is also common.",
+                    investigations: "Diagnosis requires an excisional lymph node biopsy. Immunohistochemistry is key: classic RS cells are positive for CD30 and CD15, and are usually negative for B-cell and T-cell markers like CD20 and CD3.",
+                    management: "Treatment involves chemotherapy and/or radiation therapy, with excellent cure rates, even in advanced stages. Always check current local and international Hodgkin lymphoma guidelines.",
+                    complications: "Secondary malignancies and cardiovascular disease are long-term complications of treatment.",
+                    prognosis: "One of the most curable cancers, with a 5-year survival rate of over 85%.",
+                },
+            ]
         }
     ]
-  }
-];
+  },
+]
