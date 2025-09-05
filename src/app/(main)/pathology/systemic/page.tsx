@@ -126,12 +126,7 @@ export default function SystemicPathologyPage() {
                                                 {category.diseases.map(disease => (
                                                     <AccordionItem key={disease.title} value={disease.title} className="border-0">
                                                         <AccordionTrigger className="p-1 text-primary hover:no-underline">
-                                                          <div className="flex justify-between items-center w-full">
-                                                              <span>{disease.title}</span>
-                                                              <Badge variant={disease.tags.level === 'Basic' ? 'secondary' : disease.tags.level === 'Intermediate' ? 'default' : 'destructive'}>
-                                                                {disease.tags.level}
-                                                              </Badge>
-                                                          </div>
+                                                          {disease.title}
                                                         </AccordionTrigger>
                                                         <AccordionContent className="p-4 border-t mt-1">
                                                           <DiseaseDetail disease={disease} />
