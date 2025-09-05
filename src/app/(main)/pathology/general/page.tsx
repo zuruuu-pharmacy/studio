@@ -4,12 +4,15 @@
 import { BackButton } from "@/components/back-button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Microscope, ShieldAlert, Heart, GitBranch, Stethoscope, Dna, FileText, Bot, Book, Zap, Flame, Droplet, Lightbulb, User, Video, Mic, Notebook, BarChart, TrendingUp } from 'lucide-react';
+import { Microscope, ShieldAlert, Heart, GitBranch, Stethoscope, Dna, FileText, Bot, Book, Zap, Flame, Droplet, Lightbulb, User, Video, Mic, Notebook, BarChart, TrendingUp, CheckCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
+import Link from "next/link";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 
 const generalPathologyTopics = [
     {
@@ -111,7 +114,6 @@ function MasteryProgress() {
 
 
 export default function GeneralPathologyPage() {
-    const handleComingSoon = () => toast({ title: "Feature Coming Soon!", description: "This functionality is under development." });
     
   return (
     <div>
@@ -140,15 +142,17 @@ export default function GeneralPathologyPage() {
                             <DetailSection title="Overview" icon={FileText}>
                                 <div className="flex justify-between items-start">
                                     <p className="whitespace-pre-wrap flex-1">{topic.overview}</p>
-                                    <Button variant="ghost" size="sm" className="ml-4" onClick={handleComingSoon}>
-                                        <Mic className="mr-2"/>Listen
-                                    </Button>
+                                     <Link href="/text-to-speech">
+                                        <Button variant="ghost" size="sm" className="ml-4">
+                                            <Mic className="mr-2"/>Listen
+                                        </Button>
+                                     </Link>
                                 </div>
                             </DetailSection>
                             <DetailSection title="Detailed Notes" icon={Book} content={topic.detailedNotes} />
                             <DetailSection title="Visual Learning" icon={Microscope}>
                                 <div className="flex flex-wrap gap-2">
-                                     <Dialog>
+                                    <Dialog>
                                         <DialogTrigger asChild>
                                             <Button variant="outline"><Microscope className="mr-2"/>Virtual Microscope</Button>
                                         </DialogTrigger>
@@ -162,7 +166,7 @@ export default function GeneralPathologyPage() {
                                             </div>
                                         </DialogContent>
                                     </Dialog>
-                                    <Button variant="outline" onClick={handleComingSoon}><Video className="mr-2"/>3D Animation</Button>
+                                    <Link href="/moa-animations"><Button variant="outline"><Video className="mr-2"/>3D Animation</Button></Link>
                                 </div>
                             </DetailSection>
                              <DetailSection title="Clinical & Pharmaceutical Correlation" icon={Stethoscope}>
@@ -171,13 +175,13 @@ export default function GeneralPathologyPage() {
                             </DetailSection>
                              <DetailSection title="Practice Questions & Revision" icon={Zap}>
                                 <div className="flex flex-wrap gap-2">
-                                    <Button variant="outline" size="sm" onClick={handleComingSoon}>MCQs</Button>
-                                    <Button variant="outline" size="sm" onClick={handleComingSoon}>Flashcards</Button>
-                                    <Button variant="outline" size="sm" onClick={handleComingSoon}>Case Simulation</Button>
+                                    <Link href="/mcq-bank"><Button variant="outline" size="sm">MCQs</Button></Link>
+                                    <Link href="/flashcard-generator"><Button variant="outline" size="sm">Flashcards</Button></Link>
+                                    <Link href="/clinical-case-simulator"><Button variant="outline" size="sm">Case Simulation</Button></Link>
                                 </div>
                             </DetailSection>
                              <DetailSection title="Personal Notes" icon={Notebook}>
-                                <Button variant="secondary" size="sm" onClick={handleComingSoon}>Add Note</Button>
+                                <Link href="/notes-organizer"><Button variant="secondary" size="sm">Add Note</Button></Link>
                             </DetailSection>
                         </AccordionContent>
                     </AccordionItem>
@@ -193,7 +197,9 @@ export default function GeneralPathologyPage() {
                     <CardTitle className="flex items-center gap-2"><Bot/>AI Study Tools</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                     <Button className="w-full" onClick={handleComingSoon}>AI Summarizer</Button>
+                     <Link href="/plagiarism-checker" className="w-full">
+                        <Button className="w-full">AI Summarizer</Button>
+                     </Link>
                      <p className="text-xs text-muted-foreground text-center">Upload lecture notes to get a summary.</p>
                 </CardContent>
             </Card>
@@ -202,7 +208,9 @@ export default function GeneralPathologyPage() {
                     <CardTitle className="flex items-center gap-2"><Zap/>Flash Mode</CardTitle>
                 </CardHeader>
                 <CardContent>
-                     <Button className="w-full" onClick={handleComingSoon}>Start Rapid Revision</Button>
+                     <Link href="/pharma-games/rapid-fire-quiz" className="w-full">
+                        <Button className="w-full">Start Rapid Revision</Button>
+                     </Link>
                      <p className="text-xs text-muted-foreground text-center">Quick-fire questions for exam prep.</p>
                 </CardContent>
             </Card>
