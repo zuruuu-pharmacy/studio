@@ -12,28 +12,28 @@ const pathologyModules = [
     title: "General Pathology",
     description: "Learn about the basic pathological processes like inflammation, neoplasia, and cellular injury.",
     href: "/pathology/general",
-    status: "Coming Soon",
+    status: "Active",
   },
   {
     icon: Dna,
     title: "Systemic Pathology",
     description: "Explore the pathology of specific organ systems, including cardiovascular, respiratory, and renal systems.",
     href: "/pathology/systemic",
-    status: "Coming Soon",
+    status: "Active",
   },
   {
     icon: TestTube,
     title: "Hematology & Blood Banking",
     description: "Study diseases of the blood and the principles of transfusion medicine.",
     href: "/pathology/hematology",
-    status: "Coming Soon",
+    status: "Active",
   },
   {
     icon: FileText,
     title: "Pathology Case Studies",
     description: "Review real-world case studies and analyze slides to build your diagnostic skills.",
     href: "/pathology/cases",
-    status: "Coming Soon",
+    status: "Active",
   },
 ];
 
@@ -50,7 +50,13 @@ export function PathologyClient() {
             <CardDescription>{module.description}</CardDescription>
           </CardHeader>
           <CardContent className="flex-grow flex items-end">
-            <Button disabled className="w-full">{module.status}</Button>
+            {module.status === "Active" ? (
+              <Link href={module.href} className="w-full">
+                <Button className="w-full">Explore Module</Button>
+              </Link>
+            ) : (
+              <Button disabled className="w-full">{module.status}</Button>
+            )}
           </CardContent>
         </Card>
       ))}
