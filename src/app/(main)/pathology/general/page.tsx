@@ -4,10 +4,12 @@
 import { BackButton } from "@/components/back-button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Microscope, ShieldAlert, Heart, GitBranch, Stethoscope, Dna, FileText, Bot, Book, Zap, Flame, Droplet } from 'lucide-react';
+import { Microscope, ShieldAlert, Heart, GitBranch, Stethoscope, Dna, FileText, Bot, Book, Zap, Flame, Droplet, Lightbulb, User, Video, Mic, Notebook, BarChart, TrendingUp } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { toast } from "@/hooks/use-toast";
+import { Progress } from "@/components/ui/progress";
 
 const generalPathologyTopics = [
     {
@@ -84,8 +86,33 @@ function DetailSection({ title, content, icon: Icon, children }: { title: string
     )
 }
 
+function MasteryProgress() {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><BarChart/>Mastery Progress</CardTitle>
+                <CardDescription>Your tracked progress in General Pathology. Complete quizzes and case studies to improve your score.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex items-center gap-4">
+                    <div className="flex-1 space-y-1">
+                         <p className="text-sm font-medium">Overall Progress</p>
+                         <Progress value={65} />
+                    </div>
+                    <div className="text-right">
+                        <p className="text-2xl font-bold">65%</p>
+                        <p className="text-xs text-green-500 flex items-center gap-1"><TrendingUp className="h-3 w-3"/>+5% this week</p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
+
 
 export default function GeneralPathologyPage() {
+    const handleComingSoon = () => toast({ title: "Feature Coming Soon!", description: "This functionality is under development." });
+    
   return (
     <div>
       <BackButton />
@@ -110,23 +137,33 @@ export default function GeneralPathologyPage() {
                         </div>
                         </AccordionTrigger>
                         <AccordionContent className="px-6 pb-4 space-y-4">
-                            <DetailSection title="Overview" icon={FileText} content={topic.overview} />
+                            <DetailSection title="Overview" icon={FileText}>
+                                <div className="flex justify-between items-start">
+                                    <p className="whitespace-pre-wrap flex-1">{topic.overview}</p>
+                                    <Button variant="ghost" size="sm" className="ml-4" onClick={handleComingSoon}>
+                                        <Mic className="mr-2"/>Listen
+                                    </Button>
+                                </div>
+                            </DetailSection>
                             <DetailSection title="Detailed Notes" icon={Book} content={topic.detailedNotes} />
                             <DetailSection title="Visual Learning" icon={Microscope}>
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                        <Button variant="outline">View Diagram</Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="max-w-2xl">
-                                        <DialogHeader>
-                                            <DialogTitle>{topic.title} - Visuals</DialogTitle>
-                                        </DialogHeader>
-                                        <div className="flex flex-col items-center">
-                                            <Image src={topic.visualLearning.image} alt={topic.visualLearning.caption} width={600} height={400} className="rounded-md border" />
-                                            <p className="text-xs italic mt-2 text-muted-foreground">{topic.visualLearning.caption}</p>
-                                        </div>
-                                    </DialogContent>
-                                </Dialog>
+                                <div className="flex flex-wrap gap-2">
+                                     <Dialog>
+                                        <DialogTrigger asChild>
+                                            <Button variant="outline"><Microscope className="mr-2"/>Virtual Microscope</Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="max-w-2xl">
+                                            <DialogHeader>
+                                                <DialogTitle>{topic.title} - Virtual Slide</DialogTitle>
+                                            </DialogHeader>
+                                            <div className="flex flex-col items-center">
+                                                <Image src={topic.visualLearning.image} alt={topic.visualLearning.caption} width={600} height={400} className="rounded-md border" />
+                                                <p className="text-xs italic mt-2 text-muted-foreground">{topic.visualLearning.caption}</p>
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
+                                    <Button variant="outline" onClick={handleComingSoon}><Video className="mr-2"/>3D Animation</Button>
+                                </div>
                             </DetailSection>
                              <DetailSection title="Clinical & Pharmaceutical Correlation" icon={Stethoscope}>
                                 <p><strong>Clinical:</strong> {topic.clinicalCorrelation}</p>
@@ -134,10 +171,13 @@ export default function GeneralPathologyPage() {
                             </DetailSection>
                              <DetailSection title="Practice Questions & Revision" icon={Zap}>
                                 <div className="flex flex-wrap gap-2">
-                                    <Button variant="outline" size="sm" disabled>MCQs (Coming Soon)</Button>
-                                    <Button variant="outline" size="sm" disabled>Flashcards (Coming Soon)</Button>
-                                    <Button variant="outline" size="sm" disabled>Case Simulation (Coming Soon)</Button>
+                                    <Button variant="outline" size="sm" onClick={handleComingSoon}>MCQs</Button>
+                                    <Button variant="outline" size="sm" onClick={handleComingSoon}>Flashcards</Button>
+                                    <Button variant="outline" size="sm" onClick={handleComingSoon}>Case Simulation</Button>
                                 </div>
+                            </DetailSection>
+                             <DetailSection title="Personal Notes" icon={Notebook}>
+                                <Button variant="secondary" size="sm" onClick={handleComingSoon}>Add Note</Button>
                             </DetailSection>
                         </AccordionContent>
                     </AccordionItem>
@@ -147,12 +187,13 @@ export default function GeneralPathologyPage() {
             </Card>
         </div>
         <div className="space-y-6">
+            <MasteryProgress />
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2"><Bot/>AI Study Tools</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                     <Button className="w-full" disabled>AI Summarizer (Coming Soon)</Button>
+                     <Button className="w-full" onClick={handleComingSoon}>AI Summarizer</Button>
                      <p className="text-xs text-muted-foreground text-center">Upload lecture notes to get a summary.</p>
                 </CardContent>
             </Card>
@@ -161,7 +202,7 @@ export default function GeneralPathologyPage() {
                     <CardTitle className="flex items-center gap-2"><Zap/>Flash Mode</CardTitle>
                 </CardHeader>
                 <CardContent>
-                     <Button className="w-full" disabled>Start Rapid Revision (Coming Soon)</Button>
+                     <Button className="w-full" onClick={handleComingSoon}>Start Rapid Revision</Button>
                      <p className="text-xs text-muted-foreground text-center">Quick-fire questions for exam prep.</p>
                 </CardContent>
             </Card>
