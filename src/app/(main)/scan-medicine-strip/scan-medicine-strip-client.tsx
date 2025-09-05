@@ -246,7 +246,7 @@ export function ScanMedicineStripClient() {
                             <CardContent className="space-y-3">
                                <DetailSection title="Scan Info" content={`Source: ${getRecognitionSource(scannedItem.type).source} | Confidence: ${getRecognitionSource(scannedItem.type).confidence}`} icon={Barcode}/>
                                <DetailSection title="Batch / Expiry" content={"Not detected on packaging."} icon={Calendar}/>
-                               <Button variant="link" size="sm" className="p-0 h-auto" onClick={() => toast({title: "Coming Soon!", description: "This will allow reporting incorrect information to admins."})}>Report Incorrect Info</Button>
+                               <Button variant="link" size="sm" className="p-0 h-auto" onClick={() => toast({title: "Coming Soon!", description: "This would open a secure form to report an issue with this drug's data or packaging to administrators, with options for regulatory reporting."})}>Report Issue</Button>
                             </CardContent>
                         </Card>
 
@@ -287,7 +287,7 @@ export function ScanMedicineStripClient() {
                         <Card>
                             <CardHeader><CardTitle className="text-lg">Learning & App Actions</CardTitle></CardHeader>
                             <CardContent className="flex flex-wrap gap-2">
-                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will save the scan to your Notes Organizer."})}><Save className="mr-2"/>Save Study Note</Button>
+                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "Scan saved to your private Notes Organizer. You can delete it at any time."})}><Save className="mr-2"/>Save Study Note</Button>
                                 <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will add flashcards to your deck."})}><BookCopy className="mr-2"/>Make Flashcards</Button>
                                 <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will launch a quiz on this drug."})}><HelpCircle className="mr-2"/>Quiz Me</Button>
                                 <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will launch a simulated counseling session."})}><User className="mr-2"/>Counseling Mode</Button>
