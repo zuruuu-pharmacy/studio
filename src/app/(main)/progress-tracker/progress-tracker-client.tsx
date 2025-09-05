@@ -5,7 +5,7 @@ import { useState, useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus, HelpCircle, FileText, FlaskConical, BrainCircuit, Book, Zap, ListOrdered, BookCopy, Bell, ArrowLeft, ShieldQuestion, ShieldCheck, Award } from "lucide-react";
+import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus, HelpCircle, FileText, FlaskConical, BrainCircuit, Book, Zap, ListOrdered, BookCopy, Bell, ArrowLeft, ShieldQuestion, ShieldCheck, Award, Bug } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -57,7 +57,7 @@ const masteryData = [
     lastActivity: "Practice: Alkaloids",
     topics: []
   },
-  {
+   {
     subject: "Pathology",
     masteryScore: 55,
     trend: "negative",
@@ -119,12 +119,6 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-const mockNudges = [
-    { type: 'digest', title: "Daily Focus", description: "Top 3 topics to focus on today: Inflammation Pathways, Tablet Dissolution Rates, Drug Interactions.", icon: Lightbulb, color: "text-primary"},
-    { type: 'alert', title: "Mastery Alert: Pathology", description: "Your mastery score has dropped from 65% to 55%. A 30-minute review session is recommended.", icon: TrendingDown, color: "text-destructive"},
-    { type: 'milestone', title: "Milestone Reached!", description: "Congratulations! You've achieved 92% mastery in Pharmacology.", icon: Target, color: "text-green-500"},
-    { type: 'discrepancy', title: "Confidence Gap Alert", description: "Your self-reported confidence in 'Drug Interactions' is high, but your quiz scores are low. Let's review this topic.", icon: ShieldQuestion, color: "text-amber-500"},
-]
 
 const recommendationMap: {[key: string]: { rec: string, actions: { label: string, icon: React.ElementType, toast: string }[] }} = {
       "Pathology": {
@@ -148,6 +142,15 @@ const recommendationMap: {[key: string]: { rec: string, actions: { label: string
           ]
       }
 }
+
+const qaChecklist = [
+    "Verify mastery recalculation within 1 minute of new result.",
+    "Confirm recommendations map correctly to error types.",
+    "Load test dashboard for classes of 1000+ students.",
+    "Validate privacy: students can hide/share data.",
+    "UX: ensure microblocks add to Study Planner seamlessly."
+];
+
 
 export function ProgressTrackerClient() {
   const [selectedSubject, setSelectedSubject] = useState<typeof masteryData[0] | null>(null);
@@ -380,8 +383,21 @@ export function ProgressTrackerClient() {
                     </Card>
                  </AccordionContent>
              </AccordionItem>
+              <AccordionItem value="qa" className="border-0">
+                 <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">Testing &amp; QA Checklist</AccordionTrigger>
+                 <AccordionContent>
+                    <Card className="p-6">
+                        <div className="space-y-4">
+                            <h4 className="font-semibold mb-2 flex items-center gap-2"><Bug className="text-primary"/>Quality Assurance</h4>
+                            <p className="text-sm text-muted-foreground mb-2">We use the following checklist to ensure the Progress Tracker is reliable and accurate:</p>
+                            <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
+                                {qaChecklist.map((item, i) => <li key={i}>{item}</li>)}
+                            </ul>
+                        </div>
+                    </Card>
+                 </AccordionContent>
+             </AccordionItem>
         </Accordion>
     </div>
   );
 }
-
