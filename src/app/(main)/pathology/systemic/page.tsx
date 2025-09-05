@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { BackButton } from "@/components/back-button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Stethoscope, Dna, FileText, Bot, Book, Zap, FlaskConical, GitBranch, Heart, Wind, Brain, Bone, CircleEllipsis, TestTube, Microscope, Droplet, Target, CheckCircle, Video, Mic, Notebook, BookCopy, CaseSensitive, FileHeart, HelpCircle } from 'lucide-react';
+import { Stethoscope, Dna, FileText, Bot, Book, Zap, FlaskConical, GitBranch, Heart, Wind, Brain, Bone, CircleEllipsis, TestTube, Microscope, Droplet, Target, CheckCircle, Video, Mic, Notebook, BookCopy, CaseSensitive, FileHeart, HelpCircle, GitCommit, CalendarClock, BookA } from 'lucide-react';
 import { systemicPathologyData, type Disease } from "./data";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -43,7 +43,7 @@ function DiseaseDetail({ disease }: { disease: Disease }) {
         <TabsTrigger value="morphology">Morphology</TabsTrigger>
         <TabsTrigger value="clinical">Clinical</TabsTrigger>
         <TabsTrigger value="investigations">Investigations</TabsTrigger>
-        <TabsTrigger value="revision">Practice &amp; Revision</TabsTrigger>
+        <TabsTrigger value="revision">Practice & Revision</TabsTrigger>
       </TabsList>
       <TabsContent value="overview" className="pt-4 space-y-4">
         <div className="flex justify-between items-start">
@@ -87,10 +87,10 @@ function DiseaseDetail({ disease }: { disease: Disease }) {
       </TabsContent>
        <TabsContent value="investigations" className="pt-4">
          <DetailSection title="Investigations" icon={FlaskConical}>
-            <p>{disease.investigations}</p>
+            <p className="whitespace-pre-wrap">{disease.investigations}</p>
          </DetailSection>
           <DetailSection title="Management Overview" icon={CheckCircle}>
-            <p>{disease.management}</p>
+            <p className="whitespace-pre-wrap">{disease.management}</p>
          </DetailSection>
       </TabsContent>
        <TabsContent value="revision" className="pt-4 space-y-6">
@@ -111,6 +111,27 @@ function DiseaseDetail({ disease }: { disease: Disease }) {
         </DetailSection>
         <DetailSection title="Personal Notes" icon={Notebook}>
             <Link href="/notes-organizer"><Button variant="secondary" size="sm">Add Note</Button></Link>
+        </DetailSection>
+         <DetailSection title="References & Metadata" icon={BookA}>
+            <div className="space-y-4">
+                 <div>
+                    <h5 className="font-semibold mb-1 text-sm">Suggested Reading</h5>
+                    <ul className="list-disc list-inside space-y-1">
+                        {disease.references?.map((ref, i) => <li key={i}>{ref}</li>)}
+                    </ul>
+                 </div>
+                  <div>
+                    <h5 className="font-semibold mb-1 text-sm">Review Information</h5>
+                    <p><span className="font-semibold">Faculty Reviewer:</span> {disease.facultyReviewer || 'N/A'}</p>
+                    <p><span className="font-semibold">Last Reviewed:</span> {disease.dateReviewed || 'N/A'}</p>
+                 </div>
+                 <div>
+                    <h5 className="font-semibold mb-1 text-sm">Version History</h5>
+                    <ul className="list-disc list-inside space-y-1">
+                        {disease.versionHistory?.map((v, i) => <li key={i}><strong>v{v.version} ({v.date}):</strong> {v.changes}</li>)}
+                    </ul>
+                 </div>
+            </div>
         </DetailSection>
       </TabsContent>
     </Tabs>
