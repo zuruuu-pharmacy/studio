@@ -33,8 +33,11 @@ const formSchema = z.object({
           "image/jpeg",
           "image/png",
           "image/webp",
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         ].includes(files?.[0]?.type),
-      "Only .txt and image files are supported."
+      "Only .txt, .pdf, .doc, .docx and image files are supported."
     ),
 });
 type FormValues = z.infer<typeof formSchema>;
@@ -143,11 +146,11 @@ export function PlagiarismCheckerClient() {
                   name="documentFile"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Document File (TXT or Image)</FormLabel>
+                      <FormLabel>Document File (.txt, .pdf, .doc, .docx, image)</FormLabel>
                       <FormControl>
                         <Input
                           type="file"
-                          accept=".txt,image/*"
+                          accept=".txt,.pdf,.doc,.docx,image/*"
                           {...fileRef}
                           onChange={(e) => field.onChange(e.target.files)}
                         />
