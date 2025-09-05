@@ -355,7 +355,7 @@ const studentTools = [
     {
         icon: WifiOff,
         title: "Offline Mode",
-        description: "Download materials and access features without an internet connection.",
+        description: "Download key study materials to continue learning seamlessly, even without an internet connection.",
         href: "/offline-mode",
         color: "text-gray-500",
     }
