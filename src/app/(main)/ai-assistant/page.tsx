@@ -6,9 +6,9 @@ export default function AiAssistantPage() {
   return (
     <div>
       <BackButton />
-      <h1 className="text-3xl font-bold mb-2 font-headline">AI Assistant Helper</h1>
+      <h1 className="text-3xl font-bold mb-2 font-headline">AI Smart Search</h1>
       <p className="text-muted-foreground mb-6">
-        Ask any pharmacy-related question and get an instant response from Zuruu AI.
+        Ask any pharmacy-related question and get a comprehensive, synthesized response from Zuruu AI.
       </p>
       <AiAssistantClient />
     </div>
