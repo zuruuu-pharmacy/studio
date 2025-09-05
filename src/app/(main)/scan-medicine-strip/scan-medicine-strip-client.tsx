@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "@/hooks/use-toast";
-import { Camera, Loader2, Pill, FlaskConical, AlertTriangle, ScanLine, ShieldCheck, FileText, BookCopy, HelpCircle, Leaf, Barcode } from "lucide-react";
+import { Camera, Loader2, Pill, FlaskConical, AlertTriangle, ScanLine, ShieldCheck, FileText, BookCopy, HelpCircle, Leaf, Barcode, CheckCircle, Flag } from "lucide-react";
 import { drugTreeData, Drug } from "@/app/(main)/drug-classification-tree/data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import Image from "next/image";
 
 const MOCK_SCANNABLES = [
     { type: 'drug', name: "Amoxicillin", stripPosition: { top: '30%', left: '20%' }, icon: Pill },
@@ -50,7 +51,7 @@ function DetailSection({ title, content, icon: Icon }: { title: string, content?
 export function ScanMedicineStripClient() {
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [scannedDrug, setScannedDrug] = useState<Drug | null>(null);
+  const [scannedItem, setScannedItem] = useState<{drug: Drug, type: string} | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   
@@ -81,10 +82,10 @@ export function ScanMedicineStripClient() {
     }
   };
 
-  const handleScan = (drugName: string) => {
+  const handleScan = (drugName: string, type: string) => {
     const details = findDrugDetails(drugName);
     if (details) {
-        setScannedDrug(details);
+        setScannedItem({ drug: details, type: type });
         setIsModalOpen(true);
     } else {
         toast({ variant: "destructive", title: "Drug Not Found", description: `Could not find details for ${drugName}.`})
@@ -95,6 +96,14 @@ export function ScanMedicineStripClient() {
     const highRiskDrugs = ["morphine", "warfarin", "insulin"];
     return highRiskDrugs.includes(drugName?.toLowerCase() || '');
   }
+  
+  const getRecognitionSource = (type: string) => {
+      switch(type) {
+          case 'barcode': return { source: 'Barcode Scan via GS1 Database', confidence: '98%' };
+          case 'herb': return { source: 'Plant Recognition Model', confidence: '72%' };
+          default: return { source: 'OCR Text Recognition', confidence: '95%' };
+      }
+  }
 
   return (
     <>
@@ -104,7 +113,7 @@ export function ScanMedicineStripClient() {
           <CardDescription>
             {hasCameraPermission 
               ? "Live camera feed active. Tap on a detected item (pill, barcode, herb)."
-              : "Enable your camera to scan medicine text, barcodes, or herbs."
+              : "Enable your camera to scan medicine text, barcodes, or plant specimens."
             }
           </CardDescription>
         </CardHeader>
@@ -135,7 +144,7 @@ export function ScanMedicineStripClient() {
                               variant="outline"
                               className="absolute bg-white/80 hover:bg-white text-black h-auto p-2 rounded-lg shadow-lg flex flex-col items-center gap-1" 
                               style={item.stripPosition}
-                              onClick={() => handleScan(item.name)}
+                              onClick={() => handleScan(item.name, item.type)}
                             >
                                 <Icon className="h-6 w-6 text-primary"/>
                                 <span className="text-xs font-semibold">{item.name}</span>
@@ -150,24 +159,36 @@ export function ScanMedicineStripClient() {
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-2xl">
-            {scannedDrug && (
+            {scannedItem && (
                 <>
                     <DialogHeader>
-                        <DialogTitle className="text-2xl">{scannedDrug.name} ({scannedDrug.pharmaApplications.formulations})</DialogTitle>
-                        <DialogDescription>{scannedDrug.classification}</DialogDescription>
+                        <DialogTitle className="text-2xl">{scannedItem.drug.name} ({scannedItem.drug.pharmaApplications.formulations})</DialogTitle>
+                        <DialogDescription>{scannedItem.drug.classification}</DialogDescription>
                     </DialogHeader>
                     <div className="max-h-[70vh] overflow-y-auto pr-4 space-y-4">
-                        {isHighRisk(scannedDrug.name) && (
+                        <Card className="bg-muted/50">
+                            <CardHeader>
+                                <CardTitle className="text-lg flex items-center gap-2">Recognition Details</CardTitle>
+                            </CardHeader>
+                             <CardContent className="text-sm space-y-2">
+                                <p><strong>Confidence:</strong> <span className="font-bold text-green-600">{getRecognitionSource(scannedItem.type).confidence}</span></p>
+                                <p><strong>Source:</strong> {getRecognitionSource(scannedItem.type).source}</p>
+                                <Button size="sm" variant="link" className="p-0 h-auto" onClick={() => toast({ title: "Feature Coming Soon!", description: "A system for reporting incorrect information will be implemented."})}>
+                                    <Flag className="mr-2"/>Report Incorrect Info
+                                </Button>
+                             </CardContent>
+                        </Card>
+                        {isHighRisk(scannedItem.drug.name) && (
                             <Alert variant="destructive">
                                 <AlertTriangle className="h-4 w-4"/>
                                 <AlertTitle>High-Risk Medication</AlertTitle>
                                 <AlertDescription>Check dose & monitoring. Not for patient dosing without supervision.</AlertDescription>
                             </Alert>
                         )}
-                        <DetailSection title="Mechanism of Action" content={scannedDrug.moa} icon={FlaskConical} />
-                        <DetailSection title="Therapeutic Uses" content={scannedDrug.therapeuticUses} icon={Pill} />
-                        <DetailSection title="Adverse Drug Reactions" content={scannedDrug.adrs} icon={AlertTriangle} />
-                        <DetailSection title="Contraindications" content={scannedDrug.contraindications} icon={ShieldCheck} />
+                        <DetailSection title="Mechanism of Action" content={scannedItem.drug.moa} icon={FlaskConical} />
+                        <DetailSection title="Therapeutic Uses" content={scannedItem.drug.therapeuticUses} icon={Pill} />
+                        <DetailSection title="Adverse Drug Reactions" content={scannedItem.drug.adrs} icon={AlertTriangle} />
+                        <DetailSection title="Contraindications" content={scannedItem.drug.contraindications} icon={ShieldCheck} />
                         <Card className="bg-muted/50">
                             <CardHeader><CardTitle className="text-lg">Pedagogical Actions</CardTitle></CardHeader>
                             <CardContent className="flex flex-wrap gap-2">
