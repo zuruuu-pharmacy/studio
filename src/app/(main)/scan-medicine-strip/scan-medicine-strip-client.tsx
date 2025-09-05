@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -6,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "@/hooks/use-toast";
-import { Camera, Loader2, Pill, FlaskConical, AlertTriangle, ScanLine, ShieldCheck, FileText, BookCopy, HelpCircle, Leaf, Barcode, CheckCircle, Flag, Save, TestTube } from "lucide-react";
+import { Camera, Loader2, Pill, FlaskConical, AlertTriangle, ScanLine, ShieldCheck, FileText, BookCopy, HelpCircle, Leaf, Barcode, CheckCircle, Flag, Save, TestTube, User, Stethoscope, GitCompareArrows } from "lucide-react";
 import { drugTreeData, Drug } from "@/app/(main)/drug-classification-tree/data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import Image from "next/image";
@@ -33,10 +32,10 @@ const findDrugDetails = (drugName: string): Drug | null => {
     return null;
 }
 
-function DetailSection({ title, content, icon: Icon }: { title: string, content?: string, icon: React.ElementType }) {
+function DetailSection({ title, content, icon: Icon, className }: { title: string, content?: string, icon: React.ElementType, className?: string }) {
     if (!content) return null;
     return (
-        <div className="space-y-1">
+        <div className={cn("space-y-1", className)}>
             <h4 className="font-semibold text-base flex items-center gap-2 text-primary">
                 <Icon className="h-4 w-4" />
                 {title}
@@ -186,18 +185,7 @@ export function ScanMedicineStripClient() {
                         <DialogDescription>{scannedItem.drug.classification}</DialogDescription>
                     </DialogHeader>
                     <div className="max-h-[70vh] overflow-y-auto pr-4 space-y-4">
-                        <Card className="bg-muted/50">
-                            <CardHeader>
-                                <CardTitle className="text-lg flex items-center gap-2">Recognition Details</CardTitle>
-                            </CardHeader>
-                             <CardContent className="text-sm space-y-2">
-                                <p><strong>Confidence:</strong> <span className="font-bold text-green-600">{getRecognitionSource(scannedItem.type).confidence}</span></p>
-                                <p><strong>Source:</strong> {getRecognitionSource(scannedItem.type).source}</p>
-                                <Button size="sm" variant="link" className="p-0 h-auto" onClick={() => toast({ title: "Feature Coming Soon!", description: "A system for reporting incorrect information will be implemented."})}>
-                                    <Flag className="mr-2"/>Report Incorrect Info
-                                </Button>
-                             </CardContent>
-                        </Card>
+                        
                         {isHighRisk(scannedItem.drug.name) && (
                             <Alert variant="destructive">
                                 <AlertTriangle className="h-4 w-4"/>
@@ -205,11 +193,31 @@ export function ScanMedicineStripClient() {
                                 <AlertDescription>Check dose & monitoring. Not for patient dosing without supervision.</AlertDescription>
                             </Alert>
                         )}
+                        
+                        <Card>
+                            <CardHeader><CardTitle className="text-lg">Identification</CardTitle></CardHeader>
+                            <CardContent className="space-y-3">
+                               <DetailSection title="Generic Name" content={scannedItem.drug.name} icon={Pill} />
+                               <DetailSection title="Brand(s)" content={scannedItem.drug.pharmaApplications.formulations} icon={Pill} />
+                               <DetailSection title="Dosage Forms" content={scannedItem.drug.pharmaApplications.dosageForms} icon={Pill} />
+                               <DetailSection title="Scan Info" content={`Source: ${getRecognitionSource(scannedItem.type).source} | Confidence: ${getRecognitionSource(scannedItem.type).confidence}`} icon={Barcode}/>
+                            </CardContent>
+                        </Card>
+                        
                         <DetailSection title="Mechanism of Action" content={scannedItem.drug.moa} icon={FlaskConical} />
-                        <DetailSection title="Therapeutic Uses" content={scannedItem.drug.therapeuticUses} icon={Pill} />
-                        <DetailSection title="Adverse Drug Reactions" content={scannedItem.drug.adrs} icon={AlertTriangle} />
-                        <DetailSection title="Contraindications" content={scannedItem.drug.contraindications} icon={ShieldCheck} />
-                        <Card className="bg-muted/50">
+
+                        <Card>
+                            <CardHeader><CardTitle className="text-lg">Clinical Information</CardTitle></CardHeader>
+                            <CardContent className="space-y-4">
+                               <DetailSection title="Therapeutic Uses" content={scannedItem.drug.therapeuticUses} icon={Stethoscope} />
+                               <DetailSection title="Major Adverse Drug Reactions (ADRs)" content={scannedItem.drug.adrs} icon={AlertTriangle} />
+                               <DetailSection title="Contraindications & Precautions" content={scannedItem.drug.contraindications} icon={ShieldCheck} />
+                                <DetailSection title="Typical Dosing" content={"Dosing information not available in this mock data. A real implementation would show Adult, Pediatric, and Renal/Hepatic dosing here."} icon={User} />
+                               <DetailSection title="Major Interactions" content={"Interaction data not available in this mock data."} icon={GitCompareArrows} />
+                            </CardContent>
+                        </Card>
+                        
+                        <Card>
                             <CardHeader><CardTitle className="text-lg">Pedagogical Actions</CardTitle></CardHeader>
                             <CardContent className="flex flex-wrap gap-2">
                                 <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will save the scan to your Notes Organizer."})}>Save Study Note</Button>
