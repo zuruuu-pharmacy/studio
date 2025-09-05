@@ -70,10 +70,9 @@ function CompactOverlay({ item, onScan }: { item: { type: string, name: string, 
             style={item.stripPosition}
         >
             <Card 
-                className="bg-white/90 dark:bg-black/90 backdrop-blur-sm p-2 rounded-lg shadow-xl w-64 border-primary/50 flex flex-col gap-2 cursor-pointer"
-                 onClick={() => onScan(item.name, item.type)}
+                className="bg-white/90 dark:bg-black/90 backdrop-blur-sm p-2 rounded-lg shadow-xl w-64 border-primary/50 flex flex-col gap-2"
             >
-                <div className="flex gap-2">
+                <div className="flex gap-2 cursor-pointer" onClick={() => onScan(item.name, item.type)}>
                     <div className={cn("w-2 rounded-full", riskColors[item.risk] || 'bg-gray-400')}></div>
                     <div className="flex-1 space-y-1">
                         <p className="font-bold text-sm">{drug.name}</p>
@@ -82,7 +81,7 @@ function CompactOverlay({ item, onScan }: { item: { type: string, name: string, 
                     </div>
                 </div>
                  <div className="flex gap-1 justify-around">
-                    <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={(e) => handleActionClick(e, 'Details')}>Details</Button>
+                    <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={() => onScan(item.name, item.type)}>Details</Button>
                     <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={(e) => handleActionClick(e, 'Interactions')}>Interactions</Button>
                     <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={(e) => handleActionClick(e, 'Save')}>Save</Button>
                     <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={(e) => handleActionClick(e, 'Quiz')}>Quiz</Button>
@@ -144,7 +143,7 @@ export function ScanMedicineStripClient() {
   
   const getRecognitionSource = (type: string) => {
       switch(type) {
-          case 'barcode': return { source: 'UMT Verified Formulary & GS1 Database', confidence: '98%' };
+          case 'barcode': return { source: 'UMT Formulary (Faculty Verified) / GS1 DB', confidence: '98%' };
           case 'herb': return { source: 'Plant Recognition Model', confidence: '72%' };
           default: return { source: 'OCR Text Recognition', confidence: '95%' };
       }
@@ -200,6 +199,12 @@ export function ScanMedicineStripClient() {
                     </DialogHeader>
                     <div className="max-h-[70vh] overflow-y-auto pr-4 space-y-4">
                         
+                        <Alert variant="default" className="border-blue-500/50 bg-blue-500/10">
+                            <AlertTriangle className="h-4 w-4 text-blue-500" />
+                            <AlertTitle className="text-blue-600">Clinical Disclaimer</AlertTitle>
+                            <AlertDescription>Educational tool only — confirm with official formulary before clinical decisions.</AlertDescription>
+                        </Alert>
+                        
                         {isHighRisk(scannedItem.drug.name) && (
                             <Alert variant="destructive">
                                 <AlertTriangle className="h-4 w-4"/>
@@ -216,12 +221,6 @@ export function ScanMedicineStripClient() {
                             </Alert>
                         )}
 
-                        <Alert variant="default" className="border-blue-500/50 bg-blue-500/10">
-                            <AlertTriangle className="h-4 w-4 text-blue-500" />
-                            <AlertTitle className="text-blue-600">Clinical Disclaimer</AlertTitle>
-                            <AlertDescription>Educational tool only — confirm with official formulary before clinical decisions.</AlertDescription>
-                        </Alert>
-                        
                         <Card>
                             <CardHeader><CardTitle className="text-lg">Identification & Recognition</CardTitle></CardHeader>
                             <CardContent className="space-y-3">
