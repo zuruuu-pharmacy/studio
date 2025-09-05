@@ -5,9 +5,23 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { Download, CloudOff, BookOpen, CaseSensitive, History, Trash2, CheckCircle, WifiOff, FileDown } from "lucide-react";
+import { Download, CloudOff, BookOpen, CaseSensitive, History, Trash2, CheckCircle, WifiOff, FileDown, Award } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
+
+const kpiData = [
+  { metric: "Feature Adoption Rate", formula: "(# students using offline mode) / (Total # students)", target: "> 40% within 1st semester" },
+  { metric: "Content Download Rate", formula: "(# of downloaded items) / (# of available items)", target: "Core subjects > 70%" },
+  { metric: "Offline Session Length", formula: "Avg. time spent in offline mode per session", target: "> 15 minutes" },
+  { metric: "Sync Success Rate", formula: "Successful syncs / Total sync attempts", target: "> 99.5%" },
+  { metric: "Cache Hit Ratio", formula: "(Offline content loads) / (Total content loads)", target: "Monitor correlation with grades" },
+  { metric: "Storage Usage", formula: "Avg. MB used per student for offline data", target: "Stay below 500MB avg." },
+  { metric: "User Satisfaction (CSAT/NPS)", formula: "Feedback from targeted surveys on this feature", target: "CSAT > 4.2/5" },
+];
+
 
 export function OfflineModeClient() {
   const [isOffline, setIsOffline] = useState(false);
@@ -93,6 +107,51 @@ export function OfflineModeClient() {
             </div>
         </CardContent>
       </Card>
+      
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="item-1">
+          <AccordionTrigger>Product Goals & KPIs</AccordionTrigger>
+          <AccordionContent>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Award /> Goals & Success Metrics</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <h3 className="font-semibold">Primary Goals</h3>
+                  <ul className="list-disc list-inside text-muted-foreground text-sm">
+                    <li><strong className="text-foreground">Accessibility:</strong> Enable learning for students in low-connectivity areas.</li>
+                    <li><strong className="text-foreground">Engagement:</strong> Allow studying during commutes or power outages.</li>
+                    <li><strong className="text-foreground">Outcomes:</strong> Drive better results by increasing total study time.</li>
+                  </ul>
+                </div>
+                <div>
+                    <h3 className="font-semibold">Key Performance Indicators (KPIs)</h3>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Metric</TableHead>
+                                <TableHead>Formula / Definition</TableHead>
+                                <TableHead>Target</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {kpiData.map(kpi => (
+                                <TableRow key={kpi.metric}>
+                                    <TableCell>{kpi.metric}</TableCell>
+                                    <TableCell className="font-mono text-xs">{kpi.formula}</TableCell>
+                                    <TableCell>{kpi.target}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
     </div>
   );
 }
