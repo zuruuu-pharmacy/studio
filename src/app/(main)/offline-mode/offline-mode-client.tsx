@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { Download, CloudOff, BookOpen, CaseSensitive, History, Trash2, CheckCircle, WifiOff, FileDown, Award, Bug, ShieldCheck, Settings } from "lucide-react";
+import { Download, CloudOff, BookOpen, CaseSensitive, History, Trash2, CheckCircle, WifiOff, FileDown, Award, Bug, ShieldCheck, Settings, BarChart } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -48,6 +48,12 @@ const adminFeatures = [
     "Setting expiry times: When marking content as offline-eligible, an optional 'Expiry Date' field appears. If set, the content will be automatically deleted from student devices after this date.",
     "Locking quiz offline attempts: For summative assessments, a 'Disable Offline Attempts' checkbox is available in the quiz settings to prevent students from taking it without an internet connection.",
     "Viewing sync status of class: An admin dashboard shows a table of students, their last sync time, and a status icon (green for recent, amber for >24h, red for >72h).",
+];
+
+const analyticsPoints = [
+    "Key metrics logged include: content download timestamps, download failures (with reason), sync start/end times, offline quiz attempts and scores, and offline session duration.",
+    "Data is queued locally on the device and synced in batches to a secure analytics backend when an internet connection is available to minimize battery and data usage.",
+    "The admin dashboard will feature charts visualizing this data, such as a 'Weekly Offline Activity' chart showing total downloads and average session length per day."
 ];
 
 
@@ -219,6 +225,24 @@ export function OfflineModeClient() {
                     <CardContent>
                         <ul className="list-disc list-inside space-y-3 text-sm text-muted-foreground">
                            {adminFeatures.map((item, i) => <li key={i}>{item}</li>)}
+                        </ul>
+                    </CardContent>
+                </Card>
+            </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="analytics" className="border-0">
+            <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">
+                Analytics & Monitoring
+            </AccordionTrigger>
+            <AccordionContent>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><BarChart/>Analytics & Monitoring</CardTitle>
+                        <CardDescription>How we track the usage and performance of the offline mode feature.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ul className="list-disc list-inside space-y-3 text-sm text-muted-foreground">
+                           {analyticsPoints.map((item, i) => <li key={i}>{item}</li>)}
                         </ul>
                     </CardContent>
                 </Card>
