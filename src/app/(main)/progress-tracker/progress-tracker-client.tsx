@@ -39,28 +39,30 @@ const masteryData = [
   },
   {
     subject: "Pharmaceutics",
-    masteryScore: 68,
-    trend: "positive",
-    dataDensity: "Medium",
+    masteryScore: 52,
+    trend: "negative",
+    dataDensity: "High",
     lastActivity: "Lab: Tablet Dissolution",
      topics: [
         { name: "Dosage Form Design", score: 75 },
-        { name: "Tablet Dissolution", score: 55, error: 'procedural' },
+        { name: "Tablet Dissolution", score: 52, error: 'procedural' },
         { name: "Biopharmaceutics", score: 71 },
     ]
   },
   {
     subject: "Pharmacognosy",
-    masteryScore: 75,
+    masteryScore: 58,
     trend: "neutral",
-    dataDensity: "High",
+    dataDensity: "Medium",
     lastActivity: "Practice: Alkaloids",
-    topics: []
+    topics: [
+      { name: "Plant ID", score: 58, error: 'factual' },
+    ]
   },
    {
     subject: "Pathology",
-    masteryScore: 55,
-    trend: "negative",
+    masteryScore: 88,
+    trend: "positive",
     dataDensity: "Medium",
     lastActivity: "Assignment: Inflammation",
      topics: [
@@ -70,12 +72,28 @@ const masteryData = [
   },
    {
     subject: "Biochemistry",
-    masteryScore: 0,
-    trend: "neutral",
+    masteryScore: 85,
+    trend: "positive",
     dataDensity: "Low",
     lastActivity: "N/A",
     topics: []
   },
+  {
+    subject: "Clinical Pharmacy",
+    masteryScore: 78,
+    trend: "positive",
+    dataDensity: "High",
+    lastActivity: "OSCE Practice: Counseling",
+    topics: [],
+  },
+  {
+    subject: "Pharmaceutical Chemistry",
+    masteryScore: 65,
+    trend: "neutral",
+    dataDensity: "Medium",
+    lastActivity: "Assignment: Titrations",
+    topics: [],
+  }
 ];
 
 const dataSources = [
@@ -110,7 +128,8 @@ const getTrendIcon = (trend: string) => {
 const errorTypeMap: {[key: string]: string} = {
     application: "Application Error",
     procedural: "Procedural Error",
-    conceptual: "Conceptual Error"
+    conceptual: "Conceptual Error",
+    factual: "Factual Error"
 }
 
 const chartConfig = {
@@ -121,24 +140,23 @@ const chartConfig = {
 
 
 const recommendationMap: {[key: string]: { rec: string, actions: { label: string, icon: React.ElementType, toast: string }[] }} = {
-      "Pathology": {
-          rec: "Focus on conceptual understanding of inflammation pathways.",
+      "Drug Interactions": {
+          rec: "Error type: Application. Focus on applying knowledge to patient cases.",
           actions: [
-              { label: "Review Summary", icon: BookCopy, toast: "A summary for Pathology has been opened." },
-              { label: "Start 10 MCQs", icon: Zap, toast: "A 10-question drill for Pathology has been created in the MCQ Bank." },
+              { label: "30-min case set (10 MCQs)", icon: Zap, toast: "A new case set on Drug Interactions has been assigned." },
+              { label: "Watch 12-min video", icon: BookCopy, toast: "An interaction framework video has been added to your queue." },
           ]
       },
-       "Pharmaceutics": {
-          rec: "Practice procedural calculations for dissolution rates.",
+       "Tablet Dissolution": {
+          rec: "Error type: Procedural. Reinforce the steps and calculations.",
           actions: [
-              { label: "Calculation Drills", icon: Zap, toast: "A calculation drill for Pharmaceutics has been opened." },
-              { label: "Schedule Lab Sim", icon: FlaskConical, toast: "A lab simulation has been added to your Study Planner." },
+              { label: "Lab Walkthrough", icon: FlaskConical, toast: "The dissolution lab simulation has been scheduled." },
           ]
       },
-      "Biochemistry": {
-          rec: "There isn't enough data to calculate a mastery score. Take a short diagnostic quiz to get started.",
+      "Plant ID": {
+          rec: "Error type: Factual. Reinforce memorization of key identifiers.",
           actions: [
-               { label: "Start Diagnostic Quiz", icon: Zap, toast: "A diagnostic quiz for Biochemistry has been launched." },
+               { label: "10 Flashcards + Spotter", icon: Zap, toast: "A new flashcard deck for Plant ID has been created." },
           ]
       }
 }
@@ -155,7 +173,7 @@ const qaChecklist = [
 export function ProgressTrackerClient() {
   const [selectedSubject, setSelectedSubject] = useState<typeof masteryData[0] | null>(null);
 
-  const overallMastery = Math.round(masteryData.filter(s => s.dataDensity !== 'Low').reduce((acc, item) => acc + item.masteryScore, 0) / masteryData.filter(s => s.dataDensity !== 'Low').length);
+  const overallMastery = 72;
   const strongSubjects = masteryData.filter(s => s.masteryScore >= 85);
   const moderateSubjects = masteryData.filter(s => s.masteryScore >= 60 && s.masteryScore < 85);
   const weakSubjects = masteryData.filter(s => s.masteryScore < 60 && s.dataDensity !== 'Low');
@@ -173,7 +191,7 @@ export function ProgressTrackerClient() {
     weak: { label: "Weak", color: "hsl(var(--chart-1))" },
   } satisfies ChartConfig;
   
-  const prioritizedWeakness = [...weakSubjects, ...moderateSubjects, ...masteryData.filter(s => s.dataDensity === 'Low')].sort((a,b) => a.masteryScore - b.masteryScore);
+  const prioritizedWeakness = [...weakSubjects].sort((a,b) => a.masteryScore - b.masteryScore);
 
   if(selectedSubject) {
     return (
@@ -230,8 +248,10 @@ export function ProgressTrackerClient() {
                 <div className="flex flex-col items-center justify-center text-center p-4 bg-muted/50 rounded-lg">
                     <div className={cn("text-7xl font-bold", getMasteryColor(overallMastery))}>{overallMastery}%</div>
                     <p className="text-muted-foreground">Overall Mastery</p>
+                    <p className="text-sm text-green-500 font-semibold flex items-center gap-1 mt-1"><TrendingUp className="h-4 w-4"/> +6% (last 30 days)</p>
                 </div>
                 <div>
+                    <p className="text-center font-semibold mb-2">2 Strong, 3 Moderate, 2 Weak</p>
                     <ChartContainer config={distributionConfig} className="h-[150px] w-full">
                         <RechartsBarChart accessibilityLayer data={distributionData} layout="vertical" margin={{ left: 10 }}>
                              <YAxis dataKey="status" type="category" tickLine={false} axisLine={false} tickMargin={10} className="text-xs" width={60}/>
@@ -247,14 +267,19 @@ export function ProgressTrackerClient() {
             <Card>
                 <CardHeader><CardTitle className="flex items-center gap-2"><Bell className="text-primary"/>AI Recommended Actions &amp; Nudges</CardTitle><CardDescription>Your prioritized list of what to study next.</CardDescription></CardHeader>
                 <CardContent className="space-y-3">
-                    {prioritizedWeakness.slice(0, 2).map(item => {
-                        const rec = recommendationMap[item.subject];
+                    {[
+                        { name: "Drug Interactions", subject: "Pharmacology", score: 45, error: 'application' },
+                        { name: "Tablet Dissolution", subject: "Pharmaceutics", score: 52, error: 'procedural' },
+                        { name: "Plant ID", subject: "Pharmacognosy", score: 58, error: 'factual' },
+                    ].map(item => {
+                        const recKey = item.name as keyof typeof recommendationMap;
+                        const rec = recommendationMap[recKey];
                         if (!rec) return null;
-                        const scoreText = item.dataDensity === 'Low' ? "Not enough data" : `Score: ${item.masteryScore}%`;
+                        const scoreText = `Mastery ${item.score}%`;
                         return (
-                             <Alert key={item.subject}>
+                             <Alert key={item.name}>
                                 <Lightbulb className="h-4 w-4" />
-                                <AlertTitle className="font-bold">{item.subject} ({scoreText})</AlertTitle>
+                                <AlertTitle className="font-bold">{item.subject}: {item.name} ({scoreText})</AlertTitle>
                                 <AlertDescription>
                                     <p>{rec.rec}</p>
                                      <div className="flex gap-2 mt-2">
@@ -270,12 +295,12 @@ export function ProgressTrackerClient() {
                     })}
                      <Alert variant="default" className="bg-amber-500/10 border-amber-500/50">
                         <ShieldQuestion className="h-4 w-4 text-amber-600"/>
-                        <AlertTitle className="font-bold text-amber-700">Confidence Gap Alert: Drug Interactions</AlertTitle>
+                        <AlertTitle className="font-bold text-amber-700">Urgent Alert: Topic Dropped</AlertTitle>
                         <AlertDescription>
-                           Your self-reported confidence is high, but your quiz scores are low. Let's review this topic.
+                           Your score in "Drug Interactions" dropped from 72% to 45% this week. A 30-minute remediation is recommended.
                            <div className="flex gap-2 mt-2">
                               <Button size="sm" variant="secondary" onClick={() => toast({title: "Action Triggered", description: "Review launched."})}>
-                                <BookCopy className="mr-2"/>Review Summary
+                                <BookCopy className="mr-2"/>Start Now
                               </Button>
                            </div>
                         </AlertDescription>
