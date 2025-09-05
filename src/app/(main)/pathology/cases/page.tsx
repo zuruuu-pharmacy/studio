@@ -97,15 +97,15 @@ export default function PathologyCasesPage() {
   };
 
   const handleCreateCase = newCaseForm.handleSubmit((data) => {
-    const newCase: Omit<CaseStudy, 'id'> = {
+    const newCase: Omit<CaseStudy, 'id' | 'imageHint'> = {
         ...data,
-        imageUrl: data.imageUrl || `https://picsum.photos/600/400?random=${Date.now()}`, // Fallback image
+        imageUrl: data.imageUrl || `https://picsum.photos/seed/${data.title.split(' ')[0]}/600/400`,
         quiz: data.quiz.map(q => ({
             ...q,
             options: q.options.filter(o => o.trim() !== ''),
         })),
     };
-    addCaseStudy(newCase);
+    addCaseStudy(newCase as Omit<CaseStudy, 'id'>);
     toast({ title: "Case Study Submitted!", description: "Your new case has been added to the library." });
     newCaseForm.reset();
     setIsNewCaseModalOpen(false);
@@ -157,7 +157,7 @@ export default function PathologyCasesPage() {
                 <Card className="shadow-lg hover:shadow-primary/20 transition-shadow rounded-2xl flex flex-col cursor-pointer hover:scale-105 duration-300 group">
                     <CardHeader className="p-0">
                          <div className="relative h-40 w-full overflow-hidden rounded-t-2xl">
-                           <Image src={study.imageUrl} alt={`Slide for ${study.title}`} layout="fill" objectFit="cover" />
+                           <Image src={study.imageUrl} alt={study.title} layout="fill" objectFit="cover" data-ai-hint={study.imageHint} />
                             {completedCases.has(study.id) && (
                               <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
                                 <CheckCircle className="h-5 w-5"/>
@@ -188,7 +188,7 @@ export default function PathologyCasesPage() {
                     <DetailSection title="Histopathology" icon={Microscope}>
                        <p>{study.findings}</p>
                        <div className="relative w-full aspect-video rounded-lg overflow-hidden my-2 group bg-muted">
-                            <Image src={study.imageUrl} alt={`Slide for ${study.title}`} layout="fill" objectFit="cover" />
+                            <Image src={study.imageUrl} alt={`Slide for ${study.title}`} layout="fill" objectFit="cover" data-ai-hint={study.imageHint} />
                             <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
                                 <Button size="icon" variant="secondary"><ZoomIn/></Button>
                                 <Button size="icon" variant="secondary"><ZoomOut/></Button>

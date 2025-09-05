@@ -13,6 +13,7 @@ export interface CaseStudy {
   diagnosis: string;
   discussion: string;
   imageUrl: string;
+  imageHint: string;
   tags: {
     organ: string;
     type: string;
@@ -34,7 +35,8 @@ const initialCaseStudies: CaseStudy[] = [
         findings: "Chest X-ray reveals a 3 cm spiculated mass in the right upper lobe. Biopsy shows nests of malignant cells with abundant eosinophilic cytoplasm, keratin pearls, and distinct intercellular bridges.",
         diagnosis: "Squamous Cell Carcinoma of the lung.",
         discussion: "The key histological features here are the keratin pearls and intercellular bridges, which are pathognomonic for squamous differentiation. The patient's extensive smoking history is the primary risk factor. This case highlights the classic presentation and morphology of one of the major types of lung cancer.",
-        imageUrl: "https://picsum.photos/id/101/600/400",
+        imageUrl: "https://picsum.photos/seed/lungcancer/600/400",
+        imageHint: "lung cancer",
         tags: {
             organ: "🫁 Lung",
             type: "🧪 Cancer",
@@ -56,7 +58,8 @@ const initialCaseStudies: CaseStudy[] = [
         findings: "Blood tests show elevated rheumatoid factor and anti-CCP antibodies. Synovial biopsy reveals marked synovial hyperplasia with villous-like projections, dense lymphoplasmacytic infiltrates (some forming germinal centers), and fibrinoid necrosis. This destructive tissue is known as a pannus.",
         diagnosis: "Rheumatoid Arthritis.",
         discussion: "This is a classic presentation of Rheumatoid Arthritis, an autoimmune disease. The key is the symmetrical small-joint arthritis and the specific serological markers. The histology showing pannus formation confirms the destructive nature of the inflammation, which eventually erodes cartilage and bone.",
-        imageUrl: "https://picsum.photos/id/102/600/400",
+        imageUrl: "https://picsum.photos/seed/arthritis/600/400",
+        imageHint: "rheumatoid arthritis",
         tags: {
             organ: "🦴 Rheumatology",
             type: "🧑‍⚕️ Autoimmune",
@@ -77,13 +80,14 @@ const initialCaseStudies: CaseStudy[] = [
         specialty: "Hematopathology",
         findings: "Lymph node biopsy reveals effacement of the normal architecture by a mixed inflammatory infiltrate. Scattered among these are large, binucleated cells with prominent eosinophilic nucleoli, resembling 'owl eyes'. These are Reed-Sternberg cells. Immunohistochemistry shows these cells are positive for CD30 and CD15.",
         diagnosis: "Hodgkin Lymphoma (Nodular Sclerosis type).",
-        imageUrl: "https://picsum.photos/id/103/600/400",
+        imageUrl: "https://picsum.photos/seed/lymphoma/600/400",
+        imageHint: "hodgkin lymphoma",
+        discussion: "The presence of Reed-Sternberg cells is diagnostic for Hodgkin Lymphoma. The mixed inflammatory background is characteristic. The specific subtype is determined by the overall architecture and cellular composition. The CD30+/CD15+ immunophenotype is classic.",
         tags: {
             organ: "🧬 Hematology",
             type: "🧪 Lymphoma",
             difficulty: "⭐ Classic",
         },
-        discussion: "The presence of Reed-Sternberg cells is diagnostic for Hodgkin Lymphoma. The mixed inflammatory background is characteristic. The specific subtype is determined by the overall architecture and cellular composition. The CD30+/CD15+ immunophenotype is classic.",
         quiz: [
              {
                 question: "The diagnostic cell for Hodgkin Lymphoma is the:",
