@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TestTube, Microscope, FileText, Dna, Award } from "lucide-react";
+import { TestTube, Microscope, FileText, Dna, Award, Users } from "lucide-react";
 import Link from "next/link";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -46,8 +46,8 @@ const kpiData = [
   { metric: "Assessment Pass Rate", formula: "# students passing formative quizzes (≥70%) ÷ # attempts", target: "≥75%" },
   { metric: "Case Completion Rate", formula: "# completed case studies ÷ # assigned", target: "≥80%" },
   { metric: "Teacher Verification Time", formula: "Avg. hours to review & verify content", target: "<48 hours" },
-  { metric: "Sync Success Rate", formula: "Successful offline syncs ÷ total attempts", target: "≥98%" },
-  { metric: "Retention Lift", formula: "30-day flashcard retention improvement (pre/post)", target: "+20%" },
+  { metric: "Sync Success Rate", formula: "Successful offline syncs ÷ sync attempts", target: "≥98%" },
+  { metric: "Retention Lift", formula: "flashcard retention (SRS) improvement over 30 days (pre/post)", target: "+20%" },
 ];
 
 
@@ -76,7 +76,7 @@ export function PathologyClient() {
           </Card>
         ))}
       </div>
-      <Accordion type="single" collapsible className="w-full">
+      <Accordion type="multiple" className="w-full space-y-2">
         <AccordionItem value="item-1" className="border-0">
           <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">
             Feature Goals &amp; Metrics
@@ -118,6 +118,33 @@ export function PathologyClient() {
                     </TableBody>
                   </Table>
                 </div>
+              </CardContent>
+            </Card>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="personas" className="border-0">
+          <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">
+            User Personas &amp; Stories
+          </AccordionTrigger>
+          <AccordionContent>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Users/>User Personas &amp; Stories</CardTitle>
+                <CardDescription>Defining who we are building this for and what they need to accomplish.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <h4 className="font-semibold text-lg mb-2">Persona A — 3rd-year Pharm.D student (urban campus)</h4>
+                <ul className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                    <li>
+                        <strong>As a 3rd-year student, I want annotated whole-slide images for key lesions,</strong> so that I can learn to identify histologic features before lab practicals.
+                    </li>
+                    <li>
+                        <strong>As a student, I want short clinical-pathology cases tied to lab reports,</strong> so I can practice correlating lab values and morphology.
+                    </li>
+                    <li>
+                        <strong>As a student with tight study windows, I want 10-minute “spotter” quizzes</strong> to practice on my commute.
+                    </li>
+                </ul>
               </CardContent>
             </Card>
           </AccordionContent>
