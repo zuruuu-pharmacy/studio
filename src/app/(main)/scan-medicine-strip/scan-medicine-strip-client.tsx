@@ -11,6 +11,8 @@ import { drugTreeData, Drug } from "@/app/(main)/drug-classification-tree/data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const MOCK_SCANNABLES = [
     { type: 'drug', name: "Amoxicillin", stripPosition: { top: '20%', left: '15%' }, icon: Pill, risk: 'amber' },
@@ -69,24 +71,24 @@ function CompactOverlay({ item, onScan }: { item: { type: string, name: string, 
             className="absolute p-1 border-2 border-dashed border-white/50 rounded-lg group"
             style={item.stripPosition}
         >
-            <Card 
-                className="bg-white/90 dark:bg-black/90 backdrop-blur-sm p-2 rounded-lg shadow-xl w-64 border-primary/50 flex flex-col gap-2"
+            <div 
+                className="bg-white/90 dark:bg-black/90 backdrop-blur-sm p-2 rounded-lg shadow-xl w-64 border-l-4"
+                style={{ borderColor: riskColors[item.risk] }}
             >
                 <div className="flex gap-2 cursor-pointer" onClick={() => onScan(item.name, item.type)}>
-                    <div className={cn("w-2 rounded-full", riskColors[item.risk] || 'bg-gray-400')}></div>
+                    <item.icon className="h-6 w-6 text-primary mt-1" />
                     <div className="flex-1 space-y-1">
-                        <p className="font-bold text-sm">{drug.name}</p>
+                        <p className="font-bold text-sm">{drug.name} ({drug.pharmaApplications.formulations.split(',')[0]})</p>
                         <p className="text-xs text-muted-foreground">{drug.classification}</p>
-                        <p className="text-xs text-muted-foreground">{drug.pharmaApplications.dosageForms.split(';')[0]}</p>
                     </div>
                 </div>
-                 <div className="flex gap-1 justify-around">
+                 <div className="flex gap-1 justify-around border-t mt-2 pt-1">
                     <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={() => onScan(item.name, item.type)}>Details</Button>
                     <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={(e) => handleActionClick(e, 'Interactions')}>Interactions</Button>
                     <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={(e) => handleActionClick(e, 'Save')}>Save</Button>
                     <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={(e) => handleActionClick(e, 'Quiz')}>Quiz</Button>
                  </div>
-            </Card>
+            </div>
         </div>
     );
 }
@@ -98,6 +100,9 @@ export function ScanMedicineStripClient() {
   const [scannedItem, setScannedItem] = useState<{drug: Drug, type: string} | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  
+  const [isOffline, setIsOffline] = useState(false);
+  const CACHED_DRUGS = ["Amoxicillin", "Paracetamol"];
   
   useEffect(() => {
     return () => {
@@ -127,6 +132,14 @@ export function ScanMedicineStripClient() {
   };
 
   const handleScan = (drugName: string, type: string) => {
+    if (isOffline && !CACHED_DRUGS.includes(drugName)) {
+        toast({
+            variant: "destructive",
+            title: "Offline Mode",
+            description: "Drug not in offline cache. Please connect to the internet to look it up."
+        });
+        return;
+    }
     const details = findDrugDetails(drugName);
     if (details) {
         setScannedItem({ drug: details, type: type });
@@ -142,8 +155,11 @@ export function ScanMedicineStripClient() {
   }
   
   const getRecognitionSource = (type: string) => {
+      if (isOffline) {
+        return { source: 'Offline Cache', confidence: '100%' };
+      }
       switch(type) {
-          case 'barcode': return { source: 'UMT Formulary (Faculty Verified) / GS1 DB', confidence: '98%' };
+          case 'barcode': return { source: 'UMT Verified Formulary & GS1 Database', confidence: '98%' };
           case 'herb': return { source: 'Plant Recognition Model', confidence: '72%' };
           default: return { source: 'OCR Text Recognition', confidence: '95%' };
       }
@@ -186,6 +202,10 @@ export function ScanMedicineStripClient() {
                   </div>
                 )}
           </div>
+           <div className="flex items-center space-x-2 mt-4">
+              <Switch id="offline-mode" checked={isOffline} onCheckedChange={setIsOffline} />
+              <Label htmlFor="offline-mode">Simulate Offline Mode</Label>
+            </div>
         </CardContent>
       </Card>
 
@@ -224,12 +244,9 @@ export function ScanMedicineStripClient() {
                         <Card>
                             <CardHeader><CardTitle className="text-lg">Identification & Recognition</CardTitle></CardHeader>
                             <CardContent className="space-y-3">
-                               <DetailSection title="Generic Name" content={scannedItem.drug.name} icon={Pill} />
-                               <DetailSection title="Brand(s)" content={scannedItem.drug.pharmaApplications.formulations} icon={Package} />
-                               <DetailSection title="Dosage Forms" content={scannedItem.drug.pharmaApplications.dosageForms} icon={Pill} />
                                <DetailSection title="Scan Info" content={`Source: ${getRecognitionSource(scannedItem.type).source} | Confidence: ${getRecognitionSource(scannedItem.type).confidence}`} icon={Barcode}/>
                                <DetailSection title="Batch / Expiry" content={"Not detected on packaging."} icon={Calendar}/>
-                               <Button size="sm" variant="link" className="p-0 h-auto" onClick={() => toast({title: "Coming Soon!", description: "This will allow reporting incorrect information to admins."})}>Report Incorrect Info</Button>
+                               <Button variant="link" size="sm" className="p-0 h-auto" onClick={() => toast({title: "Coming Soon!", description: "This will allow reporting incorrect information to admins."})}>Report Incorrect Info</Button>
                             </CardContent>
                         </Card>
 
