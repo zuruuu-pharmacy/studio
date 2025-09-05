@@ -4,7 +4,7 @@
 import { BackButton } from "@/components/back-button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Microscope, FileText, Plus, Zap, Notebook } from 'lucide-react';
+import { Microscope, FileText, Plus, Zap, Notebook, CheckCircle, Lightbulb } from 'lucide-react';
 import Link from 'next/link';
 import {
   Dialog,
@@ -15,6 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import Image from "next/image";
+import { toast } from "@/hooks/use-toast";
 
 const caseStudies = [
     {
@@ -43,10 +44,10 @@ const caseStudies = [
     },
 ];
 
-function DetailSection({ title, children }: { title: string, children: React.ReactNode }) {
+function DetailSection({ title, children, icon: Icon }: { title: string, children: React.ReactNode, icon: React.ElementType }) {
     return (
         <div className="mt-4">
-            <h4 className="font-semibold text-base mb-2 flex items-center gap-2">{title}</h4>
+            <h4 className="font-semibold text-base mb-2 flex items-center gap-2"><Icon className="h-5 w-5 text-primary"/>{title}</h4>
             <div className="pl-7 text-muted-foreground text-sm space-y-2 border-l-2 border-primary/20 ml-2.5 pl-4 pb-2">
               {children}
             </div>
@@ -55,6 +56,14 @@ function DetailSection({ title, children }: { title: string, children: React.Rea
 }
 
 export default function PathologyCasesPage() {
+
+  const handleAiAnalysis = () => {
+    toast({
+      title: "AI Analysis (Coming Soon)",
+      description: "This feature will provide an AI-generated breakdown of the case, differential diagnoses, and key learning points."
+    });
+  };
+
   return (
     <div>
       <BackButton />
@@ -82,26 +91,28 @@ export default function PathologyCasesPage() {
                 <DialogTitle>{study.title}</DialogTitle>
                 <DialogDescription>{study.history}</DialogDescription>
               </DialogHeader>
-              <div className="space-y-4">
+              <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
                 <div className="relative w-full aspect-video rounded-lg overflow-hidden">
                     <Image src={study.imageUrl} alt={`Slide for ${study.title}`} layout="fill" objectFit="cover" />
                 </div>
-                <div>
-                  <h3 className="font-semibold">Histopathology Findings:</h3>
-                  <p className="text-muted-foreground">{study.findings}</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold">Most Likely Diagnosis:</h3>
-                  <p className="text-primary font-bold">{study.diagnosis}</p>
-                </div>
-                 <DetailSection title="Practice Questions & Revision">
-                    <div className="flex flex-wrap gap-2">
-                        <Link href="/mcq-bank"><Button variant="outline" size="sm">MCQs</Button></Link>
-                        <Link href="/flashcard-generator"><Button variant="outline" size="sm">Flashcards</Button></Link>
-                    </div>
+                
+                <DetailSection title="Histopathology Findings" icon={Microscope}>
+                   <p>{study.findings}</p>
                 </DetailSection>
-                 <DetailSection title="Personal Notes">
-                    <Link href="/notes-organizer"><Button variant="secondary" size="sm">Add Note</Button></Link>
+
+                <DetailSection title="Most Likely Diagnosis" icon={CheckCircle}>
+                   <p className="text-primary font-bold">{study.diagnosis}</p>
+                </DetailSection>
+
+                 <DetailSection title="Practice & Action" icon={Zap}>
+                    <div className="flex flex-wrap gap-2">
+                        <Link href="/mcq-bank"><Button variant="outline" size="sm">Case MCQs</Button></Link>
+                        <Link href="/flashcard-generator"><Button variant="outline" size="sm">Make Flashcards</Button></Link>
+                         <Button variant="outline" size="sm" onClick={handleAiAnalysis}>
+                           <Lightbulb className="mr-2"/>AI Analysis
+                        </Button>
+                         <Link href="/notes-organizer"><Button variant="secondary" size="sm"><Notebook className="mr-2"/>Add to My Notes</Button></Link>
+                    </div>
                 </DetailSection>
               </div>
             </DialogContent>
