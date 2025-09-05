@@ -16,6 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 
 
 const masteryData = [
@@ -24,24 +25,28 @@ const masteryData = [
     masteryScore: 92,
     trend: "positive",
     dataDensity: "High",
+    lastActivity: "Quiz: Antihypertensives"
   },
   {
     subject: "Pharmaceutics",
     masteryScore: 68,
     trend: "positive",
     dataDensity: "Medium",
+    lastActivity: "Lab: Tablet Dissolution"
   },
   {
     subject: "Pharmacognosy",
     masteryScore: 75,
     trend: "neutral",
     dataDensity: "High",
+    lastActivity: "Practice: Alkaloids"
   },
   {
     subject: "Pathology",
     masteryScore: 55,
     trend: "negative",
     dataDensity: "Low",
+    lastActivity: "Assignment: Inflammation"
   },
 ];
 
@@ -59,6 +64,12 @@ const getMasteryColor = (score: number) => {
   return "text-red-500";
 };
 
+const getMasteryBgColor = (score: number) => {
+  if (score >= 85) return "bg-green-500";
+  if (score >= 60) return "bg-amber-500";
+  return "bg-red-500";
+};
+
 const getTrendIcon = (trend: string) => {
     switch (trend) {
         case 'positive': return <TrendingUp className="h-5 w-5 text-green-500"/>;
@@ -68,77 +79,71 @@ const getTrendIcon = (trend: string) => {
 }
 
 export function ProgressTrackerClient() {
+  const overallMastery = Math.round(masteryData.reduce((acc, item) => acc + item.masteryScore, 0) / masteryData.length);
+  const strongSubjects = masteryData.filter(s => s.masteryScore >= 85).length;
+  const moderateSubjects = masteryData.filter(s => s.masteryScore >= 60 && s.masteryScore < 85).length;
+  const weakSubjects = masteryData.filter(s => s.masteryScore < 60).length;
+
   return (
     <div className="space-y-6">
        <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2"><BarChart/>Subject Mastery Overview</CardTitle>
-          <CardDescription>Your calculated mastery scores across different subjects based on all activities.</CardDescription>
-        </CardHeader>
-        <CardContent>
-           <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead>Subject</TableHead>
-                    <TableHead className="text-center">Mastery Score</TableHead>
-                    <TableHead className="text-center">Trend (Last 2 wks)</TableHead>
-                    <TableHead className="text-center">Data Density</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {masteryData.map(item => (
-                    <TableRow key={item.subject}>
-                        <TableCell className="font-semibold">{item.subject}</TableCell>
-                        <TableCell className={cn("text-center font-bold text-2xl", getMasteryColor(item.masteryScore))}>
-                            {item.masteryScore}%
-                        </TableCell>
-                        <TableCell className="flex justify-center items-center">
-                            {getTrendIcon(item.trend)}
-                        </TableCell>
-                         <TableCell className="text-center">
-                            <Badge variant={item.dataDensity === 'High' ? 'default' : item.dataDensity === 'Medium' ? 'secondary' : 'outline'}>
-                                {item.dataDensity}
-                            </Badge>
-                        </TableCell>
-                    </TableRow>
-                ))}
-            </TableBody>
-           </Table>
-        </CardContent>
-      </Card>
-
-
-       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Lightbulb /> AI Recommendations</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <Alert>
-                <AlertTitle className="font-bold">Study Rebalancing Suggestion</AlertTitle>
+          <CardHeader>
+             <CardTitle>Overall Progress Summary</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+            <div className="flex flex-col items-center justify-center">
+                <div className={cn("text-7xl font-bold", getMasteryColor(overallMastery))}>{overallMastery}%</div>
+                <p className="text-muted-foreground">Overall Mastery Score</p>
+            </div>
+            <div className="flex gap-4">
+                <div className="text-center p-4 bg-green-500/10 rounded-lg">
+                    <p className="text-3xl font-bold text-green-600">{strongSubjects}</p>
+                    <p className="text-sm text-green-700">Strong</p>
+                </div>
+                <div className="text-center p-4 bg-amber-500/10 rounded-lg">
+                    <p className="text-3xl font-bold text-amber-600">{moderateSubjects}</p>
+                    <p className="text-sm text-amber-700">Moderate</p>
+                </div>
+                <div className="text-center p-4 bg-red-500/10 rounded-lg">
+                    <p className="text-3xl font-bold text-red-600">{weakSubjects}</p>
+                    <p className="text-sm text-red-700">Weak</p>
+                </div>
+            </div>
+            <Alert className="md:max-w-xs">
+                <Lightbulb className="h-4 w-4" />
+                <AlertTitle className="font-semibold">AI Recommendation</AlertTitle>
                 <AlertDescription>
-                    Your mastery in <strong className="text-green-500">Pharmacology</strong> is excellent. However, your score in <strong className="text-red-500">Pathology</strong> is low and trending downwards with low data density. Consider allocating one more study session to Pathology this week, focusing on foundational topics to build evidence of your learning.
+                   Focus on <strong className="text-red-500">Pathology</strong> this week by reviewing your lecture notes and completing a practice quiz.
                 </AlertDescription>
             </Alert>
-        </CardContent>
+          </CardContent>
        </Card>
 
-        <Card>
-            <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Database/>Data Sources</CardTitle>
-            <CardDescription>Your Mastery Score is calculated using data from all your interactions across the portal.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                    {dataSources.map((source) => (
-                        <div key={source.name} className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
-                            <source.icon className="h-5 w-5 text-primary"/>
-                            <span className="font-medium text-muted-foreground">{source.name}</span>
-                        </div>
-                    ))}
-                </div>
-            </CardContent>
-       </Card>
-       
+       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+         {masteryData.map(item => (
+            <Card key={item.subject} className="flex flex-col">
+                <CardHeader>
+                    <div className="flex justify-between items-start">
+                        <CardTitle>{item.subject}</CardTitle>
+                        {getTrendIcon(item.trend)}
+                    </div>
+                    <CardDescription>Mastery Score</CardDescription>
+                    <p className={cn("text-4xl font-bold", getMasteryColor(item.masteryScore))}>
+                        {item.masteryScore}%
+                    </p>
+                    <Progress value={item.masteryScore} className="[&>*]:bg-transparent" />
+                </CardHeader>
+                 <CardContent className="flex-grow">
+                    <p className="text-xs text-muted-foreground">Last Activity: {item.lastActivity}</p>
+                    <p className="text-xs text-muted-foreground">Data Density: <Badge variant={item.dataDensity === 'High' ? 'default' : item.dataDensity === 'Medium' ? 'secondary' : 'outline'}>{item.dataDensity}</Badge></p>
+                </CardContent>
+                <CardContent>
+                    <Button variant="outline" className="w-full">Drill Down</Button>
+                </CardContent>
+            </Card>
+         ))}
+       </div>
+
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><BrainCircuit /> How Your Mastery Score is Calculated</CardTitle>
@@ -190,4 +195,3 @@ export function ProgressTrackerClient() {
     </div>
   );
 }
-
