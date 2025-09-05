@@ -12,8 +12,6 @@ export interface CaseStudy {
   findings: string;
   diagnosis: string;
   discussion: string;
-  imageUrl: string;
-  imageHint: string;
   tags: {
     organ: string;
     type: string;
@@ -26,17 +24,14 @@ export interface CaseStudy {
   }[];
 }
 
-const initialCaseStudies: CaseStudy[] = [
+const initialCaseStudies: Omit<CaseStudy, 'id'>[] = [
     {
-        id: "case1",
         title: "Case 01: A 65-year-old male with a lung mass",
         history: "A 65-year-old male with a 40-pack-year smoking history presents with a chronic cough, hemoptysis, and a 10-lb weight loss over the past 3 months. He denies fever or night sweats.",
         specialty: "Pulmonary Pathology",
         findings: "Chest X-ray reveals a 3 cm spiculated mass in the right upper lobe. Biopsy shows nests of malignant cells with abundant eosinophilic cytoplasm, keratin pearls, and distinct intercellular bridges.",
         diagnosis: "Squamous Cell Carcinoma of the lung.",
         discussion: "The key histological features here are the keratin pearls and intercellular bridges, which are pathognomonic for squamous differentiation. The patient's extensive smoking history is the primary risk factor. This case highlights the classic presentation and morphology of one of the major types of lung cancer.",
-        imageUrl: "https://picsum.photos/seed/lungcancer/600/400",
-        imageHint: "lung cancer",
         tags: {
             organ: "🫁 Lung",
             type: "🧪 Cancer",
@@ -51,15 +46,12 @@ const initialCaseStudies: CaseStudy[] = [
         ]
     },
     {
-        id: "case2",
         title: "Case 02: A 45-year-old female with joint pain",
         history: "A 45-year-old female presents with symmetrical swelling and pain in the small joints of her hands and wrists (MCP, PIP joints), with morning stiffness lasting over an hour for the past 6 months.",
         specialty: "Rheumatologic Pathology",
         findings: "Blood tests show elevated rheumatoid factor and anti-CCP antibodies. Synovial biopsy reveals marked synovial hyperplasia with villous-like projections, dense lymphoplasmacytic infiltrates (some forming germinal centers), and fibrinoid necrosis. This destructive tissue is known as a pannus.",
         diagnosis: "Rheumatoid Arthritis.",
         discussion: "This is a classic presentation of Rheumatoid Arthritis, an autoimmune disease. The key is the symmetrical small-joint arthritis and the specific serological markers. The histology showing pannus formation confirms the destructive nature of the inflammation, which eventually erodes cartilage and bone.",
-        imageUrl: "https://picsum.photos/seed/arthritis/600/400",
-        imageHint: "rheumatoid arthritis",
         tags: {
             organ: "🦴 Rheumatology",
             type: "🧑‍⚕️ Autoimmune",
@@ -74,14 +66,11 @@ const initialCaseStudies: CaseStudy[] = [
         ]
     },
     {
-        id: "case3",
         title: "Case 03: A 20-year-old male with lymphadenopathy",
         history: "A 20-year-old male presents with a painless, enlarging lymph node in his neck for the past two months, accompanied by intermittent fever ('Pel-Ebstein fever') and night sweats.",
         specialty: "Hematopathology",
         findings: "Lymph node biopsy reveals effacement of the normal architecture by a mixed inflammatory infiltrate. Scattered among these are large, binucleated cells with prominent eosinophilic nucleoli, resembling 'owl eyes'. These are Reed-Sternberg cells. Immunohistochemistry shows these cells are positive for CD30 and CD15.",
         diagnosis: "Hodgkin Lymphoma (Nodular Sclerosis type).",
-        imageUrl: "https://picsum.photos/seed/lymphoma/600/400",
-        imageHint: "hodgkin lymphoma",
         discussion: "The presence of Reed-Sternberg cells is diagnostic for Hodgkin Lymphoma. The mixed inflammatory background is characteristic. The specific subtype is determined by the overall architecture and cellular composition. The CD30+/CD15+ immunophenotype is classic.",
         tags: {
             organ: "🧬 Hematology",
@@ -108,10 +97,10 @@ interface PathologyContextType {
 
 const PathologyContext = createContext<PathologyContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'pathology_data_v2'; // Bump version for progress
+const LOCAL_STORAGE_KEY = 'pathology_data_v3'; // Bump version for data model change
 
 export function PathologyProvider({ children }: { children: ReactNode }) {
-  const [caseStudies, setCaseStudies] = useState<CaseStudy[]>(initialCaseStudies);
+  const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([]);
   const [completedCases, setCompletedCases] = useState<Set<string>>(new Set());
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -122,13 +111,20 @@ export function PathologyProvider({ children }: { children: ReactNode }) {
         const parsedData = JSON.parse(savedData);
         if (Array.isArray(parsedData.cases) && parsedData.cases.length > 0) {
             setCaseStudies(parsedData.cases);
+        } else {
+            // Load initial data if none saved
+            setCaseStudies(initialCaseStudies.map((c, i) => ({...c, id: `case${i+1}`})));
         }
         if (Array.isArray(parsedData.completed)) {
             setCompletedCases(new Set(parsedData.completed));
         }
+      } else {
+         // Load initial data if no save file
+         setCaseStudies(initialCaseStudies.map((c, i) => ({...c, id: `case${i+1}`})));
       }
     } catch (error) {
       console.error("Failed to load pathology data from localStorage", error);
+       setCaseStudies(initialCaseStudies.map((c, i) => ({...c, id: `case${i+1}`})));
     }
     setIsLoaded(true);
   }, []);

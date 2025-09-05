@@ -23,7 +23,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { usePathology, type CaseStudy } from "@/contexts/pathology-context";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -50,7 +50,7 @@ const newCaseSchema = z.object({
   findings: z.string().min(10, "Findings are required."),
   diagnosis: z.string().min(5, "Diagnosis is required."),
   discussion: z.string().min(20, "Discussion is required."),
-  imageUrl: z.string().url("Please enter a valid image URL.").optional().or(z.literal('')),
+  imageHint: z.string().optional(),
   tags: z.object({
     organ: z.string().min(1),
     type: z.string().min(1),
@@ -65,22 +65,20 @@ const newCaseSchema = z.object({
 
 type NewCaseValues = z.infer<typeof newCaseSchema>;
 
-export default function PathologyCasesPage() {
-  const { caseStudies, addCaseStudy, completedCases, toggleCaseCompletion } = usePathology();
-  const [isNewCaseModalOpen, setIsNewCaseModalOpen] = useState(false);
-
+function NewCaseDialog({ onCaseSubmit }: { onCaseSubmit: (data: NewCaseValues) => void }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const newCaseForm = useForm<NewCaseValues>({
     resolver: zodResolver(newCaseSchema),
     defaultValues: {
-        title: "",
-        history: "",
-        specialty: "",
-        findings: "",
-        diagnosis: "",
-        discussion: "",
-        imageUrl: "",
-        tags: { organ: "", type: "", difficulty: "" },
-        quiz: [{ question: "", options: ["", "", "", ""], answer: "" }],
+      title: "",
+      history: "",
+      specialty: "",
+      findings: "",
+      diagnosis: "",
+      discussion: "",
+      imageHint: "",
+      tags: { organ: "", type: "", difficulty: "" },
+      quiz: [{ question: "", options: ["", "", "", ""], answer: "" }],
     },
   });
 
@@ -88,28 +86,82 @@ export default function PathologyCasesPage() {
     control: newCaseForm.control,
     name: "quiz"
   });
-  
-  const handleAiAnalysis = () => {
-    toast({
-      title: "AI Analysis (Coming Soon)",
-      description: "This feature will provide an AI-generated breakdown of the case, differential diagnoses, and key learning points."
-    });
-  };
 
   const handleCreateCase = newCaseForm.handleSubmit((data) => {
-    const newCase: Omit<CaseStudy, 'id' | 'imageHint'> = {
-        ...data,
-        imageUrl: data.imageUrl || `https://picsum.photos/seed/${data.title.split(' ')[0]}/600/400`,
-        quiz: data.quiz.map(q => ({
-            ...q,
-            options: q.options.filter(o => o.trim() !== ''),
-        })),
-    };
-    addCaseStudy(newCase as Omit<CaseStudy, 'id'>);
-    toast({ title: "Case Study Submitted!", description: "Your new case has been added to the library." });
+    onCaseSubmit(data);
     newCaseForm.reset();
-    setIsNewCaseModalOpen(false);
+    setIsModalOpen(false);
   });
+  
+  const questionCount = useMemo(() => newCaseForm.watch('quiz').length, [newCaseForm]);
+
+  return (
+    <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <DialogTrigger asChild>
+        <Card className="flex items-center justify-center border-2 border-dashed min-h-64 hover:border-primary hover:text-primary transition cursor-pointer">
+          <div className="text-center">
+            <Plus className="mx-auto h-12 w-12 text-muted-foreground" />
+            <p className="mt-2 font-semibold">Submit a New Case</p>
+          </div>
+        </Card>
+      </DialogTrigger>
+      <DialogContent className="max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>Submit a New Pathology Case</DialogTitle>
+          <DialogDescription>Contribute to the case library by filling out the form below.</DialogDescription>
+        </DialogHeader>
+        <Form {...newCaseForm}>
+          <form onSubmit={handleCreateCase} className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
+            <FormField name="title" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Case Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+            <FormField name="specialty" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Specialty</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+            <FormField name="history" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Clinical Vignette / History</FormLabel><FormControl><Textarea {...field} rows={4} /></FormControl><FormMessage /></FormItem>)} />
+            <FormField name="findings" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Histopathology Findings</FormLabel><FormControl><Textarea {...field} rows={4} /></FormControl><FormMessage /></FormItem>)} />
+            <FormField name="diagnosis" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Final Diagnosis</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+            <FormField name="discussion" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Discussion</FormLabel><FormControl><Textarea {...field} rows={4} /></FormControl><FormMessage /></FormItem>)} />
+            <FormField name="imageHint" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Image Hint (Optional)</FormLabel><FormControl><Input {...field} placeholder="e.g., 'lung cancer histology'" /></FormControl><FormMessage /></FormItem>)} />
+            <div className="grid grid-cols-3 gap-4">
+              <FormField name="tags.organ" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Organ Tag</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField name="tags.type" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Type Tag</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField name="tags.difficulty" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Difficulty Tag</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+            </div>
+            <div>
+              <Label>Quiz Questions ({questionCount})</Label>
+              {fields.map((field, index) => (
+                <Card key={field.id} className="p-4 mt-2 space-y-2">
+                  <FormField name={`quiz.${index}.question`} control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Question</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  <FormField name={`quiz.${index}.options.0`} control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Option 1</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  <FormField name={`quiz.${index}.options.1`} control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Option 2</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  <FormField name={`quiz.${index}.options.2`} control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Option 3</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  <FormField name={`quiz.${index}.options.3`} control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Option 4</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  <FormField name={`quiz.${index}.answer`} control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Correct Answer</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                </Card>
+              ))}
+            </div>
+            <DialogFooter>
+              <Button type="submit">Submit Case</Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+
+export default function PathologyCasesPage() {
+  const { caseStudies, addCaseStudy, completedCases, toggleCaseCompletion } = usePathology();
+  
+  const handleCreateCase = (data: NewCaseValues) => {
+    const newCase: Omit<CaseStudy, 'id'> = {
+      ...data,
+      quiz: data.quiz.map(q => ({
+        ...q,
+        options: q.options.filter(o => o.trim() !== ''),
+      })),
+    };
+    addCaseStudy(newCase);
+    toast({ title: "Case Study Submitted!", description: "Your new case has been added to the library." });
+  };
 
   const progressPercentage = caseStudies.length > 0 ? (completedCases.size / caseStudies.length) * 100 : 0;
 
@@ -121,20 +173,20 @@ export default function PathologyCasesPage() {
         Review clinical vignettes and corresponding histopathology to develop your diagnostic skills.
       </p>
 
-       <Card className="mb-6">
+      <Card className="mb-6">
         <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Filter/>Filter & Search</CardTitle>
+          <CardTitle className="flex items-center gap-2"><Filter />Filter & Search</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-grow">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input placeholder="Search by disease, organ, or keyword..." className="pl-10" />
-            </div>
-            <Select><SelectTrigger className="w-full md:w-[180px]"><SelectValue placeholder="Organ System" /></SelectTrigger><SelectContent><SelectItem value="lung">Lung</SelectItem><SelectItem value="heart">Heart</SelectItem></SelectContent></Select>
-            <Select><SelectTrigger className="w-full md:w-[180px]"><SelectValue placeholder="Difficulty" /></SelectTrigger><SelectContent><SelectItem value="classic">Classic</SelectItem><SelectItem value="complex">Complex</SelectItem></SelectContent></Select>
-            <Select><SelectTrigger className="w-full md:w-[180px]"><SelectValue placeholder="Case Type" /></SelectTrigger><SelectContent><SelectItem value="neoplastic">Neoplastic</SelectItem><SelectItem value="inflammatory">Inflammatory</SelectItem></SelectContent></Select>
+          <div className="relative flex-grow">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input placeholder="Search by disease, organ, or keyword..." className="pl-10" />
+          </div>
+          <Select><SelectTrigger className="w-full md:w-[180px]"><SelectValue placeholder="Organ System" /></SelectTrigger><SelectContent><SelectItem value="lung">Lung</SelectItem><SelectItem value="heart">Heart</SelectItem></SelectContent></Select>
+          <Select><SelectTrigger className="w-full md:w-[180px]"><SelectValue placeholder="Difficulty" /></SelectTrigger><SelectContent><SelectItem value="classic">Classic</SelectItem><SelectItem value="complex">Complex</SelectItem></SelectContent></Select>
+          <Select><SelectTrigger className="w-full md:w-[180px]"><SelectValue placeholder="Case Type" /></SelectTrigger><SelectContent><SelectItem value="neoplastic">Neoplastic</SelectItem><SelectItem value="inflammatory">Inflammatory</SelectItem></SelectContent></Select>
         </CardContent>
-       </Card>
+      </Card>
 
       <Card className="mb-6">
         <CardHeader>
@@ -154,25 +206,22 @@ export default function PathologyCasesPage() {
         {caseStudies.map((study) => (
           <Dialog key={study.id}>
             <DialogTrigger asChild>
-                <Card className="shadow-lg hover:shadow-primary/20 transition-shadow rounded-2xl flex flex-col cursor-pointer hover:scale-105 duration-300 group">
-                    <CardHeader className="p-0">
-                         <div className="relative h-40 w-full overflow-hidden rounded-t-2xl">
-                           <Image src={study.imageUrl} alt={study.title} layout="fill" objectFit="cover" data-ai-hint={study.imageHint} />
-                            {completedCases.has(study.id) && (
-                              <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
-                                <CheckCircle className="h-5 w-5"/>
-                              </div>
-                            )}
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-6 flex-grow flex flex-col">
-                        <h2 className="font-bold text-lg flex-grow">{study.title}</h2>
-                        <div className="flex flex-wrap gap-2 mt-3">
-                           {Object.values(study.tags).filter(Boolean).map((tag, i) => <Badge key={i}>{tag}</Badge>)}
-                        </div>
-                        <Button className="mt-4 w-full">View Case Details</Button>
-                    </CardContent>
-                </Card>
+              <Card className="shadow-lg hover:shadow-primary/20 transition-shadow rounded-2xl flex flex-col cursor-pointer hover:scale-105 duration-300 group">
+                <CardHeader>
+                  {completedCases.has(study.id) && (
+                    <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1 z-10">
+                      <CheckCircle className="h-5 w-5" />
+                    </div>
+                  )}
+                  <CardTitle className="font-bold text-lg flex-grow">{study.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="p-6 pt-0 flex-grow flex flex-col">
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {Object.values(study.tags).filter(Boolean).map((tag, i) => <Badge key={i}>{tag}</Badge>)}
+                  </div>
+                  <Button className="mt-4 w-full mt-auto">View Case Details</Button>
+                </CardContent>
+              </Card>
             </DialogTrigger>
             <DialogContent className="max-w-4xl">
               <DialogHeader>
@@ -180,122 +229,68 @@ export default function PathologyCasesPage() {
                 <DialogDescription>{study.specialty}</DialogDescription>
               </DialogHeader>
               <div className="grid lg:grid-cols-5 gap-6 max-h-[80vh] overflow-y-auto pr-4">
-                 <div className="lg:col-span-3 space-y-4">
-                    <DetailSection title="Clinical Vignette" icon={Stethoscope}>
-                        <p>{study.history}</p>
-                    </DetailSection>
+                <div className="lg:col-span-3 space-y-4">
+                  <DetailSection title="Clinical Vignette" icon={Stethoscope}>
+                    <p>{study.history}</p>
+                  </DetailSection>
 
-                    <DetailSection title="Histopathology" icon={Microscope}>
-                       <p>{study.findings}</p>
-                       <div className="relative w-full aspect-video rounded-lg overflow-hidden my-2 group bg-muted">
-                            <Image src={study.imageUrl} alt={`Slide for ${study.title}`} layout="fill" objectFit="cover" data-ai-hint={study.imageHint} />
-                            <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                                <Button size="icon" variant="secondary"><ZoomIn/></Button>
-                                <Button size="icon" variant="secondary"><ZoomOut/></Button>
-                                <Button size="icon" variant="secondary"><MessageCircle/></Button>
-                            </div>
-                        </div>
-                    </DetailSection>
-                    
-                    <DetailSection title="Diagnostic Flow & Discussion" icon={GitCompareArrows}>
-                        <p>{study.discussion}</p>
-                    </DetailSection>
-                    
-                     <DetailSection title="Practice Questions & Revision" icon={Zap}>
-                        <div className="space-y-2">
-                           <p className="font-semibold text-sm mb-2">{study.quiz[0].question}</p>
-                            <Alert className="text-sm"><AlertDescription><strong>Answer:</strong> {study.quiz[0].answer}</AlertDescription></Alert>
-                        </div>
-                         <div className="flex flex-wrap gap-2 mt-4">
-                             <Link href="/mcq-bank"><Button variant="outline" size="sm">More MCQs</Button></Link>
-                             <Link href="/flashcard-generator"><Button variant="outline" size="sm">Make Flashcards</Button></Link>
-                         </div>
-                    </DetailSection>
+                  <DetailSection title="Histopathology" icon={Microscope}>
+                    <p>{study.findings}</p>
+                  </DetailSection>
+                  
+                  <DetailSection title="Diagnostic Flow & Discussion" icon={GitCompareArrows}>
+                    <p>{study.discussion}</p>
+                  </DetailSection>
+                  
+                  <DetailSection title="Practice Questions & Revision" icon={Zap}>
+                    <div className="space-y-2">
+                      <p className="font-semibold text-sm mb-2">{study.quiz[0].question}</p>
+                      <Alert className="text-sm"><AlertDescription><strong>Answer:</strong> {study.quiz[0].answer}</AlertDescription></Alert>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      <Link href="/mcq-bank"><Button variant="outline" size="sm">More MCQs</Button></Link>
+                      <Link href="/flashcard-generator"><Button variant="outline" size="sm">Make Flashcards</Button></Link>
+                      <Link href="/clinical-case-simulator"><Button variant="outline" size="sm">Case Simulation</Button></Link>
+                    </div>
+                  </DetailSection>
 
-                    <DetailSection title="Community Discussion" icon={MessageCircle}>
-                        <div className="p-4 text-center bg-muted/50 rounded-lg">
-                            <p className="text-sm text-muted-foreground">Community discussion for this case is not yet active.</p>
-                            <Link href="/student-discussion-forum"><Button variant="link" size="sm">Go to Forum</Button></Link>
-                        </div>
-                    </DetailSection>
-                 </div>
-                 <div className="lg:col-span-2 space-y-4">
-                    <Alert variant="default" className="bg-green-500/10 border-green-500">
-                        <AlertTitle className="flex items-center gap-2 font-bold"><CheckCircle/>Final Diagnosis</AlertTitle>
-                        <AlertDescription>{study.diagnosis}</AlertDescription>
-                    </Alert>
-                    
-                    <Card>
-                        <CardHeader>
-                             <CardTitle className="text-lg flex items-center gap-2"><Lightbulb/>AI Tutor</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                             <Button onClick={handleAiAnalysis} className="w-full">
-                               <Bot className="mr-2"/>Explain this Case
-                            </Button>
-                        </CardContent>
-                    </Card>
+                  <DetailSection title="Community Discussion" icon={MessageCircle}>
+                    <div className="p-4 text-center bg-muted/50 rounded-lg">
+                      <p className="text-sm text-muted-foreground">Community discussion for this case is not yet active.</p>
+                      <Link href="/student-discussion-forum"><Button variant="link" size="sm">Go to Forum</Button></Link>
+                    </div>
+                  </DetailSection>
+                </div>
+                <div className="lg:col-span-2 space-y-4">
+                  <Alert variant="default" className="bg-green-500/10 border-green-500">
+                    <AlertTitle className="flex items-center gap-2 font-bold"><CheckCircle />Final Diagnosis</AlertTitle>
+                    <AlertDescription>{study.diagnosis}</AlertDescription>
+                  </Alert>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2"><Lightbulb />AI Tutor</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <Button onClick={() => toast({ title: "AI Analysis (Coming Soon)", description: "This feature will provide an AI-generated breakdown of the case." })} className="w-full">
+                        <Bot className="mr-2" />Explain this Case
+                      </Button>
+                    </CardContent>
+                  </Card>
 
-                    <Button onClick={() => toggleCaseCompletion(study.id)} variant={completedCases.has(study.id) ? "destructive" : "default"} className="w-full">
-                      {completedCases.has(study.id) ? 'Mark as Incomplete' : 'Mark as Complete'}
-                    </Button>
+                  <Button onClick={() => toggleCaseCompletion(study.id)} variant={completedCases.has(study.id) ? "destructive" : "default"} className="w-full">
+                    {completedCases.has(study.id) ? 'Mark as Incomplete' : 'Mark as Complete'}
+                  </Button>
 
-                    <Button onClick={() => toast({title: "Coming soon!"})} variant="outline" className="w-full">
-                       <Download className="mr-2"/>Export as PDF
-                    </Button>
-                 </div>
+                  <Button onClick={() => toast({ title: "Coming soon!" })} variant="outline" className="w-full">
+                    <Download className="mr-2" />Export as PDF
+                  </Button>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
         ))}
-         <Dialog open={isNewCaseModalOpen} onOpenChange={setIsNewCaseModalOpen}>
-            <DialogTrigger asChild>
-                <Card className="flex items-center justify-center border-2 border-dashed min-h-64 hover:border-primary hover:text-primary transition">
-                    <div className="text-center">
-                        <Plus className="mx-auto h-12 w-12 text-muted-foreground" />
-                        <p className="mt-2 font-semibold">Submit a New Case</p>
-                    </div>
-                </Card>
-            </DialogTrigger>
-            <DialogContent className="max-w-3xl">
-                <DialogHeader>
-                    <DialogTitle>Submit a New Pathology Case</DialogTitle>
-                    <DialogDescription>Contribute to the case library by filling out the form below.</DialogDescription>
-                </DialogHeader>
-                 <Form {...newCaseForm}>
-                    <form onSubmit={handleCreateCase} className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
-                        <FormField name="title" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Case Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField name="specialty" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Specialty</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField name="history" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Clinical Vignette / History</FormLabel><FormControl><Textarea {...field} rows={4} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField name="findings" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Histopathology Findings</FormLabel><FormControl><Textarea {...field} rows={4} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField name="diagnosis" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Final Diagnosis</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField name="discussion" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Discussion</FormLabel><FormControl><Textarea {...field} rows={4} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField name="imageUrl" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Image URL (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        
-                        <div className="grid grid-cols-3 gap-4">
-                            <FormField name="tags.organ" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Organ</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                            <FormField name="tags.type" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Type</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                            <FormField name="tags.difficulty" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Difficulty</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        </div>
-
-                        <div>
-                            <Label>Quiz Question</Label>
-                             <Card className="p-4 mt-2 space-y-2">
-                                <FormField name="quiz.0.question" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Question</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                <FormField name="quiz.0.options.0" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Option 1</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                <FormField name="quiz.0.options.1" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Option 2</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                <FormField name="quiz.0.options.2" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Option 3</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                <FormField name="quiz.0.options.3" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Option 4</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                <FormField name="quiz.0.answer" control={newCaseForm.control} render={({ field }) => (<FormItem><FormLabel>Correct Answer</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                             </Card>
-                        </div>
-                        <DialogFooter>
-                            <Button type="submit">Submit Case</Button>
-                        </DialogFooter>
-                    </form>
-                </Form>
-            </DialogContent>
-         </Dialog>
+        <NewCaseDialog onCaseSubmit={handleCreateCase} />
       </div>
     </div>
   );
