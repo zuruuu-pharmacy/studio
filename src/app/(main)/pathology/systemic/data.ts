@@ -75,10 +75,10 @@ export const systemicPathologyData: OrganSystem[] = [
                 imageHint: "myocardial infarction histology"
             },
             clinicalFeatures: "Severe, crushing substernal chest pain or pressure, often radiating to the left arm, jaw, or neck. Sweating (diaphoresis), nausea, and shortness of breath are common. Some MIs, especially in diabetics and the elderly, can be 'silent'.",
-            investigations: "ECG: ST-segment elevation (STEMI) or depression (NSTEMI). Cardiac Biomarkers: Troponin T and Troponin I are highly sensitive and specific for myocardial injury and are the preferred markers. Creatine kinase-MB (CK-MB) is less specific.",
-            management: "Goals are to restore blood flow, reduce oxygen demand, and prevent complications. Includes oxygen, nitrates, aspirin, antiplatelet agents (e.g., clopidogrel), anticoagulants (e.g., heparin), and urgent reperfusion therapy (PCI or thrombolysis). Beta-blockers and ACE inhibitors are used for long-term management.",
-            complications: "Arrhythmias, cardiogenic shock, myocardial rupture, ventricular aneurysm, mural thrombus, and heart failure.",
-            prognosis: "Varies greatly depending on the size of the infarct, the patient's age, and the presence of complications. With modern therapy, short-term mortality has significantly decreased."
+            investigations: "ECG: ST-segment elevation (STEMI) or depression (NSTEMI) are key findings.\n\nCardiac Biomarkers: Troponin T and Troponin I are highly sensitive and specific for myocardial injury and are the preferred markers. They rise within 2-4 hours and remain elevated for days. Creatine kinase-MB (CK-MB) is less specific and returns to normal more quickly.",
+            management: "Goals are to restore blood flow (reperfusion), reduce oxygen demand, and prevent complications.\n\nImmediate: Oxygen, nitrates, aspirin, antiplatelet agents (e.g., clopidogrel), anticoagulants (e.g., heparin).\n\nReperfusion: Urgent Percutaneous Coronary Intervention (PCI) is preferred. Thrombolysis (e.g., with Alteplase) is an option if PCI is not available.\n\nLong-term: Beta-blockers, ACE inhibitors, and Statins are crucial for secondary prevention. Always check current local and international guidelines (e.g., AHA/ACC) for the latest recommendations.",
+            complications: "Arrhythmias (most common cause of death before reaching hospital), cardiogenic shock, myocardial rupture (leading to cardiac tamponade), ventricular aneurysm, mural thrombus (risk of stroke), and chronic heart failure.",
+            prognosis: "Varies greatly depending on the size and location of the infarct, the patient's age, and the presence of complications. With modern reperfusion therapy, short-term mortality has significantly decreased."
           },
         ]
       },
