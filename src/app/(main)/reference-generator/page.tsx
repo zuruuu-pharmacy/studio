@@ -6,9 +6,9 @@ export default function ReferenceGeneratorPage() {
   return (
     <div>
       <BackButton />
-      <h1 className="text-3xl font-bold mb-2 font-headline">AI Reference & Citation Generator</h1>
+      <h1 className="text-3xl font-bold mb-2 font-headline">AI Reference & Citation Formatter</h1>
       <p className="text-muted-foreground mb-6">
-        Provide a piece of text and select a style to generate an appropriate academic citation.
+        Paste in a single citation or an entire bibliography to have the AI find and format it in your chosen style.
       </p>
       <ReferenceGeneratorClient />
     </div>

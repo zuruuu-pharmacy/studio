@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useActionState, useEffect, useTransition, useState } from "react";
+import { useTransition, useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -10,15 +10,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Sparkles, BookA, Clipboard, Check, Plus, Library } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
-  sourceIdentifier: z.string().min(3, "Please provide a valid reference string, DOI, PMID, or URL."),
+  sourceIdentifier: z.string().min(10, "Please provide a valid reference string, DOI, PMID, URL, or a list of references to format."),
   style: z.enum(['Vancouver', 'APA', 'Harvard', 'MLA']),
 });
 type FormValues = z.infer<typeof formSchema>;
@@ -29,7 +28,6 @@ const styleDescriptions: Record<FormValues['style'], string> = {
     Harvard: "A simple author-date style used across many disciplines.",
     MLA: "A style commonly used in the humanities.",
 };
-
 
 function CitationCard({ citation, onCopy }: { citation: ReferenceGeneratorOutput, onCopy: (text: string) => void }) {
     const [hasCopied, setHasCopied] = useState(false);
@@ -76,15 +74,10 @@ export function ReferenceGeneratorClient() {
 
   const selectedStyle = form.watch('style');
 
-  const formAction = async (formData: FormData) => {
-    const parsed = formSchema.safeParse(Object.fromEntries(formData));
-    if (!parsed.success) {
-      toast({ variant: "destructive", title: "Error", description: "Invalid input. Please check the form."});
-      return;
-    }
+  const handleFormSubmit = form.handleSubmit((data) => {
     startTransition(async () => {
-      try {
-        const result = await generateReference(parsed.data);
+       try {
+        const result = await generateReference(data);
         setResults(prev => [result, ...prev]); 
         form.reset({ ...form.getValues(), sourceIdentifier: "" });
       } catch (e) {
@@ -92,13 +85,6 @@ export function ReferenceGeneratorClient() {
         toast({ variant: "destructive", title: "Error", description: "Failed to generate reference. The AI may not have a suitable reference for this text." });
       }
     });
-  };
-
-  const handleFormSubmit = form.handleSubmit((data) => {
-    const formData = new FormData();
-    formData.append("sourceIdentifier", data.sourceIdentifier);
-    formData.append("style", data.style);
-    formAction(formData);
   });
 
   const handleCopy = (text: string) => {
@@ -110,22 +96,22 @@ export function ReferenceGeneratorClient() {
     <Tabs defaultValue="add" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="add"><Plus className="mr-2"/> Add Reference</TabsTrigger>
-            <TabsTrigger value="bibliography"><Library className="mr-2"/> Bibliography ({results.length})</TabsTrigger>
+            <TabsTrigger value="bibliography"><Library className="mr-2"/> Formatted Bibliography ({results.length})</TabsTrigger>
         </TabsList>
         <TabsContent value="add">
             <Card className="mt-4">
             <CardHeader>
-                <CardTitle>Generate Citation</CardTitle>
-                <CardDescription>Enter a source and select a style.</CardDescription>
+                <CardTitle>Generate Formatted References</CardTitle>
+                <CardDescription>Paste your full bibliography or a single citation to format it correctly.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
                 <form onSubmit={handleFormSubmit} className="space-y-4">
                     <FormField control={form.control} name="sourceIdentifier" render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Source Identifier</FormLabel>
+                        <FormLabel>Source Text</FormLabel>
                         <FormControl>
-                        <Input placeholder="Paste a DOI, PMID, URL, or citation" {...field} />
+                            <Textarea rows={8} placeholder="Paste your references here..." {...field}/>
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -150,7 +136,7 @@ export function ReferenceGeneratorClient() {
                     )} />
                     <Button type="submit" disabled={isPending} className="w-full">
                     {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2" />}
-                    Generate & Add to Bibliography
+                    Format & Add to Bibliography
                     </Button>
                 </form>
                 </Form>
@@ -161,14 +147,14 @@ export function ReferenceGeneratorClient() {
             <Card className="mt-4">
             <CardHeader>
               <CardTitle className="text-2xl">Bibliography</CardTitle>
-              <CardDescription>Generated citations will appear here as a running list.</CardDescription>
+              <CardDescription>Your formatted citations will appear here as a running list.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 {isPending && (
                     <div className="flex justify-center items-center h-full p-8">
                         <div className="text-center space-y-2">
                         <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
-                        <p className="text-muted-foreground">Finding and formatting reference...</p>
+                        <p className="text-muted-foreground">Finding and formatting reference(s)...</p>
                         </div>
                     </div>
                 )}
