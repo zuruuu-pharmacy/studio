@@ -18,7 +18,7 @@ export type PlagiarismInput = z.infer<typeof PlagiarismInputSchema>;
 
 const PlagiarizedSegmentSchema = z.object({
   original_text: z.string().describe("The segment of text from the user's input that is potentially plagiarized."),
-  source: z.string().describe("The likely source of the plagiarized text (e.g., 'Wikipedia', 'Journal of Pharmacology, 2021')."),
+  source: z.string().describe("The likely source of the plagiarized text (e.g., 'Wikipedia', 'Journal of Pharmacology, 2021', 'Student submission from course PH-101')."),
   similarity_score: z.coerce.number().min(0).max(1).describe("The similarity score between the user's text and the source, from 0 to 1."),
 });
 
@@ -40,15 +40,20 @@ const prompt = ai.definePrompt({
   input: {schema: PlagiarismInputSchema},
   output: {schema: PlagiarismResultSchema},
   model: 'googleai/gemini-1.5-flash',
-  prompt: `You are an academic integrity AI tool. Your task is to analyze a given document for plagiarism against a simulated database of academic journals, websites, and textbooks.
+  prompt: `You are an academic integrity AI tool. Your task is to analyze a given document for plagiarism against a simulated database of sources.
+
+**Source Pools to Check Against:**
+1.  **Open Web:** Publicly indexed websites, blogs, news articles.
+2.  **Academic Databases:** Simulate checking against sources like PubMed, CrossRef, and major scientific journals.
+3.  **Institutional Repository:** Simulate checking against a database of previously submitted student papers and theses.
 
 **Input Document:**
 {{media url=documentDataUri}}
 
 **Instructions:**
-1.  **Analyze the Document:** Perform OCR if necessary. Read the document and identify any segments that are highly similar to well-known external sources.
+1.  **Analyze the Document:** Perform OCR if necessary. Read the document and identify any segments that are highly similar to the simulated external sources.
 2.  **Calculate Similarity:** For each identified segment, provide a 'similarity_score' between 0 and 1.
-3.  **Identify Sources:** For each segment, identify a plausible 'source'. Be specific where possible (e.g., "Wikipedia article on 'Beta-blockers'", "Goodman & Gilman's Pharmacological Basis of Therapeutics, 13th Ed.").
+3.  **Identify Sources:** For each segment, identify a plausible 'source' from one of the source pools. Be specific (e.g., "Wikipedia article on 'Beta-blockers'", "Journal of Pharmacology, 2021", "Student submission from PH-402, Fall 2023").
 4.  **Overall Score:** Calculate an 'overall_similarity_percentage' for the entire document. This should be a weighted average based on the length and severity of the matches.
 5.  **Summarize:** Provide a concise 'summary' of your findings. If similarity is high (>25%), recommend significant revisions. If it is moderate (10-25%), recommend a review. If it is low (<10%), confirm originality.
 
