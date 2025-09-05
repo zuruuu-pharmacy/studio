@@ -71,15 +71,18 @@ function CompactOverlay({ item, onScan }: { item: { type: string, name: string, 
              onClick={() => onScan(item.name, item.type)}
         >
             <Card 
-                className="bg-white/90 dark:bg-black/90 backdrop-blur-sm p-2 rounded-lg shadow-xl w-60 border-primary/50 flex gap-2 cursor-pointer"
+                className="bg-white/90 dark:bg-black/90 backdrop-blur-sm p-2 rounded-lg shadow-xl w-64 border-primary/50 flex gap-2 cursor-pointer"
             >
                 <div className={cn("w-2 rounded-full", riskColors[item.risk] || 'bg-gray-400')}></div>
-                <div className="flex-1">
-                    <p className="font-bold text-sm">{drug.name}</p>
-                    <p className="text-xs text-muted-foreground">{drug.pharmaApplications.dosageForms}</p>
+                <div className="flex-1 space-y-1">
+                    <p className="font-bold text-sm">{drug.name} ({drug.pharmaApplications.formulations})</p>
                     <p className="text-xs text-muted-foreground">{drug.classification}</p>
+                     <div className="flex gap-1 pt-1">
+                        <Button size="icon" className="h-6 w-6" variant="ghost" onClick={(e) => handleActionClick(e, "Interactions")}><GitCompareArrows/></Button>
+                        <Button size="icon" className="h-6 w-6" variant="ghost" onClick={(e) => handleActionClick(e, "Save")}><Save/></Button>
+                        <Button size="icon" className="h-6 w-6" variant="ghost" onClick={(e) => handleActionClick(e, "Quiz")}><HelpCircle/></Button>
+                    </div>
                 </div>
-                 <item.icon className="h-6 w-6 text-muted-foreground self-center mr-2"/>
             </Card>
         </div>
     );
@@ -208,6 +211,12 @@ export function ScanMedicineStripClient() {
                                 <AlertDescription>Check dose & monitoring. Not for patient dosing without supervision.</AlertDescription>
                             </Alert>
                         )}
+                        
+                        <Alert variant="default" className="border-blue-500/50 bg-blue-500/10">
+                            <AlertTriangle className="h-4 w-4 text-blue-500" />
+                            <AlertTitle className="text-blue-600">Clinical Disclaimer</AlertTitle>
+                            <AlertDescription>Educational tool only — confirm with official formulary before clinical decisions.</AlertDescription>
+                        </Alert>
 
                          <Alert>
                             <AlertTitle className="flex items-center gap-2"><BookCopy className="h-4 w-4"/> Teaching Notes & Exam Highlights</AlertTitle>
@@ -221,7 +230,8 @@ export function ScanMedicineStripClient() {
                                <DetailSection title="Brand(s)" content={scannedItem.drug.pharmaApplications.formulations} icon={Package} />
                                <DetailSection title="Dosage Forms" content={scannedItem.drug.pharmaApplications.dosageForms} icon={Pill} />
                                <DetailSection title="Scan Info" content={`Source: ${getRecognitionSource(scannedItem.type).source} | Confidence: ${getRecognitionSource(scannedItem.type).confidence}`} icon={Barcode}/>
-                               <Button size="sm" variant="link" className="p-0 h-auto" onClick={() => toast({title: "Coming Soon!", description: "This will allow reporting incorrect information to admins."})}>Report incorrect info</Button>
+                               <DetailSection title="Batch / Expiry" content={"Not detected on packaging."} icon={Calendar}/>
+                               <Button size="sm" variant="link" className="p-0 h-auto" onClick={() => toast({title: "Coming Soon!", description: "This will allow reporting incorrect information to admins."})}>Report Suspect Packaging</Button>
                             </CardContent>
                         </Card>
                         
