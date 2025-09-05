@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, Combine, CalendarDays, FolderOpen, Replace, BookA, MessageSquare, ClipboardList, MessageCircleQuestion, Compass, Search, BarChart, Camera } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, Combine, CalendarDays, FolderOpen, Replace, BookA, MessageSquare, ClipboardList, MessageCircleQuestion, Compass, Search, BarChart, Camera, ScanSearch } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -207,6 +207,11 @@ const studentMenuItems = [
         description: "Generate academic citations for a given text in various styles.",
         href: "/reference-generator",
         color: "text-slate-500",
+    },
+    {
+        icon: ScanSearch,
+        label: "Plagiarism Checker",
+        href: "/plagiarism-checker",
     }
 ];
 
