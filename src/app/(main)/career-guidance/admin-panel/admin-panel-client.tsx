@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Briefcase, GraduationCap, School, BookOpen, BarChart, Settings, UserCheck } from "lucide-react";
+import { Users, Briefcase, GraduationCap, School, BookOpen, BarChart, Settings, UserCheck, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -45,10 +45,10 @@ const adminTasks = [
         link: "/lecture-notes",
     },
      {
-        title: "Engagement Analytics",
-        description: "View dashboards on how students are engaging with different career paths and resources.",
-        icon: BarChart,
-        link: "/career-guidance/analytics-dashboard",
+        title: "Plagiarism Policy Management",
+        description: "Set similarity thresholds, manage source whitelists, and review flagged submissions.",
+        icon: ShieldCheck,
+        link: "/plagiarism-checker/policy-admin",
     },
 ];
 

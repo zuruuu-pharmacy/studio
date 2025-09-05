@@ -212,6 +212,7 @@ const studentMenuItems = [
         icon: ScanSearch,
         label: "Plagiarism Checker",
         href: "/plagiarism-checker",
+        color: "text-red-500",
     }
 ];
 
@@ -301,5 +302,3 @@ export function AppShell({ children }: { children: ReactNode }) {
     </SidebarProvider>
   );
 }
-
-    
