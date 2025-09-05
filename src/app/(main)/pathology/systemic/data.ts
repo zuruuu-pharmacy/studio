@@ -228,6 +228,37 @@ export const systemicPathologyData: OrganSystem[] = [
             complications: "Valvular insufficiency, heart failure, myocardial abscess, septic emboli to brain (stroke) or other organs, glomerulonephritis (due to immune complex deposition).",
             prognosis: "Depends on the causative organism and the presence of complications. Acute endocarditis caused by S. aureus can be rapidly fatal.",
           },
+          { 
+            title: "Calcific Aortic Stenosis",
+            overview: "Calcific aortic stenosis is the most common cause of aortic stenosis, resulting from the age-related 'wear and tear' of the aortic valve. It involves the progressive calcification and fibrosis of the valve leaflets, leading to obstruction of left ventricular outflow.",
+            learningObjectives: [
+                "Identify calcific aortic stenosis as the primary cause of aortic stenosis in the elderly.",
+                "Describe the morphology of the calcified valve.",
+                "Understand the hemodynamic consequences of aortic stenosis.",
+                "Recognize the classic clinical triad of symptoms."
+            ],
+            tags: {
+                organ: "Heart",
+                system: "Cardiovascular",
+                category: "Degenerative",
+                level: "Intermediate"
+            },
+            etiology: [
+                "Age-related degenerative calcification.",
+                "Accelerated in patients with a congenitally bicuspid aortic valve."
+            ],
+            pathogenesis: "The pathogenesis is similar to atherosclerosis, involving lipid deposition, inflammation, and active calcification driven by osteoblast-like cells within the valve. Chronic mechanical stress on the valve contributes to this process.",
+            morphology: {
+                gross: "The valve cusps are thickened, fibrotic, and contain heaped-up masses of calcific deposits, particularly on the aortic side. This prevents the cusps from opening fully during systole. The commissures are typically not fused (unlike in rheumatic heart disease).",
+                microscopic: "Fibrosis and calcification within the valve cusps.",
+                imageHint: "calcific aortic stenosis gross"
+            },
+            clinicalFeatures: "Patients are often asymptomatic for a long period due to compensatory left ventricular hypertrophy. Once symptoms develop, the prognosis worsens significantly. The classic triad is: 1. Angina (chest pain) 2. Syncope (fainting), especially on exertion 3. Dyspnea (shortness of breath) from heart failure. A harsh systolic ejection murmur is heard on auscultation.",
+            investigations: "Echocardiography is the diagnostic test of choice, used to visualize the calcified valve, measure the valve area, and assess the severity of the stenosis and the degree of left ventricular hypertrophy.",
+            management: "There is no medical therapy to halt or reverse the calcification. Management involves monitoring asymptomatic patients. Once symptoms develop or the stenosis becomes severe, the only effective treatment is aortic valve replacement (either surgical or transcatheter - TAVR/TAVI). Always check current local and international valvular heart disease guidelines.",
+            complications: "Left ventricular hypertrophy, heart failure, arrhythmias, infective endocarditis.",
+            prognosis: "Excellent for asymptomatic patients. Poor once symptoms develop, with an average survival of 2-3 years without valve replacement.",
+          },
         ]
       },
       {
@@ -267,6 +298,36 @@ export const systemicPathologyData: OrganSystem[] = [
             management: "Management focuses on standard heart failure therapy, including diuretics, ACE inhibitors/ARBs, beta-blockers, and aldosterone antagonists. In advanced cases, cardiac transplantation or a left ventricular assist device (LVAD) may be necessary. Always check current local and international heart failure guidelines.",
             complications: "Progressive heart failure, arrhythmias, thromboembolism, and sudden cardiac death.",
             prognosis: "Poor without treatment. With optimal medical therapy, survival has improved, but many patients eventually progress to end-stage heart failure.",
+          },
+          { 
+            title: "Hypertrophic Cardiomyopathy (HCM)",
+            overview: "Hypertrophic cardiomyopathy is a genetic disorder characterized by myocardial hypertrophy, poorly compliant left ventricular myocardium leading to abnormal diastolic filling, and, in about one-third of cases, intermittent left ventricular outflow obstruction.",
+            learningObjectives: [
+                "Define HCM as a primary genetic disorder of the sarcomere.",
+                "Describe the characteristic asymmetric septal hypertrophy.",
+                "Recognize the key histologic feature of myocyte disarray.",
+                "Understand the risk of sudden cardiac death in young athletes."
+            ],
+            tags: {
+                organ: "Heart",
+                system: "Cardiovascular",
+                category: "Genetic",
+                level: "Advanced"
+            },
+            etiology: [
+                "Autosomal dominant mutations in genes encoding sarcomeric proteins (e.g., beta-myosin heavy chain, myosin-binding protein C)."
+            ],
+            pathogenesis: "Mutations in contractile proteins lead to hypercontractility and inefficient energy use, stimulating myocyte hypertrophy. The hypertrophy is often asymmetric, disproportionately affecting the ventricular septum. This can lead to dynamic outflow obstruction as the anterior leaflet of the mitral valve is pulled towards the septum during systole.",
+            morphology: {
+                gross: "Massive myocardial hypertrophy without ventricular dilation. The classic pattern is asymmetric hypertrophy of the ventricular septum. The LV cavity is often compressed into a 'banana-like' shape.",
+                microscopic: "The histologic hallmark is extensive myocyte hypertrophy, myocyte disarray (haphazard arrangement of myocytes), and interstitial fibrosis.",
+                imageHint: "hypertrophic cardiomyopathy histology"
+            },
+            clinicalFeatures: "Many patients are asymptomatic. Symptoms can include dyspnea, angina, fatigue, and syncope. HCM is a major cause of sudden cardiac death in young adults and athletes, often due to ventricular arrhythmias.",
+            investigations: "Echocardiography is the primary diagnostic tool, showing asymmetric septal hypertrophy and dynamic outflow obstruction. Genetic testing can identify the causative mutation.",
+            management: "Management focuses on symptom relief and reducing the risk of sudden death. Beta-blockers and calcium channel blockers are used to reduce heart rate and improve diastolic filling. Implantable cardioverter-defibrillators (ICDs) are used in high-risk patients to prevent sudden death. Always check current local and international HCM guidelines.",
+            complications: "Sudden cardiac death, atrial fibrillation, heart failure, infective endocarditis.",
+            prognosis: "Highly variable. Some patients remain stable for life, while others have a high risk of sudden death.",
           },
         ]
       }
@@ -313,11 +374,72 @@ export const systemicPathologyData: OrganSystem[] = [
             complications: "Acute exacerbations, respiratory failure, pulmonary hypertension, and cor pulmonale (right heart failure).",
             prognosis: "Progressive disease, but the rate of decline can be slowed by smoking cessation.",
           },
+          { 
+            title: "Asthma",
+            overview: "Asthma is a chronic inflammatory disorder of the airways characterized by reversible bronchoconstriction, airway hyperresponsiveness, and inflammation. It presents with episodic wheezing, shortness of breath, and cough.",
+            learningObjectives: [
+                "Define asthma as a disorder of reversible airway obstruction.",
+                "Describe the pathogenesis of atopic asthma, involving Type I hypersensitivity.",
+                "Identify the key histologic features, including airway remodeling.",
+                "Understand the basis of pharmacologic management."
+            ],
+            tags: {
+                organ: "Lung",
+                system: "Respiratory",
+                category: "Autoimmune",
+                level: "Classic"
+            },
+            etiology: [
+                "A combination of genetic predisposition (atopy) and environmental exposures (allergens, viral infections)."
+            ],
+            pathogenesis: "Atopic (allergic) asthma is a classic Type I hypersensitivity reaction. Initial exposure to an allergen sensitizes Th2 cells, which stimulate B cells to produce IgE. IgE coats mast cells. On re-exposure, the allergen cross-links IgE on mast cells, causing degranulation and release of mediators (histamine, leukotrienes) that lead to acute bronchoconstriction. A late-phase reaction involves the recruitment of eosinophils and other inflammatory cells, causing sustained inflammation. Over time, this leads to airway remodeling (hypertrophy of smooth muscle and mucous glands, sub-basement membrane fibrosis).",
+            morphology: {
+                gross: "Lungs are overdistended. Airways may be occluded by thick mucus plugs.",
+                microscopic: "Mucus plugs contain shed epithelial cells and eosinophils, forming Curschmann spirals and Charcot-Leyden crystals. Airway walls show inflammation with many eosinophils, hypertrophy of bronchial smooth muscle, and thickening of the basement membrane.",
+                imageHint: "asthma histology"
+            },
+            clinicalFeatures: "Episodic attacks of wheezing, cough (especially at night), and dyspnea, often triggered by allergens, cold air, or exercise. Symptoms are typically reversible, either spontaneously or with treatment.",
+            investigations: "Spirometry showing reversible airflow obstruction (i.e., an increase in FEV1 of >12% and >200 mL after bronchodilator administration) is the hallmark of diagnosis.",
+            management: "Management involves reliever medications for acute symptoms (e.g., short-acting beta-agonists like salbutamol) and controller medications to manage chronic inflammation (e.g., inhaled corticosteroids). Always check current local and international asthma guidelines (e.g., GINA).",
+            complications: "Severe acute exacerbations (status asthmaticus), airway remodeling.",
+            prognosis: "Excellent with proper management, but can be fatal if untreated.",
+          },
         ]
       },
       {
         name: "Restrictive Lung Diseases",
-        diseases: []
+        diseases: [
+            { 
+            title: "Idiopathic Pulmonary Fibrosis (IPF)",
+            overview: "Idiopathic pulmonary fibrosis is a progressive, irreversible, and usually fatal fibrosing interstitial pneumonia of unknown cause, occurring in older adults. It is characterized by the radiologic and/or histologic pattern of usual interstitial pneumonia (UIP).",
+            learningObjectives: [
+                "Define IPF and its association with the UIP pattern.",
+                "Describe the pathogenesis involving recurrent epithelial injury and aberrant repair.",
+                "Recognize the key morphologic features: patchy fibrosis, fibroblastic foci, and honeycomb change.",
+                "Understand the poor prognosis and limited treatment options."
+            ],
+            tags: {
+                organ: "Lung",
+                system: "Respiratory",
+                category: "Degenerative",
+                level: "Advanced"
+            },
+            etiology: [
+                "Unknown (idiopathic). Risk factors include smoking and genetic predisposition."
+            ],
+            pathogenesis: "The current hypothesis suggests that repeated cycles of epithelial injury and activation in a susceptible host lead to an abnormal wound healing response. This involves the excessive proliferation of fibroblasts and myofibroblasts (forming fibroblastic foci) and the massive deposition of collagen, leading to progressive scarring.",
+            morphology: {
+                gross: "The pleural surfaces of the lungs have a 'cobblestone' appearance. The fibrosis is most pronounced in the lower lobes and subpleural regions.",
+                microscopic: "The hallmark is patchy interstitial fibrosis, which varies in intensity and age. The key lesion is the fibroblastic focus, a collection of actively proliferating fibroblasts. In late stages, the fibrosis leads to the destruction of alveolar architecture and the formation of cystic spaces lined by bronchiolar epithelium, known as 'honeycomb lung'.",
+                imageHint: "usual interstitial pneumonia histology"
+            },
+            clinicalFeatures: "Presents with the insidious onset of gradually progressive dyspnea on exertion and a dry cough. Digital clubbing and 'velcro-like' crackles on auscultation are common.",
+            investigations: "High-resolution CT (HRCT) of the chest showing the characteristic UIP pattern (subpleural, basal-predominant reticulation with honeycomb change) can be diagnostic. If imaging is not definitive, a surgical lung biopsy is required.",
+            management: "Antifibrotic drugs (e.g., pirfenidone, nintedanib) can slow the rate of disease progression but do not cure the disease. Lung transplantation is the only definitive treatment. Supportive care includes oxygen therapy and pulmonary rehabilitation. Always check current local and international IPF guidelines.",
+            complications: "Progressive respiratory failure, acute exacerbations, pulmonary hypertension.",
+            prognosis: "Poor, with a median survival of 3 to 5 years after diagnosis.",
+          },
+        ]
       },
        {
         name: "Lung Tumors",
@@ -351,6 +473,37 @@ export const systemicPathologyData: OrganSystem[] = [
             management: "Treatment depends on the stage. Early-stage disease may be treated with surgical resection. Advanced disease is treated with chemotherapy and/or radiation. Immunotherapy (e.g., checkpoint inhibitors) has become a key part of treatment. Always check current local and international NSCLC guidelines (e.g., NCCN, ESMO).",
             complications: "Bronchial obstruction, superior vena cava syndrome (if tumor compresses the SVC), distant metastases (e.g., to adrenals, brain, bone).",
             prognosis: "Prognosis is stage-dependent but is generally poor for lung cancer overall. Better than small cell lung cancer at a similar stage.",
+          },
+          { 
+            title: "Adenocarcinoma of the Lung",
+            overview: "Adenocarcinoma is the most common type of lung cancer, particularly in non-smokers and women. It typically arises in the periphery of the lung and is characterized by gland formation or mucin production by the tumor cells.",
+            learningObjectives: [
+                "Recognize adenocarcinoma as the most common lung cancer subtype.",
+                "Identify its typical peripheral location.",
+                "Describe the characteristic histologic features (gland formation, mucin).",
+                "Understand the importance of molecular testing (e.g., for EGFR, ALK) in guiding therapy."
+            ],
+            tags: {
+                organ: "Lung",
+                system: "Respiratory",
+                category: "Neoplastic",
+                level: "Intermediate"
+            },
+            etiology: [
+                "Cigarette smoking (a major risk factor, but less strongly associated than with SCC).",
+                "Genetic mutations (e.g., EGFR, ALK, KRAS) are common and are important therapeutic targets."
+            ],
+            pathogenesis: "Develops from precursor lesions, such as atypical adenomatous hyperplasia (AAH) and adenocarcinoma in situ (AIS). The accumulation of driver mutations in genes like EGFR, KRAS, and ALK promotes uncontrolled growth and invasion.",
+            morphology: {
+                gross: "Usually located in the periphery of the lung. The tumors may be single or multiple nodules and can be associated with pleural puckering and scarring.",
+                microscopic: "Shows glandular differentiation (acinar, papillary, micropapillary, or solid growth patterns) and/or mucin production. The cells are typically cuboidal to columnar with varying degrees of atypia.",
+                imageHint: "lung adenocarcinoma histology"
+            },
+            clinicalFeatures: "Often discovered incidentally on imaging. Symptoms, when present, relate to cough, dyspnea, or chest pain. Paraneoplastic syndromes are less common than with other lung cancer types.",
+            investigations: "Diagnosis is by biopsy (often CT-guided needle biopsy). Molecular testing for driver mutations (EGFR, ALK, ROS1, etc.) is standard of care for all advanced adenocarcinomas to guide targeted therapy.",
+            management: "Treatment depends on stage and molecular status. Early-stage disease is treated with surgery. Advanced-stage disease is treated with chemotherapy, targeted therapy (e.g., osimertinib for EGFR mutations), and/or immunotherapy. Always check current local and international NSCLC guidelines.",
+            complications: "Pleural effusion, metastasis to brain, liver, adrenals, and bone.",
+            prognosis: "Variable. Patients with targetable driver mutations who respond to targeted therapy can have significantly better outcomes.",
           },
         ]
       }
@@ -393,6 +546,39 @@ export const systemicPathologyData: OrganSystem[] = [
                 complications: "The most feared complication is progression to esophageal adenocarcinoma.",
                 prognosis: "The risk of progression to cancer is low on a per-year basis but significant over a lifetime. Surveillance aims to detect dysplasia or early cancer when it is treatable.",
              },
+             { 
+                title: "Gastroesophageal Reflux Disease (GERD)",
+                overview: "GERD is a common condition characterized by symptoms or mucosal damage produced by the abnormal reflux of gastric contents into the esophagus. It is primarily a motility disorder related to lower esophageal sphincter (LES) dysfunction.",
+                learningObjectives: [
+                    "Define GERD based on its clinical and pathological features.",
+                    "Understand the mechanisms leading to LES incompetence.",
+                    "Describe the potential histologic changes in reflux esophagitis.",
+                    "List the major complications of chronic GERD."
+                ],
+                tags: {
+                    organ: "Esophagus",
+                    system: "Gastrointestinal",
+                    category: "Inflammatory",
+                    level: "Basic"
+                },
+                etiology: [
+                    "Decreased LES pressure or inappropriate transient LES relaxations.",
+                    "Hiatal hernia.",
+                    "Delayed gastric emptying.",
+                    "Factors that increase intra-abdominal pressure (e.g., obesity, pregnancy)."
+                ],
+                pathogenesis: "The primary pathogenetic event is the prolonged exposure of the esophageal mucosa to gastric acid and pepsin, and sometimes bile. This leads to chemical injury and inflammation of the squamous epithelium.",
+                morphology: {
+                    gross: "Endoscopy may show erythema (redness) and erosions or ulcers in the distal esophagus. However, many patients with symptoms have a normal-appearing endoscopy (non-erosive reflux disease or NERD).",
+                    microscopic: "Histologic findings in reflux esophagitis include: 1. Eosinophils and neutrophils within the squamous epithelium. 2. Basal zone hyperplasia (thickening of the basal layer). 3. Elongation of the lamina propria papillae.",
+                    imageHint: "reflux esophagitis histology"
+                },
+                clinicalFeatures: "The cardinal symptom is heartburn (pyrosis), often after meals or when lying down. Other symptoms include regurgitation, dysphagia (difficulty swallowing), and chronic cough or laryngitis (atypical symptoms).",
+                investigations: "Diagnosis is often made clinically based on typical symptoms. Endoscopy is performed for alarm symptoms (e.g., dysphagia, weight loss) or to evaluate for complications. 24-hour esophageal pH monitoring is the most sensitive test.",
+                management: "Lifestyle modifications (e.g., weight loss, elevating head of bed) and medications are the mainstays. Antacids provide temporary relief. H2-receptor antagonists and proton pump inhibitors (PPIs) are the most effective drugs for reducing acid secretion and healing esophagitis. Always check current local guidelines.",
+                complications: "Reflux esophagitis, esophageal stricture, Barrett esophagus, and esophageal adenocarcinoma.",
+                prognosis: "Excellent with appropriate management, but it is a chronic condition that often requires long-term therapy.",
+             },
         ]
       },
       {
@@ -431,6 +617,36 @@ export const systemicPathologyData: OrganSystem[] = [
                 complications: "Metastasis, most commonly to regional lymph nodes, liver, and peritoneum (Krukenberg tumor in ovary).",
                 prognosis: "Generally poor, as most patients present with advanced disease. Prognosis is stage-dependent.",
             },
+            { 
+                title: "Chronic Gastritis (H. pylori)",
+                overview: "Chronic gastritis is a chronic inflammation of the stomach mucosa. Infection with Helicobacter pylori is the most common cause. It can lead to complications such as peptic ulcer disease, gastric adenocarcinoma, and MALT lymphoma.",
+                learningObjectives: [
+                    "Identify H. pylori as the leading cause of chronic gastritis.",
+                    "Describe the typical location (antrum) and histologic features of H. pylori gastritis.",
+                    "Understand the mechanism of H. pylori-induced mucosal injury.",
+                    "Explain the rationale for H. pylori eradication therapy."
+                ],
+                tags: {
+                    organ: "Stomach",
+                    system: "Gastrointestinal",
+                    category: "Infectious",
+                    level: "Basic"
+                },
+                etiology: [
+                    "Helicobacter pylori infection."
+                ],
+                pathogenesis: "H. pylori is a spiral-shaped bacterium that lives in the stomach. It produces urease, which neutralizes stomach acid, allowing it to survive. It also produces toxins (like CagA and VacA) and enzymes that damage the mucosal protective layer, leading to inflammation. The host inflammatory response further contributes to epithelial cell injury.",
+                morphology: {
+                    gross: "Endoscopy may show erythema and a nodular appearance, primarily in the antrum.",
+                    microscopic: "The key features are: 1. A prominent inflammatory infiltrate of lymphocytes and plasma cells in the lamina propria. 2. Neutrophils within the gastric pits and epithelium (indicating active inflammation). 3. The curved H. pylori organisms can often be seen in the surface mucus (best visualized with a Warthin-Starry or Giemsa stain).",
+                    imageHint: "h pylori gastritis histology"
+                },
+                clinicalFeatures: "Often asymptomatic. When symptomatic, it can cause upper abdominal pain (dyspepsia), nausea, and bloating. It is a major cause of peptic ulcers.",
+                investigations: "Diagnosis can be made by non-invasive tests (urea breath test, stool antigen test, serology) or invasive tests (endoscopy with biopsy for histology and rapid urease test).",
+                management: "Eradication therapy with a combination of a proton pump inhibitor (PPI) and at least two antibiotics (e.g., clarithromycin and amoxicillin) is the standard of care. Always check current local and international guidelines for recommended regimens.",
+                complications: "Peptic ulcer disease, gastric adenocarcinoma, MALT lymphoma.",
+                prognosis: "Excellent with successful eradication, which can prevent long-term complications.",
+             },
         ]
       },
        {
