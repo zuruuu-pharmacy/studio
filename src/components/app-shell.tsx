@@ -55,7 +55,7 @@ const studentMenuItems = [
     { href: "/ai-assistant", label: "AI Assistant Helper", icon: MessageCircleQuestion },
     { href: "/patient-history", label: "My Health History", icon: User },
     { href: "/patients", label: "View Patient Cases", icon: Users },
-    { href: "/student-discussion-forum", label: "Discussion Forum", icon: MessageSquare },
+    { href: "/student-discussion-forum", label: "Student Discussion Forum", icon: MessageSquare },
     { href: "/student-polls", label: "Student Polls/Surveys", icon: ClipboardList },
     { href: "/clinical-case-simulator", label: "Clinical Case Simulator", icon: CaseSensitive },
     { href: "/osce-viva-prep", label: "OSCE & Viva Preparation", icon: FileHeart },

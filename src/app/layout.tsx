@@ -37,9 +37,9 @@ export default function RootLayout({
                         <PollsProvider>
                             <EventCalendarProvider>
                                 {children}
+                                <Toaster />
                             </EventCalendarProvider>
                         </PollsProvider>
-                        <Toaster />
                     </DiscussionForumProvider>
                 </OsceSessionsProvider>
             </LectureNotesProvider>
