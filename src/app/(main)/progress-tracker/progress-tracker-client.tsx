@@ -1,11 +1,11 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus, HelpCircle, FileText, FlaskConical, BrainCircuit, Book, Zap, ListOrdered, BookCopy, Bell, ArrowLeft, ShieldCheck, ShieldQuestion } from "lucide-react";
+import { BarChart, CheckCircle, Lightbulb, Target, TrendingUp, Database, TrendingDown, Minus, HelpCircle, FileText, FlaskConical, BrainCircuit, Book, Zap, ListOrdered, BookCopy, Bell, ArrowLeft, ShieldQuestion, ShieldCheck, Award } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -242,7 +242,7 @@ export function ProgressTrackerClient() {
            </Card>
 
             <Card>
-                <CardHeader><CardTitle className="flex items-center gap-2"><Bell className="text-primary"/>AI Recommended Actions</CardTitle><CardDescription>Your prioritized list of what to study next.</CardDescription></CardHeader>
+                <CardHeader><CardTitle className="flex items-center gap-2"><Bell className="text-primary"/>AI Recommended Actions &amp; Nudges</CardTitle><CardDescription>Your prioritized list of what to study next.</CardDescription></CardHeader>
                 <CardContent className="space-y-3">
                     {prioritizedWeakness.slice(0, 2).map(item => {
                         const rec = recommendationMap[item.subject];
@@ -321,30 +321,27 @@ export function ProgressTrackerClient() {
         </Card>
 
         <Accordion type="multiple" collapsible className="w-full space-y-4">
-             <AccordionItem value="data-sources" className="border-0">
+             <AccordionItem value="explanation" className="border-0">
                  <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">How is my Mastery Score Calculated?</AccordionTrigger>
-                 <AccordionContent>
+                 <AccordionContent className="space-y-4">
                     <Card className="p-6">
-                        <div className="space-y-4">
-                             <div className="grid md:grid-cols-2 gap-6">
-                                <div>
-                                    <h4 className="font-semibold mb-2 flex items-center gap-2"><Database className="text-primary"/>Data Sources</h4>
-                                    <p className="text-sm text-muted-foreground mb-2">Your Mastery Score is a dynamic metric computed from various learning activities across the portal:</p>
-                                    <ul className="list-disc list-inside space-y-1 text-sm">
-                                        {dataSources.map(ds => <li key={ds.name} className="flex items-center gap-2"><ds.icon className="text-primary"/>{ds.name}</li>)}
-                                    </ul>
-                                </div>
-                                 <div>
-                                    <h4 className="font-semibold mb-2 flex items-center gap-2"><BrainCircuit className="text-primary"/>Algorithm Highlights</h4>
-                                     <p className="text-sm text-muted-foreground mb-2">The score is calculated using a weighted average with time decay:</p>
-                                    <ul className="list-disc list-inside space-y-1 text-sm">
-                                        <li><strong>Recency Matters:</strong> More recent quiz scores and activities are weighted more heavily.</li>
-                                        <li><strong>Component Weighting:</strong> Different activities contribute differently (e.g., quizzes have more weight than flashcard practice).</li>
-                                        <li><strong>Forgetting Penalty:</strong> A small penalty is applied to topics not reviewed recently to encourage continuous learning.</li>
-                                    </ul>
-                                </div>
-                             </div>
+                         <div className="space-y-4">
+                            <h4 className="font-semibold mb-2 flex items-center gap-2"><BrainCircuit className="text-primary"/>Algorithm Highlights</h4>
+                            <p className="text-sm text-muted-foreground mb-2">Your Mastery Score is a dynamic metric computed from various learning activities using a weighted average with time decay:</p>
+                            <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
+                                <li><strong>Recency Matters:</strong> More recent quiz scores and activities are weighted more heavily.</li>
+                                <li><strong>Component Weighting:</strong> Different activities contribute differently (e.g., quizzes have more weight than flashcard practice).</li>
+                                <li><strong>Forgetting Penalty:</strong> A small penalty is applied to topics not reviewed recently to encourage continuous learning.</li>
+                                <li><strong>Error Type Classification:</strong> The AI categorizes errors (conceptual, procedural, etc.) to drive targeted recommendations.</li>
+                            </ul>
                         </div>
+                    </Card>
+                    <Card className="p-6">
+                        <h4 className="font-semibold mb-2 flex items-center gap-2"><Database className="text-primary"/>Data Sources</h4>
+                        <p className="text-sm text-muted-foreground mb-2">Your score is computed from all learning touchpoints across the portal:</p>
+                        <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                            {dataSources.map(ds => <li key={ds.name} className="flex items-center gap-2"><ds.icon className="text-primary"/>{ds.name}</li>)}
+                        </ul>
                     </Card>
                  </AccordionContent>
              </AccordionItem>
@@ -365,7 +362,26 @@ export function ProgressTrackerClient() {
                     </Card>
                  </AccordionContent>
              </AccordionItem>
+              <AccordionItem value="kpis" className="border-0">
+                 <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">Product Metrics &amp; KPIs</AccordionTrigger>
+                 <AccordionContent>
+                    <Card className="p-6">
+                        <div className="space-y-4">
+                            <h4 className="font-semibold mb-2 flex items-center gap-2"><Award className="text-primary"/>Measuring Success</h4>
+                            <p className="text-sm text-muted-foreground mb-2">We track these key performance indicators to ensure this feature is effective and helpful for students and faculty:</p>
+                            <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
+                                <li>Student engagement with AI-driven suggestions (% of recommendations accepted).</li>
+                                <li>Average mastery change after a student completes a recommended intervention.</li>
+                                <li>The time it takes for a student to improve a "flagged" or weak topic.</li>
+                                <li>Effectiveness of teacher-led interventions triggered by dashboard insights.</li>
+                                <li>Overall student satisfaction with the tracker (measured by Net Promoter Score).</li>
+                            </ul>
+                        </div>
+                    </Card>
+                 </AccordionContent>
+             </AccordionItem>
         </Accordion>
     </div>
   );
 }
+
