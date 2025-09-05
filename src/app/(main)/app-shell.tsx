@@ -74,6 +74,13 @@ const studentMenuItems = [
         href: "/osce-viva-prep",
         color: "text-cyan-600",
     },
+     {
+        icon: TestTube,
+        label: "Pathology",
+        description: "Explore pathology resources and case studies.",
+        href: "/pathology",
+        color: "text-red-500",
+    },
     {
         icon: Compass,
         label: "Career Guidance",
