@@ -231,5 +231,3 @@ export const systemicPathologyData: OrganSystem[] = [
     ]
   }
 ];
-
-    
