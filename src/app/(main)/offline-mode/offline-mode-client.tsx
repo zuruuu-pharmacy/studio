@@ -23,14 +23,14 @@ const kpiData = [
 ];
 
 const qaChecklist = [
-    "Upload various formats (PDF, DOCX, PPT, TXT).",
-    "OCR accuracy across scanned handwritten pages.",
-    "Correct detection of quoted + cited passages.",
-    "Paraphrase detection sensitivity: assess true positives/false positives.",
-    "Highlighting correctly maps to original page & offsets.",
-    "Quick re-check latency acceptable (<10s for a small re-scan).",
-    "Access control, encryption, and delete flows validated.",
-    "Validate thresholds and false positive rate against human review for fairness.",
+    { category: 'Downloads', test: 'Download single PDF note file.', expected: 'File downloads successfully, progress bar shows, notification on complete.' },
+    { category: 'Downloads', test: 'Attempt to download a 2GB video on mobile data.', expected: 'App shows “Large File” warning, requires confirmation to proceed.' },
+    { category: 'Sync', test: 'Make 5 annotations offline, then reconnect.', expected: 'App detects connection, initiates sync, all 5 annotations upload successfully.' },
+    { category: 'Sync', test: 'Answer a quiz offline, close app, reconnect later.', expected: 'On next app open with internet, cached answers are synced.' },
+    { category: 'Storage', test: 'Download files until 95% of allocated cache is full.', expected: '“Low Storage” warning appears. Subsequent downloads are blocked.' },
+    { category: 'Conflict Resolution', test: 'Modify a note\'s annotation offline, while a collaborator modifies the same one online.', expected: 'On sync, conflict resolution pop-up appears with “Keep Local”/“Keep Server” options.' },
+    { category: 'Performance', test: 'Load an offline-cached 100-page PDF.', expected: 'PDF renders in under 2 seconds.' },
+    { category: 'Device Matrix', test: 'Test all core flows on: Chrome (Desktop), Safari (iOS), Chrome (Android).', expected: 'All features work consistently across browsers.' },
 ];
 
 const securityChecklist = [
@@ -183,13 +183,28 @@ export function OfflineModeClient() {
             <AccordionContent>
                 <Card>
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Bug/>Quality Assurance Checklist</CardTitle>
+                        <CardTitle className="flex items-center gap-2"><Bug/>Quality Assurance Test Plan</CardTitle>
                         <CardDescription>Key validation points for ensuring tool reliability and fairness.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
-                           {qaChecklist.map((item, i) => <li key={i}>{item}</li>)}
-                        </ul>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Category</TableHead>
+                                    <TableHead>Test Case</TableHead>
+                                    <TableHead>Expected Result</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {qaChecklist.map((item, i) => (
+                                    <TableRow key={i}>
+                                        <TableCell><Badge variant="outline">{item.category}</Badge></TableCell>
+                                        <TableCell>{item.test}</TableCell>
+                                        <TableCell>{item.expected}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
                     </CardContent>
                 </Card>
             </AccordionContent>
