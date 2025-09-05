@@ -235,6 +235,216 @@ const initialCaseStudies: Omit<CaseStudy, 'id'>[] = [
             }
         ],
         imageHint: "basal cell carcinoma histology"
+    },
+    {
+        title: "Case 11: A 28-year-old female with flank pain and fever",
+        history: "A 28-year-old female presents to the ER with a two-day history of high fever, chills, and severe right-sided flank pain. She also reports dysuria and increased urinary frequency.",
+        specialty: "Renal Pathology",
+        findings: "Urinalysis is remarkable for pyuria, bacteriuria, and white blood cell casts. A urine culture grows E. coli. A renal biopsy (for educational purposes) would show a dense neutrophilic infiltrate within the renal interstitium and tubules, with associated tubular destruction and abscess formation.",
+        diagnosis: "Acute Pyelonephritis.",
+        discussion: "This case is a classic example of an acute kidney infection (pyelonephritis), which is an infection of the kidney parenchyma and renal pelvis. The presence of white blood cell casts is the key finding that localizes the infection to the kidney, distinguishing it from a lower UTI like cystitis. The causative organism is most commonly E. coli ascending from the lower urinary tract.",
+        tags: {
+            organ: "💧 Renal",
+            type: "🦠 Infectious",
+            difficulty: "⭐ Classic",
+        },
+        quiz: [
+            {
+                question: "Which finding on urinalysis is most specific for pyelonephritis versus cystitis?",
+                options: ["Pyuria (WBCs in urine)", "Bacteriuria (bacteria in urine)", "White blood cell casts", "Hematuria (blood in urine)"],
+                answer: "White blood cell casts"
+            }
+        ],
+        imageHint: "pyelonephritis histology"
+    },
+    {
+        title: "Case 12: A 78-year-old woman with memory loss",
+        history: "A 78-year-old woman is brought in by her family due to a 5-year history of progressive memory loss, particularly for recent events. She is also experiencing confusion, personality changes, and difficulty with daily tasks like cooking.",
+        specialty: "Neuropathology",
+        findings: "MRI shows diffuse cortical atrophy, especially in the temporal and parietal lobes. At autopsy, the brain is grossly atrophic. Microscopic examination reveals numerous extracellular neuritic plaques composed of amyloid-beta (Aβ) peptides and intracellular neurofibrillary tangles composed of hyperphosphorylated tau protein. Congo red staining of plaques shows apple-green birefringence under polarized light.",
+        diagnosis: "Alzheimer's Disease.",
+        discussion: "Alzheimer's Disease is the most common cause of dementia in the elderly. The diagnosis is confirmed by the characteristic histopathological findings of Aβ plaques and neurofibrillary tangles. These lesions lead to synaptic dysfunction, neuronal loss, and the macroscopic brain atrophy seen on imaging. The deposition of amyloid can also be seen in cerebral blood vessels, a condition known as cerebral amyloid angiopathy.",
+        tags: {
+            organ: "🧠 Neurology",
+            type: "Degenerative",
+            difficulty: "⭐ Classic",
+        },
+        quiz: [
+            {
+                question: "What are the two hallmark microscopic findings of Alzheimer's Disease?",
+                options: ["Lewy bodies and alpha-synuclein", "Prion protein and spongiform change", "Neuritic plaques and neurofibrillary tangles", "Oligodendrocyte loss and demyelination"],
+                answer: "Neuritic plaques and neurofibrillary tangles"
+            }
+        ],
+        imageHint: "alzheimer's disease histology"
+    },
+    {
+        title: "Case 13: A 62-year-old man with jaundice",
+        history: "A 62-year-old man with a long history of heavy alcohol use and Hepatitis C infection presents with yellowing of the skin and eyes (jaundice), a swollen abdomen (ascites), and confusion.",
+        specialty: "Gastrointestinal Pathology",
+        findings: "Liver function tests are severely deranged. A liver biopsy shows diffuse transformation of the liver into regenerative parenchymal nodules surrounded by dense fibrous bands. The normal lobular architecture of the liver is completely effaced. The fibrosis bridges between portal tracts and central veins.",
+        diagnosis: "Cirrhosis of the Liver.",
+        discussion: "Cirrhosis represents the end stage of chronic liver disease, resulting from various insults such as chronic viral hepatitis, alcohol abuse, or non-alcoholic steatohepatitis (NASH). It is defined by the presence of bridging fibrous septa and parenchymal nodule formation. This disruption of architecture leads to portal hypertension (causing ascites) and hepatocellular failure (causing jaundice and encephalopathy).",
+        tags: {
+            organ: "🩺 GI Tract",
+            type: "Chronic Disease",
+            difficulty: "🔥 Complex"
+        },
+        quiz: [
+            {
+                question: "The defining histological feature of cirrhosis is:",
+                options: ["Steatosis (fatty change)", "Acute inflammation", "Bridging fibrosis and regenerative nodules", "Bile duct proliferation"],
+                answer: "Bridging fibrosis and regenerative nodules"
+            }
+        ],
+        imageHint: "liver cirrhosis histology"
+    },
+    {
+        title: "Case 14: A 35-year-old woman with a neck nodule",
+        history: "A 35-year-old woman presents for evaluation of a painless lump in her neck that she noticed a month ago. She has no other symptoms. She has a history of radiation exposure to the neck during childhood for an unrelated condition.",
+        specialty: "Endocrine Pathology",
+        findings: "Ultrasound confirms a 1.5 cm solid nodule in the right lobe of the thyroid. A fine-needle aspiration (FNA) is performed. The cytology shows cells arranged in papillary clusters with characteristic nuclear features: enlarged, overlapping nuclei with finely dispersed, pale chromatin ('Orphan Annie eyes'), nuclear grooves, and intranuclear pseudoinclusions.",
+        diagnosis: "Papillary Thyroid Carcinoma.",
+        discussion: "Papillary thyroid carcinoma is the most common type of thyroid cancer. It is strongly associated with prior radiation exposure. The diagnosis is made primarily on the basis of its unique and characteristic nuclear features, which are often sufficient for diagnosis even on FNA cytology. The prognosis is generally excellent.",
+        tags: {
+            organ: "🦋 Endocrine",
+            type: "🧪 Cancer",
+            difficulty: "⭐ Classic"
+        },
+        quiz: [
+            {
+                question: "Which nuclear feature is considered pathognomonic for Papillary Thyroid Carcinoma?",
+                options: ["Prominent nucleoli", "Hyperchromatic, small nuclei", "'Orphan Annie eye' nuclei with grooves", "Smudged chromatin"],
+                answer: "'Orphan Annie eye' nuclei with grooves"
+            }
+        ],
+        imageHint: "papillary thyroid carcinoma histology"
+    },
+    {
+        title: "Case 15: A 50-year-old man with a chronic cough",
+        history: "A 50-year-old man, an immigrant from a high-prevalence country, presents with a chronic cough lasting over three months, accompanied by weight loss, fever, night sweats, and occasional hemoptysis.",
+        specialty: "Infectious Disease Pathology",
+        findings: "Chest X-ray shows a cavity in the apex of the right lung. A sputum sample is obtained for staining and culture. An acid-fast stain (Ziehl-Neelsen stain) reveals red, rod-shaped organisms. A lung biopsy from the edge of the cavity shows caseating granulomas, which are collections of activated macrophages (epithelioid histiocytes) and multinucleated giant cells (Langhans cells), with a central area of amorphous, eosinophilic necrotic debris.",
+        diagnosis: "Tuberculosis.",
+        discussion: "Tuberculosis, caused by Mycobacterium tuberculosis, is a major global health problem. The hallmark of the disease is the formation of caseating granulomas in response to the infection. The presence of acid-fast bacilli on stain or culture confirms the diagnosis. The upper lobe location is typical for secondary (reactivation) tuberculosis.",
+        tags: {
+            organ: "🫁 Lung",
+            type: "🦠 Infectious",
+            difficulty: "⭐ Classic"
+        },
+        quiz: [
+            {
+                question: "What is the characteristic type of necrosis seen in tuberculosis?",
+                options: ["Coagulative necrosis", "Liquefactive necrosis", "Caseous necrosis", "Fibrinoid necrosis"],
+                answer: "Caseous necrosis"
+            }
+        ],
+        imageHint: "tuberculosis granuloma histology"
+    },
+    {
+        title: "Case 16: A 62-year-old with long-standing heartburn",
+        history: "A 62-year-old man with a 15-year history of gastroesophageal reflux disease (GERD), for which he takes antacids intermittently, presents for a routine endoscopy.",
+        specialty: "Gastrointestinal Pathology",
+        findings: "Endoscopy reveals tongues of red, velvety mucosa extending proximally from the gastroesophageal junction, in contrast to the normal pale, squamous esophageal mucosa. Biopsies from this area show metaplasia of the normal stratified squamous epithelium to an intestinal-type columnar epithelium containing goblet cells.",
+        diagnosis: "Barrett Esophagus.",
+        discussion: "Barrett esophagus is a complication of chronic GERD, where the normal esophageal squamous epithelium undergoes metaplasia to a more acid-resistant intestinal-type epithelium. The key diagnostic feature is the presence of goblet cells. This condition is clinically significant because it is a major risk factor for developing esophageal adenocarcinoma, and patients require regular surveillance.",
+        tags: {
+            organ: "🩺 GI Tract",
+            type: "🧪 Pre-cancerous",
+            difficulty: "🔥 Complex"
+        },
+        quiz: [
+            {
+                question: "The definitive histological finding for Barrett Esophagus is the presence of:",
+                options: ["Squamous cells", "Goblet cells", "Parietal cells", "Chief cells"],
+                answer: "Goblet cells"
+            }
+        ],
+        imageHint: "barrett esophagus histology"
+    },
+    {
+        title: "Case 17: A 68-year-old with intermittent claudication",
+        history: "A 68-year-old man with a history of smoking and type 2 diabetes complains of cramping pain in his calf muscles that occurs on walking a certain distance and is relieved by rest (intermittent claudication).",
+        specialty: "Cardiovascular Pathology",
+        findings: "Ankle-brachial index is low, confirming peripheral artery disease. An angiogram shows severe stenosis of the femoral artery. A cross-section of a similar artery at autopsy would show a large, eccentric intimal plaque with a fibrous cap overlying a central necrotic core containing lipid debris and cholesterol crystals. The plaque is complicated by calcification.",
+        diagnosis: "Atherosclerosis.",
+        discussion: "Atherosclerosis is the underlying cause of most cardiovascular disease, including coronary artery disease, stroke, and peripheral artery disease. It is a chronic inflammatory and lipid-driven disease of the arterial intima. The characteristic lesion, the atheroma or fibrofatty plaque, narrows the vessel lumen, leading to ischemia. Plaque rupture can lead to acute thrombosis and infarction.",
+        tags: {
+            organ: "❤️ Heart",
+            type: "Degenerative",
+            difficulty: "⭐ Classic"
+        },
+        quiz: [
+            {
+                question: "The characteristic lesion of atherosclerosis is known as the:",
+                options: ["Granuloma", "Pannus", "Atheroma", "Callus"],
+                answer: "Atheroma"
+            }
+        ],
+        imageHint: "atherosclerosis histology"
+    },
+    {
+        title: "Case 18: A 50-year-old man with a painful big toe",
+        history: "A 50-year-old obese man presents with the sudden onset of excruciating pain, redness, and swelling in his left great toe. He reports eating a large meal with steak and drinking several beers the night before.",
+        specialty: "Rheumatologic Pathology",
+        findings: "Physical exam reveals a warm, tender, and swollen first metatarsophalangeal joint. Aspiration of the joint fluid is performed. Under polarized light microscopy, the fluid reveals needle-shaped, negatively birefringent crystals within neutrophils.",
+        diagnosis: "Gout.",
+        discussion: "Gout is an inflammatory arthritis caused by the deposition of monosodium urate (MSU) crystals in joints and soft tissues, resulting from hyperuricemia. The acute attack is triggered by the precipitation of these crystals, which are phagocytosed by neutrophils, leading to a massive inflammatory response. The key to diagnosis is the identification of the characteristic needle-shaped, negatively birefringent MSU crystals in synovial fluid.",
+        tags: {
+            organ: "🦴 Rheumatology",
+            type: "Metabolic",
+            difficulty: "⭐ Classic"
+        },
+        quiz: [
+            {
+                question: "What is the characteristic microscopic finding in the joint fluid of a patient with acute gout?",
+                options: ["Calcium pyrophosphate crystals", "Positively birefringent crystals", "Needle-shaped, negatively birefringent crystals", "Cholesterol crystals"],
+                answer: "Needle-shaped, negatively birefringent crystals"
+            }
+        ],
+        imageHint: "gout crystals microscopy"
+    },
+    {
+        title: "Case 19: A 75-year-old woman with abdominal pain",
+        history: "A 75-year-old woman presents with left lower quadrant abdominal pain, fever, and leukocytosis. She has a known history of diverticulosis.",
+        specialty: "Gastrointestinal Pathology",
+        findings: "A CT scan of the abdomen shows inflammation of the sigmoid colon with thickening of the colonic wall and inflammatory stranding in the surrounding fat. A biopsy of an affected diverticulum (outpouching of the colonic mucosa and submucosa) shows mucosal inflammation with crypt abscesses and perforation at the base of the diverticulum.",
+        diagnosis: "Acute Diverticulitis.",
+        discussion: "Diverticulosis, the presence of diverticula, is common in older individuals in Western countries. Diverticulitis occurs when these diverticula become obstructed or perforate, leading to inflammation and infection. The pathology is essentially a localized perforation with a resulting pericolic abscess or inflammation. Complications can include abscess formation, fistula, or free perforation leading to peritonitis.",
+        tags: {
+            organ: "🩺 GI Tract",
+            type: "炎症性 Inflammatory",
+            difficulty: "🔥 Complex"
+        },
+        quiz: [
+            {
+                question: "Diverticulitis is defined as the inflammation of what pre-existing structures?",
+                options: ["Polyps", "Haustra", "Diverticula", "Appendix"],
+                answer: "Diverticula"
+            }
+        ],
+        imageHint: "diverticulitis histology"
+    },
+    {
+        title: "Case 20: A 70-year-old man with urinary symptoms",
+        history: "A 70-year-old man presents with difficulty initiating urination, a weak urinary stream, and the need to urinate frequently at night (nocturia). A digital rectal exam reveals a hard, irregular nodule on his prostate. His serum prostate-specific antigen (PSA) level is elevated.",
+        specialty: "Urologic Pathology",
+        findings: "A prostate biopsy is performed. The histology shows small, crowded glands infiltrating the prostatic stroma. The cells have prominent nucleoli and there is a loss of the basal cell layer, which is normally present in benign glands (confirmed with immunohistochemistry for basal cell markers like p63).",
+        diagnosis: "Prostatic Adenocarcinoma.",
+        discussion: "Prostate cancer is one of the most common cancers in men. The diagnosis is made histologically on biopsy. The key features are the infiltrative pattern of small, crowded glands, the presence of prominent nucleoli, and, most importantly, the absence of the basal cell layer. The Gleason grading system is used to assess the architectural pattern of the cancer, which is a major prognostic factor.",
+        tags: {
+            organ: "♂️ Urology",
+            type: "🧪 Cancer",
+            difficulty: "🔥 Complex"
+        },
+        quiz: [
+            {
+                question: "Which feature is a key histological indicator of malignancy in prostate glands?",
+                options: ["Presence of a basal cell layer", "Large, back-to-back glands", "Absence of a basal cell layer", "Squamous metaplasia"],
+                answer: "Absence of a basal cell layer"
+            }
+        ],
+        imageHint: "prostate adenocarcinoma histology"
     }
 ];
 
@@ -248,7 +458,7 @@ interface PathologyContextType {
 
 const PathologyContext = createContext<PathologyContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'pathology_data_v3'; // Bump version for data model change
+const LOCAL_STORAGE_KEY = 'pathology_data_v4'; // Bump version for new cases
 
 export function PathologyProvider({ children }: { children: ReactNode }) {
   const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([]);
