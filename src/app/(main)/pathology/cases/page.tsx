@@ -33,9 +33,9 @@ const caseStudies = [
         discussion: "The key histological features here are the keratin pearls and intercellular bridges, which are pathognomonic for squamous differentiation. The patient's extensive smoking history is the primary risk factor. This case highlights the classic presentation and morphology of one of the major types of lung cancer.",
         imageUrl: "https://picsum.photos/id/101/600/400",
         tags: {
-            organ: "Lung",
-            type: "Neoplastic",
-            difficulty: "Classic",
+            organ: "🫁 Lung",
+            type: "🧪 Cancer",
+            difficulty: "🔥 Complex",
         },
         quiz: [
             {
@@ -55,9 +55,9 @@ const caseStudies = [
         discussion: "This is a classic presentation of Rheumatoid Arthritis, an autoimmune disease. The key is the symmetrical small-joint arthritis and the specific serological markers. The histology showing pannus formation confirms the destructive nature of the inflammation, which eventually erodes cartilage and bone.",
         imageUrl: "https://picsum.photos/id/102/600/400",
         tags: {
-            organ: "Joints",
-            type: "Inflammatory",
-            difficulty: "Moderate",
+            organ: "🦴 Rheumatology",
+            type: "🧑‍⚕️ Autoimmune",
+            difficulty: "",
         },
         quiz: [
              {
@@ -69,18 +69,18 @@ const caseStudies = [
     },
     {
         id: "case3",
-        title: "Case 03: A 20-year-old male with an enlarged lymph node",
+        title: "Case 03: A 20-year-old male with lymphadenopathy",
         history: "A 20-year-old male presents with a painless, enlarging lymph node in his neck for the past two months, accompanied by intermittent fever ('Pel-Ebstein fever') and night sweats.",
         specialty: "Hematopathology",
         findings: "Lymph node biopsy reveals effacement of the normal architecture by a mixed inflammatory infiltrate. Scattered among these are large, binucleated cells with prominent eosinophilic nucleoli, resembling 'owl eyes'. These are Reed-Sternberg cells. Immunohistochemistry shows these cells are positive for CD30 and CD15.",
         diagnosis: "Hodgkin Lymphoma (Nodular Sclerosis type).",
-        discussion: "The presence of Reed-Sternberg cells is diagnostic for Hodgkin Lymphoma. The mixed inflammatory background is characteristic. The specific subtype is determined by the overall architecture and cellular composition. The CD30+/CD15+ immunophenotype is classic.",
         imageUrl: "https://picsum.photos/id/103/600/400",
         tags: {
-            organ: "Lymph Node",
-            type: "Neoplastic",
-            difficulty: "Classic",
+            organ: "🧬 Hematology",
+            type: "🧪 Lymphoma",
+            difficulty: "",
         },
+        discussion: "The presence of Reed-Sternberg cells is diagnostic for Hodgkin Lymphoma. The mixed inflammatory background is characteristic. The specific subtype is determined by the overall architecture and cellular composition. The CD30+/CD15+ immunophenotype is classic.",
         quiz: [
              {
                 question: "The diagnostic cell for Hodgkin Lymphoma is the:",
@@ -138,27 +138,14 @@ export default function PathologyCasesPage() {
         {caseStudies.map((study) => (
           <Dialog key={study.id}>
             <DialogTrigger asChild>
-                <Card className="cursor-pointer hover:shadow-lg transition-shadow group flex flex-col">
-                    <CardHeader className="p-0">
-                        <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
-                            <Image 
-                                src={study.imageUrl} 
-                                alt={study.title} 
-                                layout="fill" 
-                                objectFit="cover"
-                                className="group-hover:scale-105 transition-transform duration-300"
-                            />
+                <Card className="shadow-lg hover:shadow-2xl transition rounded-2xl flex flex-col cursor-pointer">
+                    <CardContent className="p-6 flex-grow flex flex-col">
+                        <h2 className="font-bold text-lg">{study.title}</h2>
+                        <p className="text-gray-600 mt-2 text-sm flex-grow">{study.history}</p>
+                        <div className="flex flex-wrap gap-2 mt-3">
+                           {Object.values(study.tags).filter(Boolean).map((tag, i) => <Badge key={i}>{tag}</Badge>)}
                         </div>
-                    </CardHeader>
-                    <CardContent className="p-4 flex-grow flex flex-col">
-                        <div className="flex flex-wrap gap-2 mb-2">
-                            <Badge variant="outline">{study.tags.organ}</Badge>
-                            <Badge variant="outline">{study.tags.type}</Badge>
-                            <Badge variant="outline">{study.tags.difficulty}</Badge>
-                        </div>
-                        <CardTitle className="text-lg mb-2 flex-grow">{study.title}</CardTitle>
-                        <CardDescription className="text-xs mb-4">{study.history}</CardDescription>
-                        <Button className="w-full mt-auto">View Case</Button>
+                        <Button className="mt-4 w-full">View Case Details</Button>
                     </CardContent>
                 </Card>
             </DialogTrigger>
@@ -215,11 +202,8 @@ export default function PathologyCasesPage() {
             </DialogContent>
           </Dialog>
         ))}
-        <Card className="border-dashed flex items-center justify-center hover:border-primary hover:text-primary transition-colors cursor-pointer bg-muted/20 hover:bg-muted/50">
-            <div className="text-center text-muted-foreground">
-                <Plus className="mx-auto h-12 w-12 mb-2"/>
-                <p>Submit a New Case</p>
-            </div>
+         <Card className="flex items-center justify-center border-2 border-dashed">
+            <Button variant="outline">➕ Submit a New Case</Button>
         </Card>
       </div>
     </div>
