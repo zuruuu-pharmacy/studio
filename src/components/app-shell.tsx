@@ -36,11 +36,12 @@ const pharmacistTools = [
     { href: "/prescription-reader", label: "Prescription Reader", icon: ScanEye },
     { href: "/lab-analyzer", label: "Lab Analyzer", icon: TestTube },
     { href: "/adherence-tracker", label: "Adherence Tracker", icon: FileClock },
+    { href: "/career-guidance/admin-panel", label: "Admin Panel", icon: ShieldEllipsis },
 ];
 
 const patientMenuItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/patient-history", label: "My History", icon: User },
+    { href: "/patient-history", label: "My Health History", icon: User },
     { href: "/nutrition-coach", label: "AI Nutrition Coach", icon: Bot },
     { href: "/symptom-checker", label: "Symptom Checker", icon: Stethoscope },
     { href: "/emergency", label: "Emergency Help", icon: Siren },
