@@ -970,11 +970,6 @@ export const drugTreeData: DrugClass[] = [
         ]
       },
       {
-        name: "Therapeutic Gases",
-        pharmaFocus: "storage (cylinders, pressure control), pharmaceutical grade purity, applications in ICU.",
-        drugs: [],
-      },
-       {
         name: "CNS Stimulants",
         pharmaFocus: "assay techniques, OTC vs controlled formulations.",
         subclasses: [
@@ -1000,15 +995,74 @@ export const drugTreeData: DrugClass[] = [
                     },
                     specialNotes: "Tolerance can develop with chronic use. Abrupt cessation can cause withdrawal headaches.",
                 },
+                 {
+                    name: "Theophylline",
+                    classification: "Methylxanthine, Bronchodilator",
+                    moa: "Causes bronchodilation by relaxing smooth muscle of the bronchioles. Also has CNS stimulant, diuretic, and cardiac stimulant effects.",
+                    therapeuticUses: "Asthma, COPD (now less common).",
+                    adrs: "Nausea, vomiting, headache, tachycardia, arrhythmias (at toxic levels).",
+                    contraindications: "Hypersensitivity, active peptic ulcer disease.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets (IR, ER), capsules (ER), oral solution.",
+                        formulations: "Theo-24 (Brand), Uniphyl.",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "TLC.",
+                        quantitative: "HPLC, immunoassay for TDM.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Narrow therapeutic index requires therapeutic drug monitoring. Many drug interactions (e.g., ciprofloxacin, cimetidine increase levels).",
+                },
             ],
           },
           {
             name: "Medullary stimulants",
-            drugs: [],
+            drugs: [
+                {
+                    name: "Nikethamide",
+                    classification: "Medullary stimulant",
+                    moa: "Stimulates the chemoreceptors of the carotid body, which in turn stimulates the respiratory center in the medulla.",
+                    therapeuticUses: "Historically used as a respiratory stimulant, but now largely obsolete due to lack of efficacy and safety concerns.",
+                    adrs: "Hypertension, tachycardia, convulsions.",
+                    contraindications: "Coronary artery disease, epilepsy.",
+                    pharmaApplications: {
+                        dosageForms: "Injection.",
+                        formulations: "Coramine (Brand).",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "Colorimetric reactions.",
+                        quantitative: "Titration.",
+                        pharmacopoeial: "Older pharmacopoeias.",
+                    },
+                    specialNotes: "Largely replaced by more effective and safer methods of respiratory support like mechanical ventilation.",
+                },
+            ],
           },
            {
             name: "Spinal stimulants",
-            drugs: [],
+            drugs: [
+                 {
+                    name: "Strychnine",
+                    classification: "Spinal stimulant, Toxin",
+                    moa: "A competitive antagonist of the inhibitory neurotransmitter glycine at receptors in the spinal cord, leading to uncontrolled reflex excitation.",
+                    therapeuticUses: "No modern clinical use. Historically used as a stimulant and pest poison.",
+                    adrs: "Violent muscle contractions, opisthotonus (arched back), respiratory failure.",
+                    contraindications: "Not used clinically.",
+                    pharmaApplications: {
+                        dosageForms: "N/A.",
+                        formulations: "N/A.",
+                        storage: "N/A.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "Colorimetric tests.",
+                        quantitative: "HPLC, GC-MS.",
+                        pharmacopoeial: "N/A for clinical use.",
+                    },
+                    specialNotes: "A classic poison used in historical and fictional contexts. An important toxicological agent to know.",
+                },
+            ],
           },
         ]
       },
@@ -1084,6 +1138,25 @@ export const drugTreeData: DrugClass[] = [
                                 },
                                 specialNotes: "Low blood:gas partition coefficient allows for relatively rapid induction and recovery.",
                             },
+                              {
+                                name: "Sevoflurane",
+                                classification: "Inhalational general anesthetic",
+                                moa: "Enhances inhibitory neurotransmission and inhibits excitatory neurotransmission, exact site unknown.",
+                                therapeuticUses: "Induction and maintenance of general anesthesia, especially in pediatrics due to its low pungency.",
+                                adrs: "Hypotension, respiratory depression, nausea, vomiting. Can react with CO2 absorbents to form Compound A (nephrotoxic concern).",
+                                contraindications: "Known or suspected susceptibility to malignant hyperthermia.",
+                                pharmaApplications: {
+                                    dosageForms: "Liquid for inhalation (vaporized).",
+                                    formulations: "Ultane (Brand).",
+                                    storage: "Store in airtight containers.",
+                                },
+                                analyticalMethods: {
+                                    qualitative: "GC.",
+                                    quantitative: "GC-FID.",
+                                    pharmacopoeial: "USP, BP.",
+                                },
+                                specialNotes: "Very low blood:gas partition coefficient leads to very rapid induction and recovery. Sweet smell makes it suitable for inhalation induction.",
+                            },
                         ] 
                     },
                 ]
@@ -1091,6 +1164,30 @@ export const drugTreeData: DrugClass[] = [
             {
                 name: "Local anesthetics",
                 subclasses: [
+                    { 
+                        name: "Ester type",
+                        drugs: [
+                            {
+                                name: "Procaine",
+                                classification: "Local Anesthetic (Ester type)",
+                                moa: "Blocks voltage-gated sodium channels, preventing nerve impulse conduction.",
+                                therapeuticUses: "Local infiltration and nerve block anesthesia. Largely replaced by amide-type anesthetics.",
+                                adrs: "Allergic reactions (due to PABA metabolite), CNS stimulation, hypotension.",
+                                contraindications: "Known hypersensitivity to ester-type anesthetics.",
+                                pharmaApplications: {
+                                    dosageForms: "Injection.",
+                                    formulations: "Novocain (Brand).",
+                                    storage: "Store at room temperature, protect from light.",
+                                },
+                                analyticalMethods: {
+                                    qualitative: "Diazotization reaction.",
+                                    quantitative: "HPLC, Titration.",
+                                    pharmacopoeial: "USP, BP.",
+                                },
+                                specialNotes: "Metabolized by plasma pseudocholinesterase. Has a higher incidence of allergic reactions than amides.",
+                            },
+                        ]
+                    },
                     { 
                         name: "Amide type", 
                         drugs: [
@@ -1112,6 +1209,25 @@ export const drugTreeData: DrugClass[] = [
                                     pharmacopoeial: "USP, BP.",
                                 },
                                 specialNotes: "Metabolized by the liver. Often formulated with epinephrine to prolong duration of action and reduce systemic absorption.",
+                            },
+                             {
+                                name: "Bupivacaine",
+                                classification: "Local Anesthetic (Amide type)",
+                                moa: "Blocks voltage-gated sodium channels, with a longer duration of action than lidocaine.",
+                                therapeuticUses: "Epidural, spinal, and peripheral nerve block anesthesia.",
+                                adrs: "Cardiotoxicity (more than other amides), CNS toxicity.",
+                                contraindications: "Obstetrical paracervical block anesthesia, known hypersensitivity.",
+                                pharmaApplications: {
+                                    dosageForms: "Injection.",
+                                    formulations: "Marcaine (Brand), Sensorcaine.",
+                                    storage: "Store at room temperature.",
+                                },
+                                analyticalMethods: {
+                                    qualitative: "HPLC.",
+                                    quantitative: "HPLC, GC.",
+                                    pharmacopoeial: "USP, BP.",
+                                },
+                                specialNotes: "High potential for cardiotoxicity, especially with accidental IV injection. Lipid emulsion therapy is the antidote.",
                             },
                         ] 
                     },
@@ -1237,11 +1353,70 @@ export const drugTreeData: DrugClass[] = [
         },
         {
             name: "Disease-modifying antirheumatic drugs (DMARDs)",
-            drugs: [],
+            drugs: [
+                {
+                    name: "Methotrexate",
+                    classification: "Antimetabolite, DMARD",
+                    moa: "Inhibits dihydrofolate reductase, interfering with DNA synthesis. The anti-inflammatory effects in rheumatoid arthritis are not fully understood.",
+                    therapeuticUses: "Rheumatoid arthritis, psoriasis, various cancers.",
+                    adrs: "Myelosuppression, hepatotoxicity, mucositis, pulmonary toxicity. Nausea is common.",
+                    contraindications: "Pregnancy, breastfeeding, significant renal or hepatic impairment.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets, injection (IM, SC, IV).",
+                        formulations: "Trexall (Brand).",
+                        storage: "Store at room temperature, protect from light.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "HPLC.",
+                        quantitative: "HPLC, immunoassay for TDM in high-dose therapy.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Dosed weekly for RA, not daily. Folic acid supplementation is required to reduce side effects.",
+                },
+            ],
         },
         {
             name: "Anti-gout drugs",
-            drugs: [],
+            drugs: [
+                {
+                    name: "Allopurinol",
+                    classification: "Xanthine oxidase inhibitor",
+                    moa: "Inhibits xanthine oxidase, the enzyme responsible for converting hypoxanthine to xanthine and xanthine to uric acid. This lowers serum uric acid levels.",
+                    therapeuticUses: "Prophylaxis of gout, treatment of hyperuricemia associated with tumor lysis syndrome.",
+                    adrs: "Rash (can be severe, e.g., SJS/TEN), nausea, diarrhea. Allopurinol hypersensitivity syndrome is a rare but serious risk.",
+                    contraindications: "Known hypersensitivity. Requires screening for HLA-B*5801 allele in certain populations (e.g., Han Chinese) to predict risk of severe skin reactions.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets.",
+                        formulations: "Zyloprim (Brand).",
+                        storage: "Store at room temperature.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "HPLC.",
+                        quantitative: "HPLC.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Can precipitate an acute gout attack when first started; co-administration with an anti-inflammatory (NSAID or colchicine) is recommended.",
+                },
+                 {
+                    name: "Colchicine",
+                    classification: "Anti-gout, Anti-inflammatory",
+                    moa: "Inhibits microtubule polymerization by binding to tubulin, disrupting inflammasome activation and neutrophil motility and activity.",
+                    therapeuticUses: "Treatment of acute gout flares, prophylaxis of gout, familial Mediterranean fever.",
+                    adrs: "Diarrhea, nausea, vomiting (very common dose-limiting toxicities). Myelosuppression at high doses.",
+                    contraindications: "Severe renal or hepatic impairment, concurrent use of strong CYP3A4 and P-glycoprotein inhibitors.",
+                    pharmaApplications: {
+                        dosageForms: "Tablets.",
+                        formulations: "Colcrys (Brand).",
+                        storage: "Store at room temperature, protect from light.",
+                    },
+                    analyticalMethods: {
+                        qualitative: "HPLC.",
+                        quantitative: "HPLC.",
+                        pharmacopoeial: "USP, BP.",
+                    },
+                    specialNotes: "Narrow therapeutic index. Dose must be adjusted for renal function and drug interactions.",
+                },
+            ],
         },
     ],
   },
@@ -1794,6 +1969,79 @@ export const drugTreeData: DrugClass[] = [
       { name: "Mucolytics", drugs: [] },
     ]
   },
+  {
+    name: "Gastrointestinal Drugs",
+    pharmaFocus: "Formulation science (e.g., enteric-coated PPIs, orally disintegrating tablets for antiemetics), stability of suspensions.",
+    subclasses: [
+      {
+        name: "Drugs for Peptic Ulcer & GERD",
+        subclasses: [
+          {
+            name: "Proton Pump Inhibitors (PPIs)",
+            drugs: [
+              {
+                name: "Omeprazole",
+                classification: "Proton Pump Inhibitor (PPI)",
+                moa: "Irreversibly inhibits the H+/K+-ATPase pump (the 'proton pump') in gastric parietal cells, blocking the final step of acid secretion.",
+                therapeuticUses: "GERD, peptic ulcer disease, H. pylori eradication (in combination), Zollinger-Ellison syndrome.",
+                adrs: "Headache, diarrhea, nausea. Long-term use associated with increased risk of fractures, C. difficile infection, and hypomagnesemia.",
+                contraindications: "Known hypersensitivity.",
+                pharmaApplications: {
+                  dosageForms: "Delayed-release capsules, delayed-release tablets, powder for oral suspension.",
+                  formulations: "Prilosec (Brand), Losec.",
+                  storage: "Store at room temperature, protect from moisture.",
+                },
+                analyticalMethods: {
+                  qualitative: "HPLC, IR Spectroscopy.",
+                  quantitative: "HPLC with UV detection.",
+                  pharmacopoeial: "USP, BP.",
+                },
+                specialNotes: "A prodrug that requires an acidic environment for activation. Enteric coating is crucial to prevent degradation by stomach acid before absorption in the small intestine.",
+              },
+            ]
+          },
+          {
+            name: "H2 Receptor Antagonists",
+            drugs: []
+          },
+          {
+            name: "Antacids",
+            drugs: []
+          }
+        ]
+      },
+      {
+        name: "Antiemetics",
+        drugs: [
+            {
+                name: "Ondansetron",
+                classification: "5-HT3 Receptor Antagonist",
+                moa: "Selectively blocks serotonin 5-HT3 receptors in the chemoreceptor trigger zone (CTZ) and on peripheral vagal nerve terminals.",
+                therapeuticUses: "Prevention of chemotherapy-induced nausea and vomiting (CINV), postoperative nausea and vomiting (PONV).",
+                adrs: "Headache, constipation, dizziness, QT prolongation.",
+                contraindications: "Concomitant use with apomorphine.",
+                pharmaApplications: {
+                  dosageForms: "Tablets, orally disintegrating tablets (ODT), oral solution, injection.",
+                  formulations: "Zofran (Brand).",
+                  storage: "Store at room temperature, protect from light.",
+                },
+                analyticalMethods: {
+                  qualitative: "HPLC.",
+                  quantitative: "HPLC with UV detection.",
+                  pharmacopoeial: "USP, BP.",
+                },
+                specialNotes: "Orally disintegrating tablets are a key formulation for patients who are actively vomiting.",
+            },
+        ]
+      },
+      {
+        name: "Laxatives",
+        drugs: []
+      },
+      {
+        name: "Anti-diarrheal drugs",
+        drugs: []
+      }
+    ]
+  }
 ];
-
-    
