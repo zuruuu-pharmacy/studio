@@ -5,11 +5,12 @@ import { useState } from 'react';
 import { BackButton } from "@/components/back-button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Heart, Wind, Brain, Bone, CircleEllipsis, TestTube, Dna, FileText, CheckCircle, Target, FlaskConical, GitBranch, Microscope, Stethoscope } from 'lucide-react';
+import { Stethoscope, Dna, FileText, Bot, Book, Zap, FlaskConical, GitBranch, Heart, Wind, Brain, Bone, CircleEllipsis, TestTube, Microscope, Droplet, Target, CheckCircle, Video, Mic, Notebook, BookCopy, CaseSensitive, FileHeart, HelpCircle } from 'lucide-react';
 import { systemicPathologyData, type Disease } from "./data";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import Link from 'next/link';
 
 function DetailSection({ title, children, icon: Icon }: { title: string, children: React.ReactNode, icon: React.ElementType }) {
     return (
@@ -36,15 +37,23 @@ function DiseaseDetail({ disease }: { disease: Disease }) {
                 </Badge>
             </div>
         </div>
-      <TabsList className="grid w-full grid-cols-5">
+      <TabsList className="grid w-full grid-cols-6">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="pathogenesis">Pathogenesis</TabsTrigger>
         <TabsTrigger value="morphology">Morphology</TabsTrigger>
         <TabsTrigger value="clinical">Clinical</TabsTrigger>
         <TabsTrigger value="investigations">Investigations</TabsTrigger>
+        <TabsTrigger value="revision">Practice &amp; Revision</TabsTrigger>
       </TabsList>
       <TabsContent value="overview" className="pt-4 space-y-4">
-        <p className="italic">{disease.overview}</p>
+        <div className="flex justify-between items-start">
+          <p className="italic flex-1">{disease.overview}</p>
+          <Link href="/text-to-speech">
+              <Button variant="ghost" size="sm" className="ml-4">
+                  <Mic className="mr-2"/>Listen
+              </Button>
+          </Link>
+        </div>
         <DetailSection title="Learning Objectives" icon={Target}>
             <ul className="list-disc list-inside space-y-1">
                 {disease.learningObjectives.map((obj, i) => <li key={i}>{obj}</li>)}
@@ -83,6 +92,26 @@ function DiseaseDetail({ disease }: { disease: Disease }) {
           <DetailSection title="Management Overview" icon={CheckCircle}>
             <p>{disease.management}</p>
          </DetailSection>
+      </TabsContent>
+       <TabsContent value="revision" className="pt-4 space-y-6">
+        <DetailSection title="Visual Learning" icon={Video}>
+            <div className="flex flex-wrap gap-2">
+                <Link href="/moa-animations">
+                    <Button variant="outline"><Microscope className="mr-2"/>Virtual Microscope</Button>
+                </Link>
+                <Link href="/moa-animations"><Button variant="outline"><Video className="mr-2"/>3D Animation</Button></Link>
+            </div>
+        </DetailSection>
+         <DetailSection title="Practice Questions & Revision" icon={Zap}>
+            <div className="flex flex-wrap gap-2">
+                <Link href="/mcq-bank"><Button variant="outline" size="sm">MCQs</Button></Link>
+                <Link href="/flashcard-generator"><Button variant="outline" size="sm">Flashcards</Button></Link>
+                <Link href="/clinical-case-simulator"><Button variant="outline" size="sm">Case Simulation</Button></Link>
+            </div>
+        </DetailSection>
+        <DetailSection title="Personal Notes" icon={Notebook}>
+            <Link href="/notes-organizer"><Button variant="secondary" size="sm">Add Note</Button></Link>
+        </DetailSection>
       </TabsContent>
     </Tabs>
   )

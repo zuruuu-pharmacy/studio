@@ -77,12 +77,11 @@ const generalPathologyTopics = [
     }
 ];
 
-function DetailSection({ title, content, icon: Icon, children }: { title: string, content?: React.ReactNode, icon: React.ElementType, children?: React.ReactNode }) {
+function DetailSection({ title, icon: Icon, children }: { title: string, icon: React.ElementType, children?: React.ReactNode }) {
     return (
         <div className="mt-4">
             <h4 className="font-semibold text-base mb-2 flex items-center gap-2"><Icon className="h-5 w-5 text-primary"/>{title}</h4>
             <div className="pl-7 text-muted-foreground text-sm space-y-2 border-l-2 border-primary/20 ml-2.5 pl-4 pb-2">
-              {content && <div className="whitespace-pre-wrap">{content}</div>}
               {children}
             </div>
         </div>
@@ -149,7 +148,9 @@ export default function GeneralPathologyPage() {
                                      </Link>
                                 </div>
                             </DetailSection>
-                            <DetailSection title="Detailed Notes" icon={Book} content={topic.detailedNotes} />
+                            <DetailSection title="Detailed Notes" icon={Book}>
+                                <p className="whitespace-pre-wrap">{topic.detailedNotes}</p>
+                            </DetailSection>
                             <DetailSection title="Visual Learning" icon={Microscope}>
                                 <div className="flex flex-wrap gap-2">
                                      <Link href="/moa-animations">
