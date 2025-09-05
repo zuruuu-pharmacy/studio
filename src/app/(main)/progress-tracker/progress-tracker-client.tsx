@@ -348,7 +348,7 @@ export function ProgressTrackerClient() {
             </CardContent>
         </Card>
 
-        <Accordion type="multiple" collapsible className="w-full space-y-4">
+        <Accordion type="multiple" className="w-full space-y-4">
              <AccordionItem value="explanation" className="border-0">
                  <AccordionTrigger className="text-base text-muted-foreground flex justify-center p-2 hover:no-underline">How is my Mastery Score Calculated?</AccordionTrigger>
                  <AccordionContent className="space-y-4">
@@ -398,7 +398,7 @@ export function ProgressTrackerClient() {
                             <h4 className="font-semibold mb-2 flex items-center gap-2"><Award className="text-primary"/>Measuring Success</h4>
                             <p className="text-sm text-muted-foreground mb-2">We track these key performance indicators to ensure this feature is effective and helpful for students and faculty:</p>
                             <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
-                                <li>Student engagement with AI-driven suggestions (% of recommendations accepted).</li>
+                                <li>Student engagement with suggestions (% accepted / scheduled).</li>
                                 <li>Average mastery change after a student completes a recommended intervention.</li>
                                 <li>The time it takes for a student to improve a "flagged" or weak topic.</li>
                                 <li>Effectiveness of teacher-led interventions triggered by dashboard insights.</li>
