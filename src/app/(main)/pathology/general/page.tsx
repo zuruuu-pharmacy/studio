@@ -4,7 +4,7 @@
 import { BackButton } from "@/components/back-button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Microscope, ShieldAlert, Heart, GitBranch, Stethoscope } from 'lucide-react';
+import { Microscope, ShieldAlert, Heart, GitBranch, Stethoscope, Dna } from 'lucide-react';
 
 const generalPathologyTopics = [
     {
@@ -24,7 +24,7 @@ const generalPathologyTopics = [
     },
     {
         title: "Neoplasia",
-        icon: Microscope,
+        icon: Dna,
         content: "Neoplasia refers to abnormal, uncontrolled cell growth, forming a tumor. This topic differentiates between benign and malignant neoplasms based on differentiation, rate of growth, local invasion, and metastasis. It covers the nomenclature, characteristics, and molecular basis of cancer."
     },
     {
