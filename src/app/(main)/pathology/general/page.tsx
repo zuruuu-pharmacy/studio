@@ -129,7 +129,7 @@ export default function GeneralPathologyPage() {
                 <CardTitle>Fundamental Topics</CardTitle>
                 </CardHeader>
                 <CardContent>
-                <Accordion type="single" collapsible className="w-full space-y-3">
+                <Accordion type="single" collapsible className="w-full space-y-3" defaultValue="item-0">
                     {generalPathologyTopics.map((topic, index) => (
                     <AccordionItem key={index} value={`item-${index}`} className="border rounded-lg bg-background/50">
                         <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline">
@@ -152,20 +152,9 @@ export default function GeneralPathologyPage() {
                             <DetailSection title="Detailed Notes" icon={Book} content={topic.detailedNotes} />
                             <DetailSection title="Visual Learning" icon={Microscope}>
                                 <div className="flex flex-wrap gap-2">
-                                    <Dialog>
-                                        <DialogTrigger asChild>
-                                            <Button variant="outline"><Microscope className="mr-2"/>Virtual Microscope</Button>
-                                        </DialogTrigger>
-                                        <DialogContent className="max-w-2xl">
-                                            <DialogHeader>
-                                                <DialogTitle>{topic.title} - Virtual Slide</DialogTitle>
-                                            </DialogHeader>
-                                            <div className="flex flex-col items-center">
-                                                <Image src={topic.visualLearning.image} alt={topic.visualLearning.caption} width={600} height={400} className="rounded-md border" />
-                                                <p className="text-xs italic mt-2 text-muted-foreground">{topic.visualLearning.caption}</p>
-                                            </div>
-                                        </DialogContent>
-                                    </Dialog>
+                                     <Link href="/moa-animations">
+                                        <Button variant="outline"><Microscope className="mr-2"/>Virtual Microscope</Button>
+                                    </Link>
                                     <Link href="/moa-animations"><Button variant="outline"><Video className="mr-2"/>3D Animation</Button></Link>
                                 </div>
                             </DetailSection>

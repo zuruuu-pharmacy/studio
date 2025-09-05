@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, Combine, CalendarDays, FolderOpen, Replace, BookA, MessageSquare, ClipboardList, MessageCircleQuestion, Compass, Search, BarChart, Camera, ScanSearch, WifiOff } from "lucide-react";
+import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, Combine, CalendarDays, FolderOpen, Replace, BookA, MessageSquare, ClipboardList, MessageCircleQuestion, Compass, Search, BarChart, Camera, ScanSearch, WifiOff, Mic } from "lucide-react";
 import {
   SidebarProvider,
   Sidebar,
@@ -73,6 +73,13 @@ const studentMenuItems = [
         description: "Practice for your exams with AI-driven OSCE and viva scenarios.",
         href: "/osce-viva-prep",
         color: "text-cyan-600",
+    },
+     {
+        icon: TestTube,
+        label: "Pathology",
+        description: "Explore pathology resources and case studies.",
+        href: "/pathology",
+        color: "text-red-500",
     },
     {
         icon: Compass,
@@ -218,6 +225,11 @@ const studentMenuItems = [
         icon: WifiOff,
         label: "Offline Mode",
         href: "/offline-mode",
+    },
+    {
+        icon: Mic,
+        label: "Text-to-Speech",
+        href: "/text-to-speech"
     }
 ];
 

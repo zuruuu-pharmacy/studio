@@ -43,3 +43,4 @@ import '@/ai/flows/ai-assistant-helper.ts';
 import '@/ai/flows/virtual-lab-simulator.ts';
 import '@/ai/flows/mnemonic-generator.ts';
 import '@/ai/flows/plagiarism-checker.ts';
+import '@/ai/flows/text-to-speech.ts';
