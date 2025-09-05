@@ -135,7 +135,7 @@ export function PlagiarismCheckerClient() {
         <Card>
           <CardHeader>
             <CardTitle>Submit Document</CardTitle>
-            <CardDescription>Upload your document to check for plagiarism.</CardDescription>
+            <CardDescription>Upload your file. We’ll scan for overlap and help you fix issues before submission.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -173,7 +173,7 @@ export function PlagiarismCheckerClient() {
           <div className="flex justify-center items-center h-full">
             <div className="text-center space-y-2">
               <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
-              <p className="text-muted-foreground">Analyzing document...</p>
+              <p className="text-muted-foreground">We’re checking your document — this may take up to 90s (longer for scanned pages)...</p>
             </div>
           </div>
         )}
@@ -252,7 +252,7 @@ export function PlagiarismCheckerClient() {
             <Card>
                  <CardHeader>
                     <CardTitle>Detailed Segment Analysis</CardTitle>
-                    <CardDescription>Segments from your text with potential matches.</CardDescription>
+                    <CardDescription>Segments from your text with potential matches. Review and fix these issues before submitting.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {state.segments.length > 0 ? (
