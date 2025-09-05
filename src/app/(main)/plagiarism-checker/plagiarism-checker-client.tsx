@@ -150,16 +150,7 @@ export function PlagiarismCheckerClient() {
                     <p className={`text-5xl font-bold ${state.overall_similarity_percentage > 25 ? 'text-destructive' : state.overall_similarity_percentage > 10 ? 'text-amber-500' : 'text-green-600'}`}>
                         {state.overall_similarity_percentage.toFixed(2)}%
                     </p>
-                    <Progress 
-                      value={state.overall_similarity_percentage} 
-                      className="mt-2 h-3"
-                      children={
-                        <div
-                          className={cn("h-full", getSimilarityProgressColor(state.overall_similarity_percentage))}
-                          style={{ width: `${state.overall_similarity_percentage}%` }}
-                        />
-                      }
-                    />
+                    <Progress value={state.overall_similarity_percentage} className="mt-2 h-3" indicatorClassName={getSimilarityProgressColor(state.overall_similarity_percentage)} />
                 </div>
                 <Alert variant={state.overall_similarity_percentage > 15 ? 'destructive' : 'default'}>
                     {state.overall_similarity_percentage > 15 ? <AlertTriangle className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
