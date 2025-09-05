@@ -329,6 +329,38 @@ export const systemicPathologyData: OrganSystem[] = [
             complications: "Sudden cardiac death, atrial fibrillation, heart failure, infective endocarditis.",
             prognosis: "Highly variable. Some patients remain stable for life, while others have a high risk of sudden death.",
           },
+           {
+            title: "Myocarditis",
+            synonyms: "Inflammatory Cardiomyopathy",
+            overview: "Myocarditis is an inflammatory disease of the heart muscle. It can be caused by a wide range of infectious agents and non-infectious inflammatory processes. The clinical presentation is highly variable, ranging from asymptomatic to fulminant heart failure and sudden death.",
+            learningObjectives: [
+                "Define myocarditis as inflammation of the myocardium.",
+                "List common infectious (viral) and non-infectious causes.",
+                "Describe the characteristic histologic finding of an inflammatory infiltrate with associated myocyte necrosis.",
+                "Recognize the diverse clinical presentations, including its mimicry of acute myocardial infarction."
+            ],
+            tags: {
+                organ: "Heart",
+                system: "Cardiovascular",
+                category: "Inflammatory",
+                level: "Advanced"
+            },
+            etiology: [
+                "Infections: Viruses (Coxsackie B, parvovirus B19, adenovirus, HIV) are the most common cause in North America. Bacteria (e.g., Borrelia burgdorferi in Lyme disease), fungi, and protozoa (e.g., Trypanosoma cruzi in Chagas disease) are other causes.",
+                "Immune-mediated reactions: Post-viral, autoimmune diseases (e.g., SLE), drug hypersensitivity (e.g., clozapine, methyldopa)."
+            ],
+            pathogenesis: "The mechanism involves either direct myocyte injury by the infectious agent or, more commonly, immune-mediated injury where T-cells attack myocytes that express viral antigens. This leads to myocyte necrosis and inflammatory cell infiltration.",
+            morphology: {
+                gross: "The heart may appear normal or dilated and flabby. There may be mottled areas of pallor or hemorrhage.",
+                microscopic: "The key finding is a diffuse or patchy inflammatory infiltrate (most often lymphocytic) in the interstitium, associated with myocyte injury and necrosis. In some specific types, eosinophils (hypersensitivity myocarditis) or giant cells (giant-cell myocarditis) may be prominent.",
+                imageHint: "lymphocytic myocarditis histology"
+            },
+            clinicalFeatures: "Highly variable. Can be asymptomatic or present with fatigue, dyspnea, chest pain (mimicking an MI), fever, and signs of acute heart failure. A fulminant course can lead to cardiogenic shock and death. It can be a precursor to dilated cardiomyopathy.",
+            investigations: "ECG may show non-specific changes or signs of acute injury. Cardiac troponin levels are often elevated. Endomyocardial biopsy is the gold standard for diagnosis but is invasive and has sampling error, so it's reserved for specific clinical scenarios.",
+            management: "Management is largely supportive, focusing on standard heart failure therapies. Specific antimicrobial therapy is used if an infectious agent is identified. Immunosuppression may be used in certain types, such as giant-cell myocarditis. Always check current local and international guidelines.",
+            complications: "Heart failure, arrhythmias, dilated cardiomyopathy, sudden death.",
+            prognosis: "Variable. Many viral cases resolve completely, but some progress to chronic dilated cardiomyopathy.",
+           },
         ]
       }
     ]
@@ -439,6 +471,36 @@ export const systemicPathologyData: OrganSystem[] = [
             complications: "Progressive respiratory failure, acute exacerbations, pulmonary hypertension.",
             prognosis: "Poor, with a median survival of 3 to 5 years after diagnosis.",
           },
+          { 
+            title: "Sarcoidosis",
+            overview: "Sarcoidosis is a systemic disease of unknown cause characterized by the formation of non-caseating granulomas in multiple organs and tissues, most commonly the lungs and hilar lymph nodes.",
+            learningObjectives: [
+                "Define sarcoidosis as a multi-system granulomatous disease.",
+                "Recognize the characteristic histologic feature of non-caseating granulomas.",
+                "Identify bilateral hilar lymphadenopathy as a classic radiologic finding.",
+                "Understand the clinical presentation and variable course of the disease."
+            ],
+            tags: {
+                organ: "Lung",
+                system: "Respiratory",
+                category: "Inflammatory",
+                level: "Intermediate"
+            },
+            etiology: [
+                "Unknown. Thought to be an immune reaction to an unidentified antigen in a genetically predisposed individual."
+            ],
+            pathogenesis: "The disease is driven by a strong cell-mediated immune response, particularly involving CD4+ Th1 cells. These T-cells release cytokines that lead to the formation of well-formed, non-caseating granulomas composed of epithelioid macrophages and multinucleated giant cells.",
+            morphology: {
+                gross: "Affected organs contain multiple, scattered, small nodules (granulomas).",
+                microscopic: "The hallmark is the non-caseating granuloma, a discrete collection of epithelioid histiocytes, giant cells, and a surrounding rim of lymphocytes. Unlike in tuberculosis, there is no central caseous necrosis. Schaumann bodies (laminated calcifications) and asteroid bodies (stellate inclusions) may be seen within the giant cells.",
+                imageHint: "sarcoidosis granuloma histology"
+            },
+            clinicalFeatures: "Highly variable. Many patients are asymptomatic and discovered on a routine chest X-ray. Symptomatic patients may present with cough, dyspnea, and constitutional symptoms. Extrapulmonary involvement can cause skin lesions (erythema nodosum), eye inflammation (uveitis), and elevated serum calcium levels (due to PTH-independent vitamin D activation by macrophages in the granulomas).",
+            investigations: "Chest X-ray showing bilateral hilar lymphadenopathy is classic. Elevated serum angiotensin-converting enzyme (ACE) levels are suggestive but not specific. Biopsy of an affected tissue showing non-caseating granulomas is required for diagnosis.",
+            management: "Many patients require no treatment as the disease may resolve spontaneously. For symptomatic or progressive disease, corticosteroids are the mainstay of therapy. Always check current local and international guidelines.",
+            complications: "Progressive pulmonary fibrosis, pulmonary hypertension.",
+            prognosis: "Good in most cases. A minority of patients develop chronic, progressive disease.",
+          },
         ]
       },
        {
@@ -504,6 +566,36 @@ export const systemicPathologyData: OrganSystem[] = [
             management: "Treatment depends on stage and molecular status. Early-stage disease is treated with surgery. Advanced-stage disease is treated with chemotherapy, targeted therapy (e.g., osimertinib for EGFR mutations), and/or immunotherapy. Always check current local and international NSCLC guidelines.",
             complications: "Pleural effusion, metastasis to brain, liver, adrenals, and bone.",
             prognosis: "Variable. Patients with targetable driver mutations who respond to targeted therapy can have significantly better outcomes.",
+          },
+          { 
+            title: "Small Cell Lung Carcinoma (SCLC)",
+            overview: "Small cell lung carcinoma is a high-grade neuroendocrine tumor that is very strongly associated with smoking. It is known for its aggressive behavior, rapid growth, and early metastasis.",
+            learningObjectives: [
+                "Define SCLC as a high-grade neuroendocrine carcinoma.",
+                "Recognize its strong association with smoking.",
+                "Describe the key histologic features: small blue cells with scant cytoplasm, nuclear molding, and high mitotic rate.",
+                "Understand its rapid clinical course and association with numerous paraneoplastic syndromes."
+            ],
+            tags: {
+                organ: "Lung",
+                system: "Respiratory",
+                category: "Neoplastic",
+                level: "Advanced"
+            },
+            etiology: [
+                "Cigarette smoking (strongest association of all lung cancer types)."
+            ],
+            pathogenesis: "Arises from neuroendocrine cells in the bronchial epithelium. Characterized by universal mutations in TP53 and RB1 tumor suppressor genes.",
+            morphology: {
+                gross: "Typically a central mass with extensive hilar and mediastinal lymph node involvement. The tumor is soft, white-tan, and often shows extensive necrosis.",
+                microscopic: "Composed of sheets of small, round, blue cells with scant cytoplasm, finely granular 'salt-and-pepper' chromatin, and inconspicuous nucleoli. The cells are fragile, leading to prominent crush artifact. Nuclear molding (nuclei deforming each other) and a very high mitotic rate are characteristic. Immunohistochemistry is positive for neuroendocrine markers like synaptophysin and chromogranin.",
+                imageHint: "small cell lung cancer histology"
+            },
+            clinicalFeatures: "Presents with symptoms of a rapidly growing central mass (cough, dyspnea, SVC syndrome). It is notorious for causing paraneoplastic syndromes, such as Cushing syndrome (ACTH production) and SIADH (syndrome of inappropriate antidiuretic hormone).",
+            investigations: "Diagnosis is usually made on small biopsy or cytology specimens. Staging distinguishes between limited disease (confined to one hemithorax) and extensive disease (spread beyond).",
+            management: "SCLC is considered a systemic disease at diagnosis and is generally not treated with surgery. It is very sensitive to initial chemotherapy and radiation, but relapse is common. Always check current local and international SCLC guidelines.",
+            complications: "Widespread metastases (brain, liver, bone), paraneoplastic syndromes.",
+            prognosis: "Very poor. Even with treatment, median survival is short.",
           },
         ]
       }
@@ -751,6 +843,73 @@ export const systemicPathologyData: OrganSystem[] = [
             complications: "Portal hypertension, ascites, hepatic encephalopathy, esophageal variceal bleeding, and hepatocellular carcinoma.",
             prognosis: "Poor once decompensation occurs. The MELD score is used to predict short-term mortality and prioritize patients for liver transplant.",
             },
+             { 
+            title: "Viral Hepatitis",
+            overview: "Viral hepatitis is inflammation of the liver caused by a viral infection. It can present as an acute illness or a chronic disease, depending on the virus. Hepatitis viruses A, B, C, D, and E are the most common causes.",
+            learningObjectives: [
+                "Differentiate the modes of transmission and clinical outcomes for Hepatitis A, B, and C.",
+                "Describe the histologic features of acute and chronic viral hepatitis.",
+                "Interpret the key serologic markers used to diagnose and monitor Hepatitis B and C.",
+                "Understand the risk of progression to cirrhosis and hepatocellular carcinoma with chronic infection."
+            ],
+            tags: {
+                organ: "Liver",
+                system: "Gastrointestinal",
+                category: "Infectious",
+                level: "Intermediate"
+            },
+            etiology: [
+                "Hepatitis A Virus (HAV): Fecal-oral transmission; causes acute hepatitis only.",
+                "Hepatitis B Virus (HBV): Parenteral, sexual, and perinatal transmission; can cause acute and chronic hepatitis.",
+                "Hepatitis C Virus (HCV): Primarily parenteral transmission (e.g., IV drug use); high rate of progression to chronic hepatitis.",
+                "Hepatitis D Virus (HDV): A 'defective' virus that requires HBV for replication (co-infection or super-infection).",
+                "Hepatitis E Virus (HEV): Fecal-oral transmission; high mortality rate in pregnant women."
+            ],
+            pathogenesis: "Hepatocyte injury is primarily caused by the host's own T-cell mediated immune response to virally infected liver cells, rather than direct viral cytotoxicity. In chronic hepatitis, this persistent inflammation drives ongoing liver damage and fibrosis.",
+            morphology: {
+                gross: "Acute: Liver may be slightly enlarged and congested. Chronic: Liver can show variable fibrosis, eventually progressing to cirrhosis.",
+                microscopic: "Acute: Characterized by panlobular inflammation, hepatocyte 'ballooning' degeneration, and spotty necrosis. Apoptotic hepatocytes (Councilman bodies) are seen. Chronic: Inflammation is confined to the portal tracts. The key feature is interface hepatitis ('piecemeal necrosis'), where lymphocytes spill out from the portal tract and attack adjacent hepatocytes. Fibrosis progresses from the portal tracts.",
+                imageHint: "chronic hepatitis histology"
+            },
+            clinicalFeatures: "Acute: Can range from asymptomatic to fulminant liver failure. Symptomatic cases have jaundice, fatigue, nausea, and right upper quadrant pain. Chronic: Often asymptomatic for decades until signs of cirrhosis or liver failure develop.",
+            investigations: "Liver function tests (ALT, AST) are markedly elevated in acute hepatitis. Serologic testing for viral antigens (e.g., HBsAg, HCV RNA) and antibodies (e.g., anti-HBs, anti-HCV) is essential for diagnosis and determining the phase of infection.",
+            management: "Acute hepatitis is managed supportively. Chronic HBV and HCV are treated with antiviral medications (e.g., direct-acting antivirals for HCV) with the goal of suppressing viral replication to prevent progression to cirrhosis and cancer. Always check current local and international guidelines.",
+            complications: "Progression to cirrhosis and hepatocellular carcinoma (especially with chronic HBV and HCV), fulminant hepatic failure (rare).",
+            prognosis: "HAV/HEV: Excellent, no chronic state. HBV: Most adults clear the infection; chronic infection is more likely with perinatal transmission. HCV: High rate (>80%) of chronic infection, but now curable with modern antivirals.",
+           },
+            {
+                title: "Colorectal Adenocarcinoma",
+                overview: "Colorectal adenocarcinoma is one of the most common cancers in the Western world. Most cases arise from pre-existing adenomatous polyps through a multi-step accumulation of genetic and epigenetic alterations.",
+                learningObjectives: [
+                    "Understand the adenoma-carcinoma sequence as the primary pathway for colorectal cancer.",
+                    "Differentiate between the APC/β-catenin pathway (classic) and the microsatellite instability pathway.",
+                    "Recognize the gross and microscopic features of adenocarcinoma.",
+                    "Appreciate the importance of screening colonoscopy for prevention and early detection."
+                ],
+                tags: {
+                    organ: "Colon",
+                    system: "Gastrointestinal",
+                    category: "Neoplastic",
+                    level: "Intermediate"
+                },
+                etiology: [
+                    "Most are sporadic.",
+                    "Inherited syndromes: Familial adenomatous polyposis (FAP) due to APC gene mutations, and Lynch syndrome (HNPCC) due to mutations in DNA mismatch repair genes.",
+                    "Dietary factors: Low fiber and high fat/red meat intake are risk factors.",
+                    "Inflammatory bowel disease (ulcerative colitis)."
+                ],
+                pathogenesis: "Two main pathways: 1. The APC/β-catenin pathway (classic sequence) starts with an APC mutation, leading to polyp formation, followed by KRAS mutation and finally TP53 mutation, resulting in invasive carcinoma. 2. The microsatellite instability (MSI) pathway is due to defects in DNA mismatch repair genes, leading to an accumulation of mutations throughout the genome, often in tumors of the right colon.",
+                morphology: {
+                    gross: "Tumors in the right (proximal) colon tend to be exophytic, fungating masses that rarely cause obstruction. Tumors in the left (distal) colon tend to be annular, constricting 'apple-core' or 'napkin-ring' lesions that often cause obstruction.",
+                    microscopic: "Composed of malignant glands that invade the submucosa and muscularis propria. The degree of differentiation varies. Mucin production is common. An inflammatory and desmoplastic stromal response is often present.",
+                    imageHint: "colon adenocarcinoma histology"
+                },
+                clinicalFeatures: "Often asymptomatic for a long time. Symptoms depend on location. Right-sided cancers often present with iron deficiency anemia from occult bleeding. Left-sided cancers often present with changes in bowel habits, obstruction, and bright red blood per rectum.",
+                investigations: "Colonoscopy with biopsy is the gold standard for diagnosis and allows for the removal of precursor polyps. Carcinoembryonic antigen (CEA) is a tumor marker used for monitoring, not screening.",
+                management: "Treatment is primarily surgical resection. Adjuvant chemotherapy is given for stage III (node-positive) disease and some high-risk stage II disease. Always check current local and international colorectal cancer guidelines.",
+                complications: "Obstruction, bleeding, perforation, and metastasis (most commonly to regional lymph nodes and the liver).",
+                prognosis: "Highly dependent on the stage at diagnosis. The five-year survival rate is excellent for early-stage disease but poor for metastatic disease.",
+            },
         ]
       }
     ]
@@ -956,6 +1115,38 @@ export const systemicPathologyData: OrganSystem[] = [
                 management: "There is no cure or disease-modifying therapy. Management is symptomatic and supportive, including medications to control chorea (e.g., tetrabenazine) and psychiatric symptoms. Genetic counseling is critical for affected families. Always check current local and international guidelines.",
                 complications: "Progressive disability, swallowing difficulties leading to aspiration pneumonia, and suicide.",
                 prognosis: "Relentlessly progressive, with death typically occurring 15 to 20 years after onset.",
+            },
+             {
+                title: "Amyotrophic Lateral Sclerosis (ALS)",
+                synonyms: "Lou Gehrig's Disease",
+                overview: "Amyotrophic lateral sclerosis (ALS) is a relentlessly progressive neurodegenerative disease characterized by the loss of both upper motor neurons (in the motor cortex) and lower motor neurons (in the brainstem and spinal cord). This leads to progressive muscle weakness, paralysis, and death, typically from respiratory failure.",
+                learningObjectives: [
+                    "Define ALS as a disease affecting both upper and lower motor neurons.",
+                    "Differentiate the clinical signs of upper motor neuron vs. lower motor neuron injury.",
+                    "Recognize the key pathological finding of motor neuron loss and astrogliosis.",
+                    "Understand the progressive and fatal nature of the disease."
+                ],
+                tags: {
+                    organ: "Spinal Cord",
+                    system: "Nervous System",
+                    category: "Degenerative",
+                    level: "Advanced"
+                },
+                etiology: [
+                    "Most cases (~90%) are sporadic.",
+                    "Familial cases (~10%) are caused by genetic mutations, most commonly in the C9orf72 gene or the SOD1 gene."
+                ],
+                pathogenesis: "The exact cause is unknown, but it is thought to involve a combination of genetic and environmental factors leading to motor neuron death. Proposed mechanisms include protein misfolding and aggregation (e.g., TDP-43), excitotoxicity, oxidative stress, and mitochondrial dysfunction.",
+                morphology: {
+                    gross: "The precentral gyrus (motor cortex) may be atrophic. The anterior roots of the spinal cord are often thin and gray.",
+                    microscopic: "The key finding is a significant reduction in the number of motor neurons in the anterior horns of the spinal cord and in the motor nuclei of the brainstem, accompanied by reactive gliosis. There is also loss of the large Betz cells in the motor cortex.",
+                    imageHint: "ALS spinal cord histology"
+                },
+                clinicalFeatures: "The hallmark is the combination of upper motor neuron (UMN) signs (hyperreflexia, spasticity, Babinski sign) and lower motor neuron (LMN) signs (muscle weakness, atrophy, fasciculations). The disease can start with weakness in a single limb (limb-onset) or with difficulty speaking/swallowing (bulbar-onset). Sensation and cognitive function are typically spared.",
+                investigations: "Diagnosis is largely clinical, supported by electromyography (EMG), which shows evidence of widespread denervation.",
+                management: "There is no cure. Riluzole and edaravone are two drugs that may modestly slow disease progression. Management is multidisciplinary and focuses on supportive care, including nutritional support, respiratory support (non-invasive ventilation), and management of symptoms. Always check current local and international guidelines.",
+                complications: "Progressive paralysis, respiratory failure, aspiration pneumonia.",
+                prognosis: "Uniformly fatal, with a median survival of 3 to 5 years from diagnosis.",
             },
         ]
       }
@@ -1228,449 +1419,512 @@ export const systemicPathologyData: OrganSystem[] = [
                     clinicalFeatures: "Usually presents as a painless, palpable thyroid nodule or a mass in the neck due to lymph node metastasis. May be discovered incidentally on imaging.",
                     investigations: "Ultrasound is used to characterize the nodule. Fine-needle aspiration (FNA) cytology is the primary diagnostic tool and is often sufficient for diagnosis due to the characteristic nuclear features.",
                     management: "Treatment typically involves total or near-total thyroidectomy, followed by radioiodine ablation for higher-risk patients. Patients require lifelong thyroid hormone suppression therapy. Always check current local and international thyroid cancer guidelines.",
-                    complications: "Metastasis to cervical lymph nodes is common but does not significantly worsen the excellent prognosis. Distant metastases (e.g., to lung) are rare.",
-                    prognosis: "Excellent, with a 10-year survival rate exceeding 95%.",
-                },
-            ]
-        },
-        {
-            name: "Parathyroid Pathology",
-            diseases: [
-                {
-                    title: "Primary Hyperparathyroidism",
-                    overview: "Primary hyperparathyroidism is a condition characterized by the excessive, unregulated secretion of parathyroid hormone (PTH), leading to hypercalcemia. It is most commonly caused by a benign parathyroid adenoma.",
-                    learningObjectives: [
-                        "Define primary hyperparathyroidism and its relation to hypercalcemia.",
-                        "Identify parathyroid adenoma as the most common cause.",
-                        "Recognize the clinical manifestations summarized as 'bones, stones, groans, and psychiatric overtones'.",
-                        "Interpret the key laboratory findings of high PTH and high calcium."
-                    ],
-                    tags: {
-                        organ: "Parathyroid",
-                        system: "Endocrine System",
-                        category: "Neoplastic",
-                        level: "Classic"
-                    },
-                    etiology: [
-                        "Parathyroid adenoma (~85% of cases).",
-                        "Primary hyperplasia (~10-15%).",
-                        "Parathyroid carcinoma (<1%)."
-                    ],
-                    pathogenesis: "A somatic mutation in a single parathyroid chief cell leads to the clonal expansion and formation of a benign tumor (adenoma) that autonomously secretes PTH, irrespective of the serum calcium level. The excess PTH causes increased bone resorption, increased renal calcium reabsorption, and increased intestinal calcium absorption (via activation of Vitamin D), all leading to hypercalcemia.",
-                    morphology: {
-                        gross: "A parathyroid adenoma is typically a single, encapsulated, soft, tan-to-reddish-brown nodule. The remaining parathyroid glands are usually normal or shrunken due to feedback inhibition.",
-                        microscopic: "The adenoma is composed of uniform, polygonal chief cells arranged in sheets, with a delicate vascular network. A key feature is the absence of adipose tissue within the adenoma, which is normally present in an adult parathyroid gland.",
-                        imageHint: "parathyroid adenoma histology"
-                    },
-                    clinicalFeatures: "Many patients are asymptomatic and diagnosed on routine blood tests. Symptomatic patients can present with the classic mnemonic 'painful bones (osteitis fibrosa cystica), renal stones, abdominal groans (pancreatitis, peptic ulcers), and psychiatric overtones (depression, lethargy)'.",
-                    investigations: "The key laboratory finding is an elevated serum calcium level with a simultaneously elevated or inappropriately normal PTH level.",
-                    management: "Surgical removal of the adenomatous gland (parathyroidectomy) is the definitive treatment. Always check current local and international guidelines.",
-                    complications: "Osteoporosis, kidney stones, pancreatitis.",
-                    prognosis: "Excellent after successful surgery.",
-                },
-            ]
-        }
-    ]
-  },
-  {
-    system: "Musculoskeletal System",
-    icon: Bone,
-    categories: [
-        {
-            name: "Bone Tumors",
-            diseases: [
-                { 
-                    title: "Osteosarcoma",
-                    overview: "Osteosarcoma is the most common primary malignant tumor of bone. It is a bone-producing mesenchymal tumor that most frequently arises in the metaphysis of long bones, particularly around the knee, in adolescents and young adults.",
-                    learningObjectives: [
-                        "Identify osteosarcoma as the most common primary bone cancer.",
-                        "Recognize its typical patient demographic (adolescents) and location (around the knee).",
-                        "Describe the key histologic feature: production of osteoid (unmineralized bone) by malignant tumor cells.",
-                        "Understand the characteristic 'sunburst' appearance and Codman's triangle on X-ray."
-                    ],
-                    tags: {
-                        organ: "Bone",
-                        system: "Musculoskeletal System",
-                        category: "Neoplastic",
-                        level: "Advanced"
-                    },
-                    etiology: [
-                        "Most are sporadic.",
-                        "Associated with genetic conditions like hereditary retinoblastoma (RB1 gene mutations) and Li-Fraumeni syndrome (TP53 gene mutations).",
-                        "Can arise in the setting of prior radiation or Paget's disease of bone in older adults."
-                    ],
-                    pathogenesis: "Driven by complex genetic alterations, including mutations in the RB1 and TP53 tumor suppressor genes, which lead to the uncontrolled proliferation of malignant osteoblasts.",
-                    morphology: {
-                        gross: "The tumor is typically a large, gritty, gray-white mass that arises in the metaphysis, destroying the cortex and forming a soft tissue mass. It often shows areas of hemorrhage and cystic change.",
-                        microscopic: "The diagnostic hallmark is the production of malignant osteoid (a pink, amorphous extracellular material) by the anaplastic tumor cells. The tumor cells are pleomorphic, with large, hyperchromatic nuclei.",
-                        imageHint: "osteosarcoma histology"
-                    },
-                    clinicalFeatures: "Presents with bone pain, which may be worse at night, and a progressively enlarging, tender mass. Pathologic fracture can occur.",
-                    investigations: "X-ray shows a destructive mass, often with a 'sunburst' pattern of periosteal reaction and lifting of the cortex to form a Codman's triangle. MRI is used to define the extent of the tumor. Biopsy is required for diagnosis.",
-                    management: "Current standard of care is neoadjuvant chemotherapy (chemotherapy before surgery) followed by limb-sparing surgical resection and then further adjuvant chemotherapy. Always check current local and international sarcoma guidelines.",
-                    complications: "Metastasis, most commonly to the lungs.",
-                    prognosis: "With modern multi-agent chemotherapy and surgery, the long-term survival rate is approximately 60-70%.",
-                },
-                 { 
-                    title: "Ewing Sarcoma",
-                    overview: "Ewing sarcoma is a malignant small round blue cell tumor of bone and soft tissue that primarily affects children and young adults. It is characterized by a specific chromosomal translocation, most commonly t(11;22).",
-                    learningObjectives: [
-                        "Recognize Ewing sarcoma as a 'small round blue cell tumor' of childhood.",
-                        "Identify its characteristic chromosomal translocation t(11;22).",
-                        "Describe the classic 'onion-skin' periosteal reaction on X-ray.",
-                        "Understand the importance of immunohistochemistry (CD99 positivity) for diagnosis."
-                    ],
-                    tags: {
-                        organ: "Bone",
-                        system: "Musculoskeletal System",
-                        category: "Neoplastic",
-                        level: "Advanced"
-                    },
-                    etiology: [
-                        "Specific chromosomal translocation, t(11;22)(q24;q12), which creates an EWS-FLI1 fusion gene that acts as an aberrant transcription factor."
-                    ],
-                    pathogenesis: "The EWS-FLI1 fusion protein drives oncogenesis by altering the expression of numerous downstream genes involved in cell proliferation, survival, and differentiation.",
-                    morphology: {
-                        gross: "Typically arises in the diaphysis of long bones (like the femur) or in the flat bones of the pelvis. It is a soft, tan-white tumor that often invades the cortex and forms a large soft tissue mass.",
-                        microscopic: "Composed of sheets of uniform, small round blue cells with scant, clear cytoplasm. Homer-Wright rosettes (tumor cells arranged around a central fibrillary space) may be present. Immunohistochemistry showing strong membrane positivity for CD99 is a key diagnostic feature.",
-                        imageHint: "ewing sarcoma histology"
-                    },
-                    clinicalFeatures: "Presents as a painful, enlarging mass. Systemic symptoms like fever and leukocytosis can be present, mimicking an infection.",
-                    investigations: "X-ray often shows a destructive lytic tumor with a characteristic 'onion-skin' layered periosteal reaction. Biopsy is essential for diagnosis. Molecular testing for the t(11;22) translocation is confirmatory.",
-                    management: "Treatment involves a combination of multi-agent chemotherapy, surgery, and/or radiation therapy. Always check current local and international sarcoma guidelines.",
-                    complications: "Metastasis to lungs, bone, and bone marrow.",
-                    prognosis: "With aggressive multimodal therapy, long-term survival is around 70% for patients with localized disease.",
-                },
-                { 
-                    title: "Chondrosarcoma",
-                    overview: "Chondrosarcoma is a malignant tumor that produces cartilage. It is the second most common primary malignant tumor of bone after osteosarcoma and typically affects adults over the age of 40.",
-                    learningObjectives: [
-                        "Define chondrosarcoma as a cartilage-producing malignancy.",
-                        "Recognize its predilection for the axial skeleton (pelvis, ribs, shoulder).",
-                        "Describe the histologic features, including grading based on cellularity and atypia.",
-                        "Understand that it is largely resistant to chemotherapy and radiation."
-                    ],
-                    tags: {
-                        organ: "Bone",
-                        system: "Musculoskeletal System",
-                        category: "Neoplastic",
-                        level: "Advanced"
-                    },
-                    etiology: [
-                        "Can arise de novo (primary) or from a pre-existing benign cartilage tumor like an enchondroma or osteochondroma (secondary)."
-                    ],
-                    pathogenesis: "Involves mutations in genes like IDH1 and IDH2. The tumor cells are malignant chondrocytes that produce an abnormal cartilaginous matrix.",
-                    morphology: {
-                        gross: "A large, bulky tumor made up of gray-white, translucent, glistening nodules of cartilage. The tumor often erodes through the cortex.",
-                        microscopic: "The diagnosis and grade depend on cellularity, cytologic atypia, and mitotic activity. Low-grade tumors have mildly increased cellularity and minimal atypia. High-grade tumors are highly cellular with severe pleomorphism and frequent mitoses. The key is to find malignant chondrocytes within a cartilaginous matrix.",
-                        imageHint: "chondrosarcoma histology"
-                    },
-                    clinicalFeatures: "Presents as a painful, progressively enlarging mass. Typically affects the central skeleton (pelvis, shoulder, ribs) more often than the long bones.",
-                    investigations: "X-ray shows a lytic lesion with characteristic 'rings and arcs' or 'popcorn' calcifications, representing calcification of the cartilaginous matrix. Biopsy is required for diagnosis.",
-                    management: "Wide surgical excision is the mainstay of treatment. Most chondrosarcomas are resistant to chemotherapy and radiation therapy. Always check current local and international sarcoma guidelines.",
-                    complications: "Local recurrence after inadequate excision, metastasis (especially high-grade tumors).",
-                    prognosis: "Highly dependent on the histologic grade. Low-grade tumors have an excellent prognosis with surgery alone, while high-grade tumors have a high risk of metastasis and a poor prognosis.",
-                },
-            ]
-        },
-        {
-            name: "Diseases of Joints",
-            diseases: [
-                { 
-                    title: "Osteoarthritis",
-                    overview: "Osteoarthritis (OA) is the most common type of joint disease, characterized by the progressive degeneration and loss of articular cartilage, leading to pain and loss of function. It is primarily a disease of 'wear and tear' and aging.",
-                    learningObjectives: [
-                        "Define osteoarthritis as a degenerative, non-inflammatory joint disease.",
-                        "Understand the central role of articular cartilage breakdown in its pathogenesis.",
-                        "Recognize the key pathologic features, including eburnation, osteophytes, and subchondral cysts.",
-                        "Differentiate OA clinically and pathologically from rheumatoid arthritis."
-                    ],
-                    tags: {
-                        organ: "Joints",
-                        system: "Musculoskeletal System",
-                        category: "Degenerative",
-                        level: "Classic"
-                    },
-                    etiology: [
-                        "Primary (idiopathic): Related to aging and mechanical stress.",
-                        "Secondary: Due to a predisposing condition like trauma, congenital deformity, or other forms of arthritis."
-                    ],
-                    pathogenesis: "OA is driven by a combination of mechanical stress and biochemical changes. Chondrocytes, the cells of cartilage, initially attempt to repair damage but eventually fail. They produce degradative enzymes (like metalloproteinases) that break down the cartilage matrix. This leads to a vicious cycle of cartilage erosion, exposure of the underlying bone, and secondary inflammatory changes.",
-                    morphology: {
-                        gross: "The articular cartilage becomes softened, fibrillated, and eventually completely worn away, exposing the underlying subchondral bone, which becomes polished and ivory-like (eburnation). Bony outgrowths (osteophytes) form at the margins of the joint. Small fractures in the subchondral bone can lead to the formation of subchondral cysts.",
-                        microscopic: "Early changes include fibrillation and cracking of the cartilage surface. Later, there is a complete loss of cartilage and thickening of the subchondral bone plate.",
-                        imageHint: "osteoarthritis gross knee"
-                    },
-                    clinicalFeatures: "Presents with joint pain that worsens with use and is relieved by rest. Morning stiffness is minimal (<30 minutes). Commonly affects weight-bearing joints (knees, hips) and the small joints of the hands (DIP and PIP joints, forming Heberden's and Bouchard's nodes).",
-                    investigations: "Diagnosis is primarily clinical and radiographic. X-rays show joint space narrowing, subchondral sclerosis, osteophytes, and cysts.",
-                    management: "Management is focused on symptom relief and maintaining function. This includes weight loss, physical therapy, and analgesics (e.g., paracetamol, NSAIDs). In end-stage disease, joint replacement surgery is highly effective. Always check current local and international OA guidelines.",
-                    complications: "Chronic pain, joint deformity, and loss of mobility.",
-                    prognosis: "A progressive condition, but many patients can be managed effectively with conservative measures.",
-                },
-                 { 
-                    title: "Rheumatoid Arthritis",
-                    overview: "Rheumatoid arthritis (RA) is a chronic, systemic autoimmune disease that primarily affects the joints, leading to a symmetric, inflammatory, destructive polyarthritis. It can also have numerous extra-articular manifestations.",
-                    learningObjectives: [
-                        "Define RA as a systemic autoimmune disease.",
-                        "Understand the role of autoantibodies (RF and anti-CCP) and T-cell mediated inflammation.",
-                        "Describe the formation of a pannus and its destructive effects on cartilage and bone.",
-                        "Recognize the classic clinical presentation of symmetric arthritis with morning stiffness."
-                    ],
-                    tags: {
-                        organ: "Joints",
-                        system: "Musculoskeletal System",
-                        category: "Autoimmune",
-                        level: "Classic"
-                    },
-                    etiology: [
-                        "Autoimmune, with a strong genetic predisposition (HLA-DR4) combined with environmental triggers (e.g., smoking)."
-                    ],
-                    pathogenesis: "RA is initiated by the activation of CD4+ T-cells, which respond to an unknown antigen. These T-cells produce cytokines that activate macrophages and other inflammatory cells in the synovium. B-cells are also activated, producing autoantibodies like Rheumatoid Factor (RF) and anti-citrullinated protein antibodies (anti-CCP). This chronic inflammation leads to synovial hyperplasia and the formation of a pannus, a mass of inflamed synovial tissue, inflammatory cells, and fibroblasts that grows over the articular cartilage and erodes the underlying bone.",
-                    morphology: {
-                        gross: "Affected joints are swollen and warm. The synovium is thickened, edematous, and hyperplastic, with finger-like projections (villi). The pannus erodes the cartilage and bone, leading to joint space narrowing and bony erosions. In late stages, fibrous or bony ankylosis (fusion of the joint) can occur, causing permanent deformity.",
-                        microscopic: "The synovium shows a dense inflammatory infiltrate of lymphocytes and plasma cells (often forming lymphoid follicles), synovial cell hyperplasia, and increased vascularity. The pannus is seen invading the cartilage.",
-                        imageHint: "rheumatoid arthritis pannus histology"
-                    },
-                    clinicalFeatures: "Presents with a symmetric arthritis affecting multiple small joints (MCP, PIP joints of the hands, MTP joints of the feet). Characterized by prolonged morning stiffness (>1 hour) that improves with activity. Systemic symptoms like fatigue and low-grade fever are common.",
-                    investigations: "Blood tests for Rheumatoid Factor (RF) and anti-CCP antibodies (more specific) are key. Inflammatory markers (ESR, CRP) are elevated. X-rays show joint space narrowing and marginal bony erosions.",
-                    management: "Early treatment with disease-modifying antirheumatic drugs (DMARDs), such as methotrexate, is crucial to prevent joint destruction. Biologic agents (e.g., anti-TNF inhibitors) are used for more severe disease. NSAIDs and corticosteroids are used for symptom control. Always check current local and international RA guidelines.",
-                    complications: "Joint destruction and deformity, rheumatoid nodules, vasculitis, and an increased risk of cardiovascular disease.",
-                    prognosis: "A chronic, progressive disease, but modern therapies have significantly improved outcomes and can induce remission.",
-                },
-                 { 
-                    title: "Gout",
-                    overview: "Gout is a metabolic disease characterized by recurrent episodes of acute inflammatory arthritis due to the deposition of monosodium urate (MSU) crystals in joints and soft tissues. It is caused by chronic hyperuricemia.",
-                    learningObjectives: [
-                        "Define gout and its relationship to hyperuricemia.",
-                        "Describe the mechanism of MSU crystal-induced inflammation, involving the inflammasome.",
-                        "Recognize the characteristic appearance of needle-shaped, negatively birefringent crystals.",
-                        "Differentiate between acute gouty arthritis and chronic tophaceous gout."
-                    ],
-                    tags: {
-                        organ: "Joints",
-                        system: "Musculoskeletal System",
-                        category: "Metabolic",
-                        level: "Classic"
-                    },
-                    etiology: [
-                        "Primary gout (most common): Due to an unknown enzyme defect or underexcretion of uric acid by the kidneys.",
-                        "Secondary gout: Due to conditions that increase uric acid production (e.g., leukemia, chemotherapy) or decrease its excretion (e.g., renal failure, diuretics)."
-                    ],
-                    pathogenesis: "When serum uric acid levels are elevated, MSU crystals can precipitate in and around joints. These crystals are phagocytosed by macrophages, which triggers the activation of the NLRP3 inflammasome, leading to the production of interleukin-1β (IL-1β) and a massive neutrophilic inflammatory response, causing the acute arthritis.",
-                    morphology: {
-                        gross: "Acute arthritis shows a swollen, red joint. Chronic tophaceous gout is characterized by the formation of tophi, which are large aggregates of MSU crystals surrounded by a foreign-body giant cell reaction. Tophi commonly occur in the ear helix, joints, and tendons.",
-                        microscopic: "Synovial fluid analysis during an acute attack reveals numerous neutrophils and needle-shaped MSU crystals, which are negatively birefringent under polarized light. A tophus consists of a central core of urate crystals surrounded by macrophages, lymphocytes, and giant cells.",
-                        imageHint: "gout crystals polarized light"
-                    },
-                    clinicalFeatures: "Presents with a sudden onset of excruciatingly painful arthritis, most classically in the first metatarsophalangeal joint (podagra). The attacks are self-limited but recurrent.",
-                    investigations: "Definitive diagnosis requires aspiration of synovial fluid and identification of MSU crystals. Serum uric acid level is usually elevated but can be normal during an acute attack.",
-                    management: "Acute attacks are treated with anti-inflammatory drugs like NSAIDs, colchicine, or corticosteroids. Long-term management to lower uric acid levels involves drugs like allopurinol (a xanthine oxidase inhibitor) or probenecid (a uricosuric agent). Always check current local and international gout guidelines.",
-                    complications: "Chronic tophaceous arthritis with joint destruction, and urate nephropathy.",
-                    prognosis: "Excellent with proper long-term management.",
-                }
-            ]
-        }
-    ]
-  },
-  {
-    system: "Hematopoietic & Lymphoid Systems",
-    icon: TestTube,
-    categories: [
-        {
-            name: "Red Blood Cell Disorders",
-            diseases: [
-                { 
-                    title: "Iron Deficiency Anemia",
-                    overview: "Iron deficiency anemia is the most common type of anemia worldwide. It results from insufficient iron to support normal red blood cell production, leading to the formation of small (microcytic) and pale (hypochromic) red blood cells.",
-                    learningObjectives: [
-                        "Identify iron deficiency as the most common cause of anemia.",
-                        "List the major causes of iron deficiency.",
-                        "Describe the classic peripheral blood smear findings of microcytic, hypochromic anemia.",
-                        "Interpret key iron studies (ferritin, iron, TIBC)."
-                    ],
-                    tags: {
-                        organ: "Blood",
-                        system: "Hematopoietic & Lymphoid Systems",
-                        category: "Metabolic",
-                        level: "Basic"
-                    },
-                    etiology: [
-                        "Chronic blood loss (e.g., from GI tract, menstruation).",
-                        "Inadequate dietary intake.",
-                        "Malabsorption (e.g., celiac disease).",
-                        "Increased demand (e.g., pregnancy, infancy)."
-                    ],
-                    pathogenesis: "Iron is an essential component of heme, which is part of hemoglobin. When iron stores are depleted, hemoglobin synthesis is impaired. The body produces red blood cells that are smaller than normal and contain less hemoglobin, leading to anemia.",
-                    morphology: {
-                        gross: "N/A.",
-                        microscopic: "Peripheral blood smear shows microcytic (low MCV), hypochromic (low MCH/MCHC) red blood cells with increased central pallor. Anisopoikilocytosis (variation in size and shape) is also present.",
-                        imageHint: "iron deficiency anemia smear"
-                    },
-                    clinicalFeatures: "Presents with general symptoms of anemia: fatigue, weakness, shortness of breath on exertion, and pallor. Specific signs of iron deficiency include pica (craving for non-food items like ice), koilonychia (spoon-shaped nails), and glossitis.",
-                    investigations: "CBC shows low hemoglobin and low MCV. Iron studies are key: low serum ferritin (reflecting depleted iron stores), low serum iron, high total iron-binding capacity (TIBC), and low transferrin saturation.",
-                    management: "Treatment involves identifying and correcting the underlying cause of iron loss and repleting iron stores with oral iron supplementation (e.g., ferrous sulfate). Always check current local and international anemia guidelines.",
-                    complications: "In severe cases, can lead to high-output heart failure.",
-                    prognosis: "Excellent with correction of the underlying cause and iron replacement.",
-                },
-                 { 
-                    title: "Sickle Cell Anemia",
-                    overview: "Sickle cell anemia is an autosomal recessive genetic disorder caused by a point mutation in the beta-globin gene, leading to the production of an abnormal hemoglobin, HbS. Under deoxygenated conditions, HbS polymerizes, causing red blood cells to deform into a rigid, sickle shape.",
-                    learningObjectives: [
-                        "Understand the genetic basis of sickle cell anemia (autosomal recessive, point mutation).",
-                        "Describe the process of HbS polymerization and red cell sickling.",
-                        "Relate sickling to the two major pathological consequences: chronic hemolysis and vaso-occlusion.",
-                        "Recognize the key clinical manifestations, such as painful vaso-occlusive crises."
-                    ],
-                    tags: {
-                        organ: "Blood",
-                        system: "Hematopoietic & Lymphoid Systems",
-                        category: "Genetic",
-                        level: "Intermediate"
-                    },
-                    etiology: [
-                        "Homozygous inheritance of the sickle cell mutation in the beta-globin gene (glutamic acid is replaced by valine at the 6th position)."
-                    ],
-                    pathogenesis: "Deoxygenation causes HbS molecules to aggregate into long, rigid polymers that distort the RBC into a sickle shape. These sickled cells are less deformable, leading to obstruction of small blood vessels (vaso-occlusion) and ischemic tissue damage. They are also fragile and are rapidly destroyed in the spleen, leading to a chronic hemolytic anemia.",
-                    morphology: {
-                        gross: "Patients may show signs of chronic hemolysis (jaundice, gallstones) and vaso-occlusion (splenic atrophy, bone infarcts).",
-                        microscopic: "Peripheral blood smear shows characteristic sickle-shaped red blood cells and target cells. Howell-Jolly bodies (nuclear remnants in RBCs) are seen due to functional asplenia.",
-                        imageHint: "sickle cell anemia smear"
-                    },
-                    clinicalFeatures: "Presents with chronic hemolytic anemia and recurrent, painful vaso-occlusive crises, often affecting the bones, chest, and abdomen. Other manifestations include acute chest syndrome, stroke, and an increased susceptibility to infections with encapsulated organisms (due to splenic dysfunction).",
-                    investigations: "Diagnosis is made by hemoglobin electrophoresis, which shows a predominance of HbS. A sickling test can demonstrate the phenomenon in vitro.",
-                    management: "Management is supportive and focuses on preventing crises. This includes hydration, pain management, and hydroxyurea (which increases levels of fetal hemoglobin, HbF, an inhibitor of sickling). Blood transfusions are used for severe anemia or complications. Always check current local and international guidelines.",
-                    complications: "Acute chest syndrome, stroke, aplastic crisis (with parvovirus B19 infection), renal failure.",
-                    prognosis: "A chronic, lifelong illness, but advances in care have significantly improved life expectancy.",
-                },
-                 {
-                    title: "Autoimmune Hemolytic Anemia (AIHA)",
-                    overview: "Autoimmune hemolytic anemia is a group of disorders caused by autoantibodies that target red blood cells (RBCs), leading to their premature destruction (hemolysis). It is classified based on the thermal properties of the autoantibody (warm vs. cold).",
-                    learningObjectives: [
-                        "Define AIHA as antibody-mediated RBC destruction.",
-                        "Differentiate between warm and cold AIHA based on the antibody type and clinical presentation.",
-                        "Understand the diagnostic role of the direct antiglobulin test (DAT or Coombs test).",
-                        "Recognize spherocytes on a peripheral blood smear."
-                    ],
-                    tags: {
-                        organ: "Blood",
-                        system: "Hematopoietic & Lymphoid Systems",
-                        category: "Autoimmune",
-                        level: "Advanced"
-                    },
-                    etiology: [
-                        "Primary (idiopathic) in about half of cases.",
-                        "Secondary to other conditions, such as autoimmune diseases (e.g., SLE), lymphoid neoplasms (e.g., CLL), or drugs (e.g., penicillin, methyldopa)."
-                    ],
-                    pathogenesis: "Warm AIHA (most common): Caused by IgG antibodies that bind to RBCs optimally at body temperature (37°C). These IgG-coated RBCs are then cleared from circulation by macrophages in the spleen (extravascular hemolysis). Cold AIHA: Caused by IgM antibodies that bind to RBCs only at cold temperatures (typically <30°C). The IgM antibody fixes complement, and hemolysis can occur either extravascularly in the liver or intravascularly.",
-                    morphology: {
-                        gross: "Patients may have splenomegaly (in warm AIHA) and jaundice.",
-                        microscopic: "The key finding on the peripheral blood smear in warm AIHA is the presence of spherocytes, which are small, dark, spherical RBCs that lack central pallor. They are formed when macrophages in the spleen remove portions of the IgG-coated RBC membrane.",
-                        imageHint: "spherocytes blood smear"
-                    },
-                    clinicalFeatures: "Presents with a variable degree of anemia, from mild to life-threatening. Jaundice and splenomegaly are common. In cold AIHA, patients may experience acrocyanosis (bluish discoloration of fingertips and toes) on exposure to cold.",
-                    investigations: "The direct antiglobulin test (DAT or Coombs test) is the cornerstone of diagnosis; it detects antibodies directly on the surface of the patient's RBCs. Other findings include signs of hemolysis: elevated LDH, elevated indirect bilirubin, and low haptoglobin.",
-                    management: "Corticosteroids are the first-line treatment for warm AIHA. For refractory cases, splenectomy or other immunosuppressants (e.g., rituximab) may be used. For cold AIHA, the mainstay is avoiding cold exposure. Always check current local and international guidelines.",
-                    complications: "Severe anemia, thromboembolism.",
-                    prognosis: "Variable, depending on the underlying cause and response to treatment.",
-                },
-            ]
-        },
-        {
-            name: "Neoplasms of White Cells",
-            diseases: [
-                { 
-                    title: "Acute Lymphoblastic Leukemia (ALL)",
-                    overview: "Acute lymphoblastic leukemia is a malignant neoplasm of immature lymphoid cells (lymphoblasts). It is the most common cancer of childhood, with a peak incidence between 2 and 5 years of age.",
-                    learningObjectives: [
-                        "Define ALL as a malignancy of lymphoblasts.",
-                        "Recognize its bimodal age distribution (childhood peak and smaller adult peak).",
-                        "Describe the typical clinical presentation related to bone marrow failure.",
-                        "Understand the importance of immunophenotyping to distinguish B-cell ALL from T-cell ALL."
-                    ],
-                    tags: {
-                        organ: "Bone Marrow",
-                        system: "Hematopoietic & Lymphoid Systems",
-                        category: "Neoplastic",
-                        level: "Advanced"
-                    },
-                    etiology: [
-                        "Most cases are idiopathic.",
-                        "Associated with certain genetic syndromes like Down syndrome."
-                    ],
-                    pathogenesis: "Caused by the clonal proliferation of a transformed hematopoietic stem cell that is committed to the lymphoid lineage. The accumulation of these non-functional blasts in the bone marrow suppresses normal hematopoiesis, leading to anemia, thrombocytopenia, and neutropenia.",
-                    morphology: {
-                        gross: "Patients may have hepatosplenomegaly and lymphadenopathy.",
-                        microscopic: "The bone marrow is hypercellular and packed with lymphoblasts. These are typically small cells with scant cytoplasm, fine chromatin, and inconspicuous nucleoli. The peripheral blood smear also shows circulating blasts.",
-                        imageHint: "acute lymphoblastic leukemia smear"
-                    },
-                    clinicalFeatures: "Presents with an abrupt onset of symptoms related to bone marrow failure: fatigue (anemia), bleeding/bruising (thrombocytopenia), and fever/infections (neutropenia). Bone pain is also common. T-cell ALL can present with a large mediastinal mass.",
-                    investigations: "CBC shows anemia, thrombocytopenia, and a variable white cell count with circulating blasts. Bone marrow biopsy is required for diagnosis. Immunophenotyping by flow cytometry is crucial to confirm the lymphoid lineage (e.g., TdT positivity) and determine if it is B-cell or T-cell ALL.",
-                    management: "Treatment involves intensive multi-agent chemotherapy with different phases (induction, consolidation, maintenance). Prophylactic treatment to the CNS is also given. Always check current local and international ALL treatment protocols.",
-                    complications: "Infection, bleeding, tumor lysis syndrome during chemotherapy.",
-                    prognosis: "Prognosis is excellent in children, with cure rates over 90%. It is less favorable in adults.",
-                },
-                { 
-                    title: "Chronic Lymphocytic Leukemia (CLL)",
-                    overview: "Chronic lymphocytic leukemia is a low-grade B-cell neoplasm characterized by the progressive accumulation of mature-appearing but functionally incompetent lymphocytes. It is the most common leukemia of adults in the Western world.",
-                    learningObjectives: [
-                        "Recognize CLL as a common, indolent leukemia of the elderly.",
-                        "Describe the characteristic immunophenotype of the malignant B-cells.",
-                        "Identify 'smudge cells' on a peripheral blood smear.",
-                        "Understand the clinical course, from asymptomatic lymphocytosis to complications like immunosuppression."
-                    ],
-                    tags: {
-                        organ: "Bone Marrow",
-                        system: "Hematopoietic & Lymphoid Systems",
-                        category: "Neoplastic",
-                        level: "Intermediate"
-                    },
-                    etiology: [
-                        "Unknown."
-                    ],
-                    pathogenesis: "The disease results from the clonal proliferation of mature B-cells that are resistant to apoptosis, leading to their gradual accumulation in the blood, bone marrow, and lymph nodes.",
-                    morphology: {
-                        gross: "Patients often have generalized lymphadenopathy and hepatosplenomegaly.",
-                        microscopic: "Peripheral blood smear shows a marked lymphocytosis with small, mature-looking lymphocytes with scant cytoplasm and clumped 'soccer ball' chromatin. 'Smudge cells' (fragile lymphocytes that are disrupted during slide preparation) are characteristic. Bone marrow is infiltrated by these lymphocytes.",
-                        imageHint: "cll smudge cell smear"
-                    },
-                    clinicalFeatures: "Often discovered incidentally on a routine CBC showing lymphocytosis. Many patients are asymptomatic for years. When symptoms occur, they include fatigue, weight loss, and enlarged lymph nodes. Patients are immunosuppressed and are at increased risk for infections.",
-                    investigations: "Diagnosis is made by flow cytometry of the peripheral blood, which shows a clonal population of B-cells co-expressing CD5 and CD23, in addition to other B-cell markers like CD19 and CD20.",
-                    management: "Asymptomatic, early-stage disease is often managed with a 'watch and wait' approach. Treatment is initiated for symptomatic or advanced disease and may include chemotherapy, monoclonal antibodies (e.g., rituximab), or targeted therapies (e.g., BTK inhibitors like ibrutinib). Always check current local and international CLL guidelines.",
-                    complications: "Transformation to a more aggressive lymphoma (Richter's transformation), autoimmune hemolytic anemia, and infections.",
-                    prognosis: "Highly variable. Some patients have a very indolent course and may never require treatment, while others have more aggressive disease. Prognostic markers like IgHV mutation status and cytogenetic abnormalities (e.g., del17p) are important.",
-                },
-                 {
-                    title: "Hodgkin Lymphoma",
-                    overview: "Hodgkin lymphoma is a lymphoid neoplasm characterized by the presence of a unique tumor cell, the Reed-Sternberg (RS) cell, within a mixed inflammatory background. It typically arises in a single lymph node or chain of nodes and spreads in a contiguous, predictable fashion.",
-                    learningObjectives: [
-                        "Identify the Reed-Sternberg cell as the diagnostic hallmark of Hodgkin lymphoma.",
-                        "Differentiate Hodgkin lymphoma from non-Hodgkin lymphomas based on clinical and pathological features.",
-                        "Recognize the different classical subtypes (e.g., Nodular Sclerosis).",
-                        "Understand the excellent prognosis with modern therapy."
-                    ],
-                    tags: {
-                        organ: "Lymph Node",
-                        system: "Hematopoietic & Lymphoid Systems",
-                        category: "Neoplastic",
-                        level: "Classic"
-                    },
-                    etiology: [
-                        "Largely unknown, but linked to Epstein-Barr virus (EBV) infection in a subset of cases."
-                    ],
-                    pathogenesis: "The Reed-Sternberg cell is a large, malignant B-lymphocyte that has lost its normal B-cell gene expression program. These rare tumor cells secrete cytokines that attract a large number of non-neoplastic inflammatory cells, which make up the bulk of the tumor mass.",
-                    morphology: {
-                        gross: "Painless enlargement of lymph nodes, most commonly in the cervical or mediastinal regions.",
-                        microscopic: "The diagnostic cell is the Reed-Sternberg cell: a very large cell with multiple nuclei or a single bilobed nucleus, each containing a large, eosinophilic, inclusion-like nucleolus ('owl eyes'). These cells are scattered within a background of reactive lymphocytes, eosinophils, and plasma cells. In the Nodular Sclerosis subtype (the most common), the lymph node is divided into nodules by bands of collagen.",
-                        imageHint: "hodgkin lymphoma reed sternberg"
-                    },
-                    clinicalFeatures: "Presents with painless lymphadenopathy. 'B symptoms' (fever, night sweats, weight loss) can be present and have prognostic significance. Pruritus (itching) is also common.",
-                    investigations: "Diagnosis requires an excisional lymph node biopsy. Immunohistochemistry is key: classic RS cells are positive for CD30 and CD15, and are usually negative for B-cell and T-cell markers like CD20 and CD3.",
-                    management: "Treatment involves chemotherapy and/or radiation therapy, with excellent cure rates, even in advanced stages. Always check current local and international Hodgkin lymphoma guidelines.",
-                    complications: "Secondary malignancies and cardiovascular disease are long-term complications of treatment.",
-                    prognosis: "One of the most curable cancers, with a 5-year survival rate of over 85%.",
-                },
-            ]
-        }
-    ]
-  },
+complications: "Metastasis to cervical lymph nodes is common but does not significantly worsen the excellent prognosis. Distant metastases (e.g., to lung) are rare.",
+prognosis: "Excellent, with a 10-year survival rate exceeding 95%.",
+},
 ]
+},
+{
+name: "Parathyroid Pathology",
+diseases: [
+{
+title: "Primary Hyperparathyroidism",
+overview: "Primary hyperparathyroidism is a condition characterized by the excessive, unregulated secretion of parathyroid hormone (PTH), leading to hypercalcemia. It is most commonly caused by a benign parathyroid adenoma.",
+learningObjectives: [
+"Define primary hyperparathyroidism and its relation to hypercalcemia.",
+"Identify parathyroid adenoma as the most common cause.",
+"Recognize the clinical manifestations summarized as 'bones, stones, groans, and psychiatric overtones'.",
+"Interpret the key laboratory findings of high PTH and high calcium."
+],
+tags: {
+organ: "Parathyroid",
+system: "Endocrine System",
+category: "Neoplastic",
+level: "Classic"
+},
+etiology: [
+"Parathyroid adenoma (~85% of cases).",
+"Primary hyperplasia (~10-15%).",
+"Parathyroid carcinoma (<1%)."
+],
+pathogenesis: "A somatic mutation in a single parathyroid chief cell leads to the clonal expansion and formation of a benign tumor (adenoma) that autonomously secretes PTH, irrespective of the serum calcium level. The excess PTH causes increased bone resorption, increased renal calcium reabsorption, and increased intestinal calcium absorption (via activation of Vitamin D), all leading to hypercalcemia.",
+morphology: {
+gross: "A parathyroid adenoma is typically a single, encapsulated, soft, tan-to-reddish-brown nodule. The remaining parathyroid glands are usually normal or shrunken due to feedback inhibition.",
+microscopic: "The adenoma is composed of uniform, polygonal chief cells arranged in sheets, with a delicate vascular network. A key feature is the absence of adipose tissue within the adenoma, which is normally present in an adult parathyroid gland.",
+imageHint: "parathyroid adenoma histology"
+},
+clinicalFeatures: "Many patients are asymptomatic and diagnosed on routine blood tests. Symptomatic patients can present with the classic mnemonic 'painful bones (osteitis fibrosa cystica), renal stones, abdominal groans (pancreatitis, peptic ulcers), and psychiatric overtones (depression, lethargy)'.",
+investigations: "The key laboratory finding is an elevated serum calcium level with a simultaneously elevated or inappropriately normal PTH level.",
+management: "Surgical removal of the adenomatous gland (parathyroidectomy) is the definitive treatment. Always check current local and international guidelines.",
+complications: "Osteoporosis, kidney stones, pancreatitis.",
+prognosis: "Excellent after successful surgery.",
+},
+]
+}
+]
+},
+{
+system: "Musculoskeletal System",
+icon: Bone,
+categories: [
+{
+name: "Bone Tumors",
+diseases: [
+{
+title: "Osteosarcoma",
+overview: "Osteosarcoma is the most common primary malignant tumor of bone. It is a bone-producing mesenchymal tumor that most frequently arises in the metaphysis of long bones, particularly around the knee, in adolescents and young adults.",
+learningObjectives: [
+"Identify osteosarcoma as the most common primary bone cancer.",
+"Recognize its typical patient demographic (adolescents) and location (around the knee).",
+"Describe the key histologic feature: production of osteoid (unmineralized bone) by malignant tumor cells.",
+"Understand the characteristic 'sunburst' appearance and Codman's triangle on X-ray."
+],
+tags: {
+organ: "Bone",
+system: "Musculoskeletal System",
+category: "Neoplastic",
+level: "Advanced"
+},
+etiology: [
+"Most are sporadic.",
+"Associated with genetic conditions like hereditary retinoblastoma (RB1 gene mutations) and Li-Fraumeni syndrome (TP53 gene mutations).",
+"Can arise in the setting of prior radiation or Paget's disease of bone in older adults."
+],
+pathogenesis: "Driven by complex genetic alterations, including mutations in the RB1 and TP53 tumor suppressor genes, which lead to the uncontrolled proliferation of malignant osteoblasts.",
+morphology: {
+gross: "The tumor is typically a large, gritty, gray-white mass that arises in the metaphysis, destroying the cortex and forming a soft tissue mass. It often shows areas of hemorrhage and cystic change.",
+microscopic: "The diagnostic hallmark is the production of malignant osteoid (a pink, amorphous extracellular material) by the anaplastic tumor cells. The tumor cells are pleomorphic, with large, hyperchromatic nuclei.",
+imageHint: "osteosarcoma histology"
+},
+clinicalFeatures: "Presents with bone pain, which may be worse at night, and a progressively enlarging, tender mass. Pathologic fracture can occur.",
+investigations: "X-ray shows a destructive mass, often with a 'sunburst' pattern of periosteal reaction and lifting of the cortex to form a Codman's triangle. MRI is used to define the extent of the tumor. Biopsy is required for diagnosis.",
+management: "Current standard of care is neoadjuvant chemotherapy (chemotherapy before surgery) followed by limb-sparing surgical resection and then further adjuvant chemotherapy. Always check current local and international sarcoma guidelines.",
+complications: "Metastasis, most commonly to the lungs.",
+prognosis: "With modern multi-agent chemotherapy and surgery, the long-term survival rate is approximately 60-70%.",
+},
+{
+title: "Ewing Sarcoma",
+overview: "Ewing sarcoma is a malignant small round blue cell tumor of bone and soft tissue that primarily affects children and young adults. It is characterized by a specific chromosomal translocation, most commonly t(11;22).",
+learningObjectives: [
+"Recognize Ewing sarcoma as a 'small round blue cell tumor' of childhood.",
+"Identify its characteristic chromosomal translocation t(11;22).",
+"Describe the classic 'onion-skin' periosteal reaction on X-ray.",
+"Understand the importance of immunohistochemistry (CD99 positivity) for diagnosis."
+],
+tags: {
+organ: "Bone",
+system: "Musculoskeletal System",
+category: "Neoplastic",
+level: "Advanced"
+},
+etiology: [
+"Specific chromosomal translocation, t(11;22)(q24;q12), which creates an EWS-FLI1 fusion gene that acts as an aberrant transcription factor."
+],
+pathogenesis: "The EWS-FLI1 fusion protein drives oncogenesis by altering the expression of numerous downstream genes involved in cell proliferation, survival, and differentiation.",
+morphology: {
+gross: "Typically arises in the diaphysis of long bones (like the femur) or in the flat bones of the pelvis. It is a soft, tan-white tumor that often invades the cortex and forms a large soft tissue mass.",
+microscopic: "Composed of sheets of uniform, small round blue cells with scant, clear cytoplasm. Homer-Wright rosettes (tumor cells arranged around a central fibrillary space) may be present. Immunohistochemistry showing strong membrane positivity for CD99 is a key diagnostic feature.",
+imageHint: "ewing sarcoma histology"
+},
+clinicalFeatures: "Presents as a painful, enlarging mass. Systemic symptoms like fever and leukocytosis can be present, mimicking an infection.",
+investigations: "X-ray often shows a destructive lytic tumor with a characteristic 'onion-skin' layered periosteal reaction. Biopsy is essential for diagnosis. Molecular testing for the t(11;22) translocation is confirmatory.",
+management: "Treatment involves a combination of multi-agent chemotherapy, surgery, and/or radiation therapy. Always check current local and international sarcoma guidelines.",
+complications: "Metastasis to lungs, bone, and bone marrow.",
+prognosis: "With aggressive multimodal therapy, long-term survival is around 70% for patients with localized disease.",
+},
+{
+title: "Chondrosarcoma",
+overview: "Chondrosarcoma is a malignant tumor that produces cartilage. It is the second most common primary malignant tumor of bone after osteosarcoma and typically affects adults over the age of 40.",
+learningObjectives: [
+"Define chondrosarcoma as a cartilage-producing malignancy.",
+"Recognize its predilection for the axial skeleton (pelvis, ribs, shoulder).",
+"Describe the histologic features, including grading based on cellularity and atypia.",
+"Understand that it is largely resistant to chemotherapy and radiation."
+],
+tags: {
+organ: "Bone",
+system: "Musculoskeletal System",
+category: "Neoplastic",
+level: "Advanced"
+},
+etiology: [
+"Can arise de novo (primary) or from a pre-existing benign cartilage tumor like an enchondroma or osteochondroma (secondary)."
+],
+pathogenesis: "Involves mutations in genes like IDH1 and IDH2. The tumor cells are malignant chondrocytes that produce an abnormal cartilaginous matrix.",
+morphology: {
+gross: "A large, bulky tumor made up of gray-white, translucent, glistening nodules of cartilage. The tumor often erodes through the cortex.",
+microscopic: "The diagnosis and grade depend on cellularity, cytologic atypia, and mitotic activity. Low-grade tumors have mildly increased cellularity and minimal atypia. High-grade tumors are highly cellular with severe pleomorphism and frequent mitoses. The key is to find malignant chondrocytes within a cartilaginous matrix.",
+imageHint: "chondrosarcoma histology"
+},
+clinicalFeatures: "Presents as a painful, progressively enlarging mass. Typically affects the central skeleton (pelvis, shoulder, ribs) more often than the long bones.",
+investigations: "X-ray shows a lytic lesion with characteristic 'rings and arcs' or 'popcorn' calcifications, representing calcification of the cartilaginous matrix. Biopsy is required for diagnosis.",
+management: "Wide surgical excision is the mainstay of treatment. Most chondrosarcomas are resistant to chemotherapy and radiation therapy. Always check current local and international sarcoma guidelines.",
+complications: "Local recurrence after inadequate excision, metastasis (especially high-grade tumors).",
+prognosis: "Highly dependent on the histologic grade. Low-grade tumors have an excellent prognosis with surgery alone, while high-grade tumors have a high risk of metastasis and a poor prognosis.",
+},
+]
+},
+{
+name: "Diseases of Joints",
+diseases: [
+{
+title: "Osteoarthritis",
+overview: "Osteoarthritis (OA) is the most common type of joint disease, characterized by the progressive degeneration and loss of articular cartilage, leading to pain and loss of function. It is primarily a disease of 'wear and tear' and aging.",
+learningObjectives: [
+"Define osteoarthritis as a degenerative, non-inflammatory joint disease.",
+"Understand the central role of articular cartilage breakdown in its pathogenesis.",
+"Recognize the key pathologic features, including eburnation, osteophytes, and subchondral cysts.",
+"Differentiate OA clinically and pathologically from rheumatoid arthritis."
+],
+tags: {
+organ: "Joints",
+system: "Musculoskeletal System",
+category: "Degenerative",
+level: "Classic"
+},
+etiology: [
+"Primary (idiopathic): Related to aging and mechanical stress.",
+"Secondary: Due to a predisposing condition like trauma, congenital deformity, or other forms of arthritis."
+],
+pathogenesis: "OA is driven by a combination of mechanical stress and biochemical changes. Chondrocytes, the cells of cartilage, initially attempt to repair damage but eventually fail. They produce degradative enzymes (like metalloproteinases) that break down the cartilage matrix. This leads to a vicious cycle of cartilage erosion, exposure of the underlying bone, and secondary inflammatory changes.",
+morphology: {
+gross: "The articular cartilage becomes softened, fibrillated, and eventually completely worn away, exposing the underlying subchondral bone, which becomes polished and ivory-like (eburnation). Bony outgrowths (osteophytes) form at the margins of the joint. Small fractures in the subchondral bone can lead to the formation of subchondral cysts.",
+microscopic: "Early changes include fibrillation and cracking of the cartilage surface. Later, there is a complete loss of cartilage and thickening of the subchondral bone plate.",
+imageHint: "osteoarthritis gross knee"
+},
+clinicalFeatures: "Presents with joint pain that worsens with use and is relieved by rest. Morning stiffness is minimal (<30 minutes). Commonly affects weight-bearing joints (knees, hips) and the small joints of the hands (DIP and PIP joints, forming Heberden's and Bouchard's nodes).",
+investigations: "Diagnosis is primarily clinical and radiographic. X-rays show joint space narrowing, subchondral sclerosis, osteophytes, and cysts.",
+management: "Management is focused on symptom relief and maintaining function. This includes weight loss, physical therapy, and analgesics (e.g., paracetamol, NSAIDs). In end-stage disease, joint replacement surgery is highly effective. Always check current local and international OA guidelines.",
+complications: "Chronic pain, joint deformity, and loss of mobility.",
+prognosis: "A progressive condition, but many patients can be managed effectively with conservative measures.",
+},
+{
+title: "Rheumatoid Arthritis",
+overview: "Rheumatoid arthritis (RA) is a chronic, systemic autoimmune disease that primarily affects the joints, leading to a symmetric, inflammatory, destructive polyarthritis. It can also have numerous extra-articular manifestations.",
+learningObjectives: [
+"Define RA as a systemic autoimmune disease.",
+"Understand the role of autoantibodies (RF and anti-CCP) and T-cell mediated inflammation.",
+"Describe the formation of a pannus and its destructive effects on cartilage and bone.",
+"Recognize the classic clinical presentation of symmetric arthritis with morning stiffness."
+],
+tags: {
+organ: "Joints",
+system: "Musculoskeletal System",
+category: "Autoimmune",
+level: "Classic"
+},
+etiology: [
+"Autoimmune, with a strong genetic predisposition (HLA-DR4) combined with environmental triggers (e.g., smoking)."
+],
+pathogenesis: "RA is initiated by the activation of CD4+ T-cells, which respond to an unknown antigen. These T-cells produce cytokines that activate macrophages and other inflammatory cells in the synovium. B-cells are also activated, producing autoantibodies like Rheumatoid Factor (RF) and anti-citrullinated protein antibodies (anti-CCP). This chronic inflammation leads to synovial hyperplasia and the formation of a pannus, a mass of inflamed synovial tissue, inflammatory cells, and fibroblasts that grows over the articular cartilage and erodes the underlying bone.",
+morphology: {
+gross: "Affected joints are swollen and warm. The synovium is thickened, edematous, and hyperplastic, with finger-like projections (villi). The pannus erodes the cartilage and bone, leading to joint space narrowing and bony erosions. In late stages, fibrous or bony ankylosis (fusion of the joint) can occur, causing permanent deformity.",
+microscopic: "The synovium shows a dense inflammatory infiltrate of lymphocytes and plasma cells (often forming lymphoid follicles), synovial cell hyperplasia, and increased vascularity. The pannus is seen invading the cartilage.",
+imageHint: "rheumatoid arthritis pannus histology"
+},
+clinicalFeatures: "Presents with a symmetric arthritis affecting multiple small joints (MCP, PIP joints of the hands, MTP joints of the feet). Characterized by prolonged morning stiffness (>1 hour) that improves with activity. Systemic symptoms like fatigue and low-grade fever are common.",
+investigations: "Blood tests for Rheumatoid Factor (RF) and anti-CCP antibodies (more specific) are key. Inflammatory markers (ESR, CRP) are elevated. X-rays show joint space narrowing and marginal bony erosions.",
+management: "Early treatment with disease-modifying antirheumatic drugs (DMARDs), such as methotrexate, is crucial to prevent joint destruction. Biologic agents (e.g., anti-TNF inhibitors) are used for more severe disease. NSAIDs and corticosteroids are used for symptom control. Always check current local and international RA guidelines.",
+complications: "Joint destruction and deformity, rheumatoid nodules, vasculitis, and an increased risk of cardiovascular disease.",
+prognosis: "A chronic, progressive disease, but modern therapies have significantly improved outcomes and can induce remission.",
+},
+{
+title: "Gout",
+overview: "Gout is a metabolic disease characterized by recurrent episodes of acute inflammatory arthritis due to the deposition of monosodium urate (MSU) crystals in joints and soft tissues. It is caused by chronic hyperuricemia.",
+learningObjectives: [
+"Define gout and its relationship to hyperuricemia.",
+"Describe the mechanism of MSU crystal-induced inflammation, involving the inflammasome.",
+"Recognize the characteristic appearance of needle-shaped, negatively birefringent crystals.",
+"Differentiate between acute gouty arthritis and chronic tophaceous gout."
+],
+tags: {
+organ: "Joints",
+system: "Musculoskeletal System",
+category: "Metabolic",
+level: "Classic"
+},
+etiology: [
+"Primary gout (most common): Due to an unknown enzyme defect or underexcretion of uric acid by the kidneys.",
+"Secondary gout: Due to conditions that increase uric acid production (e.g., leukemia, chemotherapy) or decrease its excretion (e.g., renal failure, diuretics)."
+],
+pathogenesis: "When serum uric acid levels are elevated, MSU crystals can precipitate in and around joints. These crystals are phagocytosed by macrophages, which triggers the activation of the NLRP3 inflammasome, leading to the production of interleukin-1β (IL-1β) and a massive neutrophilic inflammatory response, causing the acute arthritis.",
+morphology: {
+gross: "Acute arthritis shows a swollen, red joint. Chronic tophaceous gout is characterized by the formation of tophi, which are large aggregates of MSU crystals surrounded by a foreign-body giant cell reaction. Tophi commonly occur in the ear helix, joints, and tendons.",
+microscopic: "Synovial fluid analysis during an acute attack reveals numerous neutrophils and needle-shaped MSU crystals, which are negatively birefringent under polarized light. A tophus consists of a central core of urate crystals surrounded by macrophages, lymphocytes, and giant cells.",
+imageHint: "gout crystals polarized light"
+},
+clinicalFeatures: "Presents with a sudden onset of excruciatingly painful arthritis, most classically in the first metatarsophalangeal joint (podagra). The attacks are self-limited but recurrent.",
+investigations: "Definitive diagnosis requires aspiration of synovial fluid and identification of MSU crystals. Serum uric acid level is usually elevated but can be normal during an acute attack.",
+management: "Acute attacks are treated with anti-inflammatory drugs like NSAIDs, colchicine, or corticosteroids. Long-term management to lower uric acid levels involves drugs like allopurinol (a xanthine oxidase inhibitor) or probenecid (a uricosuric agent). Always check current local and international gout guidelines.",
+complications: "Chronic tophaceous arthritis with joint destruction, and urate nephropathy.",
+prognosis: "Excellent with proper long-term management.",
+},
+{
+title: "Duchenne Muscular Dystrophy",
+synonyms: "DMD",
+overview: "Duchenne muscular dystrophy is an X-linked recessive genetic disorder characterized by progressive muscle degeneration and weakness. It is caused by mutations in the dystrophin gene, leading to an absence of the dystrophin protein.",
+learningObjectives: [
+"Understand the X-linked inheritance pattern of DMD.",
+"Describe the function of dystrophin and how its absence leads to muscle fiber injury.",
+"Recognize the key histologic features of muscular dystrophy.",
+"Identify the clinical milestones, including Gowers' sign and pseudohypertrophy of the calves."
+],
+tags: {
+organ: "Muscle",
+system: "Musculoskeletal System",
+category: "Genetic",
+level: "Intermediate"
+},
+etiology: [
+"Mutations (often deletions) in the dystrophin gene on the X chromosome, leading to a complete absence of the dystrophin protein."
+],
+pathogenesis: "Dystrophin is a crucial structural protein that connects the internal cytoskeleton of a muscle fiber to the surrounding extracellular matrix, providing mechanical stability during muscle contraction. Its absence makes the muscle cell membrane fragile and susceptible to tearing during contraction. This leads to an influx of calcium, initiating a cascade of events that results in muscle fiber necrosis and progressive replacement by fat and fibrous tissue.",
+morphology: {
+gross: "Calf muscles are often enlarged due to replacement of muscle by fat and fibrous tissue (pseudohypertrophy).",
+microscopic: "Shows marked variation in muscle fiber size, with scattered necrotic and regenerating muscle fibers. In later stages, there is extensive replacement of muscle tissue by adipose and fibrous tissue. Staining for dystrophin protein is absent.",
+imageHint: "duchenne muscular dystrophy histology"
+},
+clinicalFeatures: "Presents in early childhood with delayed motor milestones. Boys develop progressive symmetric muscle weakness, starting in the pelvis and lower limbs. Gowers' sign (using hands to push on legs to stand up) is a classic finding. Calf pseudohypertrophy is also characteristic. The weakness is relentless, leading to loss of ambulation, and eventually affects respiratory and cardiac muscles.",
+investigations: "Serum creatine kinase (CK) levels are massively elevated, especially early in the disease. Genetic testing for mutations in the dystrophin gene is diagnostic. Muscle biopsy can confirm the diagnosis if genetic testing is inconclusive.",
+management: "There is no cure. Management is supportive and multidisciplinary. Corticosteroids can slow the decline in muscle strength. Newer therapies like exon-skipping drugs are available for specific mutations. Always check current local and international guidelines.",
+complications: "Cardiomyopathy, respiratory failure, scoliosis.",
+prognosis: "Poor. Death typically occurs in the late teens or early twenties due to respiratory or cardiac failure.",
+},
+]
+}
+]
+},
+{
+system: "Hematopoietic & Lymphoid Systems",
+icon: TestTube,
+categories: [
+{
+name: "Red Blood Cell Disorders",
+diseases: [
+{
+title: "Iron Deficiency Anemia",
+overview: "Iron deficiency anemia is the most common type of anemia worldwide. It results from insufficient iron to support normal red blood cell production, leading to the formation of small (microcytic) and pale (hypochromic) red blood cells.",
+learningObjectives: [
+"Identify iron deficiency as the most common cause of anemia.",
+"List the major causes of iron deficiency.",
+"Describe the classic peripheral blood smear findings of microcytic, hypochromic anemia.",
+"Interpret key iron studies (ferritin, iron, TIBC)."
+],
+tags: {
+organ: "Blood",
+system: "Hematopoietic & Lymphoid Systems",
+category: "Metabolic",
+level: "Basic"
+},
+etiology: [
+"Chronic blood loss (e.g., from GI tract, menstruation).",
+"Inadequate dietary intake.",
+"Malabsorption (e.g., celiac disease).",
+"Increased demand (e.g., pregnancy, infancy)."
+],
+pathogenesis: "Iron is an essential component of heme, which is part of hemoglobin. When iron stores are depleted, hemoglobin synthesis is impaired. The body produces red blood cells that are smaller than normal and contain less hemoglobin, leading to anemia.",
+morphology: {
+gross: "N/A.",
+microscopic: "Peripheral blood smear shows microcytic (low MCV), hypochromic (low MCH/MCHC) red blood cells with increased central pallor. Anisopoikilocytosis (variation in size and shape) is also present.",
+imageHint: "iron deficiency anemia smear"
+},
+clinicalFeatures: "Presents with general symptoms of anemia: fatigue, weakness, shortness of breath on exertion, and pallor. Specific signs of iron deficiency include pica (craving for non-food items like ice), koilonychia (spoon-shaped nails), and glossitis.",
+investigations: "CBC shows low hemoglobin and low MCV. Iron studies are key: low serum ferritin (reflecting depleted iron stores), low serum iron, high total iron-binding capacity (TIBC), and low transferrin saturation.",
+management: "Treatment involves identifying and correcting the underlying cause of iron loss and repleting iron stores with oral iron supplementation (e.g., ferrous sulfate). Always check current local and international anemia guidelines.",
+complications: "In severe cases, can lead to high-output heart failure.",
+prognosis: "Excellent with correction of the underlying cause and iron replacement.",
+},
+{
+title: "Sickle Cell Anemia",
+overview: "Sickle cell anemia is an autosomal recessive genetic disorder caused by a point mutation in the beta-globin gene, leading to the production of an abnormal hemoglobin, HbS. Under deoxygenated conditions, HbS polymerizes, causing red blood cells to deform into a rigid, sickle shape.",
+learningObjectives: [
+"Understand the genetic basis of sickle cell anemia (autosomal recessive, point mutation).",
+"Describe the process of HbS polymerization and red cell sickling.",
+"Relate sickling to the two major pathological consequences: chronic hemolysis and vaso-occlusion.",
+"Recognize the key clinical manifestations, such as painful vaso-occlusive crises."
+],
+tags: {
+organ: "Blood",
+system: "Hematopoietic & Lymphoid Systems",
+category: "Genetic",
+level: "Intermediate"
+},
+etiology: [
+"Homozygous inheritance of the sickle cell mutation in the beta-globin gene (glutamic acid is replaced by valine at the 6th position)."
+],
+pathogenesis: "Deoxygenation causes HbS molecules to aggregate into long, rigid polymers that distort the RBC into a sickle shape. These sickled cells are less deformable, leading to obstruction of small blood vessels (vaso-occlusion) and ischemic tissue damage. They are also fragile and are rapidly destroyed in the spleen, leading to a chronic hemolytic anemia.",
+morphology: {
+gross: "Patients may show signs of chronic hemolysis (jaundice, gallstones) and vaso-occlusion (splenic atrophy, bone infarcts).",
+microscopic: "Peripheral blood smear shows characteristic sickle-shaped red blood cells and target cells. Howell-Jolly bodies (nuclear remnants in RBCs) are seen due to functional asplenia.",
+imageHint: "sickle cell anemia smear"
+},
+clinicalFeatures: "Presents with chronic hemolytic anemia and recurrent, painful vaso-occlusive crises, often affecting the bones, chest, and abdomen. Other manifestations include acute chest syndrome, stroke, and an increased susceptibility to infections with encapsulated organisms (due to splenic dysfunction).",
+investigations: "Diagnosis is made by hemoglobin electrophoresis, which shows a predominance of HbS. A sickling test can demonstrate the phenomenon in vitro.",
+management: "Management is supportive and focuses on preventing crises. This includes hydration, pain management, and hydroxyurea (which increases levels of fetal hemoglobin, HbF, an inhibitor of sickling). Blood transfusions are used for severe anemia or complications. Always check current local and international guidelines.",
+complications: "Acute chest syndrome, stroke, aplastic crisis (with parvovirus B19 infection), renal failure.",
+prognosis: "A chronic, lifelong illness, but advances in care have significantly improved life expectancy.",
+},
+{
+title: "Autoimmune Hemolytic Anemia (AIHA)",
+overview: "Autoimmune hemolytic anemia is a group of disorders caused by autoantibodies that target red blood cells (RBCs), leading to their premature destruction (hemolysis). It is classified based on the thermal properties of the autoantibody (warm vs. cold).",
+learningObjectives: [
+"Define AIHA as antibody-mediated RBC destruction.",
+"Differentiate between warm and cold AIHA based on the antibody type and clinical presentation.",
+"Understand the diagnostic role of the direct antiglobulin test (DAT or Coombs test).",
+"Recognize spherocytes on a peripheral blood smear."
+],
+tags: {
+organ: "Blood",
+system: "Hematopoietic & Lymphoid Systems",
+category: "Autoimmune",
+level: "Advanced"
+},
+etiology: [
+"Primary (idiopathic) in about half of cases.",
+"Secondary to other conditions, such as autoimmune diseases (e.g., SLE), lymphoid neoplasms (e.g., CLL), or drugs (e.g., penicillin, methyldopa)."
+],
+pathogenesis: "Warm AIHA (most common): Caused by IgG antibodies that bind to RBCs optimally at body temperature (37°C). These IgG-coated RBCs are then cleared from circulation by macrophages in the spleen (extravascular hemolysis). Cold AIHA: Caused by IgM antibodies that bind to RBCs only at cold temperatures (typically <30°C). The IgM antibody fixes complement, and hemolysis can occur either extravascularly in the liver or intravascularly.",
+morphology: {
+gross: "Patients may have splenomegaly (in warm AIHA) and jaundice.",
+microscopic: "The key finding on the peripheral blood smear in warm AIHA is the presence of spherocytes, which are small, dark, spherical RBCs that lack central pallor. They are formed when macrophages in the spleen remove portions of the IgG-coated RBC membrane.",
+imageHint: "spherocytes blood smear"
+},
+clinicalFeatures: "Presents with a variable degree of anemia, from mild to life-threatening. Jaundice and splenomegaly are common. In cold AIHA, patients may experience acrocyanosis (bluish discoloration of fingertips and toes) on exposure to cold.",
+investigations: "The direct antiglobulin test (DAT or Coombs test) is the cornerstone of diagnosis; it detects antibodies directly on the surface of the patient's RBCs. Other findings include signs of hemolysis: elevated LDH, elevated indirect bilirubin, and low haptoglobin.",
+management: "Corticosteroids are the first-line treatment for warm AIHA. For refractory cases, splenectomy or other immunosuppressants (e.g., rituximab) may be used. For cold AIHA, the mainstay is avoiding cold exposure. Always check current local and international guidelines.",
+complications: "Severe anemia, thromboembolism.",
+prognosis: "Variable, depending on the underlying cause and response to treatment.",
+},
+]
+},
+{
+name: "Neoplasms of White Cells",
+diseases: [
+{
+title: "Acute Lymphoblastic Leukemia (ALL)",
+overview: "Acute lymphoblastic leukemia is a malignant neoplasm of immature lymphoid cells (lymphoblasts). It is the most common cancer of childhood, with a peak incidence between 2 and 5 years of age.",
+learningObjectives: [
+"Define ALL as a malignancy of lymphoblasts.",
+"Recognize its bimodal age distribution (childhood peak and smaller adult peak).",
+"Describe the typical clinical presentation related to bone marrow failure.",
+"Understand the importance of immunophenotyping to distinguish B-cell ALL from T-cell ALL."
+],
+tags: {
+organ: "Bone Marrow",
+system: "Hematopoietic & Lymphoid Systems",
+category: "Neoplastic",
+level: "Advanced"
+},
+etiology: [
+"Most cases are idiopathic.",
+"Associated with certain genetic syndromes like Down syndrome."
+],
+pathogenesis: "Caused by the clonal proliferation of a transformed hematopoietic stem cell that is committed to the lymphoid lineage. The accumulation of these non-functional blasts in the bone marrow suppresses normal hematopoiesis, leading to anemia, thrombocytopenia, and neutropenia.",
+morphology: {
+gross: "Patients may have hepatosplenomegaly and lymphadenopathy.",
+microscopic: "The bone marrow is hypercellular and packed with lymphoblasts. These are typically small cells with scant cytoplasm, fine chromatin, and inconspicuous nucleoli. The peripheral blood smear also shows circulating blasts.",
+imageHint: "acute lymphoblastic leukemia smear"
+},
+clinicalFeatures: "Presents with an abrupt onset of symptoms related to bone marrow failure: fatigue (anemia), bleeding/bruising (thrombocytopenia), and fever/infections (neutropenia). Bone pain is also common. T-cell ALL can present with a large mediastinal mass.",
+investigations: "CBC shows anemia, thrombocytopenia, and a variable white cell count with circulating blasts. Bone marrow biopsy is required for diagnosis. Immunophenotyping by flow cytometry is crucial to confirm the lymphoid lineage (e.g., TdT positivity) and determine if it is B-cell or T-cell ALL.",
+management: "Treatment involves intensive multi-agent chemotherapy with different phases (induction, consolidation, maintenance). Prophylactic treatment to the CNS is also given. Always check current local and international ALL treatment protocols.",
+complications: "Infection, bleeding, tumor lysis syndrome during chemotherapy.",
+prognosis: "Prognosis is excellent in children, with cure rates over 90%. It is less favorable in adults.",
+},
+{
+title: "Chronic Lymphocytic Leukemia (CLL)",
+overview: "Chronic lymphocytic leukemia is a low-grade B-cell neoplasm characterized by the progressive accumulation of mature-appearing but functionally incompetent lymphocytes. It is the most common leukemia of adults in the Western world.",
+learningObjectives: [
+"Recognize CLL as a common, indolent leukemia of the elderly.",
+"Describe the characteristic immunophenotype of the malignant B-cells.",
+"Identify 'smudge cells' on a peripheral blood smear.",
+"Understand the clinical course, from asymptomatic lymphocytosis to complications like immunosuppression."
+],
+tags: {
+organ: "Bone Marrow",
+system: "Hematopoietic & Lymphoid Systems",
+category: "Neoplastic",
+level: "Intermediate"
+},
+etiology: [
+"Unknown."
+],
+pathogenesis: "The disease results from the clonal proliferation of mature B-cells that are resistant to apoptosis, leading to their gradual accumulation in the blood, bone marrow, and lymph nodes.",
+morphology: {
+gross: "Patients often have generalized lymphadenopathy and hepatosplenomegaly.",
+microscopic: "Peripheral blood smear shows a marked lymphocytosis with small, mature-looking lymphocytes with scant cytoplasm and clumped 'soccer ball' chromatin. 'Smudge cells' (fragile lymphocytes that are disrupted during slide preparation) are characteristic. Bone marrow is infiltrated by these lymphocytes.",
+imageHint: "cll smudge cell smear"
+},
+clinicalFeatures: "Often discovered incidentally on a routine CBC showing lymphocytosis. Many patients are asymptomatic for years. When symptoms occur, they include fatigue, weight loss, and enlarged lymph nodes. Patients are immunosuppressed and are at increased risk for infections.",
+investigations: "Diagnosis is made by flow cytometry of the peripheral blood, which shows a clonal population of B-cells co-expressing CD5 and CD23, in addition to other B-cell markers like CD19 and CD20.",
+management: "Asymptomatic, early-stage disease is often managed with a 'watch and wait' approach. Treatment is initiated for symptomatic or advanced disease and may include chemotherapy, monoclonal antibodies (e.g., rituximab), or targeted therapies (e.g., BTK inhibitors like ibrutinib). Always check current local and international CLL guidelines.",
+complications: "Transformation to a more aggressive lymphoma (Richter's transformation), autoimmune hemolytic anemia, and infections.",
+prognosis: "Highly variable. Some patients have a very indolent course and may never require treatment, while others have more aggressive disease. Prognostic markers like IgHV mutation status and cytogenetic abnormalities (e.g., del17p) are important.",
+},
+{
+title: "Hodgkin Lymphoma",
+overview: "Hodgkin lymphoma is a lymphoid neoplasm characterized by the presence of a unique tumor cell, the Reed-Sternberg (RS) cell, within a mixed inflammatory background. It typically arises in a single lymph node or chain of nodes and spreads in a contiguous, predictable fashion.",
+learningObjectives: [
+"Identify the Reed-Sternberg cell as the diagnostic hallmark of Hodgkin lymphoma.",
+"Differentiate Hodgkin lymphoma from non-Hodgkin lymphomas based on clinical and pathological features.",
+"Recognize the different classical subtypes (e.g., Nodular Sclerosis).",
+"Understand the excellent prognosis with modern therapy."
+],
+tags: {
+organ: "Lymph Node",
+system: "Hematopoietic & Lymphoid Systems",
+category: "Neoplastic",
+level: "Classic"
+},
+etiology: [
+"Largely unknown, but linked to Epstein-Barr virus (EBV) infection in a subset of cases."
+],
+pathogenesis: "The Reed-Sternberg cell is a large, malignant B-lymphocyte that has lost its normal B-cell gene expression program. These rare tumor cells secrete cytokines that attract a large number of non-neoplastic inflammatory cells, which make up the bulk of the tumor mass.",
+morphology: {
+gross: "Painless enlargement of lymph nodes, most commonly in the cervical or mediastinal regions.",
+microscopic: "The diagnostic cell is the Reed-Sternberg cell: a very large cell with multiple nuclei or a single bilobed nucleus, each containing a large, eosinophilic, inclusion-like nucleolus ('owl eyes'). These cells are scattered within a background of reactive lymphocytes, eosinophils, and plasma cells. In the Nodular Sclerosis subtype (the most common), the lymph node is divided into nodules by bands of collagen.",
+imageHint: "hodgkin lymphoma reed sternberg"
+},
+clinicalFeatures: "Presents with painless lymphadenopathy. 'B symptoms' (fever, night sweats, weight loss) can be present and have prognostic significance. Pruritus (itching) is also common.",
+investigations: "Diagnosis requires an excisional lymph node biopsy. Immunohistochemistry is key: classic RS cells are positive for CD30 and CD15, and are usually negative for B-cell and T-cell markers like CD20 and CD3.",
+management: "Treatment involves chemotherapy and/or radiation therapy, with excellent cure rates, even in advanced stages. Always check current local and international Hodgkin lymphoma guidelines.",
+complications: "Secondary malignancies and cardiovascular disease are long-term complications of treatment.",
+prognosis: "One of the most curable cancers, with a 5-year survival rate of over 85%.",
+},
+{
+title: "Diffuse Large B-Cell Lymphoma (DLBCL)",
+overview: "Diffuse large B-cell lymphoma is the most common type of non-Hodgkin lymphoma in adults. It is an aggressive malignancy of mature B-lymphocytes that presents as a rapidly enlarging mass, often in a single lymph node or extranodal site.",
+learningObjectives: [
+"Recognize DLBCL as the most common non-Hodgkin lymphoma.",
+"Describe its aggressive clinical nature.",
+"Identify the key histologic features of a diffuse infiltrate of large, atypical lymphocytes.",
+"Understand the principles of multi-agent chemotherapy (R-CHOP)."
+],
+tags: {
+organ: "Lymph Node",
+system: "Hematopoietic & Lymphoid Systems",
+category: "Neoplastic",
+level: "Advanced"
+},
+etiology: [
+"Arises de novo in most cases.",
+"Can occur as a transformation from a lower-grade lymphoma (e.g., CLL or follicular lymphoma).",
+"Associated with immunodeficiency (e.g., HIV)."
+],
+pathogenesis: "DLBCL is a genetically heterogeneous disease with multiple different pathways of oncogenesis, often involving chromosomal translocations that lead to overexpression of oncogenes like BCL2 or MYC.",
+morphology: {
+gross: "Typically presents as a large, fleshy mass that replaces a lymph node or forms a tumor in an extranodal site (e.g., GI tract, brain).",
+microscopic: "The defining feature is a diffuse infiltrate of large, malignant lymphoid cells with vesicular nuclei, prominent nucleoli, and a moderate amount of cytoplasm. The normal architecture of the lymph node is completely effaced. There is a high mitotic rate.",
+imageHint: "dlbcl histology"
+},
+clinicalFeatures: "Presents as a rapidly enlarging, often symptomatic mass. Can arise in any location. 'B symptoms' (fever, night sweats, weight loss) are common. It is an aggressive but potentially curable lymphoma.",
+investigations: "Diagnosis requires an excisional biopsy. Immunohistochemistry confirms a B-cell lineage (CD20 positive). Staging is done with PET-CT scans.",
+management: "The standard of care is multi-agent immunochemotherapy, most commonly R-CHOP (Rituximab, Cyclophosphamide, Doxorubicin, Vincristine, Prednisone). Always check current local and international DLBCL guidelines.",
+complications: "Tumor lysis syndrome, bone marrow suppression from chemotherapy.",
+prognosis: "Potentially curable, with about 60-70% of patients achieving long-term remission with R-CHOP. Prognosis depends on factors like age, stage, and the International Prognostic Index (IPI) score.",
+},
+]
+}
+]
+},
+];
