@@ -113,7 +113,7 @@ export function EmergencyClient() {
         setMode('idle');
     };
 
-    const whatsAppMessage = `🚨 EMERGENCY ALERT 🚨\nPatient: ${emergencyPacket?.patient_name}\nLocation: https://www.google.com/maps/search/?api=1&query=${emergencyPacket?.location_latitude},${emergencyPacket?.location_longitude}\nAllergies: ${emergencyPacket?.allergies_summary}\nMedications: ${emergencyPacket?.key_medications}\nTime: ${emergencyPacket?.timestamp_local}`;
+    const whatsAppMessage = `🚨 EMERGENCY: ${emergencyPacket?.patient_name} needs help.\n\nLocation: https://www.google.com/maps/search/?api=1&query=${emergencyPacket?.location_latitude},${emergencyPacket?.location_longitude}\n\nAllergies: ${emergencyPacket?.allergies_summary}\nKey Meds: ${emergencyPacket?.key_medications}\n\nTime: ${emergencyPacket?.timestamp_local}`;
     
     if (!activePatientRecord) {
         return (
@@ -247,3 +247,5 @@ export function EmergencyClient() {
         </Card>
     );
 }
+
+    
