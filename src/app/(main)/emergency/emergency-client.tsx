@@ -11,6 +11,8 @@ import { Siren, HeartPulse, ShieldAlert, Phone, Map, MessageSquare, Loader2, Loc
 import { toast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 type Mode = 'idle' | 'confirming' | 'activating' | 'ready' | 'error';
 
@@ -67,6 +69,7 @@ export function EmergencyClient() {
     const [mode, setMode] = useState<Mode>('idle');
     const [locationState, setLocationState] = useState<LocationState>({ status: 'idle' });
     const [emergencyPacket, setEmergencyPacket] = useState<EmergencyPacket | null>(null);
+    const [consentGiven, setConsentGiven] = useState(false);
 
     const { getActivePatientRecord } = usePatient();
     const activePatientRecord = getActivePatientRecord();
@@ -111,6 +114,7 @@ export function EmergencyClient() {
 
     const handleCancel = () => {
         setMode('idle');
+        setConsentGiven(false);
     };
 
     const whatsAppMessage = `🚨 EMERGENCY: ${emergencyPacket?.patient_name} needs help.\n\nLocation: https://www.google.com/maps/search/?api=1&query=${emergencyPacket?.location_latitude},${emergencyPacket?.location_longitude}\n\nAllergies: ${emergencyPacket?.allergies_summary}\nKey Meds: ${emergencyPacket?.key_medications}\n\nTime: ${emergencyPacket?.timestamp_local}`;
@@ -211,6 +215,13 @@ export function EmergencyClient() {
                         </a>
                     </CardContent>
                 </Card>
+                 <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Important Disclaimer</AlertTitle>
+                    <AlertDescription>
+                        This is not a medical diagnosis. This is an alert based on symptoms matching a critical condition. Please seek immediate medical attention. In a life-threatening emergency call 1122 first.
+                    </AlertDescription>
+                </Alert>
                 <Button onClick={handleCancel} variant="outline">Deactivate Emergency Mode</Button>
             </div>
         )
@@ -234,12 +245,18 @@ export function EmergencyClient() {
                         <AlertDialogHeader>
                             <AlertDialogTitle>Confirm Emergency Activation</AlertDialogTitle>
                             <AlertDialogDescription>
-                                This will attempt to access your location and prepare your medical summary to be shared with caregivers and help services. Are you sure you want to proceed?
+                                This will attempt to access your location and share your medical summary with caregivers and emergency services. Are you sure you want to proceed?
                             </AlertDialogDescription>
                         </AlertDialogHeader>
+                        <div className="flex items-center space-x-2 my-4">
+                            <Checkbox id="terms" checked={consentGiven} onCheckedChange={(checked) => setConsentGiven(checked as boolean)} />
+                            <Label htmlFor="terms" className="text-sm text-muted-foreground">
+                                I consent to share my location and emergency medical summary with caregivers and emergency services for this emergency.
+                            </Label>
+                        </div>
                         <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={startEmergencySequence}>Yes, Activate</AlertDialogAction>
+                            <AlertDialogCancel onClick={() => setConsentGiven(false)}>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={startEmergencySequence} disabled={!consentGiven}>Yes, Activate</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
@@ -247,5 +264,3 @@ export function EmergencyClient() {
         </Card>
     );
 }
-
-    
