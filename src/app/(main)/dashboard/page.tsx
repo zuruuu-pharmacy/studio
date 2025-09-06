@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
 import { LifestyleSuggestions } from "./lifestyle-suggestions";
+import { motion } from "framer-motion";
 
 const pharmacistTools = [
   {
@@ -282,24 +283,30 @@ export default function DashboardPage() {
               </h2>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
                 {sectionTools.map((tool) => (
-                  <Card key={tool.href} className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col group">
-                    <CardHeader className="flex flex-row items-start gap-4">
-                      <div className={`p-3 bg-primary/10 rounded-lg ${tool.color}`}>
-                        <tool.icon className="w-8 h-8" />
-                      </div>
-                      <div className="flex-1">
-                        <CardTitle className="text-xl mb-1">{tool.title}</CardTitle>
-                        <CardDescription>{tool.description}</CardDescription>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="flex-grow flex items-end justify-end mt-auto">
-                      <Link href={tool.href} passHref>
-                        <Button variant="ghost" className="text-primary group-hover:bg-accent/50">
-                            Go to Page <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                        </Button>
-                      </Link>
-                    </CardContent>
-                  </Card>
+                  <motion.div
+                    key={tool.href}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <Card className="shadow-lg hover:shadow-primary/20 transition-shadow h-full flex flex-col group">
+                      <CardHeader className="flex flex-row items-start gap-4">
+                        <div className={`p-3 bg-primary/10 rounded-lg ${tool.color}`}>
+                          <tool.icon className="w-8 h-8" />
+                        </div>
+                        <div className="flex-1">
+                          <CardTitle className="text-xl mb-1">{tool.title}</CardTitle>
+                          <CardDescription>{tool.description}</CardDescription>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="flex-grow flex items-end justify-end mt-auto">
+                        <Link href={tool.href} passHref>
+                          <Button variant="ghost" className="text-primary group-hover:bg-accent/50">
+                              Go to Page <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 ))}
               </div>
             </section>
@@ -311,24 +318,30 @@ export default function DashboardPage() {
             </h2>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
               {tools.map((tool) => (
-                <Card key={tool.href} className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col group">
-                  <CardHeader className="flex flex-row items-start gap-4">
-                    <div className={`p-3 bg-primary/10 rounded-lg ${tool.color}`}>
-                      <tool.icon className="w-8 h-8" />
-                    </div>
-                    <div className="flex-1">
-                      <CardTitle className="text-xl mb-1">{tool.title}</CardTitle>
-                      <CardDescription>{tool.description}</CardDescription>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="flex-grow flex items-end justify-end mt-auto">
-                    <Link href={tool.href} passHref>
-                      <Button variant="ghost" className="text-primary group-hover:bg-accent/50">
-                          {mode === 'pharmacist' ? "Use Tool" : "Go to Page"} <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
+                 <motion.div
+                    key={tool.href}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <Card className="shadow-lg hover:shadow-primary/20 transition-shadow h-full flex flex-col group">
+                      <CardHeader className="flex flex-row items-start gap-4">
+                        <div className={`p-3 bg-primary/10 rounded-lg ${tool.color}`}>
+                          <tool.icon className="w-8 h-8" />
+                        </div>
+                        <div className="flex-1">
+                          <CardTitle className="text-xl mb-1">{tool.title}</CardTitle>
+                          <CardDescription>{tool.description}</CardDescription>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="flex-grow flex items-end justify-end mt-auto">
+                        <Link href={tool.href} passHref>
+                          <Button variant="ghost" className="text-primary group-hover:bg-accent/50">
+                              {mode === 'pharmacist' ? "Use Tool" : "Go to Page"} <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
               ))}
             </div>
           </section>
