@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useCallback }from "react";
-import { usePatient, type PatientRecord } from "@/contexts/patient-context";
+import { usePatient, type PatientRecord, type PatientHistory } from "@/contexts/patient-context";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -10,9 +10,10 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Siren, HeartPulse, ShieldAlert, Phone, Map, MessageSquare, Loader2, LocateFixed, CheckCircle, User } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import Link from "next/link";
-
+import { Badge } from "@/components/ui/badge";
 
 type Mode = 'idle' | 'confirming' | 'activating' | 'ready' | 'error';
+
 type LocationState = {
     status: 'idle' | 'fetching' | 'success' | 'error';
     lat?: number;
@@ -20,35 +21,43 @@ type LocationState = {
     accuracy?: number;
     error?: string;
 };
+
 type EmergencyPacket = {
-    name?: string;
-    age?: string;
-    bloodGroup?: string;
-    allergies?: string;
-    medications?: string;
-    conditions?: string;
-    location?: string;
-    mapsLink?: string;
-    timestamp?: string;
+    packet_id: string;
+    timestamp_local: string;
+    patient_name: string;
+    patient_age_or_DOB?: string;
+    location_latitude?: number;
+    location_longitude?: number;
+    location_address?: string;
+    location_accuracy_meters?: number;
+    allergies_summary: string;
+    key_medications: string;
+    critical_conditions: string;
+    primary_contact_name?: string;
+    primary_contact_phone?: string;
 };
 
-function MedicalSummary({ history }: { history: PatientRecord['history'] }) {
-    const criticalInfo = [
-        { label: 'Known Allergies', value: history.allergyHistory, important: true },
-        { label: 'Past Medical History', value: history.pastMedicalHistory, important: false },
-        { label: 'Current Medications', value: history.medicationHistory, important: false },
+
+function MedicalSummary({ packet }: { packet: EmergencyPacket | null }) {
+    if (!packet) return null;
+
+    const info = [
+        { label: 'Allergies', value: packet.allergies_summary, important: packet.allergies_summary !== 'Not Provided' },
+        { label: 'Critical Conditions', value: packet.critical_conditions, important: true },
+        { label: 'Key Medications', value: packet.key_medications, important: false },
     ];
     return (
         <Card className="bg-background/50">
             <CardHeader><CardTitle className="text-lg">Critical Medical Summary</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-                {criticalInfo.map(info => info.value && (
-                    <div key={info.label}>
-                        <h4 className="font-semibold">{info.label}</h4>
-                        <p className={`text-muted-foreground ${info.important ? 'font-bold text-destructive' : ''}`}>{info.value}</p>
+                {info.map(item => item.value && (
+                    <div key={item.label}>
+                        <h4 className="font-semibold">{item.label}</h4>
+                        <p className={`text-muted-foreground ${item.important ? 'font-bold text-destructive' : ''}`}>{item.value}</p>
                     </div>
                 ))}
-                {!criticalInfo.some(i => i.value) && <p className="text-muted-foreground">No critical information available.</p>}
+                 {!info.some(i => i.value) && <p className="text-muted-foreground">No critical information available.</p>}
             </CardContent>
         </Card>
     );
@@ -57,54 +66,54 @@ function MedicalSummary({ history }: { history: PatientRecord['history'] }) {
 export function EmergencyClient() {
     const [mode, setMode] = useState<Mode>('idle');
     const [locationState, setLocationState] = useState<LocationState>({ status: 'idle' });
-    const [emergencyPacket, setEmergencyPacket] = useState<EmergencyPacket>({});
-    const [caregiverNumber, setCaregiverNumber] = useState('');
+    const [emergencyPacket, setEmergencyPacket] = useState<EmergencyPacket | null>(null);
 
     const { getActivePatientRecord } = usePatient();
     const activePatientRecord = getActivePatientRecord();
+    const caregiverNumber = activePatientRecord?.history.caretakerPhoneNumber;
 
     const startEmergencySequence = useCallback(() => {
         setMode('activating');
         const packet: EmergencyPacket = {
-            name: activePatientRecord?.history.name || 'Unknown',
-            age: activePatientRecord?.history.age,
-            allergies: activePatientRecord?.history.allergyHistory || 'Not Provided',
-            medications: activePatientRecord?.history.medicationHistory || 'Not Provided',
-            conditions: activePatientRecord?.history.pastMedicalHistory || 'Not Provided',
-            timestamp: new Date().toLocaleString(),
+            packet_id: `emg_${Date.now()}`,
+            timestamp_local: new Date().toLocaleString(),
+            patient_name: activePatientRecord?.history.name || 'Unknown',
+            patient_age_or_DOB: activePatientRecord?.history.age,
+            allergies_summary: activePatientRecord?.history.allergyHistory || 'Not Provided',
+            key_medications: activePatientRecord?.history.medicationHistory || 'Not Provided',
+            critical_conditions: activePatientRecord?.history.pastMedicalHistory || 'Not Provided',
+            primary_contact_name: "Caretaker", // Placeholder
+            primary_contact_phone: caregiverNumber,
         };
-
-        if (!activePatientRecord?.history.caretakerPhoneNumber) {
-            toast({ title: "Missing Caregiver Number", description: "Please add a caregiver number to enable alerts." });
-        } else {
-            setCaregiverNumber(activePatientRecord.history.caretakerPhoneNumber);
-        }
 
         setLocationState({ status: 'fetching' });
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude, accuracy } = position.coords;
-                packet.location = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-                packet.mapsLink = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
-                setLocationState({ status: 'success', lat: latitude, lng: longitude, accuracy: accuracy });
-                setEmergencyPacket(packet);
+                setLocationState({ status: 'success', lat: latitude, lng: longitude, accuracy });
+                setEmergencyPacket({
+                    ...packet,
+                    location_latitude: latitude,
+                    location_longitude: longitude,
+                    location_accuracy_meters: accuracy,
+                    location_address: `Approx. location at ${latitude.toFixed(4)}, ${longitude.toFixed(4)}` // Placeholder for reverse geocoding
+                });
                 setMode('ready');
             },
             (err) => {
                 setLocationState({ status: 'error', error: `Location Error: ${err.message}` });
-                packet.location = "Unavailable";
-                setEmergencyPacket(packet);
+                setEmergencyPacket({ ...packet, location_address: 'Unavailable' });
                 setMode('ready'); 
             },
             { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
         );
-    }, [activePatientRecord]);
+    }, [activePatientRecord, caregiverNumber]);
 
     const handleCancel = () => {
         setMode('idle');
     };
 
-    const whatsAppMessage = `🚨 EMERGENCY ALERT 🚨\nPatient: ${emergencyPacket.name}\nLocation: ${emergencyPacket.mapsLink || emergencyPacket.location}\nAllergies: ${emergencyPacket.allergies}\nMedications: ${emergencyPacket.medications}\nTime: ${emergencyPacket.timestamp}`;
+    const whatsAppMessage = `🚨 EMERGENCY ALERT 🚨\nPatient: ${emergencyPacket?.patient_name}\nLocation: https://www.google.com/maps/search/?api=1&query=${emergencyPacket?.location_latitude},${emergencyPacket?.location_longitude}\nAllergies: ${emergencyPacket?.allergies_summary}\nMedications: ${emergencyPacket?.key_medications}\nTime: ${emergencyPacket?.timestamp_local}`;
     
     if (!activePatientRecord) {
         return (
@@ -141,7 +150,12 @@ export function EmergencyClient() {
         )
     }
     
-     if (mode === 'ready') {
+     if (mode === 'ready' && emergencyPacket) {
+        let accuracyBadgeColor = "bg-red-500";
+        if (locationState.accuracy) {
+            if (locationState.accuracy <= 30) accuracyBadgeColor = "bg-green-500";
+            else if (locationState.accuracy <= 100) accuracyBadgeColor = "bg-amber-500";
+        }
         return (
             <div className="space-y-6">
                 <Alert variant="destructive">
@@ -153,14 +167,18 @@ export function EmergencyClient() {
                 <Card>
                     <CardHeader><CardTitle>Your Information Packet</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
-                        <MedicalSummary history={activePatientRecord.history}/>
+                        <MedicalSummary packet={emergencyPacket}/>
                         <Card className="bg-background/50">
                            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><LocateFixed/> Your Location</CardTitle></CardHeader>
                            <CardContent>
                                 {locationState.status === 'success' ? (
                                     <>
-                                        <p>{emergencyPacket.location}</p>
-                                        {locationState.accuracy && <p className="text-xs text-muted-foreground">Accuracy: +/- {locationState.accuracy.toFixed(0)} meters</p>}
+                                        <p>{emergencyPacket.location_address}</p>
+                                        {locationState.accuracy && (
+                                            <Badge className={`mt-2 ${accuracyBadgeColor}`}>
+                                                Accuracy: +/- {locationState.accuracy.toFixed(0)} meters
+                                            </Badge>
+                                        )}
                                     </>
                                 ) : (
                                     <p className="text-destructive">{locationState.error || 'Could not get location.'}</p>
@@ -176,10 +194,14 @@ export function EmergencyClient() {
                         <a href="tel:1122">
                             <Button variant="destructive" className="w-full h-20 text-xl"><Phone className="mr-4"/>Call 1122</Button>
                         </a>
-                        {caregiverNumber && (
+                        {caregiverNumber ? (
                            <a href={`https://wa.me/${caregiverNumber}?text=${encodeURIComponent(whatsAppMessage)}`} target="_blank" rel="noopener noreferrer">
                              <Button variant="secondary" className="w-full h-20 text-xl bg-green-500 hover:bg-green-600 text-white"><MessageSquare className="mr-4"/>Alert Caregiver</Button>
                            </a>
+                        ) : (
+                            <Button variant="secondary" className="w-full h-20 text-xl" disabled>
+                                Caregiver Not Set
+                            </Button>
                         )}
                         <a href={`https://www.google.com/maps/search/?api=1&query=hospital+near+me`} target="_blank" rel="noopener noreferrer">
                              <Button variant="outline" className="w-full h-16"><Map className="mr-2"/>Find Nearby Hospitals</Button>
@@ -212,7 +234,7 @@ export function EmergencyClient() {
                         <AlertDialogHeader>
                             <AlertDialogTitle>Confirm Emergency Activation</AlertDialogTitle>
                             <AlertDialogDescription>
-                                This will share your location and medical summary with caregivers and help services. Are you sure you want to proceed?
+                                This will attempt to access your location and prepare your medical summary to be shared with caregivers and help services. Are you sure you want to proceed?
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
