@@ -92,7 +92,7 @@ const studentMenuSections = {
     { href: "/patients", label: "View All Patient Cases", icon: Users },
     { href: "/career-guidance", label: "Career Guidance", icon: Compass },
   ],
-  "🚀 Advanced / AI Features": [
+  "🚀 Advanced / AI-Powered Features": [
     { href: "/smart-search", label: "Smart Search", icon: Search },
     { href: "/ai-assistant", label: "AI Assistant Helper", icon: MessageCircleQuestion },
     { href: "/scan-medicine-strip", label: "AR Medicine Scanner", icon: Camera },
