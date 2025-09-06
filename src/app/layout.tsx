@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import './globals.css';
 import { ModeProvider } from '@/contexts/mode-context';
@@ -8,8 +7,16 @@ import { LectureNotesProvider } from '@/contexts/lecture-notes-context';
 import { OsceSessionsProvider } from '@/contexts/osce-sessions-context';
 import { DiscussionForumProvider } from '@/contexts/discussion-forum-context';
 import { PollsProvider } from '@/contexts/polls-context';
-import { AnimatePresence } from 'framer-motion';
 import { PathologyProvider } from '@/contexts/pathology-context';
+
+// ✅ Recommended way to load Google Fonts in Next.js App Router
+import { PT_Sans } from 'next/font/google';
+
+const ptSans = PT_Sans({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+});
 
 export const metadata: Metadata = {
   title: 'Zuruu AI Pharmacy',
@@ -23,12 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
-      </head>
-      <body>
+      <body className={ptSans.className} suppressHydrationWarning>
         <ModeProvider>
           <PatientProvider>
             <LectureNotesProvider>
@@ -36,7 +38,7 @@ export default function RootLayout({
                 <DiscussionForumProvider>
                   <PollsProvider>
                     <PathologyProvider>
-                        {children}
+                      {children}
                     </PathologyProvider>
                     <Toaster />
                   </PollsProvider>
