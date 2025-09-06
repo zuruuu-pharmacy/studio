@@ -841,6 +841,11 @@ export function PathologyProvider({ children }: { children: ReactNode }) {
   
   const contextValue = useMemo(() => ({ caseStudies, addCaseStudy, completedCases, toggleCaseCompletion }), [caseStudies, completedCases]);
 
+  // Prevent hydration mismatch by waiting for localStorage to load
+  if (!isLoaded) {
+    return null;
+  }
+
   return (
     <PathologyContext.Provider value={contextValue}>
       {children}

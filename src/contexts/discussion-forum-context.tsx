@@ -175,6 +175,11 @@ export function DiscussionForumProvider({ children }: { children: ReactNode }) {
   
   const contextValue = useMemo(() => ({ posts, addPost, addReply, upvoteReply, toggleBestAnswer, deletePost, deleteReply }), [posts]);
 
+  // Prevent hydration mismatch by waiting for localStorage to load
+  if (!isLoaded) {
+    return null;
+  }
+
   return (
     <DiscussionForumContext.Provider value={contextValue}>
       {children}

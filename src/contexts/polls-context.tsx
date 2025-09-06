@@ -97,6 +97,11 @@ export function PollsProvider({ children }: { children: ReactNode }) {
   
   const contextValue = useMemo(() => ({ polls, addPoll, vote, deletePoll }), [polls]);
 
+  // Prevent hydration mismatch by waiting for localStorage to load
+  if (!isLoaded) {
+    return null;
+  }
+
   return (
     <PollsContext.Provider value={contextValue}>
       {children}

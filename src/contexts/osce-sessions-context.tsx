@@ -66,6 +66,11 @@ export function OsceSessionsProvider({ children }: { children: ReactNode }) {
   
   const contextValue = useMemo(() => ({ sessions, addSession, deleteSession, getSession }), [sessions]);
 
+  // Prevent hydration mismatch by waiting for localStorage to load
+  if (!isLoaded) {
+    return null;
+  }
+
   return (
     <OsceSessionsContext.Provider value={contextValue}>
       {children}

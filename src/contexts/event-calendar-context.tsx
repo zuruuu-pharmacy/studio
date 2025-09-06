@@ -99,6 +99,11 @@ export function EventCalendarProvider({ children }: { children: ReactNode }) {
   
   const contextValue = useMemo(() => ({ events, addEvent, updateEvent, deleteEvent }), [events]);
 
+  // Prevent hydration mismatch by waiting for localStorage to load
+  if (!isLoaded) {
+    return null;
+  }
+
   return (
     <EventCalendarContext.Provider value={contextValue}>
       {children}

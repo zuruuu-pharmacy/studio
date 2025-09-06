@@ -295,6 +295,11 @@ export function PatientProvider({ children }: { children: ReactNode }) {
       addVotedPoll,
     }), [patientState]);
 
+  // Prevent hydration mismatch by waiting for localStorage to load
+  if (!isLoaded) {
+    return null;
+  }
+
   return (
     <PatientContext.Provider value={contextValue}>
       {children}

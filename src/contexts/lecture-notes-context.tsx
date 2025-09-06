@@ -65,6 +65,11 @@ export function LectureNotesProvider({ children }: { children: ReactNode }) {
   
   const contextValue = useMemo(() => ({ notes, addNote, deleteNote }), [notes]);
 
+  // Prevent hydration mismatch by waiting for localStorage to load
+  if (!isLoaded) {
+    return null;
+  }
+
   return (
     <LectureNotesContext.Provider value={contextValue}>
       {children}
