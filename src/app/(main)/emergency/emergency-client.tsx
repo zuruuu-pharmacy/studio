@@ -80,8 +80,8 @@ export function EmergencyClient() {
         const packet: EmergencyPacket = {
             packet_id: `emg_${Date.now()}`,
             timestamp_local: new Date().toLocaleString(),
-            patient_name: activePatientRecord?.history.name || 'Unknown',
-            patient_age_or_DOB: activePatientRecord?.history.age,
+            patient_name: activePatientRecord?.history.name || 'Unknown Patient',
+            patient_age_or_DOB: activePatientRecord?.history.age || 'N/A',
             allergies_summary: activePatientRecord?.history.allergyHistory || 'Not Provided',
             key_medications: activePatientRecord?.history.medicationHistory || 'Not Provided',
             critical_conditions: activePatientRecord?.history.pastMedicalHistory || 'Not Provided',
@@ -119,24 +119,6 @@ export function EmergencyClient() {
 
     const whatsAppMessage = `🚨 EMERGENCY: ${emergencyPacket?.patient_name} needs help.\n\nLocation: https://www.google.com/maps/search/?api=1&query=${emergencyPacket?.location_latitude},${emergencyPacket?.location_longitude}\n\nAllergies: ${emergencyPacket?.allergies_summary}\nKey Meds: ${emergencyPacket?.key_medications}\n\nTime: ${emergencyPacket?.timestamp_local}`;
     
-    if (!activePatientRecord) {
-        return (
-             <Card className="text-center">
-                <CardHeader>
-                    <CardTitle>No Active Patient</CardTitle>
-                    <CardDescription>
-                       Please select or create a patient profile to enable the Emergency Help feature.
-                    </CardDescription>
-                </CardHeader>
-                 <CardContent>
-                    <Link href="/patient-history">
-                        <Button><User className="mr-2"/> Go to Patient History</Button>
-                    </Link>
-                </CardContent>
-            </Card>
-        )
-    }
-
     if(mode === 'activating') {
         return (
             <Card className="text-center py-12 bg-destructive/10 border-destructive/50">
