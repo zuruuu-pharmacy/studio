@@ -54,7 +54,6 @@ const patientMenuItems = [
 const studentMenuSections = {
   "Overview": [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/patient-history", label: "My Health History", icon: User },
   ],
   "📚 Study & Learning Hub": [
     { href: "/lecture-notes", label: "Lecture Notes Library", icon: BookOpen },
@@ -89,6 +88,7 @@ const studentMenuSections = {
   "👥 Community & Collaboration": [
     { href: "/student-discussion-forum", label: "Student Discussion Forum", icon: MessageSquare },
     { href: "/student-polls", label: "Student Polls/Surveys", icon: ClipboardList },
+    { href: "/patient-history", label: "My Health History", icon: User },
     { href: "/patients", label: "View All Patient Cases", icon: Users },
     { href: "/career-guidance", label: "Career Guidance", icon: Compass },
   ],
