@@ -1,7 +1,7 @@
 
 "use client";
 
-import type { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookText, Calculator, FlaskConical, LayoutDashboard, ShieldAlert, ScanEye, User, Users, TestTube, ShieldEllipsis, School, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, Combine, CalendarDays, FolderOpen, Replace, BookA, MessageSquare, ClipboardList, MessageCircleQuestion, Compass, Search, BarChart, Camera, ScanSearch, WifiOff, Mic } from "lucide-react";
@@ -21,6 +21,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { useMode } from "@/contexts/mode-context";
 import { usePatient } from "@/contexts/patient-context";
 import { Avatar, AvatarFallback } from "./ui/avatar";
+import { motion } from "framer-motion";
 
 const pharmacistTools = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -204,7 +205,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             <ModeToggle />
           </header>
           <main className="flex-1 p-4 sm:p-6 lg:p-8">
-            {children}
+             <motion.div
+                key={pathname}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+              {children}
+            </motion.div>
           </main>
         </SidebarInset>
       </div>
