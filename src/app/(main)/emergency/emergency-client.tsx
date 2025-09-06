@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Siren, HeartPulse, ShieldAlert, Phone, Map, MessageSquare, Loader2, LocateFixed, CheckCircle, User } from "lucide-react";
+import { Siren, HeartPulse, ShieldAlert, Phone, Map, MessageSquare, Loader2, LocateFixed, CheckCircle, User, AlertTriangle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -226,7 +226,7 @@ export function EmergencyClient() {
                     <AlertTriangle className="h-4 w-4" />
                     <AlertTitle>Important Disclaimer</AlertTitle>
                     <AlertDescription>
-                        This feature helps you contact help — it is not a substitute for EMS. In a life-threatening emergency call 1122 first.
+                       This is not a medical diagnosis. This is an alert based on symptoms matching a critical condition. Please seek immediate medical attention.
                     </AlertDescription>
                 </Alert>
                 <Button onClick={handleCancel} variant="outline">Deactivate Emergency Mode</Button>
