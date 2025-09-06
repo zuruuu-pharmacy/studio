@@ -18,7 +18,6 @@ type LocationState = {
     lat?: number;
     lng?: number;
     accuracy?: number;
-    address?: string;
     error?: string;
 };
 type EmergencyPacket = {
@@ -84,10 +83,10 @@ export function EmergencyClient() {
         setLocationState({ status: 'fetching' });
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                const { latitude, longitude } = position.coords;
-                packet.location = `${latitude}, ${longitude}`;
+                const { latitude, longitude, accuracy } = position.coords;
+                packet.location = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
                 packet.mapsLink = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
-                setLocationState({ status: 'success', lat: latitude, lng: longitude, accuracy: position.coords.accuracy });
+                setLocationState({ status: 'success', lat: latitude, lng: longitude, accuracy: accuracy });
                 setEmergencyPacket(packet);
                 setMode('ready');
             },
@@ -97,7 +96,7 @@ export function EmergencyClient() {
                 setEmergencyPacket(packet);
                 setMode('ready'); 
             },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
         );
     }, [activePatientRecord]);
 
