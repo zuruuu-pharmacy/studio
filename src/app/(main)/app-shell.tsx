@@ -16,7 +16,6 @@ import {
   SidebarFooter,
   SidebarInset,
   SidebarTrigger,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useMode } from "@/contexts/mode-context";
