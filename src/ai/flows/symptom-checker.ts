@@ -168,6 +168,36 @@ const triagePrompt = ai.definePrompt({
 });
 
 
+// STEP 0: Red Flag Check
+const redFlagCheckPrompt = ai.definePrompt({
+    name: 'symptomRedFlagCheckPrompt',
+    input: { schema: z.object({ initialSymptoms: z.string() }) },
+    output: { schema: z.object({
+        isRedFlag: z.boolean().describe('Whether the symptoms match a red flag condition.'),
+        reason: z.string().optional().describe('The specific red flag matched.'),
+    })},
+    model: 'googleai/gemini-1.5-flash',
+    prompt: `You are a clinical safety AI. Your only job is to check if a user's stated symptoms match any item on a critical red flag list.
+
+    **Critical Red Flag List (Life-threatening emergencies):**
+    - Unresponsive / not breathing / gasping
+    - Severe chest pain with syncope or collapse
+    - Severe shortness of breath (speaking <3 words)
+    - Severe uncontrolled bleeding
+    - Major trauma with suspected head/spine injury
+    - Focal neurological signs (facial droop, arm weakness, slurred speech) suggesting stroke
+    - Seizure lasting >5 minutes or repeated without regaining consciousness
+    - Anaphylaxis signs (widespread hives, throat swelling, airway compromise, hypotension)
+    - Suspected cardiac arrest
+
+    **User's Symptoms:**
+    "{{{initialSymptoms}}}"
+
+    Analyze the user's symptoms. If they clearly match any item on the critical list, set isRedFlag to true and state the reason. Otherwise, set isRedFlag to false. Be very conservative; only flag clear, explicit matches.
+    `,
+});
+
+
 const symptomCheckerFlow = ai.defineFlow(
   {
     name: 'symptomCheckerFlow',
@@ -179,8 +209,25 @@ const symptomCheckerFlow = ai.defineFlow(
     if (input.answers && input.answers.length > 0) {
       const { output } = await analysisPrompt(input);
       return output!;
+    }
+    
+    // This is the first step. First, check for red flags.
+    const { output: redFlagResult } = await redFlagCheckPrompt({ initialSymptoms: input.initialSymptoms });
+
+    if (redFlagResult?.isRedFlag) {
+        // If a red flag is detected, bypass triage and return an immediate emergency response.
+        return {
+            analysis: {
+                possibleConditions: [{ name: redFlagResult.reason || 'Critical Emergency', likelihood: 'High' }],
+                severity: 'Red',
+                recommendation: 'Go to ER immediately or call an ambulance.',
+                mostRelevantSystem: 'General',
+                summaryForHistory: `Patient presented with red flag symptoms: ${input.initialSymptoms}. Immediate emergency care recommended for suspected ${redFlagResult.reason}.`,
+                disclaimer: 'This is not a medical diagnosis. This is an alert based on symptoms matching a critical condition. Please seek immediate medical attention.',
+            }
+        };
     } else {
-      // If we don't have answers, this is the first step. Run the triage prompt.
+      // If no red flags, proceed to generate triage questions.
       const { output } = await triagePrompt(input);
       return output!;
     }
