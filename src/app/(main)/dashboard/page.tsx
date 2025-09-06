@@ -155,232 +155,52 @@ const patientTools = [
     },
 ];
 
-const studentTools = [
-    {
-        icon: Search,
-        title: "Smart Search",
-        description: "Search drugs, diseases, and topics across the portal.",
-        href: "/smart-search",
-        color: "text-purple-500",
-    },
-    {
-        icon: User,
-        title: "My Health History",
-        description: "Fill out your personal health record for case studies.",
-        href: "/patient-history",
-        color: "text-blue-400",
-    },
-    {
-        icon: Users,
-        title: "View All Patient Cases",
-        description: "View all patient records entered into the system for learning.",
-        href: "/patients",
-        color: "text-cyan-500",
-    },
-    {
-        icon: Camera,
-        title: "Scan Medicine Strip",
-        description: "Use AR to identify a medicine strip and view its details.",
-        href: "/scan-medicine-strip",
-        color: "text-red-500",
-    },
-    {
-        icon: MessageSquare,
-        title: "Student Discussion Forum",
-        description: "Collaborate and discuss topics with your peers.",
-        href: "/student-discussion-forum",
-        color: "text-lime-500",
-    },
-    {
-        icon: ClipboardList,
-        title: "Student Polls/Surveys",
-        description: "Participate in academic and community polls.",
-        href: "/student-polls",
-        color: "text-orange-500",
-    },
-     {
-        icon: CaseSensitive,
-        title: "Clinical Case Simulator",
-        description: "Tackle realistic patient cases and get AI-driven feedback.",
-        href: "/clinical-case-simulator",
-        color: "text-teal-500",
-    },
-    {
-        icon: FileHeart,
-        title: "OSCE and Viva Preparation",
-        description: "Practice for your exams with AI-driven OSCE and viva scenarios.",
-        href: "/osce-viva-prep",
-        color: "text-cyan-600",
-    },
-     {
-        icon: TestTube,
-        title: "Pathology",
-        description: "Explore pathology resources and case studies.",
-        href: "/pathology",
-        color: "text-red-500",
-    },
-    {
-        icon: Compass,
-        title: "Career Guidance",
-        description: "Explore career paths and get guidance for your professional journey.",
-        href: "/career-guidance",
-        color: "text-amber-600",
-    },
-    {
-        icon: BarChart,
-        title: "Progress Tracker",
-        description: "Track your academic and career readiness.",
-        href: "/progress-tracker",
-        color: "text-indigo-500",
-    },
-    {
-        icon: FlaskConical,
-        title: "Drug Interaction Simulator",
-        description: "Explore and understand drug-drug interactions.",
-        href: "/interaction-checker",
-        color: "text-purple-500",
-    },
-     {
-        icon: Calculator,
-        title: "Drug Calculation Tool",
-        description: "Practice and verify patient-specific dosages.",
-        href: "/dose-calculator",
-        color: "text-green-500",
-    },
-    {
-        icon: Replace,
-        title: "Unit Converter",
-        description: "Perform common clinical unit conversions.",
-        href: "/unit-converter",
-        color: "text-fuchsia-500",
-    },
-    {
-        icon: BookOpen,
-        title: "Lecture Notes Library",
-        description: "Upload and browse study materials for your class.",
-        href: "/lecture-notes",
-        color: "text-amber-500",
-    },
-    {
-        icon: FolderOpen,
-        title: "Notes Organizer",
-        description: "Organize your personal study notes and materials.",
-        href: "/notes-organizer",
-        color: "text-sky-600",
-    },
-    {
-        icon: Library,
-        title: "AI E-Library",
-        description: "Search for any term and get instant, AI-powered definitions and summaries.",
-        href: "/e-library",
-        color: "text-sky-500",
-    },
-     {
-        icon: Video,
-        title: "MOA Animation Library",
-        description: "Watch short, engaging animations of drug mechanisms of action.",
-        href: "/moa-animations",
-        color: "text-rose-500",
-    },
-    {
-        icon: Network,
-        title: "Drug Classification Tree",
-        description: "Visually explore drug classes with an interactive tree.",
-        href: "/drug-classification-tree",
-        color: "text-blue-500",
-    },
-    {
-        icon: GraduationCap,
-        title: "Study Material Generator",
-        description: "Generate a full study guide on any topic with a case study and quiz.",
-        href: "/study-material-generator",
-        color: "text-violet-500",
-    },
-     {
-        icon: Leaf,
-        title: "Herbal Knowledge Hub",
-        description: "Explore a detailed AI-powered pharmaco-botanical encyclopedia.",
-        href: "/herbal-hub",
-        color: "text-green-600",
-    },
-    {
-        icon: FileHeart,
-        title: "Flashcard Generator",
-        description: "Automatically create study flashcards from your lecture notes.",
-        href: "/flashcard-generator",
-        color: "text-rose-500",
-    },
-    {
-        icon: HelpCircle,
-        title: "MCQ Bank",
-        description: "Practice exam-style questions with AI-generated quizzes on any topic.",
-        href: "/mcq-bank",
-        color: "text-indigo-500",
-    },
-    {
-        icon: FileJson,
-        title: "SOP Repository",
-        description: "Generate and review Standard Operating Procedures for lab practicals.",
-        href: "/sop-repository",
-        color: "text-orange-600",
-    },
-    {
-        icon: Beaker,
-        title: "Virtual Lab Simulator",
-        description: "Run narrative-based lab simulations with AI-guided steps and feedback.",
-        href: "/virtual-lab-simulator",
-        color: "text-fuchsia-500",
-    },
-    {
-        icon: Puzzle,
-        title: "Pharma Games & Puzzles",
-        description: "Learn pharmacology concepts through interactive games and puzzles.",
-        href: "/pharma-games",
-        color: "text-pink-500",
-    },
-    {
-        icon: Combine,
-        title: "Mnemonic Generator",
-        description: "Create memorable Roman Urdu mnemonics for any medical topic.",
-        href: "/mnemonic-generator",
-        color: "text-teal-500",
-    },
-    {
-        icon: BookA,
-        title: "Reference Citation Tool",
-        description: "Generate academic citations for a given text in various styles.",
-        href: "/reference-generator",
-        color: "text-slate-500",
-    },
-    {
-        icon: ScanSearch,
-        title: "Plagiarism Checker",
-        description: "Check your assignments for plagiarism before submission.",
-        href: "/plagiarism-checker",
-        color: "text-red-500",
-    },
-    {
-        icon: CalendarDays,
-        title: "AI Study Planner",
-        description: "Generate a personalized study timetable for your subjects and exams.",
-        href: "/study-planner",
-        color: "text-indigo-500",
-    },
-    {
-        icon: WifiOff,
-        title: "Offline Mode",
-        description: "Download key study materials to continue learning seamlessly, even without an internet connection.",
-        href: "/offline-mode",
-        color: "text-gray-500",
-    },
-    {
-        icon: Mic,
-        title: "Text-to-Speech",
-        description: "Convert any text into spoken audio to listen on the go.",
-        href: "/text-to-speech",
-        color: "text-blue-500",
-    }
-];
+const studentToolSections = {
+  "📚 Study Materials & Learning Hub": [
+    { icon: BookOpen, title: "Lecture Notes Library", description: "Upload and browse study materials for your class.", href: "/lecture-notes", color: "text-amber-500" },
+    { icon: FolderOpen, title: "Notes Organizer", description: "Organize your personal study notes and materials.", href: "/notes-organizer", color: "text-sky-600" },
+    { icon: Library, title: "AI E-Library", description: "Search for any term and get instant, AI-powered definitions and summaries.", href: "/e-library", color: "text-sky-500" },
+    { icon: Video, title: "MOA Animation Library", description: "Watch short, engaging animations of drug mechanisms of action.", href: "/moa-animations", color: "text-rose-500" },
+    { icon: Network, title: "Drug Classification Tree", description: "Visually explore drug classes with an interactive tree.", href: "/drug-classification-tree", color: "text-blue-500" },
+    { icon: Leaf, title: "Herbal Knowledge Hub", description: "Explore a detailed AI-powered pharmaco-botanical encyclopedia.", href: "/herbal-hub", color: "text-green-600" },
+    { icon: FileJson, title: "SOP Repository", description: "Generate and review Standard Operating Procedures for lab practicals.", href: "/sop-repository", color: "text-orange-600" },
+    { icon: WifiOff, title: "Offline Mode", description: "Download key study materials to continue learning seamlessly, even without an internet connection.", href: "/offline-mode", color: "text-gray-500" },
+    { icon: Mic, title: "Text-to-Speech", description: "Convert any text into spoken audio to listen on the go.", href: "/text-to-speech", color: "text-blue-500" },
+  ],
+  "🎓 Interactive Learning & Practice": [
+    { icon: CaseSensitive, title: "Clinical Case Simulator", description: "Tackle realistic patient cases and get AI-driven feedback.", href: "/clinical-case-simulator", color: "text-teal-500" },
+    { icon: FileHeart, title: "OSCE and Viva Preparation", description: "Practice for your exams with AI-driven OSCE and viva scenarios.", href: "/osce-viva-prep", color: "text-cyan-600" },
+    { icon: FlaskConical, title: "Drug Interaction Simulator", description: "Explore and understand drug-drug interactions.", href: "/interaction-checker", color: "text-purple-500" },
+    { icon: Calculator, title: "Drug Calculation Tool", description: "Practice and verify patient-specific dosages.", href: "/dose-calculator", color: "text-green-500" },
+    { icon: Replace, title: "Unit Converter", description: "Perform common clinical unit conversions.", href: "/unit-converter", color: "text-fuchsia-500" },
+    { icon: Beaker, title: "Virtual Lab Simulator", description: "Run narrative-based lab simulations with AI-guided steps and feedback.", href: "/virtual-lab-simulator", color: "text-fuchsia-500" },
+    { icon: Puzzle, title: "Pharma Games & Puzzles", description: "Learn pharmacology concepts through interactive games and puzzles.", href: "/pharma-games", color: "text-pink-500" },
+    { icon: Combine, title: "Mnemonic Generator", description: "Create memorable Roman Urdu mnemonics for any medical topic.", href: "/mnemonic-generator", color: "text-teal-500" },
+  ],
+  "🧑‍🎓 Student Tools & Productivity": [
+    { icon: GraduationCap, title: "Study Material Generator", description: "Generate a full study guide on any topic with a case study and quiz.", href: "/study-material-generator", color: "text-violet-500" },
+    { icon: FileHeart, title: "Flashcard Generator", description: "Automatically create study flashcards from your lecture notes.", href: "/flashcard-generator", color: "text-rose-500" },
+    { icon: HelpCircle, title: "MCQ Bank", description: "Practice exam-style questions with AI-generated quizzes on any topic.", href: "/mcq-bank", color: "text-indigo-500" },
+    { icon: BookA, title: "Reference Citation Tool", description: "Generate academic citations for a given text in various styles.", href: "/reference-generator", color: "text-slate-500" },
+    { icon: ScanSearch, title: "Plagiarism Checker", description: "Check your assignments for plagiarism before submission.", href: "/plagiarism-checker", color: "text-red-500" },
+    { icon: CalendarDays, title: "AI Study Planner", description: "Generate a personalized study timetable for your subjects and exams.", href: "/study-planner", color: "text-indigo-500" },
+    { icon: BarChart, title: "Progress Tracker", description: "Track your academic and career readiness.", href: "/progress-tracker", color: "text-indigo-500" },
+  ],
+  "👥 Community & Collaboration": [
+    { icon: MessageSquare, title: "Student Discussion Forum", description: "Collaborate and discuss topics with your peers.", href: "/student-discussion-forum", color: "text-lime-500" },
+    { icon: ClipboardList, title: "Student Polls/Surveys", description: "Participate in academic and community polls.", href: "/student-polls", color: "text-orange-500" },
+    { icon: User, title: "My Health History", description: "Fill out your personal health record for case studies.", href: "/patient-history", color: "text-blue-400" },
+    { icon: Users, title: "View All Patient Cases", description: "View all patient records entered into the system for learning.", href: "/patients", color: "text-cyan-500" },
+    { icon: Compass, title: "Career Guidance", description: "Explore career paths and get guidance for your professional journey.", href: "/career-guidance", color: "text-amber-600" },
+  ],
+  "🚀 Advanced / AI-Powered Features": [
+    { icon: Search, title: "Smart Search", description: "Search drugs, diseases, and topics across the portal.", href: "/smart-search", color: "text-purple-500" },
+    { icon: Camera, title: "Scan Medicine Strip", description: "Use AR to identify a medicine strip and view its details.", href: "/scan-medicine-strip", color: "text-red-500" },
+    { icon: TestTube, title: "Pathology", description: "Explore pathology resources and case studies.", href: "/pathology", color: "text-red-500" },
+    { icon: MessageCircleQuestion, title: "AI Assistant Helper", description: "Ask any pharmacy-related question and get a comprehensive, synthesized response from Zuruu AI.", href: "/ai-assistant", color: "text-blue-500" },
+  ],
+};
+
 
 export default function DashboardPage() {
   const { mode } = useMode();
@@ -392,7 +212,6 @@ export default function DashboardPage() {
   const tools = {
     'pharmacist': pharmacistTools,
     'patient': patientTools,
-    'student': studentTools,
   }[mode] || [];
   
   const name = activeUser?.demographics?.name || (mode === 'patient' ? "Patient" : mode === 'student' ? 'Student' : 'Pharmacist');
@@ -454,34 +273,66 @@ export default function DashboardPage() {
             <LifestyleSuggestions patientHistory={activePatientRecord.history}/>
           </section>
         )}
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-4 text-foreground/90">
-             {toolsHeader}
-          </h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-            {tools.map((tool) => (
-              <Card key={tool.href} className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col group">
-                <CardHeader className="flex flex-row items-start gap-4">
-                  <div className={`p-3 bg-primary/10 rounded-lg ${tool.color}`}>
-                    <tool.icon className="w-8 h-8" />
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-xl mb-1">{tool.title}</CardTitle>
-                    <CardDescription>{tool.description}</CardDescription>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-grow flex items-end justify-end mt-auto">
-                  <Link href={tool.href} passHref>
-                    <Button variant="ghost" className="text-primary group-hover:bg-accent/50">
-                        {mode === 'pharmacist' ? "Use Tool" : "Go to Page"} <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
+        
+        {mode === 'student' ? (
+          Object.entries(studentToolSections).map(([sectionTitle, sectionTools]) => (
+            <section key={sectionTitle}>
+              <h2 className="text-2xl font-semibold mb-4 text-foreground/90">
+                {sectionTitle}
+              </h2>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+                {sectionTools.map((tool) => (
+                  <Card key={tool.href} className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col group">
+                    <CardHeader className="flex flex-row items-start gap-4">
+                      <div className={`p-3 bg-primary/10 rounded-lg ${tool.color}`}>
+                        <tool.icon className="w-8 h-8" />
+                      </div>
+                      <div className="flex-1">
+                        <CardTitle className="text-xl mb-1">{tool.title}</CardTitle>
+                        <CardDescription>{tool.description}</CardDescription>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="flex-grow flex items-end justify-end mt-auto">
+                      <Link href={tool.href} passHref>
+                        <Button variant="ghost" className="text-primary group-hover:bg-accent/50">
+                            Go to Page <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </section>
+          ))
+        ) : (
+          <section>
+            <h2 className="text-2xl font-semibold mb-4 text-foreground/90">
+              {toolsHeader}
+            </h2>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+              {tools.map((tool) => (
+                <Card key={tool.href} className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col group">
+                  <CardHeader className="flex flex-row items-start gap-4">
+                    <div className={`p-3 bg-primary/10 rounded-lg ${tool.color}`}>
+                      <tool.icon className="w-8 h-8" />
+                    </div>
+                    <div className="flex-1">
+                      <CardTitle className="text-xl mb-1">{tool.title}</CardTitle>
+                      <CardDescription>{tool.description}</CardDescription>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="flex-grow flex items-end justify-end mt-auto">
+                    <Link href={tool.href} passHref>
+                      <Button variant="ghost" className="text-primary group-hover:bg-accent/50">
+                          {mode === 'pharmacist' ? "Use Tool" : "Go to Page"} <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
   );
 }
