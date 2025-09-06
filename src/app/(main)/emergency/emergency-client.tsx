@@ -6,19 +6,35 @@ import { usePatient, type PatientRecord } from "@/contexts/patient-context";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Siren, HeartPulse, ShieldAlert, Phone, Map, MessageSquare, Loader2, LocateFixed, BadgeCheck, XCircle, Info, User } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Siren, HeartPulse, ShieldAlert, Phone, Map, MessageSquare, Loader2, LocateFixed, BadgeCheck, XCircle, Info, User, CheckCircle, Smartphone } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
 
-type Mode = 'idle' | 'confirming' | 'activating' | 'ready' | 'error';
-type Location = {
-    lat: number;
-    lng: number;
-    accuracy: number;
-} | null;
+type Mode = 'idle' | 'pending' | 'gathering' | 'ready' | 'error';
+type LocationState = {
+    status: 'idle' | 'fetching' | 'success' | 'error';
+    lat?: number;
+    lng?: number;
+    accuracy?: number;
+    address?: string;
+    error?: string;
+};
+type EmergencyPacket = {
+    name?: string;
+    age?: string;
+    bloodGroup?: string;
+    allergies?: string;
+    medications?: string;
+    conditions?: string;
+    location?: string;
+    mapsLink?: string;
+    timestamp?: string;
+};
 
 function MedicalSummary({ history }: { history: PatientRecord['history'] }) {
     const criticalInfo = [
@@ -36,6 +52,7 @@ function MedicalSummary({ history }: { history: PatientRecord['history'] }) {
                         <p className={`text-muted-foreground ${info.important ? 'font-bold text-destructive' : ''}`}>{info.value}</p>
                     </div>
                 ))}
+                {!criticalInfo.some(i => i.value) && <p className="text-muted-foreground">No critical information available.</p>}
             </CardContent>
         </Card>
     );
@@ -43,43 +60,72 @@ function MedicalSummary({ history }: { history: PatientRecord['history'] }) {
 
 export function EmergencyClient() {
     const [mode, setMode] = useState<Mode>('idle');
-    const [location, setLocation] = useState<Location>(null);
-    const [error, setError] = useState<string | null>(null);
-    const { getActivePatientRecord } = usePatient();
+    const [countdown, setCountdown] = useState(5);
+    const [locationState, setLocationState] = useState<LocationState>({ status: 'idle' });
+    const [emergencyPacket, setEmergencyPacket] = useState<EmergencyPacket>({});
+    const [caregiverNumber, setCaregiverNumber] = useState('');
+
+    const { getActivePatientRecord, addOrUpdatePatientRecord } = usePatient();
     const activePatientRecord = getActivePatientRecord();
 
-    const requestLocation = useCallback(() => {
-        setMode('activating');
-        setError(null);
-        
+    const startEmergencySequence = useCallback(() => {
+        setMode('gathering');
+        // Step 2 & 3: Gather Info and Location
+        const packet: EmergencyPacket = {
+            name: activePatientRecord?.history.name || 'Unknown',
+            age: activePatientRecord?.history.age,
+            allergies: activePatientRecord?.history.allergyHistory || 'Not Provided',
+            medications: activePatientRecord?.history.medicationHistory || 'Not Provided',
+            conditions: activePatientRecord?.history.pastMedicalHistory || 'Not Provided',
+            timestamp: new Date().toLocaleString(),
+        };
+
+        if (!activePatientRecord?.history.caretakerPhoneNumber) {
+            toast({ title: "Missing Caregiver Number", description: "Please add a caregiver number to enable alerts." });
+        } else {
+            setCaregiverNumber(activePatientRecord.history.caretakerPhoneNumber);
+        }
+
+        setLocationState({ status: 'fetching' });
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                setLocation({
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                    accuracy: position.coords.accuracy,
-                });
+                const { latitude, longitude } = position.coords;
+                packet.location = `${latitude}, ${longitude}`;
+                packet.mapsLink = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+                setLocationState({ status: 'success', lat: latitude, lng: longitude, accuracy: position.coords.accuracy });
+                setEmergencyPacket(packet);
                 setMode('ready');
             },
             (err) => {
-                setError(`Location Error: ${err.message}. Please enable location services.`);
-                setMode('error');
+                setLocationState({ status: 'error', error: `Location Error: ${err.message}` });
+                packet.location = "Unavailable";
+                setEmergencyPacket(packet);
+                setMode('ready'); // Still proceed to ready state
             },
-            { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         );
-    }, []);
+    }, [activePatientRecord]);
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (mode === 'pending' && countdown > 0) {
+            timer = setTimeout(() => setCountdown(c => c - 1), 1000);
+        } else if (mode === 'pending' && countdown === 0) {
+            startEmergencySequence();
+        }
+        return () => clearTimeout(timer);
+    }, [mode, countdown, startEmergencySequence]);
 
     const handleActivate = () => {
-        setMode('confirming');
-    };
-    
-    const handleConfirm = () => {
-        requestLocation();
+        setCountdown(5);
+        setMode('pending');
     };
 
     const handleCancel = () => {
         setMode('idle');
     };
+
+    const whatsAppMessage = `🚨 EMERGENCY ALERT 🚨\nPatient: ${emergencyPacket.name}\nLocation: ${emergencyPacket.mapsLink || emergencyPacket.location}\nAllergies: ${emergencyPacket.allergies}\nMedications: ${emergencyPacket.medications}\nTime: ${emergencyPacket.timestamp}`;
     
     if (!activePatientRecord) {
         return (
@@ -99,111 +145,100 @@ export function EmergencyClient() {
         )
     }
 
-    const { name, caretakerPhoneNumber } = activePatientRecord.history;
-    const whatsAppMessage = location
-      ? `⚠️ EMERGENCY: ${name || 'Patient'} requires help. Current Location (±${location.accuracy.toFixed(0)}m): https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}`
-      : `⚠️ EMERGENCY: ${name || 'Patient'} requires help. Location could not be determined.`;
+    if(mode === 'pending' || mode === 'gathering') {
+        return (
+            <Card className="text-center py-12 bg-destructive/10 border-destructive/50">
+                <CardHeader>
+                    <Siren className="mx-auto h-16 w-16 text-destructive animate-pulse mb-4" />
+                    <CardTitle className="text-3xl text-destructive">
+                        {mode === 'pending' ? 'Emergency Mode Activating...' : 'Gathering Information...'}
+                    </CardTitle>
+                    {mode === 'pending' && (
+                        <CardDescription className="text-xl">
+                            Activating in {countdown}
+                        </CardDescription>
+                    )}
+                     {mode === 'gathering' && (
+                        <CardDescription className="flex items-center justify-center gap-2">
+                           <Loader2 className="animate-spin"/> Please wait...
+                        </CardDescription>
+                    )}
+                </CardHeader>
+                <CardContent>
+                    {mode === 'pending' && (
+                        <Button onClick={handleCancel} variant="secondary" size="lg">Cancel</Button>
+                    )}
+                </CardContent>
+            </Card>
+        )
+    }
+    
+     if (mode === 'ready') {
+        return (
+            <div className="space-y-6">
+                <Alert variant="destructive">
+                    <Siren className="h-4 w-4"/>
+                    <AlertTitle>Emergency Mode Active</AlertTitle>
+                    <AlertDescription>Your information is ready to be shared. Take action below.</AlertDescription>
+                </Alert>
 
+                <Card>
+                    <CardHeader><CardTitle>Your Information Packet</CardTitle></CardHeader>
+                    <CardContent className="space-y-4">
+                        <MedicalSummary history={activePatientRecord.history}/>
+                        <Card className="bg-background/50">
+                           <CardHeader><CardTitle className="text-lg flex items-center gap-2"><LocateFixed/> Your Location</CardTitle></CardHeader>
+                           <CardContent>
+                                {locationState.status === 'success' ? (
+                                    <>
+                                        <p>{emergencyPacket.location}</p>
+                                        {locationState.accuracy && <p className="text-xs text-muted-foreground">Accuracy: +/- {locationState.accuracy.toFixed(0)} meters</p>}
+                                    </>
+                                ) : (
+                                    <p className="text-destructive">{locationState.error || 'Could not get location.'}</p>
+                                )}
+                           </CardContent>
+                        </Card>
+                    </CardContent>
+                </Card>
+                
+                 <Card>
+                    <CardHeader><CardTitle>Quick Actions</CardTitle></CardHeader>
+                    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <a href="tel:1122">
+                            <Button variant="destructive" className="w-full h-20 text-xl"><Phone className="mr-4"/>Call 1122</Button>
+                        </a>
+                        {caregiverNumber && (
+                           <a href={`https://wa.me/${caregiverNumber}?text=${encodeURIComponent(whatsAppMessage)}`} target="_blank" rel="noopener noreferrer">
+                             <Button variant="secondary" className="w-full h-20 text-xl bg-green-500 hover:bg-green-600 text-white"><MessageSquare className="mr-4"/>Alert Caregiver</Button>
+                           </a>
+                        )}
+                        <a href={`https://www.google.com/maps/search/?api=1&query=hospital+near+me`} target="_blank" rel="noopener noreferrer">
+                             <Button variant="outline" className="w-full h-16"><Map className="mr-2"/>Find Nearby Hospitals</Button>
+                        </a>
+                         <a href={`https://www.google.com/maps/search/?api=1&query=pharmacy+near+me`} target="_blank" rel="noopener noreferrer">
+                             <Button variant="outline" className="w-full h-16"><Map className="mr-2"/>Find Nearby Pharmacies</Button>
+                        </a>
+                    </CardContent>
+                </Card>
+                <Button onClick={handleCancel} variant="outline">Deactivate Emergency Mode</Button>
+            </div>
+        )
+     }
 
     return (
-        <div className="space-y-6">
-            {mode === 'idle' && (
-                 <Card className="text-center py-12 bg-destructive/10 border-destructive/50">
-                    <CardHeader>
-                        <Siren className="mx-auto h-16 w-16 text-destructive mb-4" />
-                        <CardTitle className="text-3xl text-destructive">Emergency Mode</CardTitle>
-                        <CardDescription className="max-w-md mx-auto">
-                            Only use this feature in a genuine emergency. It will access your location and prepare to share your critical medical data with a caregiver or emergency services.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Button size="lg" variant="destructive" onClick={handleActivate}>
-                           Activate Emergency Mode
-                        </Button>
-                    </CardContent>
-                </Card>
-            )}
-
-             <AlertDialog open={mode === 'confirming'} onOpenChange={(open) => !open && setMode('idle')}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Confirm Emergency Activation</AlertDialogTitle>
-                        <AlertDialogDescription>
-                           This will share your location and medical summary with caregivers and help services. Are you sure you want to proceed?
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleConfirm} className="bg-destructive hover:bg-destructive/90">Yes, Share & Activate</AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-            
-            {mode === 'activating' && (
-                <Card className="text-center py-12">
-                    <CardContent className="flex flex-col items-center gap-4">
-                        <Loader2 className="h-12 w-12 text-primary animate-spin" />
-                        <p className="text-muted-foreground">Getting location... Please allow location access.</p>
-                    </CardContent>
-                </Card>
-            )}
-            
-            {mode === 'error' && (
-                 <Alert variant="destructive">
-                    <XCircle className="h-4 w-4" />
-                    <AlertTitle>Activation Failed</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
-                    <div className="mt-4 flex gap-4">
-                        <Button variant="secondary" onClick={requestLocation}>Retry</Button>
-                        <a href="tel:1122"><Button>Call 1122 Directly</Button></a>
-                    </div>
-                </Alert>
-            )}
-
-            {mode === 'ready' && (
-                <div className="space-y-6">
-                    <Alert variant="default" className="bg-green-500/10 border-green-500">
-                        <BadgeCheck className="h-4 w-4 text-green-600"/>
-                        <AlertTitle className="text-green-700">Emergency Mode Activated</AlertTitle>
-                        <AlertDescription className="flex justify-between items-center">
-                            <span>Your information is ready to be shared.</span>
-                            <Button variant="secondary" size="sm" onClick={handleCancel}>Cancel Emergency</Button>
-                        </AlertDescription>
-                    </Alert>
-
-                     {location && (
-                        <Card>
-                            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><LocateFixed/>Your Location</CardTitle></CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground">Location acquired with an accuracy of {location.accuracy.toFixed(0)} meters.</p>
-                                 <div className="flex gap-2 mt-2">
-                                     <a href={`https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}`} target="_blank" rel="noopener noreferrer">
-                                        <Button variant="outline"><Map className="mr-2"/>Open in Maps</Button>
-                                    </a>
-                                 </div>
-                            </CardContent>
-                        </Card>
-                    )}
-
-                    <Card>
-                        <CardHeader><CardTitle className="text-lg">Quick Actions</CardTitle></CardHeader>
-                        <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <a href="tel:1122">
-                                <Button variant="destructive" className="w-full h-full text-lg py-4"><Phone className="mr-2"/>Call 1122</Button>
-                            </a>
-                            <a href={`https://wa.me/${caretakerPhoneNumber}?text=${encodeURIComponent(whatsAppMessage)}`} target="_blank" rel="noopener noreferrer">
-                                <Button className="w-full h-full text-lg py-4 bg-green-600 hover:bg-green-700"><MessageSquare className="mr-2"/>Share Location (WhatsApp)</Button>
-                            </a>
-                            <a href={`tel:${caretakerPhoneNumber}`}>
-                               <Button variant="secondary" className="w-full h-full text-lg py-4"><Phone className="mr-2"/>Call Caregiver</Button>
-                            </a>
-                        </CardContent>
-                    </Card>
-
-                    <MedicalSummary history={activePatientRecord.history} />
-                </div>
-            )}
-        </div>
+        <Card className="text-center py-12">
+            <CardHeader>
+                <Siren className="mx-auto h-16 w-16 text-muted-foreground mb-4"/>
+                <CardTitle className="text-3xl">Activate Emergency Mode</CardTitle>
+                <CardDescription>This will start the process of gathering and sharing your critical information.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Button onClick={handleActivate} size="lg" variant="destructive" className="text-xl h-16 px-12">
+                    <ShieldAlert className="mr-4"/> Activate
+                </Button>
+            </CardContent>
+        </Card>
     );
 }
 
