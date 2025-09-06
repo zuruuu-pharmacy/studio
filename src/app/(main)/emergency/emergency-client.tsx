@@ -6,16 +6,13 @@ import { usePatient, type PatientRecord } from "@/contexts/patient-context";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Siren, HeartPulse, ShieldAlert, Phone, Map, MessageSquare, Loader2, LocateFixed, BadgeCheck, XCircle, Info, User, CheckCircle, Smartphone } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Siren, HeartPulse, ShieldAlert, Phone, Map, MessageSquare, Loader2, LocateFixed, CheckCircle, User } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { Progress } from "@/components/ui/progress";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
 
-type Mode = 'idle' | 'pending' | 'gathering' | 'ready' | 'error';
+type Mode = 'idle' | 'confirming' | 'activating' | 'ready' | 'error';
 type LocationState = {
     status: 'idle' | 'fetching' | 'success' | 'error';
     lat?: number;
@@ -60,17 +57,15 @@ function MedicalSummary({ history }: { history: PatientRecord['history'] }) {
 
 export function EmergencyClient() {
     const [mode, setMode] = useState<Mode>('idle');
-    const [countdown, setCountdown] = useState(5);
     const [locationState, setLocationState] = useState<LocationState>({ status: 'idle' });
     const [emergencyPacket, setEmergencyPacket] = useState<EmergencyPacket>({});
     const [caregiverNumber, setCaregiverNumber] = useState('');
 
-    const { getActivePatientRecord, addOrUpdatePatientRecord } = usePatient();
+    const { getActivePatientRecord } = usePatient();
     const activePatientRecord = getActivePatientRecord();
 
     const startEmergencySequence = useCallback(() => {
-        setMode('gathering');
-        // Step 2 & 3: Gather Info and Location
+        setMode('activating');
         const packet: EmergencyPacket = {
             name: activePatientRecord?.history.name || 'Unknown',
             age: activePatientRecord?.history.age,
@@ -100,26 +95,11 @@ export function EmergencyClient() {
                 setLocationState({ status: 'error', error: `Location Error: ${err.message}` });
                 packet.location = "Unavailable";
                 setEmergencyPacket(packet);
-                setMode('ready'); // Still proceed to ready state
+                setMode('ready'); 
             },
             { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         );
     }, [activePatientRecord]);
-
-    useEffect(() => {
-        let timer: NodeJS.Timeout;
-        if (mode === 'pending' && countdown > 0) {
-            timer = setTimeout(() => setCountdown(c => c - 1), 1000);
-        } else if (mode === 'pending' && countdown === 0) {
-            startEmergencySequence();
-        }
-        return () => clearTimeout(timer);
-    }, [mode, countdown, startEmergencySequence]);
-
-    const handleActivate = () => {
-        setCountdown(5);
-        setMode('pending');
-    };
 
     const handleCancel = () => {
         setMode('idle');
@@ -145,29 +125,18 @@ export function EmergencyClient() {
         )
     }
 
-    if(mode === 'pending' || mode === 'gathering') {
+    if(mode === 'activating') {
         return (
             <Card className="text-center py-12 bg-destructive/10 border-destructive/50">
                 <CardHeader>
-                    <Siren className="mx-auto h-16 w-16 text-destructive animate-pulse mb-4" />
-                    <CardTitle className="text-3xl text-destructive">
-                        {mode === 'pending' ? 'Emergency Mode Activating...' : 'Gathering Information...'}
-                    </CardTitle>
-                    {mode === 'pending' && (
-                        <CardDescription className="text-xl">
-                            Activating in {countdown}
-                        </CardDescription>
-                    )}
-                     {mode === 'gathering' && (
-                        <CardDescription className="flex items-center justify-center gap-2">
-                           <Loader2 className="animate-spin"/> Please wait...
-                        </CardDescription>
-                    )}
+                    <Loader2 className="mx-auto h-16 w-16 text-destructive animate-spin mb-4" />
+                    <CardTitle className="text-3xl text-destructive">Activating Emergency Mode</CardTitle>
+                    <CardDescription className="flex items-center justify-center gap-2">
+                       Getting location... Please allow location access.
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {mode === 'pending' && (
-                        <Button onClick={handleCancel} variant="secondary" size="lg">Cancel</Button>
-                    )}
+                    <Button onClick={handleCancel} variant="secondary" size="lg">Cancel</Button>
                 </CardContent>
             </Card>
         )
@@ -234,11 +203,26 @@ export function EmergencyClient() {
                 <CardDescription>This will start the process of gathering and sharing your critical information.</CardDescription>
             </CardHeader>
             <CardContent>
-                <Button onClick={handleActivate} size="lg" variant="destructive" className="text-xl h-16 px-12">
-                    <ShieldAlert className="mr-4"/> Activate
-                </Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button size="lg" variant="destructive" className="text-xl h-16 px-12">
+                            <ShieldAlert className="mr-4"/> Activate
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Confirm Emergency Activation</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This will share your location and medical summary with caregivers and help services. Are you sure you want to proceed?
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={startEmergencySequence}>Yes, Activate</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </CardContent>
         </Card>
     );
 }
-
