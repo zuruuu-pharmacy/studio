@@ -51,187 +51,54 @@ const patientMenuItems = [
     { href: "/adherence-tracker", label: "Adherence Tracker", icon: FileClock },
 ];
 
-const studentMenuItems = [
+const studentMenuSections = {
+  "Overview": [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/smart-search", label: "Smart Search", icon: Search },
-    { href: "/ai-assistant", label: "AI Assistant Helper", icon: MessageCircleQuestion },
     { href: "/patient-history", label: "My Health History", icon: User },
-    { href: "/patients", label: "View Patient Cases", icon: Users },
-    { href: "/scan-medicine-strip", label: "AR Medicine Scanner", icon: Camera },
+  ],
+  "📚 Study & Learning Hub": [
+    { href: "/lecture-notes", label: "Lecture Notes Library", icon: BookOpen },
+    { href: "/notes-organizer", label: "Notes Organizer", icon: FolderOpen },
+    { href: "/e-library", label: "AI E-Library", icon: Library },
+    { href: "/moa-animations", label: "MOA Animation Library", icon: Video },
+    { href: "/drug-classification-tree", label: "Drug Classification Tree", icon: Network },
+    { href: "/herbal-hub", label: "Herbal Knowledge Hub", icon: Leaf },
+    { href: "/sop-repository", label: "SOP Repository", icon: FileJson },
+    { href: "/offline-mode", label: "Offline Mode", icon: WifiOff },
+    { href: "/text-to-speech", label: "Text-to-Speech", icon: Mic },
+  ],
+  "🎓 Interactive Learning & Practice": [
+    { href: "/clinical-case-simulator", label: "Clinical Case Simulator", icon: CaseSensitive },
+    { href: "/osce-viva-prep", label: "OSCE and Viva Preparation", icon: FileHeart },
+    { href: "/interaction-checker", label: "Drug Interaction Simulator", icon: FlaskConical },
+    { href: "/dose-calculator", label: "Drug Calculation Tool", icon: Calculator },
+    { href: "/unit-converter", label: "Unit Converter", icon: Replace },
+    { href: "/virtual-lab-simulator", label: "Virtual Lab Simulator", icon: Beaker },
+    { href: "/pharma-games", label: "Pharma Games & Puzzles", icon: Puzzle },
+    { href: "/mnemonic-generator", label: "Mnemonic Generator", icon: Combine },
+  ],
+  "🧑‍🎓 Student Tools & Productivity": [
+    { href: "/study-material-generator", label: "Study Material Generator", icon: GraduationCap },
+    { href: "/flashcard-generator", label: "Flashcard Generator", icon: FileHeart },
+    { href: "/mcq-bank", label: "MCQ Bank", icon: HelpCircle },
+    { href: "/reference-generator", label: "Reference Citation Tool", icon: BookA },
+    { href: "/plagiarism-checker", label: "Plagiarism Checker", icon: ScanSearch },
+    { href: "/study-planner", label: "AI Study Planner", icon: CalendarDays },
+    { href: "/progress-tracker", label: "Progress Tracker", icon: BarChart },
+  ],
+  "👥 Community & Collaboration": [
     { href: "/student-discussion-forum", label: "Student Discussion Forum", icon: MessageSquare },
     { href: "/student-polls", label: "Student Polls/Surveys", icon: ClipboardList },
-     {
-        icon: CaseSensitive,
-        label: "Clinical Case Simulator",
-        description: "Tackle realistic patient cases and get AI-driven feedback.",
-        href: "/clinical-case-simulator",
-        color: "text-teal-500",
-    },
-    {
-        icon: FileHeart,
-        label: "OSCE and Viva Preparation",
-        description: "Practice for your exams with AI-driven OSCE and viva scenarios.",
-        href: "/osce-viva-prep",
-        color: "text-cyan-600",
-    },
-     {
-        icon: TestTube,
-        label: "Pathology",
-        description: "Explore pathology resources and case studies.",
-        href: "/pathology",
-        color: "text-red-500",
-    },
-    {
-        icon: Compass,
-        label: "Career Guidance",
-        description: "Explore career paths and get guidance for your professional journey.",
-        href: "/career-guidance",
-        color: "text-amber-600",
-    },
-    {
-        icon: BarChart,
-        label: "Analytics Dashboard",
-        href: "/progress-tracker",
-    },
-    {
-        icon: FlaskConical,
-        label: "Drug Interaction Simulator",
-        description: "Explore and understand drug-drug interactions.",
-        href: "/interaction-checker",
-        color: "text-purple-500",
-    },
-     {
-        icon: Calculator,
-        label: "Drug Calculation Tool",
-        description: "Practice and verify patient-specific dosages.",
-        href: "/dose-calculator",
-        color: "text-green-500",
-    },
-    {
-        icon: Replace,
-        label: "Unit Converter",
-        description: "Perform common clinical unit conversions.",
-        href: "/unit-converter",
-        color: "text-fuchsia-500",
-    },
-    {
-        icon: BookOpen,
-        label: "Lecture Notes Library",
-        description: "Upload and browse study materials for your class.",
-        href: "/lecture-notes",
-        color: "text-amber-500",
-    },
-    {
-        icon: FolderOpen,
-        label: "Notes Organizer",
-        description: "Organize your personal study notes and materials.",
-        href: "/notes-organizer",
-        color: "text-sky-600",
-    },
-    {
-        icon: Library,
-        label: "AI E-Library",
-        description: "Search for any term and get instant, AI-powered definitions and summaries.",
-        href: "/e-library",
-        color: "text-sky-500",
-    },
-     {
-        icon: Video,
-        label: "MOA Animation Library",
-        description: "Watch short, engaging animations of drug mechanisms of action.",
-        href: "/moa-animations",
-        color: "text-rose-500",
-    },
-    {
-        icon: Network,
-        label: "Drug Classification Tree",
-        description: "Visually explore drug classes with an interactive tree.",
-        href: "/drug-classification-tree",
-        color: "text-blue-500",
-    },
-    {
-        icon: GraduationCap,
-        label: "Study Material Generator",
-        description: "Generate a full study guide on any topic with a case study and quiz.",
-        href: "/study-material-generator",
-        color: "text-violet-500",
-    },
-    {
-        icon: CalendarDays,
-        label: "AI Study Planner",
-        description: "Generate a personalized study timetable for your subjects and exams.",
-        href: "/study-planner",
-        color: "text-indigo-500",
-    },
-     {
-        icon: Leaf,
-        label: "Herbal Knowledge Hub",
-        description: "Explore a detailed AI-powered pharmaco-botanical encyclopedia.",
-        href: "/herbal-hub",
-        color: "text-green-600",
-    },
-    {
-        label: "Flashcard Generator",
-        href: "/flashcard-generator",
-        icon: FileHeart,
-    },
-    {
-        label: "MCQ Bank",
-        href: "/mcq-bank",
-        icon: HelpCircle,
-    },
-    {
-        icon: FileJson,
-        label: "SOP Repository",
-        description: "Generate and review Standard Operating Procedures for lab practicals.",
-        href: "/sop-repository",
-        color: "text-orange-600",
-    },
-    {
-        icon: Beaker,
-        label: "Virtual Lab Simulator",
-        description: "Run narrative-based lab simulations with AI-guided steps and feedback.",
-        href: "/virtual-lab-simulator",
-        color: "text-fuchsia-500",
-    },
-    {
-        icon: Puzzle,
-        label: "Pharma Games & Puzzles",
-        description: "Learn pharmacology concepts through interactive games and puzzles.",
-        href: "/pharma-games",
-        color: "text-pink-500",
-    },
-    {
-        icon: Combine,
-        label: "Mnemonic Generator",
-        description: "Create memorable Roman Urdu mnemonics for any medical topic.",
-        href: "/mnemonic-generator",
-        color: "text-teal-500",
-    },
-    {
-        icon: BookA,
-        label: "Reference Citation Tool",
-        description: "Generate academic citations for a given text in various styles.",
-        href: "/reference-generator",
-        color: "text-slate-500",
-    },
-    {
-        icon: ScanSearch,
-        label: "Plagiarism Checker",
-        href: "/plagiarism-checker",
-        color: "text-red-500",
-    },
-     {
-        icon: WifiOff,
-        label: "Offline Mode",
-        href: "/offline-mode",
-    },
-    {
-        icon: Mic,
-        label: "Text-to-Speech",
-        href: "/text-to-speech",
-    }
-];
+    { href: "/patients", label: "View All Patient Cases", icon: Users },
+    { href: "/career-guidance", label: "Career Guidance", icon: Compass },
+  ],
+  "🚀 Advanced / AI Features": [
+    { href: "/smart-search", label: "Smart Search", icon: Search },
+    { href: "/ai-assistant", label: "AI Assistant Helper", icon: MessageCircleQuestion },
+    { href: "/scan-medicine-strip", label: "AR Medicine Scanner", icon: Camera },
+    { href: "/pathology", label: "Pathology", icon: TestTube },
+  ],
+};
 
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -245,12 +112,15 @@ export function AppShell({ children }: { children: ReactNode }) {
         return pharmacistTools;
       case 'patient':
         return patientMenuItems;
+      // In student mode, we will handle rendering differently
       case 'student':
-        return studentMenuItems;
+        return [];
       default:
         return [];
     }
   }
+  
+  const allStudentItems = Object.values(studentMenuSections).flat();
   
   const getInitials = (name?: string) => {
     if (!name) return "?";
@@ -274,19 +144,42 @@ export function AppShell({ children }: { children: ReactNode }) {
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
-              {menuItems().map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <Link href={item.href} passHref>
-                    <SidebarMenuButton
-                      isActive={pathname === item.href}
-                      tooltip={{ children: item.label }}
-                    >
-                      <item.icon />
-                      <span>{item.label}</span>
-                    </SidebarMenuButton>
-                  </Link>
-                </SidebarMenuItem>
-              ))}
+              {mode === 'student' ? (
+                Object.entries(studentMenuSections).map(([section, items]) => (
+                  <React.Fragment key={section}>
+                    <SidebarMenuItem className="px-2 mt-4 mb-1">
+                      <p className="text-xs font-semibold text-sidebar-foreground/70">{section}</p>
+                    </SidebarMenuItem>
+                    {items.map(item => (
+                       <SidebarMenuItem key={item.href}>
+                         <Link href={item.href} passHref>
+                           <SidebarMenuButton
+                             isActive={pathname === item.href}
+                             tooltip={{ children: item.label }}
+                           >
+                             <item.icon />
+                             <span>{item.label}</span>
+                           </SidebarMenuButton>
+                         </Link>
+                       </SidebarMenuItem>
+                    ))}
+                  </React.Fragment>
+                ))
+              ) : (
+                menuItems().map((item) => (
+                  <SidebarMenuItem key={item.href}>
+                    <Link href={item.href} passHref>
+                      <SidebarMenuButton
+                        isActive={pathname === item.href}
+                        tooltip={{ children: item.label }}
+                      >
+                        <item.icon />
+                        <span>{item.label}</span>
+                      </SidebarMenuButton>
+                    </Link>
+                  </SidebarMenuItem>
+                ))
+              )}
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
@@ -306,7 +199,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <SidebarTrigger className="md:hidden" />
             <div className="hidden md:block">
               <h2 className="text-lg font-semibold">
-                {menuItems().find(item => item.href === pathname)?.label || 'Dashboard'}
+                {mode === 'student' ? (allStudentItems.find(item => item.href === pathname)?.label || 'Dashboard') : (menuItems().find(item => item.href === pathname)?.label || 'Dashboard')}
               </h2>
             </div>
             <ModeToggle />
