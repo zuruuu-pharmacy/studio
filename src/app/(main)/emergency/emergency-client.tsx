@@ -45,7 +45,7 @@ function MedicalSummary({ packet }: { packet: EmergencyPacket | null }) {
     if (!packet) return null;
 
     const info = [
-        { label: 'Allergies', value: packet.allergies_summary, important: packet.allergies_summary !== 'Not Provided' },
+        { label: 'Allergies', value: packet.allergies_summary, important: packet.allergies_summary !== 'Not Provided' && packet.allergies_summary !== 'None known' },
         { label: 'Critical Conditions', value: packet.critical_conditions, important: true },
         { label: 'Key Medications', value: packet.key_medications, important: false },
     ];
@@ -59,7 +59,7 @@ function MedicalSummary({ packet }: { packet: EmergencyPacket | null }) {
                         <p className={`text-muted-foreground ${item.important ? 'font-bold text-destructive' : ''}`}>{item.value}</p>
                     </div>
                 ))}
-                 {!info.some(i => i.value) && <p className="text-muted-foreground">No critical information available.</p>}
+                 {!info.some(i => i.value && i.value !== 'Not Provided') && <p className="text-muted-foreground">No critical information available.</p>}
             </CardContent>
         </Card>
     );
@@ -156,9 +156,16 @@ export function EmergencyClient() {
     
      if (mode === 'ready' && emergencyPacket) {
         let accuracyBadgeColor = "bg-red-500";
+        let accuracyText = "Low accuracy";
         if (locationState.accuracy) {
-            if (locationState.accuracy <= 30) accuracyBadgeColor = "bg-green-500";
-            else if (locationState.accuracy <= 100) accuracyBadgeColor = "bg-amber-500";
+            if (locationState.accuracy <= 30) {
+                accuracyBadgeColor = "bg-green-500";
+                accuracyText = "Precise location"
+            }
+            else if (locationState.accuracy <= 100) {
+                 accuracyBadgeColor = "bg-amber-500";
+                 accuracyText = "Approximate"
+            };
         }
         return (
             <div className="space-y-6">
@@ -180,7 +187,7 @@ export function EmergencyClient() {
                                         <p>{emergencyPacket.location_address}</p>
                                         {locationState.accuracy && (
                                             <Badge className={`mt-2 ${accuracyBadgeColor}`}>
-                                                Accuracy: +/- {locationState.accuracy.toFixed(0)} meters
+                                                {accuracyText}: +/- {locationState.accuracy.toFixed(0)} meters
                                             </Badge>
                                         )}
                                     </>
@@ -219,7 +226,7 @@ export function EmergencyClient() {
                     <AlertTriangle className="h-4 w-4" />
                     <AlertTitle>Important Disclaimer</AlertTitle>
                     <AlertDescription>
-                        This is not a medical diagnosis. This is an alert based on symptoms matching a critical condition. Please seek immediate medical attention. In a life-threatening emergency call 1122 first.
+                        This feature helps you contact help — it is not a substitute for EMS. In a life-threatening emergency call 1122 first.
                     </AlertDescription>
                 </Alert>
                 <Button onClick={handleCancel} variant="outline">Deactivate Emergency Mode</Button>
