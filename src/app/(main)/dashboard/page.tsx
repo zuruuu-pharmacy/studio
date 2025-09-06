@@ -157,7 +157,7 @@ const patientTools = [
 ];
 
 const studentToolSections = {
-  "📚 Study Materials & Learning Hub": [
+  "📚 Study & Learning Hub": [
     { icon: BookOpen, title: "Lecture Notes Library", description: "Upload and browse study materials for your class.", href: "/lecture-notes", color: "text-amber-500" },
     { icon: FolderOpen, title: "Notes Organizer", description: "Organize your personal study notes and materials.", href: "/notes-organizer", color: "text-sky-600" },
     { icon: Library, title: "AI E-Library", description: "Search for any term and get instant, AI-powered definitions and summaries.", href: "/e-library", color: "text-sky-500" },
@@ -202,6 +202,23 @@ const studentToolSections = {
   ],
 };
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+  },
+};
 
 export default function DashboardPage() {
   const { mode } = useMode();
@@ -277,14 +294,23 @@ export default function DashboardPage() {
         
         {mode === 'student' ? (
           Object.entries(studentToolSections).map(([sectionTitle, sectionTools]) => (
-            <section key={sectionTitle}>
+            <motion.section 
+              key={sectionTitle}
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
               <h2 className="text-2xl font-semibold mb-4 text-foreground/90">
                 {sectionTitle}
               </h2>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+              <motion.div 
+                className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
+                variants={containerVariants}
+              >
                 {sectionTools.map((tool) => (
                   <motion.div
                     key={tool.href}
+                    variants={itemVariants}
                     whileHover={{ scale: 1.05, y: -5 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
@@ -301,25 +327,33 @@ export default function DashboardPage() {
                       <CardContent className="flex-grow flex items-end justify-end mt-auto">
                         <Link href={tool.href} passHref>
                           <Button variant="ghost" className="text-primary group-hover:bg-accent/50">
-                              Go to Page <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                              Go to Page <motion.span whileHover={{ x: 2 }}><ArrowRight className="ml-2 h-4 w-4" /></motion.span>
                           </Button>
                         </Link>
                       </CardContent>
                     </Card>
                   </motion.div>
                 ))}
-              </div>
-            </section>
+              </motion.div>
+            </motion.section>
           ))
         ) : (
-          <section>
+          <motion.section
+             variants={containerVariants}
+             initial="hidden"
+             animate="visible"
+          >
             <h2 className="text-2xl font-semibold mb-4 text-foreground/90">
               {toolsHeader}
             </h2>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+            <motion.div 
+              className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
+              variants={containerVariants}
+            >
               {tools.map((tool) => (
                  <motion.div
                     key={tool.href}
+                    variants={itemVariants}
                     whileHover={{ scale: 1.05, y: -5 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
@@ -336,15 +370,15 @@ export default function DashboardPage() {
                       <CardContent className="flex-grow flex items-end justify-end mt-auto">
                         <Link href={tool.href} passHref>
                           <Button variant="ghost" className="text-primary group-hover:bg-accent/50">
-                              {mode === 'pharmacist' ? "Use Tool" : "Go to Page"} <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                              {mode === 'pharmacist' ? "Use Tool" : "Go to Page"} <motion.span whileHover={{ x: 2 }}><ArrowRight className="ml-2 h-4 w-4" /></motion.span>
                           </Button>
                         </Link>
                       </CardContent>
                     </Card>
                   </motion.div>
               ))}
-            </div>
-          </section>
+            </motion.div>
+          </motion.section>
         )}
       </div>
   );
