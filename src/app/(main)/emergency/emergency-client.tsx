@@ -7,12 +7,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Siren, HeartPulse, ShieldAlert, Phone, Map, MessageSquare, Loader2, LocateFixed, CheckCircle, User, AlertTriangle } from "lucide-react";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Siren, HeartPulse, ShieldAlert, Phone, Map, MessageSquare, Loader2, LocateFixed, CheckCircle, User, AlertTriangle, UserPlus } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+
 
 type Mode = 'idle' | 'confirming' | 'activating' | 'ready' | 'error';
 
@@ -70,6 +73,8 @@ export function EmergencyClient() {
     const [locationState, setLocationState] = useState<LocationState>({ status: 'idle' });
     const [emergencyPacket, setEmergencyPacket] = useState<EmergencyPacket | null>(null);
     const [consentGiven, setConsentGiven] = useState(false);
+    const [isCaregiverModalOpen, setIsCaregiverModalOpen] = useState(false);
+    const [tempCaregiverNumber, setTempCaregiverNumber] = useState('');
 
     const { getActivePatientRecord } = usePatient();
     const activePatientRecord = getActivePatientRecord();
@@ -118,6 +123,17 @@ export function EmergencyClient() {
     };
 
     const whatsAppMessage = `🚨 EMERGENCY: ${emergencyPacket?.patient_name} needs help.\n\nLocation: https://www.google.com/maps/search/?api=1&query=${emergencyPacket?.location_latitude},${emergencyPacket?.location_longitude}\n\nAllergies: ${emergencyPacket?.allergies_summary}\nKey Meds: ${emergencyPacket?.key_medications}\n\nTime: ${emergencyPacket?.timestamp_local}`;
+    
+    const handleAlertCaregiver = (number?: string) => {
+        const targetNumber = number || caregiverNumber;
+        if (!targetNumber) {
+            setIsCaregiverModalOpen(true);
+            return;
+        }
+        window.open(`https://wa.me/${targetNumber}?text=${encodeURIComponent(whatsAppMessage)}`, '_blank');
+        setIsCaregiverModalOpen(false);
+        setTempCaregiverNumber('');
+    }
     
     if(mode === 'activating') {
         return (
@@ -187,15 +203,9 @@ export function EmergencyClient() {
                         <a href="tel:1122">
                             <Button variant="destructive" className="w-full h-20 text-xl"><Phone className="mr-4"/>Call 1122</Button>
                         </a>
-                        {caregiverNumber ? (
-                           <a href={`https://wa.me/${caregiverNumber}?text=${encodeURIComponent(whatsAppMessage)}`} target="_blank" rel="noopener noreferrer">
-                             <Button variant="secondary" className="w-full h-20 text-xl bg-green-500 hover:bg-green-600 text-white"><MessageSquare className="mr-4"/>Alert Caregiver</Button>
-                           </a>
-                        ) : (
-                            <Button variant="secondary" className="w-full h-20 text-xl" disabled>
-                                Caregiver Not Set
-                            </Button>
-                        )}
+                        <Button variant="secondary" className="w-full h-20 text-xl bg-green-500 hover:bg-green-600 text-white" onClick={() => handleAlertCaregiver()}>
+                            <MessageSquare className="mr-4"/>Alert Caregiver
+                        </Button>
                         <a href={`https://www.google.com/maps/search/?api=1&query=hospital+near+me`} target="_blank" rel="noopener noreferrer">
                              <Button variant="outline" className="w-full h-16"><Map className="mr-2"/>Find Nearby Hospitals</Button>
                         </a>
@@ -212,6 +222,32 @@ export function EmergencyClient() {
                     </AlertDescription>
                 </Alert>
                 <Button onClick={handleCancel} variant="outline">Deactivate Emergency Mode</Button>
+                
+                 <Dialog open={isCaregiverModalOpen} onOpenChange={setIsCaregiverModalOpen}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Enter Caregiver Number</DialogTitle>
+                            <DialogDescription>
+                                No caregiver number is saved. Please enter a phone number to send the emergency alert.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="py-4">
+                            <Label htmlFor="caregiver-phone">Caregiver's Phone Number</Label>
+                            <Input
+                                id="caregiver-phone"
+                                value={tempCaregiverNumber}
+                                onChange={(e) => setTempCaregiverNumber(e.target.value)}
+                                placeholder="+923001234567"
+                            />
+                        </div>
+                        <DialogFooter>
+                            <DialogClose asChild>
+                                <Button variant="ghost">Cancel</Button>
+                            </DialogClose>
+                            <Button onClick={() => handleAlertCaregiver(tempCaregiverNumber)}>Send Alert</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         )
      }
