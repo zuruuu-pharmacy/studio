@@ -45,7 +45,7 @@ export function PollsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (savedData) {
+      if (savedData && savedData !== 'undefined') {
         setPolls(JSON.parse(savedData));
       }
     } catch (error) {

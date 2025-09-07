@@ -106,7 +106,7 @@ export function PatientProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (savedData) {
+      if (savedData && savedData !== 'undefined') {
         const parsedData = JSON.parse(savedData);
         // Basic validation to prevent crashes on data structure changes
         if(parsedData.users && parsedData.patientRecords) {

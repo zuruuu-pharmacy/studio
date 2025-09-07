@@ -56,7 +56,7 @@ export function EventCalendarProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (savedData) {
+      if (savedData && savedData !== 'undefined') {
         const parsedData = JSON.parse(savedData, (key, value) => {
             if (key === 'date') return new Date(value);
             return value;

@@ -387,7 +387,7 @@ const initialCaseStudies: Omit<CaseStudy, 'id'>[] = [
         title: "Case 18: A 50-year-old man with a painful big toe",
         history: "A 50-year-old obese man presents with the sudden onset of excruciating pain, redness, and swelling in his left great toe. He reports eating a large meal with steak and drinking several beers the night before.",
         specialty: "Rheumatologic Pathology",
-        findings: "Physical exam reveals a warm, tender, and swollen first metatarsophalangeal joint. Aspiration of the joint fluid is performed. Under polarized light microscopy, the fluid reveals needle-shaped, negatively birefringent crystals within neutrophils.",
+        findings: "Physical exam reveals a warm, tender, and swollen first metatarsalphalangeal joint. Aspiration of the joint fluid is performed. Under polarized light microscopy, the fluid reveals needle-shaped, negatively birefringent crystals within neutrophils.",
         diagnosis: "Gout.",
         discussion: "Gout is an inflammatory arthritis caused by the deposition of monosodium urate (MSU) crystals in joints and soft tissues, resulting from hyperuricemia. The acute attack is triggered by the precipitation of these crystals, which are phagocytosed by neutrophils, leading to a massive inflammatory response. The key to diagnosis is the identification of the characteristic needle-shaped, negatively birefringent MSU crystals in synovial fluid.",
         tags: {
@@ -687,7 +687,7 @@ const initialCaseStudies: Omit<CaseStudy, 'id'>[] = [
         tags: {
             organ: "🩺 GI Tract",
             type: "🧑‍⚕️ Autoimmune",
-            difficulty: "⭐ Classic",
+            difficulty: "⭐ Classic"
         },
         quiz: [
             {
@@ -708,7 +708,7 @@ const initialCaseStudies: Omit<CaseStudy, 'id'>[] = [
         tags: {
             organ: "🩺 GI Tract",
             type: "🧪 Cancer",
-            difficulty: "🔥 Complex",
+            difficulty: "🔥 Complex"
         },
         quiz: [
             {
@@ -729,7 +729,7 @@ const initialCaseStudies: Omit<CaseStudy, 'id'>[] = [
         tags: {
             organ: "🦴 Rheumatology",
             type: "🧑‍⚕️ Autoimmune",
-            difficulty: "🔥 Complex",
+            difficulty: "🔥 Complex"
         },
         quiz: [
             {
@@ -750,7 +750,7 @@ const initialCaseStudies: Omit<CaseStudy, 'id'>[] = [
         tags: {
             organ: "🧬 Hematology",
             type: "🧪 Cancer",
-            difficulty: "🔥 Complex",
+            difficulty: "🔥 Complex"
         },
         quiz: [
             {
@@ -783,7 +783,7 @@ export function PathologyProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (savedData) {
+      if (savedData && savedData !== 'undefined') {
         const parsedData = JSON.parse(savedData);
         if (Array.isArray(parsedData.cases) && parsedData.cases.length > 0) {
             setCaseStudies(parsedData.cases);
