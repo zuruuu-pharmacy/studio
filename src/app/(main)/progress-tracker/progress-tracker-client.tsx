@@ -428,5 +428,3 @@ export function ProgressTrackerClient() {
     </div>
   );
 }
-
-    
