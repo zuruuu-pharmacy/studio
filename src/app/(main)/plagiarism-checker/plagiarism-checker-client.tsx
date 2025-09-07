@@ -1,300 +1,295 @@
-
 "use client";
 
-import { useActionState, useEffect, useTransition, useState, useRef, useMemo } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { checkPlagiarism, type PlagiarismResult } from "@/ai/flows/plagiarism-checker";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePatient, UserProfile } from "@/contexts/patient-context";
+import { useMode } from "@/contexts/mode-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ScanSearch, CheckCircle, AlertTriangle, ShieldCheck, Upload, Lightbulb, Bot, ExternalLink } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { cn } from "@/lib/utils";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { User, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School, Siren } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const PHARMACIST_CODE = "239773";
+
+export default function RoleSelectionPage() {
+  const [pharmacistModalOpen, setPharmacistModalOpen] = useState(false);
+  const [patientOptionsModalOpen, setPatientOptionsModalOpen] = useState(false);
+  const [patientLoginModalOpen, setPatientLoginModalOpen] = useState(false);
+  const [studentLoginModalOpen, setStudentLoginModalOpen] = useState(false);
+  
+  const [pharmacistCode, setPharmacistCode] = useState("");
+  const [patientName, setPatientName] = useState("");
+  const [patientPhone, setPatientPhone] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [yearOfStudy, setYearOfStudy] = useState("");
 
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-
-const formSchema = z.object({
-  documentFile: z
-    .any()
-    .refine((files) => files?.length === 1, "A document file is required.")
-    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
-    .refine(
-      (files) =>
-        [
-          "text/plain",
-          "application/pdf",
-          "image/jpeg",
-          "image/png",
-          "image/webp",
-        ].includes(files?.[0]?.type),
-      "Only .txt, .pdf, and image files are supported."
-    ),
-});
-type FormValues = z.infer<typeof formSchema>;
-
-const getSimilarityBadge = (score: number) => {
-    if (score > 25) return "destructive";
-    if (score > 10) return "default";
-    return "secondary";
-}
-
-const getSimilarityBadgeClass = (score: number) => {
-     if (score > 25) return "bg-destructive text-destructive-foreground";
-    if (score > 10) return "bg-amber-500 text-amber-foreground";
-    return "bg-green-600 text-green-foreground";
-}
-
-const getSimilarityLabel = (score: number) => {
-    if (score > 25) return "High Similarity - Revision Required";
-    if (score > 10) return "Medium Similarity - Review Suggested";
-    return "Low Similarity - Original Work";
-}
-
-export function PlagiarismCheckerClient() {
-  const [isPending, startTransition] = useTransition();
-  const [state, formAction] = useActionState<PlagiarismResult | { error: string } | null, FormData>(
-    async (previousState, formData) => {
-      const file = formData.get('documentFile') as File;
-      if (!file) {
-        return { error: "File not provided." };
-      }
-
-      try {
-         const documentDataUri = await new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-        const result = await checkPlagiarism({ documentDataUri });
-        return result;
-      } catch (e) {
-        console.error(e);
-        return { error: "Failed to perform plagiarism check. Please try again." };
-      }
-    },
-    null
-  );
-
+  const { setMode } = useMode();
+  const { patientState, setActiveUser, addOrUpdateUser, clearActiveUser } = usePatient();
+  const router = useRouter();
   const { toast } = useToast();
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { documentFile: undefined },
-  });
-  const fileRef = form.register("documentFile");
 
-
-  useEffect(() => {
-    if (state?.error) {
-      toast({ variant: "destructive", title: "Error", description: state.error });
+  const handlePharmacistLogin = () => {
+    if (pharmacistCode === PHARMACIST_CODE) {
+      setMode("pharmacist");
+      clearActiveUser();
+      router.push("/dashboard");
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Incorrect Code",
+        description: "This is not for you as you are not a pharmacist.",
+      });
     }
-  }, [state, toast]);
+  };
 
-  const handleFormSubmit = form.handleSubmit((data) => {
-    const formData = new FormData();
-    formData.append("documentFile", data.documentFile[0]);
-    startTransition(() => formAction(formData));
-  });
+  const handlePatientLogin = () => {
+    if (!patientName || !patientPhone) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please enter your name and phone number." });
+        return;
+    }
+    const existingUser = patientState.users.find(
+      (p) =>
+        p.role === 'patient' &&
+        p.demographics?.name?.toLowerCase() === patientName.toLowerCase() &&
+        p.demographics?.phoneNumber === patientPhone
+    );
 
-  const topSources = useMemo(() => {
-    if (!state || !('segments' in state)) return [];
+    setMode("patient");
+
+    if (existingUser) {
+      setActiveUser(existingUser.id);
+      toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+      router.push("/dashboard");
+    } else {
+       clearActiveUser();
+       const newUser: Omit<UserProfile, 'id'> = {
+         role: 'patient',
+         demographics: { name: patientName, phoneNumber: patientPhone }
+       };
+       addOrUpdateUser(newUser);
+       toast({ title: "Welcome!", description: "Let's create your patient history." });
+       router.push("/patient-history");
+    }
+    setPatientLoginModalOpen(false);
+  };
+  
+  const handleNewPatient = () => {
+    setMode('patient');
+    clearActiveUser();
+    router.push('/patient-history');
+  }
+
+  const handleStudentLogin = () => {
+    if (!studentName || !studentId || !yearOfStudy) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please fill out all fields." });
+        return;
+    }
+    if (!studentId.toLowerCase().includes('edu')) {
+        toast({ variant: "destructive", title: "Invalid Student ID" });
+        return;
+    }
+
+    const existingUser = patientState.users.find(
+      (u) =>
+        u.role === 'student' &&
+        u.demographics?.name?.toLowerCase() === studentName.toLowerCase() &&
+        u.studentId === studentId
+    );
     
-    const sourceCounts: { [key: string]: { count: number, totalScore: number } } = {};
-    state.segments.forEach(segment => {
-        if (!sourceCounts[segment.source]) {
-            sourceCounts[segment.source] = { count: 0, totalScore: 0 };
-        }
-        sourceCounts[segment.source].count++;
-        sourceCounts[segment.source].totalScore += segment.similarity_score;
-    });
+    setMode("student");
 
-    const overallTotalScore = state.segments.reduce((acc, seg) => acc + seg.similarity_score, 1);
+    if (existingUser) {
+        setActiveUser(existingUser.id);
+        toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+    } else {
+        const newUser: Omit<UserProfile, 'id'> = {
+            role: 'student',
+            demographics: { name: studentName, yearOfStudy: yearOfStudy },
+            studentId: studentId,
+        };
+        addOrUpdateUser(newUser);
+        toast({ title: "Welcome!", description: `Your student profile has been created, ${studentName}. Let's create your health record.` });
+    }
+    router.push("/dashboard");
+    setStudentLoginModalOpen(false);
+  };
 
-    return Object.entries(sourceCounts)
-        .map(([source, data]) => ({
-            name: source,
-            percentage: (data.totalScore / overallTotalScore) * state.overall_similarity_percentage
-        }))
-        .sort((a,b) => b.percentage - a.percentage)
-        .slice(0, 5); // Get top 5 sources
+  const handleEmergency = () => {
+    setMode('patient'); // Emergency defaults to patient view
+    clearActiveUser();
+    router.push('/emergency');
+  }
 
-  }, [state]);
+  const openPatientLogin = () => {
+    setPatientOptionsModalOpen(false);
+    setPatientLoginModalOpen(true);
+  }
+  
+  const openStudentLogin = () => {
+    setStudentLoginModalOpen(true);
+  }
 
   return (
-    <div className="grid md:grid-cols-3 gap-6 items-start">
-      <div className="md:col-span-1 sticky top-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Submit Document</CardTitle>
-            <CardDescription>Drag your assignment here or click to upload. We’ll scan for overlap and help you fix issues before submission.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={handleFormSubmit} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="documentFile"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Document File (.txt, .pdf, image)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="file"
-                          accept="text/plain,application/pdf,image/*"
-                          {...fileRef}
-                          onChange={(e) => field.onChange(e.target.files)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" disabled={isPending} className="w-full">
-                  {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ScanSearch className="mr-2" />}
-                  Check for Plagiarism
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-      </div>
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <Card className="w-full max-w-5xl shadow-2xl">
+        <CardHeader className="text-center">
+            <div className="mx-auto mb-4">
+                
+            </div>
+          <CardTitle className="text-3xl font-headline">Welcome to Zuruu AI Pharmacy</CardTitle>
+          <CardDescription>Please select your role to continue</CardDescription>
+        </CardHeader>
+        <CardContent className="grid md:grid-cols-3 gap-8 p-8">
+          <div
+            onClick={() => setPatientOptionsModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <User className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Patient</h3>
+            <p className="text-muted-foreground mt-2">Access your profile or get emergency help.</p>
+          </div>
+          <div
+            onClick={() => setPharmacistModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <BriefcaseMedical className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Pharmacist</h3>
+            <p className="text-muted-foreground mt-2">Access the full suite of clinical tools.</p>
+          </div>
+           <div
+            onClick={openStudentLogin}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <School className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Student</h3>
+            <p className="text-muted-foreground mt-2">Login to access learning modules.</p>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Pharmacist Modal */}
+      <Dialog open={pharmacistModalOpen} onOpenChange={setPharmacistModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pharmacist Access</DialogTitle>
+            <DialogDescription>Please enter your access code to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="pharmacist-code">Access Code</Label>
+            <Input 
+              id="pharmacist-code" 
+              type="password" 
+              value={pharmacistCode}
+              onChange={(e) => setPharmacistCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handlePharmacistLogin()}
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePharmacistLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Patient Options Modal */}
+      <Dialog open={patientOptionsModalOpen} onOpenChange={setPatientOptionsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Options</DialogTitle>
+            <DialogDescription>How can we help you today?</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4">
+             <Button onClick={openPatientLogin} variant="outline" size="lg" className="h-auto py-4">
+              <LogIn className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">Patient Login</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Access your existing patient profile.</p>
+              </div>
+            </Button>
+             <Button onClick={handleNewPatient} variant="outline" size="lg" className="h-auto py-4">
+              <UserPlus className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">New Patient Registration</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Create a new patient history form.</p>
+              </div>
+            </Button>
+            <Button onClick={handleEmergency} variant="destructive" size="lg" className="h-auto py-4">
+                <Siren className="mr-4 text-destructive-foreground" />
+                 <div>
+                    <p className="font-semibold text-base text-left">Emergency Help</p>
+                    <p className="font-normal text-sm text-destructive-foreground/80 text-left">Immediately get assistance.</p>
+                </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-      <div className="md:col-span-2">
-        {isPending && (
-          <div className="flex justify-center items-center h-full">
-            <div className="text-center space-y-2">
-              <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
-              <p className="text-muted-foreground">We’re checking your document — this may take up to 90s (longer for scanned pages).</p>
+      {/* Patient Login Modal */}
+      <Dialog open={patientLoginModalOpen} onOpenChange={setPatientLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Login</DialogTitle>
+            <DialogDescription>Please enter your details to find your profile.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="patient-name">Full Name</Label>
+                <Input id="patient-name" value={patientName} onChange={(e) => setPatientName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="patient-phone">Phone Number</Label>
+                <Input id="patient-phone" value={patientPhone} onChange={(e) => setPatientPhone(e.target.value)} />
             </div>
           </div>
-        )}
-        
-        {state && 'segments' in state ? (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Plagiarism Report</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-center p-4 rounded-lg bg-muted flex items-center justify-center gap-6">
-                    <div>
-                        <p className="text-sm text-muted-foreground">Overall Similarity</p>
-                        <p className={`text-6xl font-bold ${getSimilarityBadgeClass(state.overall_similarity_percentage).split(' ')[0]}`}>
-                            {state.overall_similarity_percentage.toFixed(0)}%
-                        </p>
-                    </div>
-                     <Badge className={`px-4 py-2 text-base ${getSimilarityBadgeClass(state.overall_similarity_percentage)}`}>{getSimilarityLabel(state.overall_similarity_percentage)}</Badge>
-                </div>
-                <Alert variant={state.overall_similarity_percentage > 15 ? 'destructive' : 'default'}>
-                    {state.overall_similarity_percentage > 15 ? <AlertTriangle className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
-                    <AlertTitle>Summary & Recommendation</AlertTitle>
-                    <AlertDescription>{state.summary}</AlertDescription>
-                </Alert>
-              </CardContent>
-            </Card>
+          <DialogFooter>
+            <Button onClick={handlePatientLogin}>Continue</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-            <Card>
-                 <CardHeader>
-                    <CardTitle>Top Matched Sources</CardTitle>
-                    <CardDescription>The primary sources contributing to the similarity score.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                   <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Source</TableHead>
-                        <TableHead className="text-right">Contribution</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {topSources.map(source => (
-                          <TableRow key={source.name}>
-                            <TableCell className="font-medium flex items-center gap-2">
-                                <ExternalLink className="h-4 w-4 text-muted-foreground"/>
-                                {source.name}
-                            </TableCell>
-                            <TableCell className="text-right font-bold">{source.percentage.toFixed(1)}%</TableCell>
-                          </TableRow>
-                        ))}
-                    </TableBody>
-                   </Table>
-                </CardContent>
-            </Card>
-
-            {state.writing_suggestions && state.writing_suggestions.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2"><Bot /> AI Writing Assistant</CardTitle>
-                  <CardDescription>Suggestions to improve grammar, clarity, and style.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {state.writing_suggestions.map((item, index) => (
-                    <div key={index} className="p-3 border rounded-md">
-                        <Badge variant="secondary" className="mb-2">{item.type}</Badge>
-                        <p className="text-sm text-muted-foreground line-through">"{item.original_text}"</p>
-                        <p className="text-sm text-primary font-medium mt-1">"{item.suggestion}"</p>
-                        <p className="text-xs text-muted-foreground mt-2"><strong>Reason:</strong> {item.explanation}</p>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            )}
-
-            <Card>
-                 <CardHeader>
-                    <CardTitle>Detailed Segment Analysis</CardTitle>
-                    <CardDescription>Segments from your text with potential matches. Review and fix these issues before submitting.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    {state.segments.length > 0 ? (
-                        <div className="space-y-4">
-                            {state.segments.map((segment, index) => (
-                                <div key={index} className="p-4 border rounded-md space-y-3">
-                                    <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground">
-                                        "{segment.original_text}"
-                                    </blockquote>
-                                    <div className="flex justify-between items-center mt-2 text-sm">
-                                        <p><strong>Source:</strong> {segment.source}</p>
-                                        <Badge variant={getSimilarityBadge(segment.similarity_score * 100)}>
-                                            {(segment.similarity_score * 100).toFixed(0)}% Match
-                                        </Badge>
-                                    </div>
-                                    {segment.remediation_suggestion && (
-                                         <Alert variant="default" className="bg-amber-500/10 border-amber-500/50">
-                                            <Lightbulb className="h-4 w-4 text-amber-600"/>
-                                            <AlertTitle className="text-amber-700">AI Suggestion</AlertTitle>
-                                            <AlertDescription>
-                                            {segment.remediation_suggestion}
-                                            </AlertDescription>
-                                        </Alert>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-muted-foreground text-center p-8">No specific plagiarized segments found. The document appears to be original.</p>
-                    )}
-                </CardContent>
-            </Card>
+       {/* Student Login Modal */}
+       <Dialog open={studentLoginModalOpen} onOpenChange={setStudentLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Student Login</DialogTitle>
+            <DialogDescription>Please enter your details to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="student-name">Full Name</Label>
+                <Input id="student-name" value={studentName} onChange={(e) => setStudentName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="student-id">Student ID</Label>
+                <Input id="student-id" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g., user@university.edu"/>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="year-of-study">Year of Study</Label>
+                <Select value={yearOfStudy} onValueChange={setYearOfStudy}>
+                    <SelectTrigger id="year-of-study">
+                        <SelectValue placeholder="Select your year..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="1st Year">1st Year</SelectItem>
+                        <SelectItem value="2nd Year">2nd Year</SelectItem>
+                        <SelectItem value="3rd Year">3rd Year</SelectItem>
+                        <SelectItem value="4th Year">4th Year</SelectItem>
+                        <SelectItem value="5th Year">5th Year</SelectItem>
+                        <SelectItem value="Graduate">Graduate</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
           </div>
-        ) : (
-          !isPending && (
-             <Card className="flex flex-col items-center justify-center h-full min-h-[300px] text-center p-6 bg-muted/50">
-                <ScanSearch className="h-16 w-16 text-muted-foreground/50 mb-4" />
-                <h3 className="text-xl font-semibold text-muted-foreground">Your Report Will Appear Here</h3>
-                <p className="text-muted-foreground/80 mt-2">Submit a document to begin the plagiarism check.</p>
-            </Card>
-          )
-        )}
-      </div>
+          <DialogFooter>
+            <Button onClick={handleStudentLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

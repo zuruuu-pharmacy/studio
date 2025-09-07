@@ -1,255 +1,295 @@
-
 "use client";
 
-import { useActionState, useEffect, useMemo, useTransition } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useFieldArray } from "react-hook-form";
-import { checkDrugInteractions, type CheckDrugInteractionsOutput } from "@/ai/flows/ai-interaction-engine";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePatient, UserProfile } from "@/contexts/patient-context";
+import { useMode } from "@/contexts/mode-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, XCircle, AlertTriangle, ShieldCheck, ShieldQuestion, Salad, FlaskConical, Stethoscope, Lightbulb } from "lucide-react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
-import { useMode } from "@/contexts/mode-context";
-import { Separator } from "@/components/ui/separator";
+import { User, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School, Siren } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const formSchema = z.object({
-  medications: z.array(z.object({ value: z.string().min(2, "Required") })).min(2, "At least two medications are required"),
-  labResults: z.string().optional(),
-});
+const PHARMACIST_CODE = "239773";
 
-type FormValues = z.infer<typeof formSchema>;
+export default function RoleSelectionPage() {
+  const [pharmacistModalOpen, setPharmacistModalOpen] = useState(false);
+  const [patientOptionsModalOpen, setPatientOptionsModalOpen] = useState(false);
+  const [patientLoginModalOpen, setPatientLoginModalOpen] = useState(false);
+  const [studentLoginModalOpen, setStudentLoginModalOpen] = useState(false);
+  
+  const [pharmacistCode, setPharmacistCode] = useState("");
+  const [patientName, setPatientName] = useState("");
+  const [patientPhone, setPatientPhone] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [yearOfStudy, setYearOfStudy] = useState("");
 
-const severityMap: { [key: string]: { icon: React.ElementType, color: string, badge: "destructive" | "secondary" | "default" } } = {
-  'high': { icon: AlertTriangle, color: 'text-red-500', badge: 'destructive' },
-  'moderate': { icon: ShieldQuestion, color: 'text-yellow-500', badge: 'default' },
-  'low': { icon: ShieldCheck, color: 'text-green-500', badge: 'secondary' },
-};
 
-export function InteractionClient() {
-  const [isPending, startTransition] = useTransition();
-  const [state, formAction] = useActionState<CheckDrugInteractionsOutput | { error: string } | null, FormData>(
-    async (previousState, formData) => {
-      const medications = formData.getAll("medications").map(m => m.toString()).filter(m => m.length > 1);
-      const labResults = formData.get("labResults")?.toString();
-
-      if (medications.length < 2) {
-        return { error: "Please provide at least two medications." };
-      }
-      try {
-        const result = await checkDrugInteractions({ medications, labResults });
-        return result;
-      } catch (e) {
-        console.error(e);
-        return { error: "Failed to check interactions. Please try again." };
-      }
-    },
-    null
-  );
-
-  const { mode } = useMode();
+  const { setMode } = useMode();
+  const { patientState, setActiveUser, addOrUpdateUser, clearActiveUser } = usePatient();
+  const router = useRouter();
   const { toast } = useToast();
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      medications: [{ value: "" }, { value: "" }],
-      labResults: "",
-    },
-  });
-  
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "medications",
-  });
 
-  const { drugInteractions, foodInteractions } = useMemo(() => {
-    if (!state || !('interactions' in state)) {
-      return { drugInteractions: [], foodInteractions: [] };
+  const handlePharmacistLogin = () => {
+    if (pharmacistCode === PHARMACIST_CODE) {
+      setMode("pharmacist");
+      clearActiveUser();
+      router.push("/dashboard");
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Incorrect Code",
+        description: "This is not for you as you are not a pharmacist.",
+      });
     }
-    const drugInteractions = state.interactions.filter(i => !i.interactingDrugs.includes('Food'));
-    const foodInteractions = state.interactions.filter(i => i.interactingDrugs.includes('Food'));
-    return { drugInteractions, foodInteractions };
-  }, [state]);
+  };
 
-
-  useEffect(() => {
-    if (state && 'error' in state && state.error) {
-      toast({ variant: "destructive", title: "Error", description: state.error });
+  const handlePatientLogin = () => {
+    if (!patientName || !patientPhone) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please enter your name and phone number." });
+        return;
     }
-  }, [state, toast]);
+    const existingUser = patientState.users.find(
+      (p) =>
+        p.role === 'patient' &&
+        p.demographics?.name?.toLowerCase() === patientName.toLowerCase() &&
+        p.demographics?.phoneNumber === patientPhone
+    );
 
-  const handleFormSubmit = form.handleSubmit(() => {
-    form.trigger().then(valid => {
-        if (valid) {
-            const formData = new FormData();
-            const formValues = form.getValues();
-            formValues.medications.forEach(med => {
-                formData.append('medications', med.value);
-            });
-            if(formValues.labResults) {
-                formData.append('labResults', formValues.labResults);
-            }
-            startTransition(() => {
-              formAction(formData);
-            });
-        }
-    });
-  });
+    setMode("patient");
+
+    if (existingUser) {
+      setActiveUser(existingUser.id);
+      toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+      router.push("/dashboard");
+    } else {
+       clearActiveUser();
+       const newUser: Omit<UserProfile, 'id'> = {
+         role: 'patient',
+         demographics: { name: patientName, phoneNumber: patientPhone }
+       };
+       addOrUpdateUser(newUser);
+       toast({ title: "Welcome!", description: "Let's create your patient history." });
+       router.push("/patient-history");
+    }
+    setPatientLoginModalOpen(false);
+  };
   
-  function InfoRow({ label, content, icon: Icon }: { label: string; content?: string; icon: React.ElementType }) {
-    if (!content) return null;
-    return (
-        <div className="flex items-start gap-4">
-            <Icon className="h-5 w-5 text-muted-foreground mt-1" />
-            <div className="flex-1">
-                <p className="font-semibold text-foreground">{label}</p>
-                <p className="text-muted-foreground">{content}</p>
-            </div>
-        </div>
-    )
+  const handleNewPatient = () => {
+    setMode('patient');
+    clearActiveUser();
+    router.push('/patient-history');
+  }
+
+  const handleStudentLogin = () => {
+    if (!studentName || !studentId || !yearOfStudy) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please fill out all fields." });
+        return;
+    }
+    if (!studentId.toLowerCase().includes('edu')) {
+        toast({ variant: "destructive", title: "Invalid Student ID" });
+        return;
+    }
+
+    const existingUser = patientState.users.find(
+      (u) =>
+        u.role === 'student' &&
+        u.demographics?.name?.toLowerCase() === studentName.toLowerCase() &&
+        u.studentId === studentId
+    );
+    
+    setMode("student");
+
+    if (existingUser) {
+        setActiveUser(existingUser.id);
+        toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+    } else {
+        const newUser: Omit<UserProfile, 'id'> = {
+            role: 'student',
+            demographics: { name: studentName, yearOfStudy: yearOfStudy },
+            studentId: studentId,
+        };
+        addOrUpdateUser(newUser);
+        toast({ title: "Welcome!", description: `Your student profile has been created, ${studentName}. Let's create your health record.` });
+    }
+    router.push("/dashboard");
+    setStudentLoginModalOpen(false);
+  };
+
+  const handleEmergency = () => {
+    setMode('patient'); // Emergency defaults to patient view
+    clearActiveUser();
+    router.push('/emergency');
+  }
+
+  const openPatientLogin = () => {
+    setPatientOptionsModalOpen(false);
+    setPatientLoginModalOpen(true);
+  }
+  
+  const openStudentLogin = () => {
+    setStudentLoginModalOpen(true);
   }
 
   return (
-    <div className="grid md:grid-cols-3 gap-6">
-      <div className="md:col-span-1">
-        <Card>
-          <CardHeader>
-            <CardTitle>Medication List</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={handleFormSubmit} className="space-y-4">
-                {fields.map((field, index) => (
-                  <FormField
-                    key={field.id}
-                    control={form.control}
-                    name={`medications.${index}.value`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Medication {index + 1}</FormLabel>
-                        <div className="flex items-center gap-2">
-                          <FormControl>
-                            <Input placeholder="e.g., Warfarin" {...field} />
-                          </FormControl>
-                          {fields.length > 2 && (
-                            <Button variant="ghost" size="icon" onClick={() => remove(index)} type="button">
-                              <XCircle className="h-5 w-5 text-destructive" />
-                            </Button>
-                          )}
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ))}
-                <Button type="button" variant="outline" size="sm" onClick={() => append({ value: "" })}>
-                  <PlusCircle className="mr-2 h-4 w-4" /> Add Medication
-                </Button>
-                <FormField control={form.control} name="labResults" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Relevant Lab Results (Optional)</FormLabel>
-                    <FormControl><Textarea placeholder="e.g., INR 2.5, K+ 4.0" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <Button type="submit" disabled={isPending} className="w-full">
-                  {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Check Interactions
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-      </div>
-      <div className="md:col-span-2 space-y-6">
-        {isPending && <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}
-        
-        {state && 'interactions' in state && (
-          <>
-            {state.interactions.length === 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>No Interactions Found</CardTitle>
-                  <CardDescription>No significant drug-drug or drug-food interactions were found.</CardDescription>
-                </CardHeader>
-              </Card>
-            )}
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <Card className="w-full max-w-5xl shadow-2xl">
+        <CardHeader className="text-center">
+            <div className="mx-auto mb-4">
+                
+            </div>
+          <CardTitle className="text-3xl font-headline">Welcome to Zuruu AI Pharmacy</CardTitle>
+          <CardDescription>Please select your role to continue</CardDescription>
+        </CardHeader>
+        <CardContent className="grid md:grid-cols-3 gap-8 p-8">
+          <div
+            onClick={() => setPatientOptionsModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <User className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Patient</h3>
+            <p className="text-muted-foreground mt-2">Access your profile or get emergency help.</p>
+          </div>
+          <div
+            onClick={() => setPharmacistModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <BriefcaseMedical className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Pharmacist</h3>
+            <p className="text-muted-foreground mt-2">Access the full suite of clinical tools.</p>
+          </div>
+           <div
+            onClick={openStudentLogin}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <School className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Student</h3>
+            <p className="text-muted-foreground mt-2">Login to access learning modules.</p>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Pharmacist Modal */}
+      <Dialog open={pharmacistModalOpen} onOpenChange={setPharmacistModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pharmacist Access</DialogTitle>
+            <DialogDescription>Please enter your access code to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="pharmacist-code">Access Code</Label>
+            <Input 
+              id="pharmacist-code" 
+              type="password" 
+              value={pharmacistCode}
+              onChange={(e) => setPharmacistCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handlePharmacistLogin()}
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePharmacistLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Patient Options Modal */}
+      <Dialog open={patientOptionsModalOpen} onOpenChange={setPatientOptionsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Options</DialogTitle>
+            <DialogDescription>How can we help you today?</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4">
+             <Button onClick={openPatientLogin} variant="outline" size="lg" className="h-auto py-4">
+              <LogIn className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">Patient Login</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Access your existing patient profile.</p>
+              </div>
+            </Button>
+             <Button onClick={handleNewPatient} variant="outline" size="lg" className="h-auto py-4">
+              <UserPlus className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">New Patient Registration</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Create a new patient history form.</p>
+              </div>
+            </Button>
+            <Button onClick={handleEmergency} variant="destructive" size="lg" className="h-auto py-4">
+                <Siren className="mr-4 text-destructive-foreground" />
+                 <div>
+                    <p className="font-semibold text-base text-left">Emergency Help</p>
+                    <p className="font-normal text-sm text-destructive-foreground/80 text-left">Immediately get assistance.</p>
+                </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-            {drugInteractions.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2"><FlaskConical className="h-6 w-6 text-primary"/> Drug-Drug Interactions</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Accordion type="multiple" className="w-full" defaultValue={drugInteractions.map((_, i) => `item-d-${i}`)}>
-                    {drugInteractions.map((interaction, index) => {
-                      const severity = interaction.severity.toLowerCase();
-                      const SeverityIcon = severityMap[severity]?.icon || ShieldQuestion;
-                      return (
-                        <AccordionItem value={`item-d-${index}`} key={index}>
-                          <AccordionTrigger className="text-lg font-semibold hover:no-underline">
-                            <div className="flex items-center gap-4">
-                              <SeverityIcon className={`h-6 w-6 ${severityMap[severity]?.color || 'text-gray-500'}`} />
-                              <p>{interaction.interactingDrugs.join(' + ')}</p>
-                              <Badge variant={severityMap[severity]?.badge || 'default'}>{interaction.severity}</Badge>
-                            </div>
-                          </AccordionTrigger>
-                          <AccordionContent className="space-y-4 pt-4">
-                             <InfoRow label="Clinical Consequences" content={interaction.clinicalConsequences} icon={Stethoscope}/>
-                             <InfoRow label="Mechanism" content={interaction.mechanism} icon={FlaskConical}/>
-                             <InfoRow label="Suggested Actions" content={interaction.suggestedActions} icon={ShieldCheck}/>
-                             <InfoRow label="Safer Alternative" content={interaction.saferAlternative} icon={PlusCircle}/>
-                             <InfoRow label="Educational Note" content={interaction.educationalNote} icon={Lightbulb}/>
-                          </AccordionContent>
-                        </AccordionItem>
-                      );
-                    })}
-                  </Accordion>
-                </CardContent>
-              </Card>
-            )}
+      {/* Patient Login Modal */}
+      <Dialog open={patientLoginModalOpen} onOpenChange={setPatientLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Login</DialogTitle>
+            <DialogDescription>Please enter your details to find your profile.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="patient-name">Full Name</Label>
+                <Input id="patient-name" value={patientName} onChange={(e) => setPatientName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="patient-phone">Phone Number</Label>
+                <Input id="patient-phone" value={patientPhone} onChange={(e) => setPatientPhone(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePatientLogin}>Continue</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-            {foodInteractions.length > 0 && (
-              <Card>
-                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2"><Salad className="h-6 w-6 text-green-500"/> Drug-Food Interactions</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Accordion type="multiple" className="w-full" defaultValue={foodInteractions.map((_, i) => `item-f-${i}`)}>
-                    {foodInteractions.map((interaction, index) => {
-                      const severity = interaction.severity.toLowerCase();
-                      const SeverityIcon = severityMap[severity]?.icon || ShieldQuestion;
-                       const drug = interaction.interactingDrugs.find(d => d !== 'Food');
-                      return (
-                        <AccordionItem value={`item-f-${index}`} key={index}>
-                          <AccordionTrigger className="text-lg font-semibold hover:no-underline">
-                            <div className="flex items-center gap-4">
-                              <SeverityIcon className={`h-6 w-6 ${severityMap[severity]?.color || 'text-gray-500'}`} />
-                              <p>{drug} + Food</p>
-                              <Badge variant={severityMap[severity]?.badge || 'default'}>{interaction.severity}</Badge>
-                            </div>
-                          </AccordionTrigger>
-                           <AccordionContent className="space-y-4 pt-4">
-                             <InfoRow label="Clinical Consequences" content={interaction.clinicalConsequences} icon={Stethoscope}/>
-                             <InfoRow label="Mechanism" content={interaction.mechanism} icon={FlaskConical}/>
-                             <InfoRow label="Suggested Actions" content={interaction.suggestedActions} icon={ShieldCheck}/>
-                             <InfoRow label="Educational Note" content={interaction.educationalNote} icon={Lightbulb}/>
-                          </AccordionContent>
-                        </AccordionItem>
-                      );
-                    })}
-                  </Accordion>
-                </CardContent>
-              </Card>
-            )}
-          </>
-        )}
-      </div>
+       {/* Student Login Modal */}
+       <Dialog open={studentLoginModalOpen} onOpenChange={setStudentLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Student Login</DialogTitle>
+            <DialogDescription>Please enter your details to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="student-name">Full Name</Label>
+                <Input id="student-name" value={studentName} onChange={(e) => setStudentName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="student-id">Student ID</Label>
+                <Input id="student-id" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g., user@university.edu"/>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="year-of-study">Year of Study</Label>
+                <Select value={yearOfStudy} onValueChange={setYearOfStudy}>
+                    <SelectTrigger id="year-of-study">
+                        <SelectValue placeholder="Select your year..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="1st Year">1st Year</SelectItem>
+                        <SelectItem value="2nd Year">2nd Year</SelectItem>
+                        <SelectItem value="3rd Year">3rd Year</SelectItem>
+                        <SelectItem value="4th Year">4th Year</SelectItem>
+                        <SelectItem value="5th Year">5th Year</SelectItem>
+                        <SelectItem value="Graduate">Graduate</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleStudentLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

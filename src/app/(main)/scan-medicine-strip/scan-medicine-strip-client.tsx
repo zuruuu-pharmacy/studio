@@ -1,311 +1,295 @@
-
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePatient, UserProfile } from "@/contexts/patient-context";
+import { useMode } from "@/contexts/mode-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { toast } from "@/hooks/use-toast";
-import { Camera, Loader2, Pill, FlaskConical, AlertTriangle, ScanLine, ShieldCheck, FileText, BookCopy, HelpCircle, Leaf, Barcode, CheckCircle, Flag, Save, TestTube, User, Stethoscope, GitCompareArrows, Archive, Microscope, Book, Package, Volume2, Camera as CameraIcon } from "lucide-react";
-import { drugTreeData, Drug } from "@/app/(main)/drug-classification-tree/data";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { User, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School, Siren } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const MOCK_SCANNABLES = [
-    { type: 'drug', name: "Amoxicillin", stripPosition: { top: '20%', left: '15%' }, icon: Pill, risk: 'amber' },
-    { type: 'drug', name: "Paracetamol", stripPosition: { top: '55%', left: '55%' }, icon: Pill, risk: 'green' },
-    { type: 'barcode', name: "Morphine", stripPosition: { top: '75%', left: '10%' }, icon: Barcode, risk: 'red' },
-    { type: 'herb', name: "Strychnine", stripPosition: { top: '15%', left: '65%' }, icon: Leaf, risk: 'red' },
-];
+const PHARMACIST_CODE = "239773";
 
-const riskColors: { [key: string]: string } = {
-    red: 'border-red-500',
-    amber: 'border-amber-500',
-    green: 'border-green-500'
-}
-
-// Helper to find a drug by name in your data
-const findDrugDetails = (drugName: string): Drug | null => {
-    for (const category of drugTreeData) {
-        for (const subclass of category.subclasses || []) {
-             for (const subsubclass of subclass.subclasses || []) {
-                 const drug = subsubclass.drugs?.find(d => d.name.toLowerCase() === drugName.toLowerCase());
-                 if (drug) return drug;
-            }
-            const drug = subclass.drugs?.find(d => d.name.toLowerCase() === drugName.toLowerCase());
-            if (drug) return drug;
-        }
-    }
-    return null;
-}
-
-function DetailSection({ title, content, icon: Icon, className }: { title: string, content?: string, icon: React.ElementType, className?: string }) {
-    if (!content) return null;
-    return (
-        <div className={cn("space-y-1", className)}>
-            <h4 className="font-semibold text-base flex items-center gap-2 text-primary">
-                <Icon className="h-4 w-4" />
-                {title}
-            </h4>
-            <div className="pl-6 text-muted-foreground text-sm">
-                <p className="whitespace-pre-wrap">{content}</p>
-            </div>
-        </div>
-    );
-}
-
-function CompactOverlay({ item, onScan }: { item: { type: string, name: string, stripPosition: { top: string, left: string }, icon: React.ElementType, risk: string }, onScan: (drugName: string, type: string) => void }) {
-    const drug = findDrugDetails(item.name);
-    if (!drug) return null;
-
-    const handleActionClick = (e: React.MouseEvent, action: string) => {
-        e.stopPropagation();
-        if (action === "Save") {
-            toast({ title: "Saved to Notes — tagged: Pharmacology > Analgesics", description: "This is a simulated action."});
-        } else {
-            toast({ title: "Coming Soon!", description: `${action} functionality will be implemented soon.`});
-        }
-    };
-    
-    return (
-        <div 
-            className="absolute p-1 border-2 border-dashed border-white/50 rounded-lg group"
-            style={item.stripPosition}
-        >
-            <div 
-                className={cn(
-                    "bg-white/90 dark:bg-black/90 backdrop-blur-sm p-2 rounded-lg shadow-xl w-64 border-l-4",
-                    riskColors[item.risk] || 'border-gray-500'
-                )}
-            >
-                <div className="flex gap-2 cursor-pointer" onClick={() => onScan(item.name, item.type)}>
-                    <item.icon className="h-6 w-6 text-primary mt-1" />
-                    <div className="flex-1 space-y-1">
-                        <p className="font-bold text-sm">{drug.name} ({drug.pharmaApplications.formulations.split(',')[0]})</p>
-                        <p className="text-xs text-muted-foreground">{drug.classification}</p>
-                    </div>
-                </div>
-                 <div className="flex gap-1 justify-around border-t mt-2 pt-1">
-                    <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={() => onScan(item.name, item.type)}>Details</Button>
-                    <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={(e) => handleActionClick(e, 'Interactions')}>Interactions</Button>
-                    <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={(e) => handleActionClick(e, 'Save')}>Save</Button>
-                    <Button variant="ghost" size="sm" className="h-auto text-xs" onClick={(e) => handleActionClick(e, 'Quiz')}>Quiz</Button>
-                 </div>
-            </div>
-        </div>
-    );
-}
-
-
-export function ScanMedicineStripClient() {
-  const [hasCameraPermission, setHasCameraPermission] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [scannedItem, setScannedItem] = useState<{drug: Drug, type: string} | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+export default function RoleSelectionPage() {
+  const [pharmacistModalOpen, setPharmacistModalOpen] = useState(false);
+  const [patientOptionsModalOpen, setPatientOptionsModalOpen] = useState(false);
+  const [patientLoginModalOpen, setPatientLoginModalOpen] = useState(false);
+  const [studentLoginModalOpen, setStudentLoginModalOpen] = useState(false);
   
-  const [isOffline, setIsOffline] = useState(false);
-  const CACHED_DRUGS = ["Amoxicillin", "Paracetamol"];
-  
-  useEffect(() => {
-    return () => {
-        if (videoRef.current && videoRef.current.srcObject) {
-            const stream = videoRef.current.srcObject as MediaStream;
-            stream.getTracks().forEach(track => track.stop());
-        }
-    };
-  }, []);
+  const [pharmacistCode, setPharmacistCode] = useState("");
+  const [patientName, setPatientName] = useState("");
+  const [patientPhone, setPatientPhone] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [yearOfStudy, setYearOfStudy] = useState("");
 
-  const enableCamera = async () => {
-    setIsLoading(true);
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-      setHasCameraPermission(true);
-      toast({ title: "Camera Enabled", description: "Point your camera at a scannable item." });
-    } catch (error) {
-      console.error("Error accessing camera:", error);
-      toast({ variant: "destructive", title: "Camera Access Denied", description: "Please enable camera permissions in your browser settings." });
-      setHasCameraPermission(false);
-    } finally {
-      setIsLoading(false);
+
+  const { setMode } = useMode();
+  const { patientState, setActiveUser, addOrUpdateUser, clearActiveUser } = usePatient();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handlePharmacistLogin = () => {
+    if (pharmacistCode === PHARMACIST_CODE) {
+      setMode("pharmacist");
+      clearActiveUser();
+      router.push("/dashboard");
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Incorrect Code",
+        description: "This is not for you as you are not a pharmacist.",
+      });
     }
   };
 
-  const handleScan = (drugName: string, type: string) => {
-    if (isOffline && !CACHED_DRUGS.includes(drugName)) {
-        toast({
-            variant: "destructive",
-            title: "Offline Mode",
-            description: "Drug not in offline cache. Please connect to the internet to look it up."
-        });
+  const handlePatientLogin = () => {
+    if (!patientName || !patientPhone) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please enter your name and phone number." });
         return;
     }
-    const details = findDrugDetails(drugName);
-    if (details) {
-        setScannedItem({ drug: details, type: type });
-        setIsModalOpen(true);
+    const existingUser = patientState.users.find(
+      (p) =>
+        p.role === 'patient' &&
+        p.demographics?.name?.toLowerCase() === patientName.toLowerCase() &&
+        p.demographics?.phoneNumber === patientPhone
+    );
+
+    setMode("patient");
+
+    if (existingUser) {
+      setActiveUser(existingUser.id);
+      toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+      router.push("/dashboard");
     } else {
-        toast({ variant: "destructive", title: "No confident match.", description: `Tap ‘Manual search’ or upload clearer photos.`})
+       clearActiveUser();
+       const newUser: Omit<UserProfile, 'id'> = {
+         role: 'patient',
+         demographics: { name: patientName, phoneNumber: patientPhone }
+       };
+       addOrUpdateUser(newUser);
+       toast({ title: "Welcome!", description: "Let's create your patient history." });
+       router.push("/patient-history");
     }
+    setPatientLoginModalOpen(false);
+  };
+  
+  const handleNewPatient = () => {
+    setMode('patient');
+    clearActiveUser();
+    router.push('/patient-history');
   }
 
-  const isHighRisk = (drugName?: string) => {
-    const highRiskDrugs = ["morphine", "warfarin", "insulin", "strychnine"];
-    return highRiskDrugs.includes(drugName?.toLowerCase() || '');
+  const handleStudentLogin = () => {
+    if (!studentName || !studentId || !yearOfStudy) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please fill out all fields." });
+        return;
+    }
+    if (!studentId.toLowerCase().includes('edu')) {
+        toast({ variant: "destructive", title: "Invalid Student ID" });
+        return;
+    }
+
+    const existingUser = patientState.users.find(
+      (u) =>
+        u.role === 'student' &&
+        u.demographics?.name?.toLowerCase() === studentName.toLowerCase() &&
+        u.studentId === studentId
+    );
+    
+    setMode("student");
+
+    if (existingUser) {
+        setActiveUser(existingUser.id);
+        toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+    } else {
+        const newUser: Omit<UserProfile, 'id'> = {
+            role: 'student',
+            demographics: { name: studentName, yearOfStudy: yearOfStudy },
+            studentId: studentId,
+        };
+        addOrUpdateUser(newUser);
+        toast({ title: "Welcome!", description: `Your student profile has been created, ${studentName}. Let's create your health record.` });
+    }
+    router.push("/dashboard");
+    setStudentLoginModalOpen(false);
+  };
+
+  const handleEmergency = () => {
+    setMode('patient'); // Emergency defaults to patient view
+    clearActiveUser();
+    router.push('/emergency');
+  }
+
+  const openPatientLogin = () => {
+    setPatientOptionsModalOpen(false);
+    setPatientLoginModalOpen(true);
   }
   
-  const getRecognitionSource = (type: string) => {
-      if (isOffline) {
-        return { source: 'Offline Cache', confidence: '100%' };
-      }
-      switch(type) {
-          case 'barcode': return { source: 'UMT Verified Formulary & GS1 Database', confidence: '98%' };
-          case 'herb': return { source: 'Plant Recognition Model', confidence: '72%' };
-          default: return { source: 'OCR Text Recognition', confidence: '95%' };
-      }
+  const openStudentLogin = () => {
+    setStudentLoginModalOpen(true);
   }
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Medicine Strip Scanner</CardTitle>
-          <CardDescription>
-            {hasCameraPermission 
-              ? "Point your camera at medicine strip, bottle label, or herb."
-              : "Enable your camera to scan medicine text, barcodes, or plant specimens."
-            }
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="relative w-full aspect-video bg-muted rounded-lg flex items-center justify-center overflow-hidden">
-              <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
-              {!hasCameraPermission && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50">
-                      {isLoading ? (
-                          <Loader2 className="h-12 w-12 text-white animate-spin"/>
-                      ) : (
-                          <Button onClick={enableCamera} size="lg">
-                              <Camera className="mr-2"/> Enable Camera
-                          </Button>
-                      )}
-                  </div>
-              )}
-                {hasCameraPermission && (
-                  <div className="absolute inset-0">
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-1/2 pointer-events-none flex items-center justify-center">
-                          <ScanLine className="h-16 w-16 text-white/50 animate-pulse"/>
-                        </div>
-                      {MOCK_SCANNABLES.map(item => (
-                          <CompactOverlay key={item.name} item={item} onScan={handleScan} />
-                      ))}
-                  </div>
-                )}
-          </div>
-           <div className="flex items-center space-x-2 mt-4">
-              <Switch id="offline-mode" checked={isOffline} onCheckedChange={setIsOffline} />
-              <Label htmlFor="offline-mode">Simulate Offline Mode</Label>
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <Card className="w-full max-w-5xl shadow-2xl">
+        <CardHeader className="text-center">
+            <div className="mx-auto mb-4">
+                
             </div>
+          <CardTitle className="text-3xl font-headline">Welcome to Zuruu AI Pharmacy</CardTitle>
+          <CardDescription>Please select your role to continue</CardDescription>
+        </CardHeader>
+        <CardContent className="grid md:grid-cols-3 gap-8 p-8">
+          <div
+            onClick={() => setPatientOptionsModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <User className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Patient</h3>
+            <p className="text-muted-foreground mt-2">Access your profile or get emergency help.</p>
+          </div>
+          <div
+            onClick={() => setPharmacistModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <BriefcaseMedical className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Pharmacist</h3>
+            <p className="text-muted-foreground mt-2">Access the full suite of clinical tools.</p>
+          </div>
+           <div
+            onClick={openStudentLogin}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <School className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Student</h3>
+            <p className="text-muted-foreground mt-2">Login to access learning modules.</p>
+          </div>
         </CardContent>
       </Card>
-
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-2xl">
-            {scannedItem && (
-                <>
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl">{scannedItem.drug.name} ({scannedItem.drug.pharmaApplications.formulations})</DialogTitle>
-                        <DialogDescription>{scannedItem.drug.classification}</DialogDescription>
-                    </DialogHeader>
-                    <div className="max-h-[70vh] overflow-y-auto pr-4 space-y-4">
-                        
-                        <Alert variant="default" className="border-blue-500/50 bg-blue-500/10">
-                            <AlertTriangle className="h-4 w-4 text-blue-500" />
-                            <AlertTitle className="text-blue-600">Clinical Disclaimer</AlertTitle>
-                            <AlertDescription>Educational tool only — confirm with official formulary before clinical decisions.</AlertDescription>
-                        </Alert>
-                        
-                        {isHighRisk(scannedItem.drug.name) && (
-                            <Alert variant="destructive">
-                                <AlertTriangle className="h-4 w-4"/>
-                                <AlertTitle>High-Risk Medication</AlertTitle>
-                                <AlertDescription>Confirm dose & monitoring with supervisor.</AlertDescription>
-                            </Alert>
-                        )}
-                        
-                        {scannedItem.type === 'herb' && (
-                            <Alert>
-                                <AlertTriangle className="h-4 w-4"/>
-                                <AlertTitle>Possible Identification Only</AlertTitle>
-                                <AlertDescription>Possible match: {scannedItem.drug.name}. Confirm with specimen.</AlertDescription>
-                            </Alert>
-                        )}
-
-                        <Card>
-                            <CardHeader><CardTitle className="text-lg">Identification & Recognition</CardTitle></CardHeader>
-                            <CardContent className="space-y-3">
-                               <DetailSection title="Scan Info" content={`Source: ${getRecognitionSource(scannedItem.type).source} | Confidence: ${getRecognitionSource(scannedItem.type).confidence}`} icon={Barcode}/>
-                               <DetailSection title="Batch / Expiry" content={"Not detected on packaging."} icon={Calendar}/>
-                               <Button variant="link" size="sm" className="p-0 h-auto" onClick={() => toast({title: "Report this product as suspicious?", description: "Your report will be shared with campus admin."})}>Report Incorrect Info</Button>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader><CardTitle className="text-lg">Faculty Teaching Notes & Exam Highlights</CardTitle></CardHeader>
-                            <CardContent>
-                               <DetailSection title="Key Points" content={scannedItem.drug.specialNotes} icon={BookCopy} />
-                            </CardContent>
-                        </Card>
-                        
-                         <Card>
-                            <CardHeader><CardTitle className="text-lg">Pharmaceutical & Analytical Notes</CardTitle></CardHeader>
-                            <CardContent className="space-y-4">
-                               <DetailSection title="Storage & Stability" content={scannedItem.drug.pharmaApplications.storage} icon={Archive} />
-                               <DetailSection title="Therapeutic Alternatives" content={"Data on alternatives not available in this mock dataset."} icon={GitCompareArrows} />
-                               <DetailSection title="Analytical / QC Methods" content={`Qualitative: ${scannedItem.drug.analyticalMethods.qualitative}\nQuantitative: ${scannedItem.drug.analyticalMethods.quantitative}\nPharmacopoeial: ${scannedItem.drug.analyticalMethods.pharmacopoeial}`} icon={Microscope} />
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader><CardTitle className="text-lg">Clinical Information</CardTitle></CardHeader>
-                            <CardContent className="space-y-4">
-                               <DetailSection title="Mechanism of Action" content={scannedItem.drug.moa} icon={FlaskConical} />
-                               {scannedItem.type === 'herb' && (
-                                    <>
-                                        <DetailSection title="Active Constituents" content={scannedItem.drug.moa} icon={TestTube} />
-                                        <DetailSection title="Traditional Uses" content={scannedItem.drug.therapeuticUses} icon={Leaf} />
-                                    </>
-                                )}
-                               <DetailSection title="Therapeutic Uses" content={scannedItem.drug.therapeuticUses} icon={Stethoscope} />
-                               <DetailSection title="Major Adverse Drug Reactions (ADRs)" content={scannedItem.drug.adrs} icon={AlertTriangle} />
-                               <DetailSection title="Contraindications & Precautions" content={scannedItem.drug.contraindications} icon={ShieldCheck} />
-                               <DetailSection title="Typical Dosing" content={"Dosing information not available in this mock data. A real implementation would show Adult, Pediatric, and Renal/Hepatic dosing here."} icon={User} />
-                               <DetailSection title="Major Interactions" content={"Interaction data not available in this mock dataset."} icon={GitCompareArrows} />
-                            </CardContent>
-                        </Card>
-                        
-                        <Card>
-                            <CardHeader><CardTitle className="text-lg">Learning & App Actions</CardTitle></CardHeader>
-                            <CardContent className="flex flex-wrap gap-2">
-                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Saved to Notes — tagged: Pharmacology > Analgesics.", description: "This is a simulated action."})}><Save className="mr-2"/>Save Study Note</Button>
-                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will add flashcards to your deck."})}><BookCopy className="mr-2"/>Make Flashcards</Button>
-                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will launch a quiz on this drug."})}><HelpCircle className="mr-2"/>Quiz Me</Button>
-                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will launch a simulated counseling session."})}><User className="mr-2"/>Counseling Mode</Button>
-                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will allow taking a snapshot of the AR view."})}><CameraIcon className="mr-2"/>Snapshot</Button>
-                                <Button size="sm" variant="secondary" onClick={() => toast({title: "Coming Soon!", description: "This will read the card details aloud."})}><Volume2 className="mr-2"/>Read Aloud</Button>
-                            </CardContent>
-                        </Card>
-                    </div>
-                </>
-            )}
+      
+      {/* Pharmacist Modal */}
+      <Dialog open={pharmacistModalOpen} onOpenChange={setPharmacistModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pharmacist Access</DialogTitle>
+            <DialogDescription>Please enter your access code to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="pharmacist-code">Access Code</Label>
+            <Input 
+              id="pharmacist-code" 
+              type="password" 
+              value={pharmacistCode}
+              onChange={(e) => setPharmacistCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handlePharmacistLogin()}
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePharmacistLogin}>Login</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+      
+      {/* Patient Options Modal */}
+      <Dialog open={patientOptionsModalOpen} onOpenChange={setPatientOptionsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Options</DialogTitle>
+            <DialogDescription>How can we help you today?</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4">
+             <Button onClick={openPatientLogin} variant="outline" size="lg" className="h-auto py-4">
+              <LogIn className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">Patient Login</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Access your existing patient profile.</p>
+              </div>
+            </Button>
+             <Button onClick={handleNewPatient} variant="outline" size="lg" className="h-auto py-4">
+              <UserPlus className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">New Patient Registration</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Create a new patient history form.</p>
+              </div>
+            </Button>
+            <Button onClick={handleEmergency} variant="destructive" size="lg" className="h-auto py-4">
+                <Siren className="mr-4 text-destructive-foreground" />
+                 <div>
+                    <p className="font-semibold text-base text-left">Emergency Help</p>
+                    <p className="font-normal text-sm text-destructive-foreground/80 text-left">Immediately get assistance.</p>
+                </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Patient Login Modal */}
+      <Dialog open={patientLoginModalOpen} onOpenChange={setPatientLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Login</DialogTitle>
+            <DialogDescription>Please enter your details to find your profile.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="patient-name">Full Name</Label>
+                <Input id="patient-name" value={patientName} onChange={(e) => setPatientName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="patient-phone">Phone Number</Label>
+                <Input id="patient-phone" value={patientPhone} onChange={(e) => setPatientPhone(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePatientLogin}>Continue</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+       {/* Student Login Modal */}
+       <Dialog open={studentLoginModalOpen} onOpenChange={setStudentLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Student Login</DialogTitle>
+            <DialogDescription>Please enter your details to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="student-name">Full Name</Label>
+                <Input id="student-name" value={studentName} onChange={(e) => setStudentName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="student-id">Student ID</Label>
+                <Input id="student-id" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g., user@university.edu"/>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="year-of-study">Year of Study</Label>
+                <Select value={yearOfStudy} onValueChange={setYearOfStudy}>
+                    <SelectTrigger id="year-of-study">
+                        <SelectValue placeholder="Select your year..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="1st Year">1st Year</SelectItem>
+                        <SelectItem value="2nd Year">2nd Year</SelectItem>
+                        <SelectItem value="3rd Year">3rd Year</SelectItem>
+                        <SelectItem value="4th Year">4th Year</SelectItem>
+                        <SelectItem value="5th Year">5th Year</SelectItem>
+                        <SelectItem value="Graduate">Graduate</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleStudentLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

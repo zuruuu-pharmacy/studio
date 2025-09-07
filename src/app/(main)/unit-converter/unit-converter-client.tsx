@@ -1,258 +1,295 @@
-
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRightLeft, ChevronsDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePatient, UserProfile } from "@/contexts/patient-context";
+import { useMode } from "@/contexts/mode-context";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { User, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School, Siren } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const conversionFactors: { [key: string]: { [key: string]: number } } = {
-  mass: {
-    g: 1,
-    mg: 1000,
-    mcg: 1000000,
-  },
-  weight: {
-    kg: 1,
-    lb: 2.20462,
-  },
-  volume: {
-    L: 1,
-    mL: 1000,
-  },
-  concentration: {
-    'percent_w_v': 1, // Base unit is %w/v (g/100mL)
-    'mg_ml': 10,       // 1% w/v = 1g/100mL = 1000mg/100mL = 10mg/mL
-    'percent_v_v': 1, // Base unit is %v/v (mL/100mL)
-    'ml_ml': 0.01,     // 1% v/v = 1mL/100mL = 0.01mL/mL
-  }
-};
+const PHARMACIST_CODE = "239773";
 
-const unitLabels: { [key: string]: { [key: string]: string } } = {
-  mass: {
-    g: 'Grams (g)',
-    mg: 'Milligrams (mg)',
-    mcg: 'Micrograms (mcg)',
-  },
-  weight: {
-    kg: 'Kilograms (kg)',
-    lb: 'Pounds (lb)',
-  },
-  volume: {
-    L: 'Liters (L)',
-    mL: 'Milliliters (mL)',
-  },
-  temperature: {
-    C: 'Celsius (°C)',
-    F: 'Fahrenheit (°F)',
-    K: 'Kelvin (K)',
-  },
-  concentration: {
-    'percent_w_v': '% w/v',
-    'mg_ml': 'mg/mL',
-    'percent_v_v': '% v/v',
-    'ml_ml': 'mL/mL',
-  }
-};
-
-type UnitCategory = 'mass' | 'weight' | 'volume' | 'temperature' | 'concentration';
-
-export function UnitConverterClient() {
-  const [category, setCategory] = useState<UnitCategory>('mass');
-  const [inputValue, setInputValue] = useState<string>('1');
+export default function RoleSelectionPage() {
+  const [pharmacistModalOpen, setPharmacistModalOpen] = useState(false);
+  const [patientOptionsModalOpen, setPatientOptionsModalOpen] = useState(false);
+  const [patientLoginModalOpen, setPatientLoginModalOpen] = useState(false);
+  const [studentLoginModalOpen, setStudentLoginModalOpen] = useState(false);
   
-  const unitsForCategory = Object.keys(unitLabels[category]);
-  
-  const [fromUnit, setFromUnit] = useState<string>(unitsForCategory[0]);
-  const [toUnit, setToUnit] = useState<string>(unitsForCategory[1]);
+  const [pharmacistCode, setPharmacistCode] = useState("");
+  const [patientName, setPatientName] = useState("");
+  const [patientPhone, setPatientPhone] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [yearOfStudy, setYearOfStudy] = useState("");
 
-  // Reset units when category changes
-  useEffect(() => {
-    const newUnits = Object.keys(unitLabels[category]);
-    setFromUnit(newUnits[0]);
-    if (newUnits.length > 1) {
-      setToUnit(newUnits[1]);
+
+  const { setMode } = useMode();
+  const { patientState, setActiveUser, addOrUpdateUser, clearActiveUser } = usePatient();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handlePharmacistLogin = () => {
+    if (pharmacistCode === PHARMACIST_CODE) {
+      setMode("pharmacist");
+      clearActiveUser();
+      router.push("/dashboard");
     } else {
-      setToUnit(newUnits[0]);
+      toast({
+        variant: "destructive",
+        title: "Incorrect Code",
+        description: "This is not for you as you are not a pharmacist.",
+      });
     }
-  }, [category]);
+  };
 
-  const handleSwap = () => {
-    const newFrom = toUnit;
-    const newTo = fromUnit;
-    const newInputValue = convertedValue;
-    
-    setFromUnit(newFrom);
-    setToUnit(newTo);
-    setInputValue(newInputValue);
+  const handlePatientLogin = () => {
+    if (!patientName || !patientPhone) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please enter your name and phone number." });
+        return;
+    }
+    const existingUser = patientState.users.find(
+      (p) =>
+        p.role === 'patient' &&
+        p.demographics?.name?.toLowerCase() === patientName.toLowerCase() &&
+        p.demographics?.phoneNumber === patientPhone
+    );
+
+    setMode("patient");
+
+    if (existingUser) {
+      setActiveUser(existingUser.id);
+      toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+      router.push("/dashboard");
+    } else {
+       clearActiveUser();
+       const newUser: Omit<UserProfile, 'id'> = {
+         role: 'patient',
+         demographics: { name: patientName, phoneNumber: patientPhone }
+       };
+       addOrUpdateUser(newUser);
+       toast({ title: "Welcome!", description: "Let's create your patient history." });
+       router.push("/patient-history");
+    }
+    setPatientLoginModalOpen(false);
   };
   
-  const convertedValue = useMemo(() => {
-    const value = parseFloat(inputValue);
-    if (isNaN(value)) return '';
+  const handleNewPatient = () => {
+    setMode('patient');
+    clearActiveUser();
+    router.push('/patient-history');
+  }
 
-    if (fromUnit === toUnit) return inputValue;
-
-    if (category === 'temperature') {
-        let celsiusValue: number;
-        if (fromUnit === 'C') celsiusValue = value;
-        else if (fromUnit === 'F') celsiusValue = (value - 32) * 5/9;
-        else celsiusValue = value - 273.15; // Kelvin
-
-        if (toUnit === 'C') return Number(celsiusValue.toPrecision(10)).toString();
-        if (toUnit === 'F') return Number(((celsiusValue * 9/5) + 32).toPrecision(10)).toString();
-        if (toUnit === 'K') return Number((celsiusValue + 273.15).toPrecision(10)).toString();
-        return '';
-    } 
-    
-    const factors = conversionFactors[category];
-    if (!factors) return '';
-
-    // Handle special cases for concentration to prevent invalid conversions
-    if (category === 'concentration') {
-        const fromIsWeightBased = fromUnit === 'percent_w_v' || fromUnit === 'mg_ml';
-        const toIsWeightBased = toUnit === 'percent_w_v' || toUnit === 'mg_ml';
-        const fromIsVolumeBased = fromUnit === 'percent_v_v' || fromUnit === 'ml_ml';
-        const toIsVolumeBased = toUnit === 'percent_v_v' || toUnit === 'ml_ml';
-
-        if ((fromIsWeightBased && toIsVolumeBased) || (fromIsVolumeBased && toIsWeightBased)) {
-            return 'N/A';
-        }
+  const handleStudentLogin = () => {
+    if (!studentName || !studentId || !yearOfStudy) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please fill out all fields." });
+        return;
     }
-    
-    const fromFactor = factors[fromUnit];
-    const toFactor = factors[toUnit];
-
-    if (!fromFactor || !toFactor) return '';
-
-    const baseValue = value / fromFactor;
-    const result = baseValue * toFactor;
-    return Number(result.toPrecision(10)).toString();
-
-  }, [inputValue, fromUnit, toUnit, category]);
-
-  const calculationExplanation = useMemo(() => {
-    const value = parseFloat(inputValue);
-    if (isNaN(value)) return 'Invalid input value.';
-    if (convertedValue === 'N/A') return 'This conversion is not directly supported as it mixes weight-based and volume-based concentrations without knowing the density of the solution.';
-    
-    if (category === 'temperature') {
-        if (fromUnit === 'F' && toUnit === 'C') return `Formula: (°F - 32) × 5/9 = °C\nCalculation: (${value} - 32) × 5/9 = ${convertedValue} °C`;
-        if (fromUnit === 'C' && toUnit === 'F') return `Formula: (°C × 9/5) + 32 = °F\nCalculation: (${value} × 9/5) + 32 = ${convertedValue} °F`;
-        if (fromUnit === 'C' && toUnit === 'K') return `Formula: °C + 273.15 = K\nCalculation: ${value} + 273.15 = ${convertedValue} K`;
-        if (fromUnit === 'K' && toUnit === 'C') return `Formula: K - 273.15 = °C\nCalculation: ${value} - 273.15 = ${convertedValue} °C`;
-        return 'Select different temperature units to see the calculation.';
+    if (!studentId.toLowerCase().includes('edu')) {
+        toast({ variant: "destructive", title: "Invalid Student ID" });
+        return;
     }
 
-    if (category === 'concentration') {
-        if (fromUnit === 'percent_w_v' && toUnit === 'mg_ml') return `Definition: % w/v = g / 100 mL\nCalculation: ${value} g/100mL = ${value*1000} mg/100mL = ${convertedValue} mg/mL`;
-        if (fromUnit === 'mg_ml' && toUnit === 'percent_w_v') return `Definition: % w/v = g / 100 mL\nCalculation: ${value} mg/mL = ${value/1000} g/mL = ${value/10} g/100mL = ${convertedValue} % w/v`;
-        if (fromUnit === 'percent_v_v' && toUnit === 'ml_ml') return `Definition: % v/v = mL / 100 mL\nCalculation: ${value} mL/100mL = ${convertedValue} mL/mL`;
-        if (fromUnit === 'ml_ml' && toUnit === 'percent_v_v') return `Definition: % v/v = mL / 100 mL\nCalculation: ${value} mL/mL = ${value*100} mL/100mL = ${convertedValue} % v/v`;
-    }
-
-    const factors = conversionFactors[category];
-    if (!factors) return 'No conversion factors available for this category.';
-
-    const fromFactor = factors[fromUnit];
-    const toFactor = factors[toUnit];
+    const existingUser = patientState.users.find(
+      (u) =>
+        u.role === 'student' &&
+        u.demographics?.name?.toLowerCase() === studentName.toLowerCase() &&
+        u.studentId === studentId
+    );
     
-    if (fromFactor > toFactor) { // e.g. g to mg
-      const factor = fromFactor / toFactor;
-      return `Formula: 1 ${fromUnit} = ${factor} ${toUnit}\nCalculation: ${value} ${fromUnit} × ${factor} = ${convertedValue} ${toUnit}`;
-    } else { // e.g. mg to g
-      const factor = toFactor / fromFactor;
-      return `Formula: 1 ${toUnit} = ${factor} ${fromUnit}\nCalculation: ${value} ${fromUnit} ÷ ${factor} = ${convertedValue} ${toUnit}`;
-    }
-  }, [inputValue, fromUnit, toUnit, category, convertedValue]);
+    setMode("student");
 
+    if (existingUser) {
+        setActiveUser(existingUser.id);
+        toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+    } else {
+        const newUser: Omit<UserProfile, 'id'> = {
+            role: 'student',
+            demographics: { name: studentName, yearOfStudy: yearOfStudy },
+            studentId: studentId,
+        };
+        addOrUpdateUser(newUser);
+        toast({ title: "Welcome!", description: `Your student profile has been created, ${studentName}. Let's create your health record.` });
+    }
+    router.push("/dashboard");
+    setStudentLoginModalOpen(false);
+  };
+
+  const handleEmergency = () => {
+    setMode('patient'); // Emergency defaults to patient view
+    clearActiveUser();
+    router.push('/emergency');
+  }
+
+  const openPatientLogin = () => {
+    setPatientOptionsModalOpen(false);
+    setPatientLoginModalOpen(true);
+  }
+  
+  const openStudentLogin = () => {
+    setStudentLoginModalOpen(true);
+  }
 
   return (
-    <Card className="max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle>Clinical Unit Converter</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div>
-          <Label>Conversion Type</Label>
-          <Select value={category} onValueChange={(value) => setCategory(value as UnitCategory)}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="mass">Mass</SelectItem>
-              <SelectItem value="weight">Weight</SelectItem>
-              <SelectItem value="volume">Volume</SelectItem>
-              <SelectItem value="temperature">Temperature</SelectItem>
-              <SelectItem value="concentration">Concentration</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="grid grid-cols-5 items-center gap-2">
-          <div className="col-span-2 space-y-2">
-            <Label htmlFor="from-value">From</Label>
-            <Input
-              id="from-value"
-              type="number"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-            />
-            <Select value={fromUnit} onValueChange={setFromUnit}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {unitsForCategory.map(unit => (
-                  <SelectItem key={unit} value={unit}>{unitLabels[category][unit]}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <Card className="w-full max-w-5xl shadow-2xl">
+        <CardHeader className="text-center">
+            <div className="mx-auto mb-4">
+                
+            </div>
+          <CardTitle className="text-3xl font-headline">Welcome to Zuruu AI Pharmacy</CardTitle>
+          <CardDescription>Please select your role to continue</CardDescription>
+        </CardHeader>
+        <CardContent className="grid md:grid-cols-3 gap-8 p-8">
+          <div
+            onClick={() => setPatientOptionsModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <User className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Patient</h3>
+            <p className="text-muted-foreground mt-2">Access your profile or get emergency help.</p>
           </div>
-
-          <div className="col-span-1 flex justify-center pt-8">
-            <Button variant="ghost" size="icon" onClick={handleSwap}>
-              <ArrowRightLeft className="h-6 w-6 text-primary" />
+          <div
+            onClick={() => setPharmacistModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <BriefcaseMedical className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Pharmacist</h3>
+            <p className="text-muted-foreground mt-2">Access the full suite of clinical tools.</p>
+          </div>
+           <div
+            onClick={openStudentLogin}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <School className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Student</h3>
+            <p className="text-muted-foreground mt-2">Login to access learning modules.</p>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Pharmacist Modal */}
+      <Dialog open={pharmacistModalOpen} onOpenChange={setPharmacistModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pharmacist Access</DialogTitle>
+            <DialogDescription>Please enter your access code to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="pharmacist-code">Access Code</Label>
+            <Input 
+              id="pharmacist-code" 
+              type="password" 
+              value={pharmacistCode}
+              onChange={(e) => setPharmacistCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handlePharmacistLogin()}
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePharmacistLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Patient Options Modal */}
+      <Dialog open={patientOptionsModalOpen} onOpenChange={setPatientOptionsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Options</DialogTitle>
+            <DialogDescription>How can we help you today?</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4">
+             <Button onClick={openPatientLogin} variant="outline" size="lg" className="h-auto py-4">
+              <LogIn className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">Patient Login</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Access your existing patient profile.</p>
+              </div>
+            </Button>
+             <Button onClick={handleNewPatient} variant="outline" size="lg" className="h-auto py-4">
+              <UserPlus className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">New Patient Registration</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Create a new patient history form.</p>
+              </div>
+            </Button>
+            <Button onClick={handleEmergency} variant="destructive" size="lg" className="h-auto py-4">
+                <Siren className="mr-4 text-destructive-foreground" />
+                 <div>
+                    <p className="font-semibold text-base text-left">Emergency Help</p>
+                    <p className="font-normal text-sm text-destructive-foreground/80 text-left">Immediately get assistance.</p>
+                </div>
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
 
-          <div className="col-span-2 space-y-2">
-            <Label htmlFor="to-value">To</Label>
-            <Input id="to-value" value={convertedValue} readOnly className="font-bold bg-muted" />
-            <Select value={toUnit} onValueChange={setToUnit}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                 {unitsForCategory.map(unit => (
-                  <SelectItem key={unit} value={unit}>{unitLabels[category][unit]}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      {/* Patient Login Modal */}
+      <Dialog open={patientLoginModalOpen} onOpenChange={setPatientLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Login</DialogTitle>
+            <DialogDescription>Please enter your details to find your profile.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="patient-name">Full Name</Label>
+                <Input id="patient-name" value={patientName} onChange={(e) => setPatientName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="patient-phone">Phone Number</Label>
+                <Input id="patient-phone" value={patientPhone} onChange={(e) => setPatientPhone(e.target.value)} />
+            </div>
           </div>
-        </div>
-      </CardContent>
-       <CardFooter>
-          <Accordion type="single" className="w-full">
-            <AccordionItem value="item-1">
-              <AccordionTrigger>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <ChevronsDown className="h-4 w-4" />
-                  Show Calculation
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="p-4 bg-muted/50 rounded-md whitespace-pre-wrap font-mono text-sm">
-                  {calculationExplanation}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-       </CardFooter>
-    </Card>
+          <DialogFooter>
+            <Button onClick={handlePatientLogin}>Continue</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+       {/* Student Login Modal */}
+       <Dialog open={studentLoginModalOpen} onOpenChange={setStudentLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Student Login</DialogTitle>
+            <DialogDescription>Please enter your details to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="student-name">Full Name</Label>
+                <Input id="student-name" value={studentName} onChange={(e) => setStudentName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="student-id">Student ID</Label>
+                <Input id="student-id" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g., user@university.edu"/>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="year-of-study">Year of Study</Label>
+                <Select value={yearOfStudy} onValueChange={setYearOfStudy}>
+                    <SelectTrigger id="year-of-study">
+                        <SelectValue placeholder="Select your year..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="1st Year">1st Year</SelectItem>
+                        <SelectItem value="2nd Year">2nd Year</SelectItem>
+                        <SelectItem value="3rd Year">3rd Year</SelectItem>
+                        <SelectItem value="4th Year">4th Year</SelectItem>
+                        <SelectItem value="5th Year">5th Year</SelectItem>
+                        <SelectItem value="Graduate">Graduate</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleStudentLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

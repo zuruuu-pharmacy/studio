@@ -1,188 +1,295 @@
-
 "use client";
 
-import { BackButton } from "@/components/back-button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Droplet, TestTube, Microscope, CheckCircle, Video, Zap, Notebook, Mic, User, Database, Bot, FileText, BarChart, GitCompareArrows, Calendar, Truck, ShieldCheck, Siren, BrainCircuit, ListChecks, Lightbulb, UserPlus, FileUp } from 'lucide-react';
-import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePatient, UserProfile } from "@/contexts/patient-context";
+import { useMode } from "@/contexts/mode-context";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { User, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School, Siren } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-function DetailSection({ title, children, icon: Icon }: { title: string, children: React.ReactNode, icon: React.ElementType }) {
-    return (
-        <div className="mt-4">
-            <h4 className="font-semibold text-base mb-2 flex items-center gap-2"><Icon className="h-5 w-5 text-primary"/>{title}</h4>
-            <div className="pl-7 text-muted-foreground text-sm space-y-2 border-l-2 border-primary/20 ml-2.5 pl-4 pb-2">
-              {children}
-            </div>
-        </div>
-    )
-}
+const PHARMACIST_CODE = "239773";
 
-const hematologyTopics = [
-    {
-        title: "Disorders of Red Blood Cells",
-        icon: Droplet,
-        content: `This module functions as a diagnostic and educational tool for common red blood cell (RBC) disorders, focusing on anemia, polycythemia, and hemoglobinopathies.`,
-        details: [
-            { 
-                title: "UI & Data Input", 
-                icon: UserPlus,
-                description: "The user, likely a healthcare professional or a medical student, would enter patient data through a series of interactive forms, including CBC with RBC indices, reticulocyte count, and clinical symptoms."
-            },
-            {
-                title: "AI-Powered Morphological Analysis",
-                icon: Bot,
-                description: "The user uploads a digital image of a peripheral blood smear. A Convolutional Neural Network (CNN) then performs a multi-step analysis:",
-                steps: [
-                    "Cell Segmentation: Identifies and isolates individual cells (RBCs, WBCs, platelets).",
-                    "Feature Extraction: Extracts features like size, shape (poikilocytosis), color, and inclusions (Howell-Jolly bodies).",
-                    "Classification & Diagnosis: Compares features against a massive dataset to generate a probabilistic diagnosis (e.g., 'High likelihood of Iron Deficiency Anemia (85% confidence)')."
-                ]
-            },
-            {
-                title: "AI-Driven Diagnostic Workflow",
-                icon: BrainCircuit,
-                description: "Based on all inputs, the app provides a comprehensive decision support workflow:",
-                steps: [
-                    "Differential Diagnosis Generation: Creates a ranked list of possible conditions.",
-                    "Guidance for Further Testing: Recommends the next logical tests (e.g., serum ferritin, hemoglobin electrophoresis).",
-                    "Educational Overlay: Links each diagnosis to an in-depth module with pathophysiology diagrams and treatment protocols."
-                ]
-            }
-        ]
-    },
-    {
-        title: "Disorders of White Blood Cells",
-        icon: Microscope,
-        content: `This module provides a detailed framework for understanding and diagnosing both benign and malignant white blood cell (WBC) disorders.`,
-         details: [
-            { 
-                title: "Data Aggregation", 
-                icon: Database,
-                description: "The user inputs CBC results with differential counts, along with genetic and molecular test results (e.g., karyotype analysis, JAK2 mutation status)."
-            },
-            {
-                title: "AI-Powered Risk Stratification",
-                icon: Bot,
-                description: "AI models (e.g., Gradient Boosting Machines) are used to perform risk stratification for conditions like myelodysplastic syndromes (MDS) or various leukemias:",
-                steps: [
-                    "Data Integration: The AI ingests all patient data, including demographics, symptoms, CBC, and genetic markers.",
-                    "Pattern Recognition: Analyzes data points to identify subtle patterns that correlate with disease progression or treatment response.",
-                    "Prognostic Report: Generates a detailed prognostic report, estimating risk and suggesting the most effective treatment approach based on similar patient profiles."
-                ]
-            },
-            {
-                title: "Interactive Pathophysiology",
-                icon: GitCompareArrows,
-                description: "The module includes interactive educational tools:",
-                steps: [
-                    "Cell Lineage Pathway: An animated diagram of hematopoiesis allows users to see how various disorders disrupt normal cell maturation.",
-                    "Treatment Optimization: Simulates different chemotherapy regimens, showing how each drug targets specific cell types or genetic mutations."
-                ]
-            }
-        ]
-    },
-    {
-        title: "Disorders of Hemostasis",
-        icon: TestTube,
-        content: `This module provides a complex, animated simulation of the coagulation cascade, allowing users to visualize and understand bleeding and thrombotic disorders.`,
-        details: [
-            { 
-                title: "Animated Coagulation Cascade", 
-                icon: Video,
-                description: "The main screen shows a complex, multi-layered animation of the coagulation cascade. Each clotting factor and platelet is an interactive element, allowing users to explore its role and common deficiencies."
-            },
-             { 
-                title: "Simulated Disorders", 
-                icon: Bot,
-                description: "Users can select a disorder (e.g., Hemophilia A) and watch the simulation play out, showing where the cascade fails and visually demonstrating the consequences, like prolonged bleeding time."
-            },
-             { 
-                title: "Diagnostic & Management Flow", 
-                icon: ListChecks,
-                description: "The app provides guided diagnostic and treatment strategy tools:",
-                 steps: [
-                    "Algorithmic Test Interpretation: Guides the user through interpreting results like a prolonged PT with a normal aPTT, suggesting next steps like a liver function test.",
-                    "Treatment Strategy Simulation: For conditions like DVT, the app simulates the effects of different anticoagulants (e.g., Warfarin, Heparin) on the coagulation pathway."
-                ]
-            },
-        ]
-    },
-    {
-        title: "Blood Banking & Transfusion Medicine",
-        icon: CheckCircle,
-        content: `This module is a comprehensive and dynamic platform for managing and learning about the entire blood transfusion process, from donor to recipient.`,
-        details: [
-             { 
-                title: "Logistics & Inventory", 
-                icon: Truck,
-                description: "Features for managing the blood supply chain:",
-                 steps: [
-                    "Donor Management: Detailed donor profiles with donation history, blood type, and scheduling/reminders.",
-                    "Real-time Inventory Dashboard: Displays current inventory of all blood components by type, with alerts for critical shortages.",
-                    "Vein-to-Vein Tracking: Barcode/QR code scanning at every step (collection, processing, storage, administration) for complete traceability."
-                ]
-            },
-             { 
-                title: "AI-Powered Safety Features", 
-                icon: Bot,
-                description: "Critical AI-driven tools to enhance patient safety and resource management:",
-                 steps: [
-                    "AI Compatibility Checker: At the point of transfusion, scanning the patient wristband and blood bag triggers a real-time, triple-check verification. The system locks out the user if any incompatibility is detected.",
-                    "Predictive Demand Forecasting: Analyzes historical data and local demand to predict future blood needs, optimizing collection schedules.",
-                    "Transfusion Reaction Protocol: In the event of a reaction, the app provides an immediate, step-by-step emergency protocol."
-                ]
-            },
-        ]
+export default function RoleSelectionPage() {
+  const [pharmacistModalOpen, setPharmacistModalOpen] = useState(false);
+  const [patientOptionsModalOpen, setPatientOptionsModalOpen] = useState(false);
+  const [patientLoginModalOpen, setPatientLoginModalOpen] = useState(false);
+  const [studentLoginModalOpen, setStudentLoginModalOpen] = useState(false);
+  
+  const [pharmacistCode, setPharmacistCode] = useState("");
+  const [patientName, setPatientName] = useState("");
+  const [patientPhone, setPatientPhone] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [yearOfStudy, setYearOfStudy] = useState("");
+
+
+  const { setMode } = useMode();
+  const { patientState, setActiveUser, addOrUpdateUser, clearActiveUser } = usePatient();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handlePharmacistLogin = () => {
+    if (pharmacistCode === PHARMACIST_CODE) {
+      setMode("pharmacist");
+      clearActiveUser();
+      router.push("/dashboard");
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Incorrect Code",
+        description: "This is not for you as you are not a pharmacist.",
+      });
     }
-];
+  };
 
-export default function HematologyPage() {
+  const handlePatientLogin = () => {
+    if (!patientName || !patientPhone) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please enter your name and phone number." });
+        return;
+    }
+    const existingUser = patientState.users.find(
+      (p) =>
+        p.role === 'patient' &&
+        p.demographics?.name?.toLowerCase() === patientName.toLowerCase() &&
+        p.demographics?.phoneNumber === patientPhone
+    );
+
+    setMode("patient");
+
+    if (existingUser) {
+      setActiveUser(existingUser.id);
+      toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+      router.push("/dashboard");
+    } else {
+       clearActiveUser();
+       const newUser: Omit<UserProfile, 'id'> = {
+         role: 'patient',
+         demographics: { name: patientName, phoneNumber: patientPhone }
+       };
+       addOrUpdateUser(newUser);
+       toast({ title: "Welcome!", description: "Let's create your patient history." });
+       router.push("/patient-history");
+    }
+    setPatientLoginModalOpen(false);
+  };
+  
+  const handleNewPatient = () => {
+    setMode('patient');
+    clearActiveUser();
+    router.push('/patient-history');
+  }
+
+  const handleStudentLogin = () => {
+    if (!studentName || !studentId || !yearOfStudy) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please fill out all fields." });
+        return;
+    }
+    if (!studentId.toLowerCase().includes('edu')) {
+        toast({ variant: "destructive", title: "Invalid Student ID" });
+        return;
+    }
+
+    const existingUser = patientState.users.find(
+      (u) =>
+        u.role === 'student' &&
+        u.demographics?.name?.toLowerCase() === studentName.toLowerCase() &&
+        u.studentId === studentId
+    );
+    
+    setMode("student");
+
+    if (existingUser) {
+        setActiveUser(existingUser.id);
+        toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+    } else {
+        const newUser: Omit<UserProfile, 'id'> = {
+            role: 'student',
+            demographics: { name: studentName, yearOfStudy: yearOfStudy },
+            studentId: studentId,
+        };
+        addOrUpdateUser(newUser);
+        toast({ title: "Welcome!", description: `Your student profile has been created, ${studentName}. Let's create your health record.` });
+    }
+    router.push("/dashboard");
+    setStudentLoginModalOpen(false);
+  };
+
+  const handleEmergency = () => {
+    setMode('patient'); // Emergency defaults to patient view
+    clearActiveUser();
+    router.push('/emergency');
+  }
+
+  const openPatientLogin = () => {
+    setPatientOptionsModalOpen(false);
+    setPatientLoginModalOpen(true);
+  }
+  
+  const openStudentLogin = () => {
+    setStudentLoginModalOpen(true);
+  }
+
   return (
-    <div>
-      <BackButton />
-      <h1 className="text-3xl font-bold mb-2 font-headline">Hematology & Blood Banking</h1>
-      <p className="text-muted-foreground mb-6">
-        An overview of blood-related diseases and transfusion science.
-      </p>
-      <Card>
-        <CardHeader>
-          <CardTitle>Key Topics in Hematology</CardTitle>
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <Card className="w-full max-w-5xl shadow-2xl">
+        <CardHeader className="text-center">
+            <div className="mx-auto mb-4">
+                
+            </div>
+          <CardTitle className="text-3xl font-headline">Welcome to Zuruu AI Pharmacy</CardTitle>
+          <CardDescription>Please select your role to continue</CardDescription>
         </CardHeader>
-        <CardContent>
-          <Accordion type="single" collapsible className="w-full space-y-3" defaultValue="item-0">
-            {hematologyTopics.map((topic, index) => (
-              <AccordionItem key={index} value={`item-${index}`} className="border rounded-lg bg-background/50">
-                <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline">
-                  <div className="flex items-center gap-3">
-                    <topic.icon className="h-6 w-6 text-primary" />
-                    {topic.title}
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-4 space-y-4">
-                  <p className="italic text-muted-foreground">{topic.content}</p>
-                   {topic.details && topic.details.map((detail, detailIndex) => (
-                        <Card key={detailIndex} className="bg-background">
-                            <CardHeader>
-                                <CardTitle className="text-lg flex items-center gap-2"><detail.icon className="h-5 w-5 text-primary"/>{detail.title}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground mb-4">{detail.description}</p>
-                                {detail.steps && (
-                                    <ul className="list-disc list-inside space-y-2 text-sm">
-                                        {detail.steps.map((step, stepIndex) => <li key={stepIndex}>{step}</li>)}
-                                    </ul>
-                                )}
-                            </CardContent>
-                        </Card>
-                   ))}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+        <CardContent className="grid md:grid-cols-3 gap-8 p-8">
+          <div
+            onClick={() => setPatientOptionsModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <User className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Patient</h3>
+            <p className="text-muted-foreground mt-2">Access your profile or get emergency help.</p>
+          </div>
+          <div
+            onClick={() => setPharmacistModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <BriefcaseMedical className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Pharmacist</h3>
+            <p className="text-muted-foreground mt-2">Access the full suite of clinical tools.</p>
+          </div>
+           <div
+            onClick={openStudentLogin}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <School className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Student</h3>
+            <p className="text-muted-foreground mt-2">Login to access learning modules.</p>
+          </div>
         </CardContent>
       </Card>
+      
+      {/* Pharmacist Modal */}
+      <Dialog open={pharmacistModalOpen} onOpenChange={setPharmacistModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pharmacist Access</DialogTitle>
+            <DialogDescription>Please enter your access code to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="pharmacist-code">Access Code</Label>
+            <Input 
+              id="pharmacist-code" 
+              type="password" 
+              value={pharmacistCode}
+              onChange={(e) => setPharmacistCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handlePharmacistLogin()}
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePharmacistLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Patient Options Modal */}
+      <Dialog open={patientOptionsModalOpen} onOpenChange={setPatientOptionsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Options</DialogTitle>
+            <DialogDescription>How can we help you today?</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4">
+             <Button onClick={openPatientLogin} variant="outline" size="lg" className="h-auto py-4">
+              <LogIn className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">Patient Login</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Access your existing patient profile.</p>
+              </div>
+            </Button>
+             <Button onClick={handleNewPatient} variant="outline" size="lg" className="h-auto py-4">
+              <UserPlus className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">New Patient Registration</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Create a new patient history form.</p>
+              </div>
+            </Button>
+            <Button onClick={handleEmergency} variant="destructive" size="lg" className="h-auto py-4">
+                <Siren className="mr-4 text-destructive-foreground" />
+                 <div>
+                    <p className="font-semibold text-base text-left">Emergency Help</p>
+                    <p className="font-normal text-sm text-destructive-foreground/80 text-left">Immediately get assistance.</p>
+                </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Patient Login Modal */}
+      <Dialog open={patientLoginModalOpen} onOpenChange={setPatientLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Login</DialogTitle>
+            <DialogDescription>Please enter your details to find your profile.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="patient-name">Full Name</Label>
+                <Input id="patient-name" value={patientName} onChange={(e) => setPatientName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="patient-phone">Phone Number</Label>
+                <Input id="patient-phone" value={patientPhone} onChange={(e) => setPatientPhone(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePatientLogin}>Continue</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+       {/* Student Login Modal */}
+       <Dialog open={studentLoginModalOpen} onOpenChange={setStudentLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Student Login</DialogTitle>
+            <DialogDescription>Please enter your details to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="student-name">Full Name</Label>
+                <Input id="student-name" value={studentName} onChange={(e) => setStudentName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="student-id">Student ID</Label>
+                <Input id="student-id" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g., user@university.edu"/>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="year-of-study">Year of Study</Label>
+                <Select value={yearOfStudy} onValueChange={setYearOfStudy}>
+                    <SelectTrigger id="year-of-study">
+                        <SelectValue placeholder="Select your year..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="1st Year">1st Year</SelectItem>
+                        <SelectItem value="2nd Year">2nd Year</SelectItem>
+                        <SelectItem value="3rd Year">3rd Year</SelectItem>
+                        <SelectItem value="4th Year">4th Year</SelectItem>
+                        <SelectItem value="5th Year">5th Year</SelectItem>
+                        <SelectItem value="Graduate">Graduate</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleStudentLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

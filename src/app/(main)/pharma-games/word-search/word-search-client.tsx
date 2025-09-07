@@ -1,257 +1,295 @@
-
 "use client";
 
-import { useActionState, useEffect, useState, useTransition, useRef, useMemo } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { generateWordSearch, type WordSearchGeneratorOutput } from "@/ai/flows/word-search-generator";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePatient, UserProfile } from "@/contexts/patient-context";
+import { useMode } from "@/contexts/mode-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Sparkles, Search, CheckCircle, Trophy } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { User, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School, Siren } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-// Form schema for topic selection
-const topicFormSchema = z.object({
-  topic: z.string().min(3, "Please enter a topic."),
-});
-type TopicFormValues = z.infer<typeof topicFormSchema>;
+const PHARMACIST_CODE = "239773";
 
-type Cell = { row: number; col: number };
+export default function RoleSelectionPage() {
+  const [pharmacistModalOpen, setPharmacistModalOpen] = useState(false);
+  const [patientOptionsModalOpen, setPatientOptionsModalOpen] = useState(false);
+  const [patientLoginModalOpen, setPatientLoginModalOpen] = useState(false);
+  const [studentLoginModalOpen, setStudentLoginModalOpen] = useState(false);
+  
+  const [pharmacistCode, setPharmacistCode] = useState("");
+  const [patientName, setPatientName] = useState("");
+  const [patientPhone, setPatientPhone] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [yearOfStudy, setYearOfStudy] = useState("");
 
-export function WordSearchClient() {
-  const [isPending, startTransition] = useTransition();
-  const [state, formAction] = useActionState<WordSearchGeneratorOutput | { error: string } | null, FormData>(
-    async (previousState, formData) => {
-      const parsed = topicFormSchema.safeParse(Object.fromEntries(formData));
-      if (!parsed.success) return { error: "Invalid topic." };
-      try {
-        const result = await generateWordSearch({ topic: parsed.data.topic });
-        return result;
-      } catch (e) {
-        console.error(e);
-        return { error: "Failed to generate word search." };
-      }
-    },
-    null
-  );
 
+  const { setMode } = useMode();
+  const { patientState, setActiveUser, addOrUpdateUser, clearActiveUser } = usePatient();
+  const router = useRouter();
   const { toast } = useToast();
-  const topicForm = useForm<TopicFormValues>({ resolver: zodResolver(topicFormSchema), defaultValues: { topic: "" } });
 
-  const [foundWords, setFoundWords] = useState<Set<string>>(new Set());
-  const [selection, setSelection] = useState<Cell[]>([]);
-  const [isSelecting, setIsSelecting] = useState(false);
-  
-  // New state to track if answers are revealed
-  const [isRevealed, setIsRevealed] = useState(false);
-
-  useEffect(() => {
-    if (state?.error) {
-      toast({ variant: "destructive", title: "Error", description: state.error });
-    } else if (state?.grid) {
-      setFoundWords(new Set());
-      setSelection([]);
-      setIsRevealed(false); // Reset reveal state on new game
-    }
-  }, [state, toast]);
-
-  const handleTopicSubmit = topicForm.handleSubmit((data) => {
-    const formData = new FormData();
-    formData.append("topic", data.topic);
-    startTransition(() => formAction(formData));
-  });
-
-  const checkSelection = (currentSelection: Cell[]) => {
-      if (currentSelection.length < 2 || !state?.words) return;
-      const selectedString = currentSelection.map(cell => state.grid[cell.row][cell.col]).join('');
-      const reversedString = selectedString.split('').reverse().join('');
-      
-      const wordsToFind = new Set(state.words);
-      if (wordsToFind.has(selectedString) && !foundWords.has(selectedString)) {
-          setFoundWords(prev => new Set(prev).add(selectedString));
-      } else if (wordsToFind.has(reversedString) && !foundWords.has(reversedString)) {
-          setFoundWords(prev => new Set(prev).add(reversedString));
-      }
-  };
-
-  const handleMouseDown = (row: number, col: number) => {
-    if(isRevealed) return;
-    setIsSelecting(true);
-    setSelection([{ row, col }]);
-  };
-
-  const handleMouseEnter = (row: number, col: number) => {
-    if (!isSelecting || isRevealed) return;
-    
-    // Prevent adding the same cell multiple times
-    if (selection.some(cell => cell.row === row && cell.col === col)) return;
-
-    // This is a simplified selection logic. A robust implementation would
-    // strictly enforce straight lines (horizontal, vertical, diagonal).
-    setSelection(prev => [...prev, { row, col }]);
-  };
-
-  const handleMouseUp = () => {
-    if(isRevealed) return;
-    setIsSelecting(false);
-    checkSelection(selection);
-    setSelection([]);
-  };
-
-  const isCellSelected = (row: number, col: number) => {
-    return selection.some(cell => cell.row === row && cell.col === col);
-  };
-  
-  const handleNewGame = () => {
-    topicForm.reset({ topic: ""});
-    startTransition(() => formAction(new FormData()));
-  }
-
-  const handleGiveUp = () => {
-    if (!state?.words) return;
-    setIsRevealed(true);
-    setFoundWords(new Set(state.words)); // Mark all words as found
-  }
-
-  const isGameOver = state?.words && foundWords.size === state.words.length;
-  
-  const revealedCells = useMemo(() => {
-    if (!isRevealed || !state?.words || !state.grid) return new Set<string>();
-    
-    const allWordChars = new Set(state.words.join(''));
-    const letterPositions: { [key: string]: Cell[] } = {};
-
-    // Map all positions of each letter in the grid
-    state.grid.forEach((row, rIdx) => {
-      row.forEach((letter, cIdx) => {
-        if (!letterPositions[letter]) {
-          letterPositions[letter] = [];
-        }
-        letterPositions[letter].push({ row: rIdx, col: cIdx });
+  const handlePharmacistLogin = () => {
+    if (pharmacistCode === PHARMACIST_CODE) {
+      setMode("pharmacist");
+      clearActiveUser();
+      router.push("/dashboard");
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Incorrect Code",
+        description: "This is not for you as you are not a pharmacist.",
       });
-    });
-
-    // For simplicity, we'll just highlight all occurrences of letters that are part of the solution words.
-    // A more advanced solution would trace the exact path of each word.
-    const solutionCells = new Set<string>();
-    const solutionLetters = new Set(state.words.join('').split(''));
-
-    for (let r = 0; r < state.grid.length; r++) {
-      for (let c = 0; c < state.grid[r].length; c++) {
-        if (solutionLetters.has(state.grid[r][c])) {
-            // This is a simplified reveal. We can improve it to highlight full words later.
-            // For now, it gives a strong hint.
-        }
-      }
     }
-    // Since full word pathing is complex, let's just highlight all cells.
-    // A better approach is needed. For now, let's highlight based on the `foundWords` which get populated on "give up"
-    return new Set<string>();
-  }, [isRevealed, state]);
-
-   const isCellPartOfRevealedWord = (row: number, col: number): boolean => {
-    if (!isRevealed || !state) return false;
-    // This is a simplified heuristic: check if the letter is part of any solution word.
-    // This isn't perfect as it might highlight unrelated letters, but it's a start.
-    const letter = state.grid[row][col];
-    return state.words.some(word => word.includes(letter));
   };
 
-
-  if (isPending) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64 gap-4">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="text-muted-foreground">Generating your word search for "{topicForm.getValues('topic')}"...</p>
-      </div>
+  const handlePatientLogin = () => {
+    if (!patientName || !patientPhone) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please enter your name and phone number." });
+        return;
+    }
+    const existingUser = patientState.users.find(
+      (p) =>
+        p.role === 'patient' &&
+        p.demographics?.name?.toLowerCase() === patientName.toLowerCase() &&
+        p.demographics?.phoneNumber === patientPhone
     );
+
+    setMode("patient");
+
+    if (existingUser) {
+      setActiveUser(existingUser.id);
+      toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+      router.push("/dashboard");
+    } else {
+       clearActiveUser();
+       const newUser: Omit<UserProfile, 'id'> = {
+         role: 'patient',
+         demographics: { name: patientName, phoneNumber: patientPhone }
+       };
+       addOrUpdateUser(newUser);
+       toast({ title: "Welcome!", description: "Let's create your patient history." });
+       router.push("/patient-history");
+    }
+    setPatientLoginModalOpen(false);
+  };
+  
+  const handleNewPatient = () => {
+    setMode('patient');
+    clearActiveUser();
+    router.push('/patient-history');
   }
 
-  if (!state?.grid) {
-    return (
-      <Card className="max-w-xl mx-auto">
-        <CardHeader>
-          <CardTitle>Generate a Word Search</CardTitle>
-          <CardDescription>Enter a topic to create a new puzzle.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...topicForm}>
-            <form onSubmit={handleTopicSubmit} className="space-y-4">
-              <FormField name="topic" control={topicForm.control} render={({ field }) => (
-                <FormItem><FormLabel>Game Topic</FormLabel><FormControl><Input placeholder="e.g., NSAIDs, Antifungals" {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-              <Button type="submit" className="w-full" disabled={isPending}><Sparkles className="mr-2" /> Generate Game</Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+  const handleStudentLogin = () => {
+    if (!studentName || !studentId || !yearOfStudy) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please fill out all fields." });
+        return;
+    }
+    if (!studentId.toLowerCase().includes('edu')) {
+        toast({ variant: "destructive", title: "Invalid Student ID" });
+        return;
+    }
+
+    const existingUser = patientState.users.find(
+      (u) =>
+        u.role === 'student' &&
+        u.demographics?.name?.toLowerCase() === studentName.toLowerCase() &&
+        u.studentId === studentId
     );
+    
+    setMode("student");
+
+    if (existingUser) {
+        setActiveUser(existingUser.id);
+        toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+    } else {
+        const newUser: Omit<UserProfile, 'id'> = {
+            role: 'student',
+            demographics: { name: studentName, yearOfStudy: yearOfStudy },
+            studentId: studentId,
+        };
+        addOrUpdateUser(newUser);
+        toast({ title: "Welcome!", description: `Your student profile has been created, ${studentName}. Let's create your health record.` });
+    }
+    router.push("/dashboard");
+    setStudentLoginModalOpen(false);
+  };
+
+  const handleEmergency = () => {
+    setMode('patient'); // Emergency defaults to patient view
+    clearActiveUser();
+    router.push('/emergency');
+  }
+
+  const openPatientLogin = () => {
+    setPatientOptionsModalOpen(false);
+    setPatientLoginModalOpen(true);
+  }
+  
+  const openStudentLogin = () => {
+    setStudentLoginModalOpen(true);
   }
 
   return (
-    <div className="grid lg:grid-cols-3 gap-6">
-      <div className="lg:col-span-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Word Search: {state.topic}</CardTitle>
-            <CardDescription>Click and drag to find the words from the list.</CardDescription>
-          </CardHeader>
-          <CardContent onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
-            <div className="grid gap-1 select-none" style={{ gridTemplateColumns: `repeat(${state.grid.length}, minmax(0, 1fr))` }}>
-              {state.grid.map((row, rIdx) =>
-                row.map((letter, cIdx) => (
-                  <div
-                    key={`${rIdx}-${cIdx}`}
-                    onMouseDown={() => handleMouseDown(rIdx, cIdx)}
-                    onMouseEnter={() => handleMouseEnter(rIdx, cIdx)}
-                    className={cn(
-                      "flex items-center justify-center aspect-square text-lg font-bold border rounded-md transition-colors",
-                      isRevealed ? "cursor-default" : "cursor-pointer",
-                      isCellSelected(rIdx, cIdx) && "bg-primary text-primary-foreground",
-                      isRevealed && isCellPartOfRevealedWord(rIdx, cIdx) && "bg-yellow-400/50 border-yellow-500",
-                      !isCellSelected(rIdx, cIdx) && !(isRevealed && isCellPartOfRevealedWord(rIdx, cIdx)) && "bg-muted/50"
-                    )}
-                  >
-                    {letter}
-                  </div>
-                ))
-              )}
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <Card className="w-full max-w-5xl shadow-2xl">
+        <CardHeader className="text-center">
+            <div className="mx-auto mb-4">
+                
             </div>
-          </CardContent>
-        </Card>
-      </div>
-      <div>
-        <Card>
-          <CardHeader><CardTitle>Words to Find</CardTitle></CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
-              {state.words.map((word) => (
-                <li key={word} className={cn("flex items-center gap-2 transition-all", foundWords.has(word) && "text-muted-foreground line-through")}>
-                  {foundWords.has(word) && <CheckCircle className="h-5 w-5 text-green-500" />}
-                  {word}
-                </li>
-              ))}
-            </ul>
-            
-            {!isGameOver && !isRevealed && (
-                 <Button onClick={handleGiveUp} variant="secondary" className="w-full mt-6">Give Up</Button>
-            )}
-
-            {(isGameOver || isRevealed) && (
-                <div className="mt-6 text-center space-y-4">
-                    <Trophy className="mx-auto h-12 w-12 text-yellow-400"/>
-                    <h3 className="text-xl font-bold">{isRevealed ? "Here's the Solution!" : "Congratulations!"}</h3>
-                    <p className="text-muted-foreground">{isRevealed ? "All words have been revealed." : "You found all the words!"}</p>
-                    <Button onClick={handleNewGame}>Play a New Game</Button>
+          <CardTitle className="text-3xl font-headline">Welcome to Zuruu AI Pharmacy</CardTitle>
+          <CardDescription>Please select your role to continue</CardDescription>
+        </CardHeader>
+        <CardContent className="grid md:grid-cols-3 gap-8 p-8">
+          <div
+            onClick={() => setPatientOptionsModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <User className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Patient</h3>
+            <p className="text-muted-foreground mt-2">Access your profile or get emergency help.</p>
+          </div>
+          <div
+            onClick={() => setPharmacistModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <BriefcaseMedical className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Pharmacist</h3>
+            <p className="text-muted-foreground mt-2">Access the full suite of clinical tools.</p>
+          </div>
+           <div
+            onClick={openStudentLogin}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <School className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Student</h3>
+            <p className="text-muted-foreground mt-2">Login to access learning modules.</p>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Pharmacist Modal */}
+      <Dialog open={pharmacistModalOpen} onOpenChange={setPharmacistModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pharmacist Access</DialogTitle>
+            <DialogDescription>Please enter your access code to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="pharmacist-code">Access Code</Label>
+            <Input 
+              id="pharmacist-code" 
+              type="password" 
+              value={pharmacistCode}
+              onChange={(e) => setPharmacistCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handlePharmacistLogin()}
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePharmacistLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Patient Options Modal */}
+      <Dialog open={patientOptionsModalOpen} onOpenChange={setPatientOptionsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Options</DialogTitle>
+            <DialogDescription>How can we help you today?</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4">
+             <Button onClick={openPatientLogin} variant="outline" size="lg" className="h-auto py-4">
+              <LogIn className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">Patient Login</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Access your existing patient profile.</p>
+              </div>
+            </Button>
+             <Button onClick={handleNewPatient} variant="outline" size="lg" className="h-auto py-4">
+              <UserPlus className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">New Patient Registration</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Create a new patient history form.</p>
+              </div>
+            </Button>
+            <Button onClick={handleEmergency} variant="destructive" size="lg" className="h-auto py-4">
+                <Siren className="mr-4 text-destructive-foreground" />
+                 <div>
+                    <p className="font-semibold text-base text-left">Emergency Help</p>
+                    <p className="font-normal text-sm text-destructive-foreground/80 text-left">Immediately get assistance.</p>
                 </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Patient Login Modal */}
+      <Dialog open={patientLoginModalOpen} onOpenChange={setPatientLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Login</DialogTitle>
+            <DialogDescription>Please enter your details to find your profile.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="patient-name">Full Name</Label>
+                <Input id="patient-name" value={patientName} onChange={(e) => setPatientName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="patient-phone">Phone Number</Label>
+                <Input id="patient-phone" value={patientPhone} onChange={(e) => setPatientPhone(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePatientLogin}>Continue</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+       {/* Student Login Modal */}
+       <Dialog open={studentLoginModalOpen} onOpenChange={setStudentLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Student Login</DialogTitle>
+            <DialogDescription>Please enter your details to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="student-name">Full Name</Label>
+                <Input id="student-name" value={studentName} onChange={(e) => setStudentName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="student-id">Student ID</Label>
+                <Input id="student-id" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g., user@university.edu"/>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="year-of-study">Year of Study</Label>
+                <Select value={yearOfStudy} onValueChange={setYearOfStudy}>
+                    <SelectTrigger id="year-of-study">
+                        <SelectValue placeholder="Select your year..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="1st Year">1st Year</SelectItem>
+                        <SelectItem value="2nd Year">2nd Year</SelectItem>
+                        <SelectItem value="3rd Year">3rd Year</SelectItem>
+                        <SelectItem value="4th Year">4th Year</SelectItem>
+                        <SelectItem value="5th Year">5th Year</SelectItem>
+                        <SelectItem value="Graduate">Graduate</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleStudentLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

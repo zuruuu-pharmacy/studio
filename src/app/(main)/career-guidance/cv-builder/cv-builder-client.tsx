@@ -1,238 +1,295 @@
-
 "use client";
 
-import { useState } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { usePatient } from '@/contexts/patient-context';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { PlusCircle, Trash2, Printer, Download } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePatient, UserProfile } from "@/contexts/patient-context";
+import { useMode } from "@/contexts/mode-context";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { User, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School, Siren } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const cvFormSchema = z.object({
-  name: z.string().min(1, "Name is required."),
-  email: z.string().email().optional(),
-  phone: z.string().optional(),
-  linkedin: z.string().url().optional().or(z.literal('')),
-  summary: z.string().optional(),
-  education: z.array(z.object({
-    institution: z.string().min(1, "Institution is required."),
-    degree: z.string().min(1, "Degree is required."),
-    year: z.string().min(4, "Year is required."),
-  })),
-  experience: z.array(z.object({
-    role: z.string().min(1, "Role is required."),
-    company: z.string().min(1, "Company is required."),
-    period: z.string().min(1, "Period is required."),
-    description: z.string().optional(),
-  })),
-  skills: z.array(z.object({
-    skill: z.string().min(1, "Skill cannot be empty."),
-  })),
-  certifications: z.array(z.object({
-    cert: z.string().min(1, "Certification cannot be empty."),
-  })),
-});
+const PHARMACIST_CODE = "239773";
 
-type CvFormValues = z.infer<typeof cvFormSchema>;
+export default function RoleSelectionPage() {
+  const [pharmacistModalOpen, setPharmacistModalOpen] = useState(false);
+  const [patientOptionsModalOpen, setPatientOptionsModalOpen] = useState(false);
+  const [patientLoginModalOpen, setPatientLoginModalOpen] = useState(false);
+  const [studentLoginModalOpen, setStudentLoginModalOpen] = useState(false);
+  
+  const [pharmacistCode, setPharmacistCode] = useState("");
+  const [patientName, setPatientName] = useState("");
+  const [patientPhone, setPatientPhone] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [yearOfStudy, setYearOfStudy] = useState("");
 
-export function CvBuilderClient() {
-  const { patientState } = usePatient();
-  const student = patientState.activeUser;
 
-  const form = useForm<CvFormValues>({
-    resolver: zodResolver(cvFormSchema),
-    defaultValues: {
-      name: student?.demographics?.name || "",
-      email: student?.studentId || "",
-      phone: student?.demographics?.phoneNumber || "",
-      linkedin: student?.demographics?.linkedinProfile || "",
-      summary: student?.demographics?.personalStatement || "",
-      education: [{ institution: 'University of Management and Technology', degree: 'Pharm.D', year: '2020-2025' }],
-      experience: [],
-      skills: [{ skill: 'Clinical Research' }, { skill: 'Patient Counseling' }],
-      certifications: [],
+  const { setMode } = useMode();
+  const { patientState, setActiveUser, addOrUpdateUser, clearActiveUser } = usePatient();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handlePharmacistLogin = () => {
+    if (pharmacistCode === PHARMACIST_CODE) {
+      setMode("pharmacist");
+      clearActiveUser();
+      router.push("/dashboard");
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Incorrect Code",
+        description: "This is not for you as you are not a pharmacist.",
+      });
     }
-  });
+  };
 
-  const { fields: eduFields, append: appendEdu, remove: removeEdu } = useFieldArray({ control: form.control, name: "education" });
-  const { fields: expFields, append: appendExp, remove: removeExp } = useFieldArray({ control: form.control, name: "experience" });
-  const { fields: skillFields, append: appendSkill, remove: removeSkill } = useFieldArray({ control: form.control, name: "skills" });
-  const { fields: certFields, append: appendCert, remove: removeCert } = useFieldArray({ control: form.control, name: "certifications" });
+  const handlePatientLogin = () => {
+    if (!patientName || !patientPhone) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please enter your name and phone number." });
+        return;
+    }
+    const existingUser = patientState.users.find(
+      (p) =>
+        p.role === 'patient' &&
+        p.demographics?.name?.toLowerCase() === patientName.toLowerCase() &&
+        p.demographics?.phoneNumber === patientPhone
+    );
 
-  const cvData = form.watch();
+    setMode("patient");
 
-  const handlePrint = () => {
-    toast({ title: 'Printing CV...', description: 'This would trigger the browser print dialog.' });
-    // window.print(); // This would be the actual implementation
+    if (existingUser) {
+      setActiveUser(existingUser.id);
+      toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+      router.push("/dashboard");
+    } else {
+       clearActiveUser();
+       const newUser: Omit<UserProfile, 'id'> = {
+         role: 'patient',
+         demographics: { name: patientName, phoneNumber: patientPhone }
+       };
+       addOrUpdateUser(newUser);
+       toast({ title: "Welcome!", description: "Let's create your patient history." });
+       router.push("/patient-history");
+    }
+    setPatientLoginModalOpen(false);
+  };
+  
+  const handleNewPatient = () => {
+    setMode('patient');
+    clearActiveUser();
+    router.push('/patient-history');
   }
 
-  const handleDownload = () => {
-     toast({ title: 'Downloading PDF...', description: 'A PDF version of your CV would be generated and downloaded.' });
+  const handleStudentLogin = () => {
+    if (!studentName || !studentId || !yearOfStudy) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please fill out all fields." });
+        return;
+    }
+    if (!studentId.toLowerCase().includes('edu')) {
+        toast({ variant: "destructive", title: "Invalid Student ID" });
+        return;
+    }
+
+    const existingUser = patientState.users.find(
+      (u) =>
+        u.role === 'student' &&
+        u.demographics?.name?.toLowerCase() === studentName.toLowerCase() &&
+        u.studentId === studentId
+    );
+    
+    setMode("student");
+
+    if (existingUser) {
+        setActiveUser(existingUser.id);
+        toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+    } else {
+        const newUser: Omit<UserProfile, 'id'> = {
+            role: 'student',
+            demographics: { name: studentName, yearOfStudy: yearOfStudy },
+            studentId: studentId,
+        };
+        addOrUpdateUser(newUser);
+        toast({ title: "Welcome!", description: `Your student profile has been created, ${studentName}. Let's create your health record.` });
+    }
+    router.push("/dashboard");
+    setStudentLoginModalOpen(false);
+  };
+
+  const handleEmergency = () => {
+    setMode('patient'); // Emergency defaults to patient view
+    clearActiveUser();
+    router.push('/emergency');
+  }
+
+  const openPatientLogin = () => {
+    setPatientOptionsModalOpen(false);
+    setPatientLoginModalOpen(true);
+  }
+  
+  const openStudentLogin = () => {
+    setStudentLoginModalOpen(true);
   }
 
   return (
-    <div className="grid lg:grid-cols-3 gap-8 items-start">
-      <div className="lg:col-span-1 space-y-4">
-        <Card>
-            <CardHeader>
-                <CardTitle>CV Content</CardTitle>
-                <CardDescription>Fill in the sections below. The preview will update automatically.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Form {...form}>
-                    <form>
-                        <Accordion type="multiple" defaultValue={['personal', 'education']} className="w-full">
-                           <AccordionItem value="personal">
-                                <AccordionTrigger>Personal Details</AccordionTrigger>
-                                <AccordionContent className="space-y-4">
-                                    <FormField name="name" control={form.control} render={({ field }) => (<FormItem><FormLabel>Full Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                    <FormField name="email" control={form.control} render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                    <FormField name="phone" control={form.control} render={({ field }) => (<FormItem><FormLabel>Phone</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                    <FormField name="linkedin" control={form.control} render={({ field }) => (<FormItem><FormLabel>LinkedIn</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                </AccordionContent>
-                           </AccordionItem>
-                            <AccordionItem value="summary">
-                                <AccordionTrigger>Summary</AccordionTrigger>
-                                <AccordionContent>
-                                     <FormField name="summary" control={form.control} render={({ field }) => (<FormItem><FormControl><Textarea rows={5} {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                </AccordionContent>
-                           </AccordionItem>
-                            <AccordionItem value="education">
-                                <AccordionTrigger>Education</AccordionTrigger>
-                                <AccordionContent className="space-y-4">
-                                     {eduFields.map((field, index) => (
-                                         <Card key={field.id} className="p-4 bg-muted/50"><div className="space-y-2">
-                                            <FormField name={`education.${index}.institution`} control={form.control} render={({ field }) => (<FormItem><FormLabel>Institution</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>)} />
-                                            <FormField name={`education.${index}.degree`} control={form.control} render={({ field }) => (<FormItem><FormLabel>Degree</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>)} />
-                                            <FormField name={`education.${index}.year`} control={form.control} render={({ field }) => (<FormItem><FormLabel>Year</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>)} />
-                                         </div><Button variant="ghost" size="icon" className="float-right -mt-8" onClick={() => removeEdu(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button></Card>
-                                     ))}
-                                     <Button variant="outline" size="sm" onClick={() => appendEdu({ institution: '', degree: '', year: '' })}><PlusCircle className="mr-2"/>Add Education</Button>
-                                </AccordionContent>
-                           </AccordionItem>
-                            <AccordionItem value="experience">
-                                <AccordionTrigger>Experience</AccordionTrigger>
-                                <AccordionContent className="space-y-4">
-                                     {expFields.map((field, index) => (
-                                         <Card key={field.id} className="p-4 bg-muted/50"><div className="space-y-2">
-                                            <FormField name={`experience.${index}.role`} control={form.control} render={({ field }) => (<FormItem><FormLabel>Role</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>)} />
-                                            <FormField name={`experience.${index}.company`} control={form.control} render={({ field }) => (<FormItem><FormLabel>Company/Hospital</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>)} />
-                                            <FormField name={`experience.${index}.period`} control={form.control} render={({ field }) => (<FormItem><FormLabel>Period</FormLabel><FormControl><Input {...field} placeholder="e.g., 2023 - Present" /></FormControl></FormItem>)} />
-                                            <FormField name={`experience.${index}.description`} control={form.control} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} /></FormControl></FormItem>)} />
-                                         </div><Button variant="ghost" size="icon" className="float-right -mt-8" onClick={() => removeExp(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button></Card>
-                                     ))}
-                                     <Button variant="outline" size="sm" onClick={() => appendExp({ role: '', company: '', period: '', description: '' })}><PlusCircle className="mr-2"/>Add Experience</Button>
-                                </AccordionContent>
-                           </AccordionItem>
-                            <AccordionItem value="skills">
-                                <AccordionTrigger>Skills</AccordionTrigger>
-                                <AccordionContent className="space-y-4">
-                                     {skillFields.map((field, index) => (
-                                         <div key={field.id} className="flex gap-2">
-                                            <FormField name={`skills.${index}.skill`} control={form.control} render={({ field }) => (<FormItem className="flex-1"><FormControl><Input {...field} /></FormControl></FormItem>)} />
-                                            <Button variant="ghost" size="icon" onClick={() => removeSkill(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                                         </div>
-                                     ))}
-                                     <Button variant="outline" size="sm" onClick={() => appendSkill({ skill: '' })}><PlusCircle className="mr-2"/>Add Skill</Button>
-                                </AccordionContent>
-                           </AccordionItem>
-                            <AccordionItem value="certifications">
-                                <AccordionTrigger>Certifications</AccordionTrigger>
-                                <AccordionContent className="space-y-4">
-                                     {certFields.map((field, index) => (
-                                         <div key={field.id} className="flex gap-2">
-                                            <FormField name={`certifications.${index}.cert`} control={form.control} render={({ field }) => (<FormItem className="flex-1"><FormControl><Input {...field} /></FormControl></FormItem>)} />
-                                            <Button variant="ghost" size="icon" onClick={() => removeCert(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                                         </div>
-                                     ))}
-                                     <Button variant="outline" size="sm" onClick={() => appendCert({ cert: '' })}><PlusCircle className="mr-2"/>Add Certification</Button>
-                                </AccordionContent>
-                           </AccordionItem>
-                        </Accordion>
-                    </form>
-                </Form>
-            </CardContent>
-        </Card>
-        <Card>
-            <CardHeader>
-                <CardTitle>Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-                <Button onClick={handlePrint}><Printer className="mr-2"/>Print CV</Button>
-                <Button onClick={handleDownload} variant="secondary"><Download className="mr-2"/>Download as PDF</Button>
-            </CardContent>
-        </Card>
-      </div>
-
-      <div className="lg:col-span-2">
-        <Card className="p-8">
-          <div className="prose prose-sm dark:prose-invert max-w-none">
-            <header className="text-center mb-6 border-b pb-4">
-              <h1 className="text-3xl font-bold mb-1">{cvData.name}</h1>
-              <div className="text-muted-foreground flex justify-center gap-4 text-xs">
-                {cvData.email && <span>{cvData.email}</span>}
-                {cvData.phone && <span>{cvData.phone}</span>}
-                {cvData.linkedin && <a href={cvData.linkedin} target="_blank" rel="noopener noreferrer">{cvData.linkedin}</a>}
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <Card className="w-full max-w-5xl shadow-2xl">
+        <CardHeader className="text-center">
+            <div className="mx-auto mb-4">
+                
+            </div>
+          <CardTitle className="text-3xl font-headline">Welcome to Zuruu AI Pharmacy</CardTitle>
+          <CardDescription>Please select your role to continue</CardDescription>
+        </CardHeader>
+        <CardContent className="grid md:grid-cols-3 gap-8 p-8">
+          <div
+            onClick={() => setPatientOptionsModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <User className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Patient</h3>
+            <p className="text-muted-foreground mt-2">Access your profile or get emergency help.</p>
+          </div>
+          <div
+            onClick={() => setPharmacistModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <BriefcaseMedical className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Pharmacist</h3>
+            <p className="text-muted-foreground mt-2">Access the full suite of clinical tools.</p>
+          </div>
+           <div
+            onClick={openStudentLogin}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <School className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Student</h3>
+            <p className="text-muted-foreground mt-2">Login to access learning modules.</p>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Pharmacist Modal */}
+      <Dialog open={pharmacistModalOpen} onOpenChange={setPharmacistModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pharmacist Access</DialogTitle>
+            <DialogDescription>Please enter your access code to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="pharmacist-code">Access Code</Label>
+            <Input 
+              id="pharmacist-code" 
+              type="password" 
+              value={pharmacistCode}
+              onChange={(e) => setPharmacistCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handlePharmacistLogin()}
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePharmacistLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Patient Options Modal */}
+      <Dialog open={patientOptionsModalOpen} onOpenChange={setPatientOptionsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Options</DialogTitle>
+            <DialogDescription>How can we help you today?</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4">
+             <Button onClick={openPatientLogin} variant="outline" size="lg" className="h-auto py-4">
+              <LogIn className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">Patient Login</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Access your existing patient profile.</p>
               </div>
-            </header>
-
-            {cvData.summary && <section>
-              <h2 className="text-lg font-semibold border-b mb-2">PROFESSIONAL SUMMARY</h2>
-              <p>{cvData.summary}</p>
-            </section>}
-
-            {cvData.education?.length > 0 && <section>
-              <h2 className="text-lg font-semibold border-b mt-4 mb-2">EDUCATION</h2>
-              {cvData.education.map((edu, i) => (
-                <div key={i} className="mb-2">
-                  <div className="flex justify-between items-baseline">
-                    <h3 className="font-bold">{edu.institution}</h3>
-                    <p className="text-sm text-muted-foreground">{edu.year}</p>
-                  </div>
-                  <p className="text-sm">{edu.degree}</p>
+            </Button>
+             <Button onClick={handleNewPatient} variant="outline" size="lg" className="h-auto py-4">
+              <UserPlus className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">New Patient Registration</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Create a new patient history form.</p>
+              </div>
+            </Button>
+            <Button onClick={handleEmergency} variant="destructive" size="lg" className="h-auto py-4">
+                <Siren className="mr-4 text-destructive-foreground" />
+                 <div>
+                    <p className="font-semibold text-base text-left">Emergency Help</p>
+                    <p className="font-normal text-sm text-destructive-foreground/80 text-left">Immediately get assistance.</p>
                 </div>
-              ))}
-            </section>}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-            {cvData.experience?.length > 0 && <section>
-              <h2 className="text-lg font-semibold border-b mt-4 mb-2">EXPERIENCE</h2>
-              {cvData.experience.map((exp, i) => (
-                <div key={i} className="mb-2">
-                  <div className="flex justify-between items-baseline">
-                    <h3 className="font-bold">{exp.role}</h3>
-                    <p className="text-sm text-muted-foreground">{exp.period}</p>
-                  </div>
-                  <p className="text-sm italic">{exp.company}</p>
-                  <p className="text-sm mt-1">{exp.description}</p>
-                </div>
-              ))}
-            </section>}
-            
-             <div className="grid grid-cols-2 gap-x-8">
-                 {cvData.skills?.length > 0 && <section>
-                  <h2 className="text-lg font-semibold border-b mt-4 mb-2">SKILLS</h2>
-                  <ul className="list-disc list-inside">
-                    {cvData.skills.map((skill, i) => <li key={i}>{skill.skill}</li>)}
-                  </ul>
-                </section>}
-
-                {cvData.certifications?.length > 0 && <section>
-                  <h2 className="text-lg font-semibold border-b mt-4 mb-2">CERTIFICATIONS</h2>
-                  <ul className="list-disc list-inside">
-                    {cvData.certifications.map((cert, i) => <li key={i}>{cert.cert}</li>)}
-                  </ul>
-                </section>}
+      {/* Patient Login Modal */}
+      <Dialog open={patientLoginModalOpen} onOpenChange={setPatientLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Login</DialogTitle>
+            <DialogDescription>Please enter your details to find your profile.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="patient-name">Full Name</Label>
+                <Input id="patient-name" value={patientName} onChange={(e) => setPatientName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="patient-phone">Phone Number</Label>
+                <Input id="patient-phone" value={patientPhone} onChange={(e) => setPatientPhone(e.target.value)} />
             </div>
           </div>
-        </Card>
-      </div>
+          <DialogFooter>
+            <Button onClick={handlePatientLogin}>Continue</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+       {/* Student Login Modal */}
+       <Dialog open={studentLoginModalOpen} onOpenChange={setStudentLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Student Login</DialogTitle>
+            <DialogDescription>Please enter your details to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="student-name">Full Name</Label>
+                <Input id="student-name" value={studentName} onChange={(e) => setStudentName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="student-id">Student ID</Label>
+                <Input id="student-id" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g., user@university.edu"/>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="year-of-study">Year of Study</Label>
+                <Select value={yearOfStudy} onValueChange={setYearOfStudy}>
+                    <SelectTrigger id="year-of-study">
+                        <SelectValue placeholder="Select your year..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="1st Year">1st Year</SelectItem>
+                        <SelectItem value="2nd Year">2nd Year</SelectItem>
+                        <SelectItem value="3rd Year">3rd Year</SelectItem>
+                        <SelectItem value="4th Year">4th Year</SelectItem>
+                        <SelectItem value="5th Year">5th Year</SelectItem>
+                        <SelectItem value="Graduate">Graduate</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleStudentLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

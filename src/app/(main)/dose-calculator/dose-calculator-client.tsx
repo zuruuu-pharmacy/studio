@@ -1,238 +1,295 @@
-
 "use client";
 
-import { useActionState, useEffect, useTransition } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { calculateDosage, type CalculateDosageOutput } from "@/ai/flows/ai-dose-calculator";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePatient, UserProfile } from "@/contexts/patient-context";
+import { useMode } from "@/contexts/mode-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Beaker, FileText, CheckCircle, AlertTriangle } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { User, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School, Siren } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+const PHARMACIST_CODE = "239773";
 
-const formSchema = z.object({
-  drugName: z.string().min(2, "Required"),
-  indication: z.string().min(3, "Indication is required"),
-  patientWeight: z.coerce.number().positive("Must be positive"),
-  patientWeightUnit: z.enum(['kg', 'lb']),
-  patientAgeYears: z.coerce.number().int().positive("Must be a positive integer"),
-  renalFunction: z.string().optional(),
-  hepaticFunction: z.string().optional(),
-  availableFormulations: z.string().optional(),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
-export function DoseCalculatorClient() {
-  const [isPending, startTransition] = useTransition();
-  const [state, formAction] = useActionState<CalculateDosageOutput | { error: string } | null, FormData>(
-    async (previousState, formData) => {
-        
-       const data = {
-        drugName: formData.get('drugName'),
-        indication: formData.get('indication'),
-        patientWeight: formData.get('patientWeight'),
-        patientWeightUnit: formData.get('patientWeightUnit'),
-        patientAgeYears: formData.get('patientAgeYears'),
-        renalFunction: formData.get('renalFunction'),
-        hepaticFunction: formData.get('hepaticFunction'),
-        availableFormulations: formData.get('availableFormulations'),
-      };
-      
-      const parsed = formSchema.safeParse(data);
-
-      if (!parsed.success) {
-        console.error(parsed.error);
-        return { error: "Invalid input. Check the form fields." };
-      }
-      
-      let weightInKg = parsed.data.patientWeight;
-      if (parsed.data.patientWeightUnit === 'lb') {
-        weightInKg = weightInKg / 2.20462;
-      }
-
-      try {
-        const result = await calculateDosage({
-            drugName: parsed.data.drugName,
-            indication: parsed.data.indication,
-            patientWeightKg: weightInKg,
-            patientAgeYears: parsed.data.patientAgeYears,
-            renalFunction: parsed.data.renalFunction,
-            hepaticFunction: parsed.data.hepaticFunction,
-            availableFormulations: parsed.data.availableFormulations
-        });
-        return result;
-      } catch (e) {
-        console.error(e);
-        return { error: "Failed to calculate dosage. Please try again." };
-      }
-    },
-    null
-  );
-
-  const { toast } = useToast();
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      drugName: "",
-      indication: "",
-      patientWeight: "" as any,
-      patientWeightUnit: "kg",
-      patientAgeYears: "" as any,
-      renalFunction: "",
-      hepaticFunction: "",
-      availableFormulations: "",
-    },
-  });
+export default function RoleSelectionPage() {
+  const [pharmacistModalOpen, setPharmacistModalOpen] = useState(false);
+  const [patientOptionsModalOpen, setPatientOptionsModalOpen] = useState(false);
+  const [patientLoginModalOpen, setPatientLoginModalOpen] = useState(false);
+  const [studentLoginModalOpen, setStudentLoginModalOpen] = useState(false);
   
-  useEffect(() => {
-    if (state && 'error' in state && state.error) {
+  const [pharmacistCode, setPharmacistCode] = useState("");
+  const [patientName, setPatientName] = useState("");
+  const [patientPhone, setPatientPhone] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [yearOfStudy, setYearOfStudy] = useState("");
+
+
+  const { setMode } = useMode();
+  const { patientState, setActiveUser, addOrUpdateUser, clearActiveUser } = usePatient();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handlePharmacistLogin = () => {
+    if (pharmacistCode === PHARMACIST_CODE) {
+      setMode("pharmacist");
+      clearActiveUser();
+      router.push("/dashboard");
+    } else {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: state.error,
+        title: "Incorrect Code",
+        description: "This is not for you as you are not a pharmacist.",
       });
     }
-  }, [state, toast]);
-  
-  const weight = form.watch('patientWeight');
-  const unit = form.watch('patientWeightUnit');
-  const convertedWeight = unit === 'lb' && weight > 0 ? (weight / 2.20462).toFixed(2) + ' kg' : null;
+  };
 
-  const handleFormSubmit = form.handleSubmit((data) => {
-     startTransition(() => {
-        const formData = new FormData();
-        Object.entries(data).forEach(([key, value]) => {
-            if (value !== undefined && value !== null && value !== '') {
-                formData.append(key, value.toString());
-            }
-        });
-      formAction(formData);
-    });
-  });
+  const handlePatientLogin = () => {
+    if (!patientName || !patientPhone) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please enter your name and phone number." });
+        return;
+    }
+    const existingUser = patientState.users.find(
+      (p) =>
+        p.role === 'patient' &&
+        p.demographics?.name?.toLowerCase() === patientName.toLowerCase() &&
+        p.demographics?.phoneNumber === patientPhone
+    );
+
+    setMode("patient");
+
+    if (existingUser) {
+      setActiveUser(existingUser.id);
+      toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+      router.push("/dashboard");
+    } else {
+       clearActiveUser();
+       const newUser: Omit<UserProfile, 'id'> = {
+         role: 'patient',
+         demographics: { name: patientName, phoneNumber: patientPhone }
+       };
+       addOrUpdateUser(newUser);
+       toast({ title: "Welcome!", description: "Let's create your patient history." });
+       router.push("/patient-history");
+    }
+    setPatientLoginModalOpen(false);
+  };
+  
+  const handleNewPatient = () => {
+    setMode('patient');
+    clearActiveUser();
+    router.push('/patient-history');
+  }
+
+  const handleStudentLogin = () => {
+    if (!studentName || !studentId || !yearOfStudy) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please fill out all fields." });
+        return;
+    }
+    if (!studentId.toLowerCase().includes('edu')) {
+        toast({ variant: "destructive", title: "Invalid Student ID" });
+        return;
+    }
+
+    const existingUser = patientState.users.find(
+      (u) =>
+        u.role === 'student' &&
+        u.demographics?.name?.toLowerCase() === studentName.toLowerCase() &&
+        u.studentId === studentId
+    );
+    
+    setMode("student");
+
+    if (existingUser) {
+        setActiveUser(existingUser.id);
+        toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+    } else {
+        const newUser: Omit<UserProfile, 'id'> = {
+            role: 'student',
+            demographics: { name: studentName, yearOfStudy: yearOfStudy },
+            studentId: studentId,
+        };
+        addOrUpdateUser(newUser);
+        toast({ title: "Welcome!", description: `Your student profile has been created, ${studentName}. Let's create your health record.` });
+    }
+    router.push("/dashboard");
+    setStudentLoginModalOpen(false);
+  };
+
+  const handleEmergency = () => {
+    setMode('patient'); // Emergency defaults to patient view
+    clearActiveUser();
+    router.push('/emergency');
+  }
+
+  const openPatientLogin = () => {
+    setPatientOptionsModalOpen(false);
+    setPatientLoginModalOpen(true);
+  }
+  
+  const openStudentLogin = () => {
+    setStudentLoginModalOpen(true);
+  }
 
   return (
-    <div className="grid md:grid-cols-3 gap-6">
-      <div className="md:col-span-1">
-        <Card>
-          <CardHeader>
-            <CardTitle>Patient & Drug Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={handleFormSubmit} className="space-y-4">
-                <FormField name="drugName" control={form.control} render={({ field }) => (
-                  <FormItem><FormLabel>Drug Name</FormLabel><FormControl><Input placeholder="e.g., Amoxicillin" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                 <FormField name="indication" control={form.control} render={({ field }) => (
-                  <FormItem><FormLabel>Indication for Use</FormLabel><FormControl><Input placeholder="e.g., Pneumonia" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <Card className="w-full max-w-5xl shadow-2xl">
+        <CardHeader className="text-center">
+            <div className="mx-auto mb-4">
                 
-                <FormItem>
-                  <FormLabel>Patient Weight</FormLabel>
-                  <div className="flex gap-2">
-                    <FormField name="patientWeight" control={form.control} render={({ field }) => (
-                      <FormControl><Input type="number" placeholder="e.g., 70" {...field} className="flex-grow"/></FormControl>
-                    )} />
-                     <FormField name="patientWeightUnit" control={form.control} render={({ field }) => (
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger className="w-[80px]">
-                            <SelectValue/>
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="kg">kg</SelectItem>
-                          <SelectItem value="lb">lb</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )} />
-                  </div>
-                  <FormMessage>{form.formState.errors.patientWeight?.message}</FormMessage>
-                  {convertedWeight && <p className="text-xs text-muted-foreground pt-1">Converted: {convertedWeight}</p>}
-                </FormItem>
-
-                <FormField name="patientAgeYears" control={form.control} render={({ field }) => (
-                  <FormItem><FormLabel>Patient Age (years)</FormLabel><FormControl><Input type="number" placeholder="e.g., 45" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField name="renalFunction" control={form.control} render={({ field }) => (
-                  <FormItem><FormLabel>Renal Function (Optional)</FormLabel><FormControl><Input placeholder="e.g., CrCl 50 ml/min" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField name="hepaticFunction" control={form.control} render={({ field }) => (
-                  <FormItem><FormLabel>Hepatic Function (Optional)</FormLabel><FormControl><Input placeholder="e.g., Mild impairment" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField name="availableFormulations" control={form.control} render={({ field }) => (
-                  <FormItem><FormLabel>Available Formulations (Optional)</FormLabel><FormControl><Input placeholder="e.g., 250mg, 500mg tablets" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <Button type="submit" disabled={isPending} className="w-full">
-                  {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Calculate Dose
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="md:col-span-2">
-        {isPending && <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}
-        {state && 'isIndicationMismatch' in state && (
-          state.isIndicationMismatch ? (
-             <Alert variant="destructive" className="h-fit">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>Warning: Indication Mismatch</AlertTitle>
-                <AlertDescription>{state.mismatchWarning}</AlertDescription>
-             </Alert>
-          ) : state.calculatedDosage ? (
-            <Card className="bg-gradient-to-br from-background to-secondary/30">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-primary">Dosage Calculation Results</CardTitle>
-                <CardDescription>Results for {form.getValues("drugName")} for {form.getValues("indication")}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="p-6 bg-primary/10 rounded-lg text-center">
-                  <h3 className="text-lg font-semibold text-primary-foreground/80">Calculated Dosage</h3>
-                  <p className="text-4xl font-bold text-primary">{state.calculatedDosage}</p>
+            </div>
+          <CardTitle className="text-3xl font-headline">Welcome to Zuruu AI Pharmacy</CardTitle>
+          <CardDescription>Please select your role to continue</CardDescription>
+        </CardHeader>
+        <CardContent className="grid md:grid-cols-3 gap-8 p-8">
+          <div
+            onClick={() => setPatientOptionsModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <User className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Patient</h3>
+            <p className="text-muted-foreground mt-2">Access your profile or get emergency help.</p>
+          </div>
+          <div
+            onClick={() => setPharmacistModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <BriefcaseMedical className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Pharmacist</h3>
+            <p className="text-muted-foreground mt-2">Access the full suite of clinical tools.</p>
+          </div>
+           <div
+            onClick={openStudentLogin}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <School className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Student</h3>
+            <p className="text-muted-foreground mt-2">Login to access learning modules.</p>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Pharmacist Modal */}
+      <Dialog open={pharmacistModalOpen} onOpenChange={setPharmacistModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pharmacist Access</DialogTitle>
+            <DialogDescription>Please enter your access code to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="pharmacist-code">Access Code</Label>
+            <Input 
+              id="pharmacist-code" 
+              type="password" 
+              value={pharmacistCode}
+              onChange={(e) => setPharmacistCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handlePharmacistLogin()}
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePharmacistLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Patient Options Modal */}
+      <Dialog open={patientOptionsModalOpen} onOpenChange={setPatientOptionsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Options</DialogTitle>
+            <DialogDescription>How can we help you today?</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4">
+             <Button onClick={openPatientLogin} variant="outline" size="lg" className="h-auto py-4">
+              <LogIn className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">Patient Login</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Access your existing patient profile.</p>
+              </div>
+            </Button>
+             <Button onClick={handleNewPatient} variant="outline" size="lg" className="h-auto py-4">
+              <UserPlus className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">New Patient Registration</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Create a new patient history form.</p>
+              </div>
+            </Button>
+            <Button onClick={handleEmergency} variant="destructive" size="lg" className="h-auto py-4">
+                <Siren className="mr-4 text-destructive-foreground" />
+                 <div>
+                    <p className="font-semibold text-base text-left">Emergency Help</p>
+                    <p className="font-normal text-sm text-destructive-foreground/80 text-left">Immediately get assistance.</p>
                 </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-                {state.roundedDosageSuggestion && (
-                  <div className="p-4 bg-accent/20 rounded-lg flex items-center gap-4">
-                    <CheckCircle className="h-6 w-6 text-accent" />
-                    <div>
-                      <h4 className="font-semibold">Rounding Suggestion</h4>
-                      <p className="text-muted-foreground">{state.roundedDosageSuggestion}</p>
-                    </div>
-                  </div>
-                )}
-                
-                  <>
-                    <Separator />
-                    {state.calculationSteps && (
-                      <div className="space-y-4">
-                        <h3 className="text-xl font-semibold flex items-center gap-2"><Beaker className="h-5 w-5 text-primary"/>Calculation Steps</h3>
-                        <p className="p-4 bg-muted/50 rounded-md whitespace-pre-wrap font-code">{state.calculationSteps}</p>
-                      </div>
-                    )}
-                    {state.references && (
-                      <div className="space-y-4">
-                        <h3 className="text-xl font-semibold flex items-center gap-2"><FileText className="h-5 w-5 text-primary"/>References</h3>
-                        <p className="p-4 bg-muted/50 rounded-md whitespace-pre-wrap font-code text-sm">{state.references}</p>
-                      </div>
-                    )}
-                  </>
-                
-              </CardContent>
-            </Card>
-          ) : null
-        )}
-      </div>
+      {/* Patient Login Modal */}
+      <Dialog open={patientLoginModalOpen} onOpenChange={setPatientLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Login</DialogTitle>
+            <DialogDescription>Please enter your details to find your profile.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="patient-name">Full Name</Label>
+                <Input id="patient-name" value={patientName} onChange={(e) => setPatientName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="patient-phone">Phone Number</Label>
+                <Input id="patient-phone" value={patientPhone} onChange={(e) => setPatientPhone(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePatientLogin}>Continue</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+       {/* Student Login Modal */}
+       <Dialog open={studentLoginModalOpen} onOpenChange={setStudentLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Student Login</DialogTitle>
+            <DialogDescription>Please enter your details to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="student-name">Full Name</Label>
+                <Input id="student-name" value={studentName} onChange={(e) => setStudentName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="student-id">Student ID</Label>
+                <Input id="student-id" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g., user@university.edu"/>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="year-of-study">Year of Study</Label>
+                <Select value={yearOfStudy} onValueChange={setYearOfStudy}>
+                    <SelectTrigger id="year-of-study">
+                        <SelectValue placeholder="Select your year..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="1st Year">1st Year</SelectItem>
+                        <SelectItem value="2nd Year">2nd Year</SelectItem>
+                        <SelectItem value="3rd Year">3rd Year</SelectItem>
+                        <SelectItem value="4th Year">4th Year</SelectItem>
+                        <SelectItem value="5th Year">5th Year</SelectItem>
+                        <SelectItem value="Graduate">Graduate</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleStudentLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

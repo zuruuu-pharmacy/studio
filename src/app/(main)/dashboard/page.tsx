@@ -1,385 +1,295 @@
-
 "use client";
 
-import Link from "next/link";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { BookText, Calculator, FlaskConical, ShieldAlert, ArrowRight, ScanEye, User, Users, TestTube, ShieldEllipsis, UserPlus, FileClock, Stethoscope, Siren, ShoppingCart, Microscope, Apple, Bot, BookOpen, Library, Leaf, GraduationCap, FileHeart, HelpCircle, CaseSensitive, FileJson, Beaker, Video, Network, Puzzle, Combine, CalendarDays, FolderOpen, Replace, BookA, MessageSquare, ClipboardList, MessageCircleQuestion, Compass, Search, BarChart, Camera, ScanSearch, WifiOff, Mic } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePatient, UserProfile } from "@/contexts/patient-context";
 import { useMode } from "@/contexts/mode-context";
-import { usePatient } from "@/contexts/patient-context";
-import { LifestyleSuggestions } from "./lifestyle-suggestions";
-import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { User, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School, Siren } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const pharmacistTools = [
-  {
-    icon: Users,
-    title: "Patients",
-    description: "Manage patient records and select an active patient.",
-    href: "/patients",
-    color: "text-cyan-500",
-  },
-  {
-    icon: User,
-    title: "Patient History Form",
-    description: "Add or edit detailed patient history.",
-    href: "/patient-history",
-    color: "text-blue-400",
-  },
-  {
-    icon: Stethoscope,
-    title: "Symptom Checker",
-    description: "Guide patients through a symptom triage.",
-    href: "/symptom-checker",
-    color: "text-rose-500",
-  },
-   {
-    icon: Apple,
-    title: "Simple Diet Planner",
-    description: "Generate a diet plan based on patient profile.",
-    href: "/diet-planner",
-    color: "text-lime-500",
-  },
-  {
-    icon: BookText,
-    title: "Drug Monograph Lookup",
-    description: "Access comprehensive drug information.",
-    href: "/monograph",
-    color: "text-blue-500",
-  },
-  {
-    icon: Calculator,
-    title: "AI Dose Calculator",
-    description: "Calculate patient-specific dosages.",
-    href: "/dose-calculator",
-    color: "text-green-500",
-  },
-  {
-    icon: FlaskConical,
-    title: "AI Interaction Engine",
-    description: "Check for multi-drug interactions.",
-    href: "/interaction-checker",
-    color: "text-purple-500",
-  },
-  {
-    icon: ShieldAlert,
-    title: "Allergy Checker",
-    description: "Identify potential allergies & cross-reactivity.",
-    href: "/allergy-checker",
-    color: "text-red-500",
-  },
-  {
-    icon: ScanEye,
-    title: "Prescription Reader",
-    description: "Analyze a prescription image.",
-    href: "/prescription-reader",
-    color: "text-orange-500",
-  },
-  {
-    icon: TestTube,
-    title: "Lab Report Analyzer",
-    description: "Interpret and analyze lab report data.",
-    href: "/lab-analyzer",
-    color: "text-indigo-500",
-  },
-  {
-    icon: FileClock,
-    title: "Adherence Tracker",
-    description: "Generate a medication adherence report.",
-    href: "/adherence-tracker",
-    color: "text-teal-500",
-  },
-  {
-    icon: ShieldEllipsis,
-    title: "Admin Panel",
-    description: "Manage platform content and view engagement analytics.",
-    href: "/career-guidance/admin-panel",
-    color: "text-slate-500",
-  },
-];
+const PHARMACIST_CODE = "239773";
 
-const patientTools = [
-    {
-        icon: User,
-        title: "My Health History",
-        description: "View or update your personal and medical information.",
-        href: "/patient-history",
-        color: "text-blue-400",
-    },
-     {
-        icon: Bot,
-        title: "AI Nutrition Coach",
-        description: "Get a personalized diet plan from our AI assistant.",
-        href: "/nutrition-coach",
-        color: "text-green-500",
-    },
-    {
-        icon: Stethoscope,
-        title: "Symptom Checker",
-        description: "Analyze your symptoms with an AI assistant.",
-        href: "/symptom-checker",
-        color: "text-rose-500",
-    },
-    {
-        icon: Siren,
-        title: "Emergency Help",
-        description: "Get immediate assistance and access critical info.",
-        href: "/emergency",
-        color: "text-red-600",
-    },
-    {
-        icon: ScanEye,
-        title: "Upload Prescription",
-        description: "Upload and analyze a new prescription from your doctor.",
-        href: "/prescription-reader",
-        color: "text-orange-500",
-    },
-    {
-        icon: Microscope,
-        title: "Analyze Lab Report",
-        description: "Get an AI-powered analysis of your lab results.",
-        href: "/lab-analyzer",
-        color: "text-indigo-500",
-    },
-     {
-        icon: ShoppingCart,
-        title: "Order Medicines",
-        description: "Manage refills and order your medicines.",
-        href: "/order-refills",
-        color: "text-emerald-500",
-    },
-    {
-        icon: FileClock,
-        title: "Adherence Tracker",
-        description: "Track and report your medication adherence.",
-        href: "/adherence-tracker",
-        color: "text-teal-500",
-    },
-];
-
-const studentToolSections = {
-  "📚 Study & Learning Hub": [
-    { icon: BookOpen, title: "Lecture Notes Library", description: "Upload and browse study materials for your class.", href: "/lecture-notes", color: "text-amber-500" },
-    { icon: FolderOpen, title: "Notes Organizer", description: "Organize your personal study notes and materials.", href: "/notes-organizer", color: "text-sky-600" },
-    { icon: Library, title: "AI E-Library", description: "Search for any term and get instant, AI-powered definitions and summaries.", href: "/e-library", color: "text-sky-500" },
-    { icon: Video, title: "MOA Animation Library", description: "Watch short, engaging animations of drug mechanisms of action.", href: "/moa-animations", color: "text-rose-500" },
-    { icon: Network, title: "Drug Classification Tree", description: "Visually explore drug classes with an interactive tree.", href: "/drug-classification-tree", color: "text-blue-500" },
-    { icon: Leaf, title: "Herbal Knowledge Hub", description: "Explore a detailed AI-powered pharmaco-botanical encyclopedia.", href: "/herbal-hub", color: "text-green-600" },
-    { icon: FileJson, title: "SOP Repository", description: "Generate and review Standard Operating Procedures for lab practicals.", href: "/sop-repository", color: "text-orange-600" },
-    { icon: WifiOff, title: "Offline Mode", description: "Download key study materials to continue learning seamlessly, even without an internet connection.", href: "/offline-mode", color: "text-gray-500" },
-    { icon: Mic, title: "Text-to-Speech", description: "Convert any text into spoken audio to listen on the go.", href: "/text-to-speech", color: "text-blue-500" },
-  ],
-  "🎓 Interactive Learning & Practice": [
-    { icon: CaseSensitive, title: "Clinical Case Simulator", description: "Tackle realistic patient cases and get AI-driven feedback.", href: "/clinical-case-simulator", color: "text-teal-500" },
-    { icon: FileHeart, title: "OSCE and Viva Preparation", description: "Practice for your exams with AI-driven OSCE and viva scenarios.", href: "/osce-viva-prep", color: "text-cyan-600" },
-    { icon: FlaskConical, title: "Drug Interaction Simulator", description: "Explore and understand drug-drug interactions.", href: "/interaction-checker", color: "text-purple-500" },
-    { icon: Calculator, title: "Drug Calculation Tool", description: "Practice and verify patient-specific dosages.", href: "/dose-calculator", color: "text-green-500" },
-    { icon: Replace, title: "Unit Converter", description: "Perform common clinical unit conversions.", href: "/unit-converter", color: "text-fuchsia-500" },
-    { icon: Beaker, title: "Virtual Lab Simulator", description: "Run narrative-based lab simulations with AI-guided steps and feedback.", href: "/virtual-lab-simulator", color: "text-fuchsia-500" },
-    { icon: Puzzle, title: "Pharma Games & Puzzles", description: "Learn pharmacology concepts through interactive games and puzzles.", href: "/pharma-games", color: "text-pink-500" },
-    { icon: Combine, title: "Mnemonic Generator", description: "Create memorable Roman Urdu mnemonics for any medical topic.", href: "/mnemonic-generator", color: "text-teal-500" },
-  ],
-  "🧑‍🎓 Student Tools & Productivity": [
-    { icon: GraduationCap, title: "Study Material Generator", description: "Generate a full study guide on any topic with a case study and quiz.", href: "/study-material-generator", color: "text-violet-500" },
-    { icon: FileHeart, title: "Flashcard Generator", description: "Automatically create study flashcards from your lecture notes.", href: "/flashcard-generator", color: "text-rose-500" },
-    { icon: HelpCircle, title: "MCQ Bank", description: "Practice exam-style questions with AI-generated quizzes on any topic.", href: "/mcq-bank", color: "text-indigo-500" },
-    { icon: BookA, title: "Reference Citation Tool", description: "Generate academic citations for a given text in various styles.", href: "/reference-generator", color: "text-slate-500" },
-    { icon: ScanSearch, title: "Plagiarism Checker", description: "Check your assignments for plagiarism before submission.", href: "/plagiarism-checker", color: "text-red-500" },
-    { icon: CalendarDays, title: "AI Study Planner", description: "Generate a personalized study timetable for your subjects and exams.", href: "/study-planner", color: "text-indigo-500" },
-    { icon: BarChart, title: "Progress Tracker", description: "Track your academic and career readiness.", href: "/progress-tracker", color: "text-indigo-500" },
-  ],
-  "👥 Community & Collaboration": [
-    { icon: MessageSquare, title: "Student Discussion Forum", description: "Collaborate and discuss topics with your peers.", href: "/student-discussion-forum", color: "text-lime-500" },
-    { icon: ClipboardList, title: "Student Polls/Surveys", description: "Participate in academic and community polls.", href: "/student-polls", color: "text-orange-500" },
-    { icon: User, title: "My Health History", description: "Fill out your personal health record for case studies.", href: "/patient-history", color: "text-blue-400" },
-    { icon: Users, title: "View All Patient Cases", description: "View all patient records entered into the system for learning.", href: "/patients", color: "text-cyan-500" },
-    { icon: Compass, title: "Career Guidance", description: "Explore career paths and get guidance for your professional journey.", href: "/career-guidance", color: "text-amber-600" },
-  ],
-  "🚀 Advanced / AI-Powered Features": [
-    { icon: Search, title: "Smart Search", description: "Search drugs, diseases, and topics across the portal.", href: "/smart-search", color: "text-purple-500" },
-    { icon: Camera, title: "Scan Medicine Strip", description: "Use AR to identify a medicine strip and view its details.", href: "/scan-medicine-strip", color: "text-red-500" },
-    { icon: TestTube, title: "Pathology", description: "Explore pathology resources and case studies.", href: "/pathology", color: "text-red-500" },
-    { icon: MessageCircleQuestion, title: "AI Assistant Helper", description: "Ask any pharmacy-related question and get a comprehensive, synthesized response from Zuruu AI.", href: "/ai-assistant", color: "text-blue-500" },
-  ],
-};
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-  },
-};
-
-export default function DashboardPage() {
-  const { mode } = useMode();
-  const { patientState, getActivePatientRecord } = usePatient();
-  const activeUser = patientState.activeUser;
-  const activePatientRecord = getActivePatientRecord();
-
-
-  const tools = {
-    'pharmacist': pharmacistTools,
-    'patient': patientTools,
-  }[mode] || [];
+export default function RoleSelectionPage() {
+  const [pharmacistModalOpen, setPharmacistModalOpen] = useState(false);
+  const [patientOptionsModalOpen, setPatientOptionsModalOpen] = useState(false);
+  const [patientLoginModalOpen, setPatientLoginModalOpen] = useState(false);
+  const [studentLoginModalOpen, setStudentLoginModalOpen] = useState(false);
   
-  const name = activeUser?.demographics?.name || (mode === 'patient' ? "Patient" : mode === 'student' ? 'Student' : 'Pharmacist');
+  const [pharmacistCode, setPharmacistCode] = useState("");
+  const [patientName, setPatientName] = useState("");
+  const [patientPhone, setPatientPhone] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [yearOfStudy, setYearOfStudy] = useState("");
 
-  const headerTitle = {
-    'pharmacist': "Welcome to Zuruu AI Pharmacy",
-    'patient': `Welcome, ${name}`,
-    'student': `Welcome, ${name}`,
-  }[mode];
+
+  const { setMode } = useMode();
+  const { patientState, setActiveUser, addOrUpdateUser, clearActiveUser } = usePatient();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handlePharmacistLogin = () => {
+    if (pharmacistCode === PHARMACIST_CODE) {
+      setMode("pharmacist");
+      clearActiveUser();
+      router.push("/dashboard");
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Incorrect Code",
+        description: "This is not for you as you are not a pharmacist.",
+      });
+    }
+  };
+
+  const handlePatientLogin = () => {
+    if (!patientName || !patientPhone) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please enter your name and phone number." });
+        return;
+    }
+    const existingUser = patientState.users.find(
+      (p) =>
+        p.role === 'patient' &&
+        p.demographics?.name?.toLowerCase() === patientName.toLowerCase() &&
+        p.demographics?.phoneNumber === patientPhone
+    );
+
+    setMode("patient");
+
+    if (existingUser) {
+      setActiveUser(existingUser.id);
+      toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+      router.push("/dashboard");
+    } else {
+       clearActiveUser();
+       const newUser: Omit<UserProfile, 'id'> = {
+         role: 'patient',
+         demographics: { name: patientName, phoneNumber: patientPhone }
+       };
+       addOrUpdateUser(newUser);
+       toast({ title: "Welcome!", description: "Let's create your patient history." });
+       router.push("/patient-history");
+    }
+    setPatientLoginModalOpen(false);
+  };
   
-  const headerDescription = {
-    'pharmacist': "Your AI-powered suite of clinical tools for enhanced pharmaceutical care. Start by managing your patients or explore the tools directly.",
-    'patient': "This is your personal health dashboard. Access your history or get help in an emergency.",
-    'student': "This is your student dashboard. Create your patient case study or review existing ones."
-  }[mode];
+  const handleNewPatient = () => {
+    setMode('patient');
+    clearActiveUser();
+    router.push('/patient-history');
+  }
+
+  const handleStudentLogin = () => {
+    if (!studentName || !studentId || !yearOfStudy) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please fill out all fields." });
+        return;
+    }
+    if (!studentId.toLowerCase().includes('edu')) {
+        toast({ variant: "destructive", title: "Invalid Student ID" });
+        return;
+    }
+
+    const existingUser = patientState.users.find(
+      (u) =>
+        u.role === 'student' &&
+        u.demographics?.name?.toLowerCase() === studentName.toLowerCase() &&
+        u.studentId === studentId
+    );
+    
+    setMode("student");
+
+    if (existingUser) {
+        setActiveUser(existingUser.id);
+        toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+    } else {
+        const newUser: Omit<UserProfile, 'id'> = {
+            role: 'student',
+            demographics: { name: studentName, yearOfStudy: yearOfStudy },
+            studentId: studentId,
+        };
+        addOrUpdateUser(newUser);
+        toast({ title: "Welcome!", description: `Your student profile has been created, ${studentName}. Let's create your health record.` });
+    }
+    router.push("/dashboard");
+    setStudentLoginModalOpen(false);
+  };
+
+  const handleEmergency = () => {
+    setMode('patient'); // Emergency defaults to patient view
+    clearActiveUser();
+    router.push('/emergency');
+  }
+
+  const openPatientLogin = () => {
+    setPatientOptionsModalOpen(false);
+    setPatientLoginModalOpen(true);
+  }
   
-  const headerButton = {
-    'pharmacist': (
-        <Link href="/patients" passHref>
-            <Button variant="secondary" size="lg"><Users className="mr-2" /> Go to Patients</Button>
-        </Link>
-    ),
-    'patient': (
-        <Link href="/patient-history" passHref>
-            <Button variant="secondary" size="lg"><User className="mr-2" /> My History</Button>
-        </Link>
-    ),
-    'student': (
-         <Link href="/patient-history" passHref>
-            <Button variant="secondary" size="lg"><User className="mr-2" /> My Health History</Button>
-        </Link>
-    )
-  }[mode];
-
-  const toolsHeader = {
-    'pharmacist': 'Clinical Tools',
-    'patient': 'Your Options',
-    'student': 'Student Tools'
-  }[mode]
-
+  const openStudentLogin = () => {
+    setStudentLoginModalOpen(true);
+  }
 
   return (
-      <div className="flex flex-col gap-8">
-        <header className="relative bg-primary text-primary-foreground rounded-lg p-8 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 opacity-50"></div>
-          <div className="relative z-10">
-            <h1 className="text-4xl font-bold font-headline tracking-tight">{headerTitle}</h1>
-            <p className="mt-2 text-lg text-primary-foreground/90 max-w-2xl">
-             {headerDescription}
-            </p>
-            <div className="mt-6">
-             {headerButton}
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <Card className="w-full max-w-5xl shadow-2xl">
+        <CardHeader className="text-center">
+            <div className="mx-auto mb-4">
+                
+            </div>
+          <CardTitle className="text-3xl font-headline">Welcome to Zuruu AI Pharmacy</CardTitle>
+          <CardDescription>Please select your role to continue</CardDescription>
+        </CardHeader>
+        <CardContent className="grid md:grid-cols-3 gap-8 p-8">
+          <div
+            onClick={() => setPatientOptionsModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <User className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Patient</h3>
+            <p className="text-muted-foreground mt-2">Access your profile or get emergency help.</p>
+          </div>
+          <div
+            onClick={() => setPharmacistModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <BriefcaseMedical className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Pharmacist</h3>
+            <p className="text-muted-foreground mt-2">Access the full suite of clinical tools.</p>
+          </div>
+           <div
+            onClick={openStudentLogin}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <School className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Student</h3>
+            <p className="text-muted-foreground mt-2">Login to access learning modules.</p>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Pharmacist Modal */}
+      <Dialog open={pharmacistModalOpen} onOpenChange={setPharmacistModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pharmacist Access</DialogTitle>
+            <DialogDescription>Please enter your access code to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="pharmacist-code">Access Code</Label>
+            <Input 
+              id="pharmacist-code" 
+              type="password" 
+              value={pharmacistCode}
+              onChange={(e) => setPharmacistCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handlePharmacistLogin()}
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePharmacistLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Patient Options Modal */}
+      <Dialog open={patientOptionsModalOpen} onOpenChange={setPatientOptionsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Options</DialogTitle>
+            <DialogDescription>How can we help you today?</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4">
+             <Button onClick={openPatientLogin} variant="outline" size="lg" className="h-auto py-4">
+              <LogIn className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">Patient Login</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Access your existing patient profile.</p>
+              </div>
+            </Button>
+             <Button onClick={handleNewPatient} variant="outline" size="lg" className="h-auto py-4">
+              <UserPlus className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">New Patient Registration</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Create a new patient history form.</p>
+              </div>
+            </Button>
+            <Button onClick={handleEmergency} variant="destructive" size="lg" className="h-auto py-4">
+                <Siren className="mr-4 text-destructive-foreground" />
+                 <div>
+                    <p className="font-semibold text-base text-left">Emergency Help</p>
+                    <p className="font-normal text-sm text-destructive-foreground/80 text-left">Immediately get assistance.</p>
+                </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Patient Login Modal */}
+      <Dialog open={patientLoginModalOpen} onOpenChange={setPatientLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Login</DialogTitle>
+            <DialogDescription>Please enter your details to find your profile.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="patient-name">Full Name</Label>
+                <Input id="patient-name" value={patientName} onChange={(e) => setPatientName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="patient-phone">Phone Number</Label>
+                <Input id="patient-phone" value={patientPhone} onChange={(e) => setPatientPhone(e.target.value)} />
             </div>
           </div>
-        </header>
+          <DialogFooter>
+            <Button onClick={handlePatientLogin}>Continue</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-        {activePatientRecord && (
-          <section>
-            <LifestyleSuggestions patientHistory={activePatientRecord.history}/>
-          </section>
-        )}
-        
-        {mode === 'student' ? (
-          Object.entries(studentToolSections).map(([sectionTitle, sectionTools]) => (
-            <motion.section 
-              key={sectionTitle}
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              <h2 className="text-2xl font-semibold mb-4 text-foreground/90">
-                {sectionTitle}
-              </h2>
-              <motion.div 
-                className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
-                variants={containerVariants}
-              >
-                {sectionTools.map((tool) => (
-                  <motion.div
-                    key={tool.href}
-                    variants={itemVariants}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <Card className="shadow-lg hover:shadow-primary/20 transition-shadow h-full flex flex-col group">
-                      <CardHeader className="flex flex-row items-start gap-4">
-                        <div className={`p-3 bg-primary/10 rounded-lg ${tool.color}`}>
-                          <tool.icon className="w-8 h-8" />
-                        </div>
-                        <div className="flex-1">
-                          <CardTitle className="text-xl mb-1">{tool.title}</CardTitle>
-                          <CardDescription>{tool.description}</CardDescription>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="flex-grow flex items-end justify-end mt-auto">
-                        <Link href={tool.href} passHref>
-                          <Button variant="ghost" className="text-primary group-hover:bg-accent/50">
-                              Go to Page <motion.span whileHover={{ x: 2 }}><ArrowRight className="ml-2 h-4 w-4" /></motion.span>
-                          </Button>
-                        </Link>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </motion.section>
-          ))
-        ) : (
-          <motion.section
-             variants={containerVariants}
-             initial="hidden"
-             animate="visible"
-          >
-            <h2 className="text-2xl font-semibold mb-4 text-foreground/90">
-              {toolsHeader}
-            </h2>
-            <motion.div 
-              className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
-              variants={containerVariants}
-            >
-              {tools.map((tool) => (
-                 <motion.div
-                    key={tool.href}
-                    variants={itemVariants}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <Card className="shadow-lg hover:shadow-primary/20 transition-shadow h-full flex flex-col group">
-                      <CardHeader className="flex flex-row items-start gap-4">
-                        <div className={`p-3 bg-primary/10 rounded-lg ${tool.color}`}>
-                          <tool.icon className="w-8 h-8" />
-                        </div>
-                        <div className="flex-1">
-                          <CardTitle className="text-xl mb-1">{tool.title}</CardTitle>
-                          <CardDescription>{tool.description}</CardDescription>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="flex-grow flex items-end justify-end mt-auto">
-                        <Link href={tool.href} passHref>
-                          <Button variant="ghost" className="text-primary group-hover:bg-accent/50">
-                              {mode === 'pharmacist' ? "Use Tool" : "Go to Page"} <motion.span whileHover={{ x: 2 }}><ArrowRight className="ml-2 h-4 w-4" /></motion.span>
-                          </Button>
-                        </Link>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-              ))}
-            </motion.div>
-          </motion.section>
-        )}
-      </div>
+       {/* Student Login Modal */}
+       <Dialog open={studentLoginModalOpen} onOpenChange={setStudentLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Student Login</DialogTitle>
+            <DialogDescription>Please enter your details to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="student-name">Full Name</Label>
+                <Input id="student-name" value={studentName} onChange={(e) => setStudentName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="student-id">Student ID</Label>
+                <Input id="student-id" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g., user@university.edu"/>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="year-of-study">Year of Study</Label>
+                <Select value={yearOfStudy} onValueChange={setYearOfStudy}>
+                    <SelectTrigger id="year-of-study">
+                        <SelectValue placeholder="Select your year..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="1st Year">1st Year</SelectItem>
+                        <SelectItem value="2nd Year">2nd Year</SelectItem>
+                        <SelectItem value="3rd Year">3rd Year</SelectItem>
+                        <SelectItem value="4th Year">4th Year</SelectItem>
+                        <SelectItem value="5th Year">5th Year</SelectItem>
+                        <SelectItem value="Graduate">Graduate</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleStudentLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

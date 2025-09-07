@@ -1,304 +1,295 @@
-
 "use client";
 
-import { useTransition, useState, useEffect } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, Controller } from "react-hook-form";
-import { generateCoachedDietPlan, type NutritionCoachOutput } from "@/ai/flows/nutrition-coach";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePatient, UserProfile } from "@/contexts/patient-context";
+import { useMode } from "@/contexts/mode-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, ArrowRight, Bot, Sparkles, ClipboardCheck, Utensils, AlertTriangle, Info } from "lucide-react";
-import { usePatient } from "@/contexts/patient-context";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { Progress } from "@/components/ui/progress";
+import { User, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School, Siren } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-// Define Zod schemas for each step of the questionnaire
-const step1Schema = z.object({
-  age: z.coerce.number().positive(),
-  gender: z.string().min(1),
-  height: z.string().min(1),
-  weight: z.string().min(1),
-  occupation: z.string().min(1),
-  activity_level: z.string().min(1),
-  sleep_pattern: z.string().min(1),
-  stress_level: z.string().min(1),
-});
+const PHARMACIST_CODE = "239773";
 
-const step2Schema = z.object({
-  chronic_diseases: z.array(z.string()).optional(),
-  medications: z.array(z.string()).optional(),
-  allergies: z.array(z.string()).optional(),
-  recent_surgeries: z.string().optional(),
-  family_history: z.array(z.string()).optional(),
-});
-
-const step3Schema = z.object({
-  meal_pattern: z.string().min(1),
-  skips_meals: z.boolean(),
-  water_intake: z.string().min(1),
-  other_drinks: z.array(z.string()).optional(),
-  processed_food_intake: z.string().min(1),
-  cooking_habit: z.string().min(1),
-});
-
-const step4Schema = z.object({
-  diet_type: z.array(z.string()).optional(),
-  favorite_foods: z.string().optional(),
-  disliked_foods: z.string().optional(),
-  fasting_practices: z.string().optional(),
-});
-
-const step5Schema = z.object({
-  primary_goal: z.string().min(1),
-  timeline: z.string().min(1),
-  motivation_level: z.string().min(1),
-  budget: z.string().min(1),
-  open_to_lifestyle_changes: z.boolean(),
-});
-
-// Combine all steps into a single schema for the final form
-const fullSchema = z.object({
-    profile: step1Schema,
-    medical_history: step2Schema,
-    current_diet: step3Schema,
-    preferences: step4Schema,
-    goals: step5Schema,
-});
-
-type FullFormValues = z.infer<typeof fullSchema>;
-
-const steps = [
-  { id: 'profile', title: 'Personal & Lifestyle', schema: step1Schema },
-  { id: 'medical_history', title: 'Medical History', schema: step2Schema },
-  { id: 'current_diet', title: 'Current Diet Habits', schema: step3Schema },
-  { id: 'preferences', title: 'Cultural & Personal Preferences', schema: step4Schema },
-  { id: 'goals', title: 'Goals & Motivation', schema: step5Schema },
-];
+export default function RoleSelectionPage() {
+  const [pharmacistModalOpen, setPharmacistModalOpen] = useState(false);
+  const [patientOptionsModalOpen, setPatientOptionsModalOpen] = useState(false);
+  const [patientLoginModalOpen, setPatientLoginModalOpen] = useState(false);
+  const [studentLoginModalOpen, setStudentLoginModalOpen] = useState(false);
+  
+  const [pharmacistCode, setPharmacistCode] = useState("");
+  const [patientName, setPatientName] = useState("");
+  const [patientPhone, setPatientPhone] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [yearOfStudy, setYearOfStudy] = useState("");
 
 
-export function NutritionCoachClient() {
-  const [state, setState] = useState<NutritionCoachOutput | { error: string } | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const { setMode } = useMode();
+  const { patientState, setActiveUser, addOrUpdateUser, clearActiveUser } = usePatient();
+  const router = useRouter();
   const { toast } = useToast();
-  const { getActivePatientRecord } = usePatient();
-  const activePatientRecord = getActivePatientRecord();
-  
-  const [currentStep, setCurrentStep] = useState(0);
 
-  const form = useForm<FullFormValues>({
-    resolver: zodResolver(fullSchema),
-    defaultValues: {
-      profile: {
-        age: activePatientRecord?.history.age ? parseInt(activePatientRecord.history.age) : 0,
-        gender: activePatientRecord?.history.gender || "",
-        height: "",
-        weight: "",
-        occupation: "",
-        activity_level: "",
-        sleep_pattern: "",
-        stress_level: "",
-      },
-      medical_history: {
-        chronic_diseases: activePatientRecord?.history.pastMedicalHistory?.split(',').map(s => s.trim()) || [],
-        medications: activePatientRecord?.history.medicationHistory?.split(',').map(s => s.trim()) || [],
-        allergies: activePatientRecord?.history.allergyHistory?.split(',').map(s => s.trim()) || [],
-        recent_surgeries: "",
-        family_history: activePatientRecord?.history.familyHistory?.split(',').map(s => s.trim()) || [],
-      },
-      current_diet: {
-        meal_pattern: "",
-        skips_meals: false,
-        water_intake: "",
-        other_drinks: [],
-        processed_food_intake: "",
-        cooking_habit: "",
-      },
-      preferences: {
-        diet_type: [],
-        favorite_foods: "",
-        disliked_foods: "",
-        fasting_practices: "",
-      },
-      goals: {
-        primary_goal: "",
-        timeline: "",
-        motivation_level: "",
-        budget: "",
-        open_to_lifestyle_changes: true,
-      }
-    },
-  });
-
-  const formAction = async (formData: FullFormValues) => {
-    startTransition(async () => {
-      try {
-        const result = await generateCoachedDietPlan(formData);
-        setState(result);
-        setCurrentStep(steps.length); // Move to result view
-      } catch (e) {
-        console.error(e);
-        setState({ error: "Failed to generate diet plan. Please try again." });
-      }
-    });
-  }
-  
-   useEffect(() => {
-    if (state && 'error' in state && state.error) {
-      toast({ variant: "destructive", title: "Error", description: state.error });
-    }
-  }, [state, toast]);
-
-  const nextStep = async () => {
-    const section = steps[currentStep].id as keyof FullFormValues;
-    const isValid = await form.trigger(section);
-    if (isValid) {
-      setCurrentStep(prev => prev + 1);
+  const handlePharmacistLogin = () => {
+    if (pharmacistCode === PHARMACIST_CODE) {
+      setMode("pharmacist");
+      clearActiveUser();
+      router.push("/dashboard");
     } else {
-        toast({variant: 'destructive', title: 'Please fill out all required fields.'});
+      toast({
+        variant: "destructive",
+        title: "Incorrect Code",
+        description: "This is not for you as you are not a pharmacist.",
+      });
     }
   };
 
-  const prevStep = () => {
-    setCurrentStep(prev => prev - 1);
-  };
+  const handlePatientLogin = () => {
+    if (!patientName || !patientPhone) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please enter your name and phone number." });
+        return;
+    }
+    const existingUser = patientState.users.find(
+      (p) =>
+        p.role === 'patient' &&
+        p.demographics?.name?.toLowerCase() === patientName.toLowerCase() &&
+        p.demographics?.phoneNumber === patientPhone
+    );
 
-  if (isPending) {
-    return <div className="flex flex-col justify-center items-center h-full gap-4">
-        <Bot className="h-16 w-16 text-primary animate-bounce"/>
-        <p className="text-muted-foreground">Our AI coach is preparing your personalized plan...</p>
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-    </div>;
+    setMode("patient");
+
+    if (existingUser) {
+      setActiveUser(existingUser.id);
+      toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+      router.push("/dashboard");
+    } else {
+       clearActiveUser();
+       const newUser: Omit<UserProfile, 'id'> = {
+         role: 'patient',
+         demographics: { name: patientName, phoneNumber: patientPhone }
+       };
+       addOrUpdateUser(newUser);
+       toast({ title: "Welcome!", description: "Let's create your patient history." });
+       router.push("/patient-history");
+    }
+    setPatientLoginModalOpen(false);
+  };
+  
+  const handleNewPatient = () => {
+    setMode('patient');
+    clearActiveUser();
+    router.push('/patient-history');
   }
 
-  if (currentStep === steps.length && state && 'diet_plan' in state) {
-     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-2xl flex items-center gap-2"><Sparkles className="text-primary"/>Your Personalized Nutrition Plan</CardTitle>
-                <CardDescription>Generated by Zuruu AI for {activePatientRecord?.history.name || 'you'}.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                {state.warnings && state.warnings.length > 0 && (
-                    <Alert variant="destructive">
-                        <AlertTriangle className="h-4 w-4"/>
-                        <AlertTitle>Important Warnings!</AlertTitle>
-                        <AlertDescription>
-                            <ul className="list-disc list-inside">
-                                {state.warnings.map((w,i) => <li key={i}>{w}</li>)}
-                            </ul>
-                        </AlertDescription>
-                    </Alert>
-                )}
-                
-                <Card className="bg-muted/50">
-                    <CardHeader><CardTitle className="flex items-center gap-2"><Utensils/>Daily Meal Plan</CardTitle></CardHeader>
-                    <CardContent className="space-y-2 text-muted-foreground">
-                        <p><strong>Breakfast:</strong> {state.diet_plan.breakfast}</p>
-                        <p><strong>Lunch:</strong> {state.diet_plan.lunch}</p>
-                        <p><strong>Snack:</strong> {state.diet_plan.snack}</p>
-                        <p><strong>Dinner:</strong> {state.diet_plan.dinner}</p>
-                        <p><strong>Hydration:</strong> {state.diet_plan.hydration}</p>
-                    </CardContent>
-                </Card>
-                
-                <Card className="bg-muted/50">
-                     <CardHeader><CardTitle className="flex items-center gap-2"><ClipboardCheck/>Clinical Notes</CardTitle></CardHeader>
-                     <CardContent className="space-y-2 text-muted-foreground">
-                        <p><strong>Target Calories:</strong> {state.detailed_notes.calories}</p>
-                        <p><strong>Macronutrient Split:</strong> {state.detailed_notes.macros}</p>
-                        <p><strong>Notes:</strong> {state.detailed_notes.special_notes}</p>
-                     </CardContent>
-                </Card>
+  const handleStudentLogin = () => {
+    if (!studentName || !studentId || !yearOfStudy) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please fill out all fields." });
+        return;
+    }
+    if (!studentId.toLowerCase().includes('edu')) {
+        toast({ variant: "destructive", title: "Invalid Student ID" });
+        return;
+    }
 
-                <Button onClick={() => setCurrentStep(0)}>Start Over</Button>
-            </CardContent>
-        </Card>
-     )
+    const existingUser = patientState.users.find(
+      (u) =>
+        u.role === 'student' &&
+        u.demographics?.name?.toLowerCase() === studentName.toLowerCase() &&
+        u.studentId === studentId
+    );
+    
+    setMode("student");
+
+    if (existingUser) {
+        setActiveUser(existingUser.id);
+        toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+    } else {
+        const newUser: Omit<UserProfile, 'id'> = {
+            role: 'student',
+            demographics: { name: studentName, yearOfStudy: yearOfStudy },
+            studentId: studentId,
+        };
+        addOrUpdateUser(newUser);
+        toast({ title: "Welcome!", description: `Your student profile has been created, ${studentName}. Let's create your health record.` });
+    }
+    router.push("/dashboard");
+    setStudentLoginModalOpen(false);
+  };
+
+  const handleEmergency = () => {
+    setMode('patient'); // Emergency defaults to patient view
+    clearActiveUser();
+    router.push('/emergency');
+  }
+
+  const openPatientLogin = () => {
+    setPatientOptionsModalOpen(false);
+    setPatientLoginModalOpen(true);
+  }
+  
+  const openStudentLogin = () => {
+    setStudentLoginModalOpen(true);
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{steps[currentStep].title}</CardTitle>
-        <CardDescription>Step {currentStep + 1} of {steps.length}</CardDescription>
-        <Progress value={((currentStep + 1) / (steps.length + 1)) * 100} className="w-full" />
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(formAction)} className="space-y-6">
-            {/* Step 1: Profile */}
-            <div className={currentStep === 0 ? 'block' : 'hidden'}>
-                <div className="grid md:grid-cols-2 gap-4">
-                    <FormField name="profile.age" control={form.control} render={({ field }) => (<FormItem><FormLabel>Age</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField name="profile.gender" control={form.control} render={({ field }) => (<FormItem><FormLabel>Gender</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem><SelectItem value="Other">Other</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
-                    <FormField name="profile.height" control={form.control} render={({ field }) => (<FormItem><FormLabel>Height (cm)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField name="profile.weight" control={form.control} render={({ field }) => (<FormItem><FormLabel>Weight (kg)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField name="profile.occupation" control={form.control} render={({ field }) => (<FormItem><FormLabel>Occupation</FormLabel><FormControl><Input {...field} placeholder="e.g., Office worker, Teacher" /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField name="profile.activity_level" control={form.control} render={({ field }) => (<FormItem><FormLabel>Daily Activity Level</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Sedentary">Sedentary</SelectItem><SelectItem value="Lightly Active">Lightly Active</SelectItem><SelectItem value="Moderately Active">Moderately Active</SelectItem><SelectItem value="Very Active">Very Active</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
-                    <FormField name="profile.sleep_pattern" control={form.control} render={({ field }) => (<FormItem><FormLabel>Sleep Pattern</FormLabel><FormControl><Input {...field} placeholder="e.g., 7-8 hours, good quality" /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField name="profile.stress_level" control={form.control} render={({ field }) => (<FormItem><FormLabel>Stress/Anxiety Impact</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="None">None</SelectItem><SelectItem value="Sometimes">Sometimes</SelectItem><SelectItem value="Often">Often</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <Card className="w-full max-w-5xl shadow-2xl">
+        <CardHeader className="text-center">
+            <div className="mx-auto mb-4">
+                
+            </div>
+          <CardTitle className="text-3xl font-headline">Welcome to Zuruu AI Pharmacy</CardTitle>
+          <CardDescription>Please select your role to continue</CardDescription>
+        </CardHeader>
+        <CardContent className="grid md:grid-cols-3 gap-8 p-8">
+          <div
+            onClick={() => setPatientOptionsModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <User className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Patient</h3>
+            <p className="text-muted-foreground mt-2">Access your profile or get emergency help.</p>
+          </div>
+          <div
+            onClick={() => setPharmacistModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <BriefcaseMedical className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Pharmacist</h3>
+            <p className="text-muted-foreground mt-2">Access the full suite of clinical tools.</p>
+          </div>
+           <div
+            onClick={openStudentLogin}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <School className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Student</h3>
+            <p className="text-muted-foreground mt-2">Login to access learning modules.</p>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Pharmacist Modal */}
+      <Dialog open={pharmacistModalOpen} onOpenChange={setPharmacistModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pharmacist Access</DialogTitle>
+            <DialogDescription>Please enter your access code to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="pharmacist-code">Access Code</Label>
+            <Input 
+              id="pharmacist-code" 
+              type="password" 
+              value={pharmacistCode}
+              onChange={(e) => setPharmacistCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handlePharmacistLogin()}
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePharmacistLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Patient Options Modal */}
+      <Dialog open={patientOptionsModalOpen} onOpenChange={setPatientOptionsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Options</DialogTitle>
+            <DialogDescription>How can we help you today?</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4">
+             <Button onClick={openPatientLogin} variant="outline" size="lg" className="h-auto py-4">
+              <LogIn className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">Patient Login</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Access your existing patient profile.</p>
+              </div>
+            </Button>
+             <Button onClick={handleNewPatient} variant="outline" size="lg" className="h-auto py-4">
+              <UserPlus className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">New Patient Registration</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Create a new patient history form.</p>
+              </div>
+            </Button>
+            <Button onClick={handleEmergency} variant="destructive" size="lg" className="h-auto py-4">
+                <Siren className="mr-4 text-destructive-foreground" />
+                 <div>
+                    <p className="font-semibold text-base text-left">Emergency Help</p>
+                    <p className="font-normal text-sm text-destructive-foreground/80 text-left">Immediately get assistance.</p>
                 </div>
-            </div>
-            {/* Step 2: Medical History */}
-            <div className={currentStep === 1 ? 'block' : 'hidden'}>
-                 <FormField name="medical_history.chronic_diseases" control={form.control} render={({ field }) => (<FormItem><FormLabel>Chronic Diseases</FormLabel><FormControl><Input {...field} value={Array.isArray(field.value) ? field.value.join(', ') : ''} onChange={(e) => field.onChange(e.target.value.split(',').map(s => s.trim()))} placeholder="e.g., Diabetes, Hypertension" /></FormControl><FormMessage /></FormItem>)} />
-                 <FormField name="medical_history.medications" control={form.control} render={({ field }) => (<FormItem><FormLabel>Current Medications</FormLabel><FormControl><Input {...field} value={Array.isArray(field.value) ? field.value.join(', ') : ''} onChange={(e) => field.onChange(e.target.value.split(',').map(s => s.trim()))} placeholder="e.g., Metformin, Amlodipine" /></FormControl><FormMessage /></FormItem>)} />
-                 <FormField name="medical_history.allergies" control={form.control} render={({ field }) => (<FormItem><FormLabel>Allergies</FormLabel><FormControl><Input {...field} value={Array.isArray(field.value) ? field.value.join(', ') : ''} onChange={(e) => field.onChange(e.target.value.split(',').map(s => s.trim()))} placeholder="e.g., Peanuts, Lactose" /></FormControl><FormMessage /></FormItem>)} />
-                 <FormField name="medical_history.recent_surgeries" control={form.control} render={({ field }) => (<FormItem><FormLabel>Recent Surgeries</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                 <FormField name="medical_history.family_history" control={form.control} render={({ field }) => (<FormItem><FormLabel>Family History</FormLabel><FormControl><Input {...field} value={Array.isArray(field.value) ? field.value.join(', ') : ''} onChange={(e) => field.onChange(e.target.value.split(',').map(s => s.trim()))} placeholder="e.g., Heart disease, Cancer" /></FormControl><FormMessage /></FormItem>)} />
-            </div>
-            {/* Step 3: Current Diet */}
-            <div className={currentStep === 2 ? 'block' : 'hidden'}>
-                <FormField name="current_diet.meal_pattern" control={form.control} render={({ field }) => (<FormItem><FormLabel>Typical Meal Pattern</FormLabel><FormControl><Input {...field} placeholder="e.g., 3 meals, 2 snacks" /></FormControl><FormMessage /></FormItem>)} />
-                <FormField name="current_diet.skips_meals" control={form.control} render={({ field }) => (<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4"><div className="space-y-0.5"><FormLabel>Do you skip meals often?</FormLabel></div><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem>)} />
-                <FormField name="current_diet.water_intake" control={form.control} render={({ field }) => (<FormItem><FormLabel>Daily Water Intake</FormLabel><FormControl><Input {...field} placeholder="e.g., 2 liters, 8 glasses" /></FormControl><FormMessage /></FormItem>)} />
-                <FormField name="current_diet.other_drinks" control={form.control} render={({ field }) => (<FormItem><FormLabel>Other Drinks (comma separated)</FormLabel><FormControl><Input {...field} value={Array.isArray(field.value) ? field.value.join(', ') : ''} onChange={(e) => field.onChange(e.target.value.split(',').map(s => s.trim()))} placeholder="e.g., Coffee, Soda, Tea" /></FormControl><FormMessage /></FormItem>)} />
-                <FormField name="current_diet.processed_food_intake" control={form.control} render={({ field }) => (<FormItem><FormLabel>Processed/Fast Food Intake</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Rarely">Rarely</SelectItem><SelectItem value="1-2 times a week">1-2 times/week</SelectItem><SelectItem value="3-5 times a week">3-5 times/week</SelectItem><SelectItem value="Daily">Daily</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
-                <FormField name="current_diet.cooking_habit" control={form.control} render={({ field }) => (<FormItem><FormLabel>Cooking Habits</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Cook at home">Mostly cook at home</SelectItem><SelectItem value="Eat outside">Mostly eat outside</SelectItem><SelectItem value="Mix">A mix of both</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
-            </div>
-             {/* Step 4: Preferences */}
-            <div className={currentStep === 3 ? 'block' : 'hidden'}>
-                <FormField name="preferences.diet_type" control={form.control} render={({ field }) => (<FormItem><FormLabel>Dietary Type (comma separated)</FormLabel><FormControl><Input {...field} value={Array.isArray(field.value) ? field.value.join(', ') : ''} onChange={(e) => field.onChange(e.target.value.split(',').map(s => s.trim()))} placeholder="e.g., Vegetarian, Halal" /></FormControl><FormMessage /></FormItem>)} />
-                <FormField name="preferences.favorite_foods" control={form.control} render={({ field }) => (<FormItem><FormLabel>Favorite Foods</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
-                <FormField name="preferences.disliked_foods" control={form.control} render={({ field }) => (<FormItem><FormLabel>Disliked Foods</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
-                <FormField name="preferences.fasting_practices" control={form.control} render={({ field }) => (<FormItem><FormLabel>Religious/Cultural Fasting</FormLabel><FormControl><Input {...field} placeholder="e.g., Ramadan, Lent" /></FormControl><FormMessage /></FormItem>)} />
-            </div>
-             {/* Step 5: Goals */}
-            <div className={currentStep === 4 ? 'block' : 'hidden'}>
-                 <FormField name="goals.primary_goal" control={form.control} render={({ field }) => (<FormItem><FormLabel>Primary Goal</FormLabel><FormControl><Input {...field} placeholder="e.g., Weight loss, Disease control" /></FormControl><FormMessage /></FormItem>)} />
-                 <FormField name="goals.timeline" control={form.control} render={({ field }) => (<FormItem><FormLabel>Timeline</FormLabel><FormControl><Input {...field} placeholder="e.g., 3 months, long-term" /></FormControl><FormMessage /></FormItem>)} />
-                 <FormField name="goals.motivation_level" control={form.control} render={({ field }) => (<FormItem><FormLabel>Motivation Level</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Low">Low</SelectItem><SelectItem value="Moderate">Moderate</SelectItem><SelectItem value="High">High</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
-                 <FormField name="goals.budget" control={form.control} render={({ field }) => (<FormItem><FormLabel>Food/Supplement Budget</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Low">Low</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="High">High</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
-                 <FormField name="goals.open_to_lifestyle_changes" control={form.control} render={({ field }) => (<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4"><div className="space-y-0.5"><FormLabel>Open to exercise/lifestyle changes?</FormLabel></div><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem>)} />
-            </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-            <div className="flex justify-between pt-4">
-              <Button type="button" variant="outline" onClick={prevStep} disabled={currentStep === 0}>
-                <ArrowLeft className="mr-2" /> Previous
-              </Button>
-              {currentStep < steps.length - 1 ? (
-                <Button type="button" onClick={nextStep}>
-                  Next <ArrowRight className="ml-2" />
-                </Button>
-              ) : (
-                <Button type="submit">
-                  Generate My Plan <Sparkles className="ml-2" />
-                </Button>
-              )}
+      {/* Patient Login Modal */}
+      <Dialog open={patientLoginModalOpen} onOpenChange={setPatientLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Login</DialogTitle>
+            <DialogDescription>Please enter your details to find your profile.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="patient-name">Full Name</Label>
+                <Input id="patient-name" value={patientName} onChange={(e) => setPatientName(e.target.value)} />
             </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+            <div className="space-y-2">
+                <Label htmlFor="patient-phone">Phone Number</Label>
+                <Input id="patient-phone" value={patientPhone} onChange={(e) => setPatientPhone(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePatientLogin}>Continue</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+       {/* Student Login Modal */}
+       <Dialog open={studentLoginModalOpen} onOpenChange={setStudentLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Student Login</DialogTitle>
+            <DialogDescription>Please enter your details to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="student-name">Full Name</Label>
+                <Input id="student-name" value={studentName} onChange={(e) => setStudentName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="student-id">Student ID</Label>
+                <Input id="student-id" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g., user@university.edu"/>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="year-of-study">Year of Study</Label>
+                <Select value={yearOfStudy} onValueChange={setYearOfStudy}>
+                    <SelectTrigger id="year-of-study">
+                        <SelectValue placeholder="Select your year..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="1st Year">1st Year</SelectItem>
+                        <SelectItem value="2nd Year">2nd Year</SelectItem>
+                        <SelectItem value="3rd Year">3rd Year</SelectItem>
+                        <SelectItem value="4th Year">4th Year</SelectItem>
+                        <SelectItem value="5th Year">5th Year</SelectItem>
+                        <SelectItem value="Graduate">Graduate</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleStudentLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
-
-    

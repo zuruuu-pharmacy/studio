@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { ModeProvider } from '@/contexts/mode-context';
@@ -9,6 +10,7 @@ import { DiscussionForumProvider } from '@/contexts/discussion-forum-context';
 import { PollsProvider } from '@/contexts/polls-context';
 import { PathologyProvider } from '@/contexts/pathology-context';
 import { EventCalendarProvider } from '@/contexts/event-calendar-context';
+import { AppShell } from './app-shell';
 
 // ✅ Recommended way to load Google Fonts in Next.js App Router
 import { PT_Sans } from 'next/font/google';
@@ -40,7 +42,9 @@ export default function RootLayout({
                   <PollsProvider>
                     <PathologyProvider>
                       <EventCalendarProvider>
-                        {children}
+                        <AppShell>
+                            {children}
+                        </AppShell>
                       </EventCalendarProvider>
                     </PathologyProvider>
                     <Toaster />

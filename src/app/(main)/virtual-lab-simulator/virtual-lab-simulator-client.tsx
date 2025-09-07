@@ -1,200 +1,295 @@
-
 "use client";
 
-import { useActionState, useEffect, useTransition } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { generateSop, type SopGeneratorOutput } from "@/ai/flows/sop-generator";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePatient, UserProfile } from "@/contexts/patient-context";
+import { useMode } from "@/contexts/mode-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Search, FileJson, Beaker, FlaskConical, AlertTriangle, ListOrdered, TestTube, Microscope, Bot, FileQuestion, GraduationCap } from "lucide-react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { User, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School, Siren } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const PHARMACIST_CODE = "239773";
+
+export default function RoleSelectionPage() {
+  const [pharmacistModalOpen, setPharmacistModalOpen] = useState(false);
+  const [patientOptionsModalOpen, setPatientOptionsModalOpen] = useState(false);
+  const [patientLoginModalOpen, setPatientLoginModalOpen] = useState(false);
+  const [studentLoginModalOpen, setStudentLoginModalOpen] = useState(false);
+  
+  const [pharmacistCode, setPharmacistCode] = useState("");
+  const [patientName, setPatientName] = useState("");
+  const [patientPhone, setPatientPhone] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [yearOfStudy, setYearOfStudy] = useState("");
 
 
-const formSchema = z.object({
-  experimentTitle: z.string().min(10, "Please enter a descriptive experiment title."),
-});
-type FormValues = z.infer<typeof formSchema>;
-
-function SopSection({ title, content, icon: Icon, isList = false }: { title: string, content?: string | string[], icon: React.ElementType, isList?: boolean }) {
-    if (!content || (Array.isArray(content) && content.length === 0)) return null;
-    return (
-        <div className="space-y-2">
-            <h3 className="font-semibold text-lg flex items-center gap-2"><Icon className="h-5 w-5 text-primary"/>{title}</h3>
-            {isList && Array.isArray(content) ? (
-                <ul className="list-decimal list-inside pl-4 text-muted-foreground space-y-1">
-                    {content.map((item, i) => <li key={i}>{item}</li>)}
-                </ul>
-            ) : (
-                <p className="text-muted-foreground whitespace-pre-wrap">{content as string}</p>
-            )}
-        </div>
-    );
-}
-
-export function VirtualLabSimulatorClient() {
-  const [isPending, startTransition] = useTransition();
-  const [state, formAction] = useActionState<SopGeneratorOutput | { error: string } | null, FormData>(
-    async (previousState, formData) => {
-      const parsed = formSchema.safeParse(Object.fromEntries(formData));
-      if (!parsed.success) {
-        return { error: "Invalid input." };
-      }
-      try {
-        const result = await generateSop(parsed.data);
-        return result;
-      } catch (e) {
-        console.error(e);
-        return { error: "Failed to generate simulation. Please try again." };
-      }
-    },
-    null
-  );
-
+  const { setMode } = useMode();
+  const { patientState, setActiveUser, addOrUpdateUser, clearActiveUser } = usePatient();
+  const router = useRouter();
   const { toast } = useToast();
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { experimentTitle: "" },
-  });
 
-  useEffect(() => {
-    if (state && 'error' in state && state.error) {
-      toast({ variant: "destructive", title: "Error", description: state.error });
+  const handlePharmacistLogin = () => {
+    if (pharmacistCode === PHARMACIST_CODE) {
+      setMode("pharmacist");
+      clearActiveUser();
+      router.push("/dashboard");
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Incorrect Code",
+        description: "This is not for you as you are not a pharmacist.",
+      });
     }
-  }, [state, toast]);
+  };
 
-  const handleFormSubmit = form.handleSubmit((data) => {
-    const formData = new FormData();
-    formData.append("experimentTitle", data.experimentTitle);
-    startTransition(() => formAction(formData));
-  });
+  const handlePatientLogin = () => {
+    if (!patientName || !patientPhone) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please enter your name and phone number." });
+        return;
+    }
+    const existingUser = patientState.users.find(
+      (p) =>
+        p.role === 'patient' &&
+        p.demographics?.name?.toLowerCase() === patientName.toLowerCase() &&
+        p.demographics?.phoneNumber === patientPhone
+    );
+
+    setMode("patient");
+
+    if (existingUser) {
+      setActiveUser(existingUser.id);
+      toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+      router.push("/dashboard");
+    } else {
+       clearActiveUser();
+       const newUser: Omit<UserProfile, 'id'> = {
+         role: 'patient',
+         demographics: { name: patientName, phoneNumber: patientPhone }
+       };
+       addOrUpdateUser(newUser);
+       toast({ title: "Welcome!", description: "Let's create your patient history." });
+       router.push("/patient-history");
+    }
+    setPatientLoginModalOpen(false);
+  };
+  
+  const handleNewPatient = () => {
+    setMode('patient');
+    clearActiveUser();
+    router.push('/patient-history');
+  }
+
+  const handleStudentLogin = () => {
+    if (!studentName || !studentId || !yearOfStudy) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please fill out all fields." });
+        return;
+    }
+    if (!studentId.toLowerCase().includes('edu')) {
+        toast({ variant: "destructive", title: "Invalid Student ID" });
+        return;
+    }
+
+    const existingUser = patientState.users.find(
+      (u) =>
+        u.role === 'student' &&
+        u.demographics?.name?.toLowerCase() === studentName.toLowerCase() &&
+        u.studentId === studentId
+    );
+    
+    setMode("student");
+
+    if (existingUser) {
+        setActiveUser(existingUser.id);
+        toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+    } else {
+        const newUser: Omit<UserProfile, 'id'> = {
+            role: 'student',
+            demographics: { name: studentName, yearOfStudy: yearOfStudy },
+            studentId: studentId,
+        };
+        addOrUpdateUser(newUser);
+        toast({ title: "Welcome!", description: `Your student profile has been created, ${studentName}. Let's create your health record.` });
+    }
+    router.push("/dashboard");
+    setStudentLoginModalOpen(false);
+  };
+
+  const handleEmergency = () => {
+    setMode('patient'); // Emergency defaults to patient view
+    clearActiveUser();
+    router.push('/emergency');
+  }
+
+  const openPatientLogin = () => {
+    setPatientOptionsModalOpen(false);
+    setPatientLoginModalOpen(true);
+  }
+  
+  const openStudentLogin = () => {
+    setStudentLoginModalOpen(true);
+  }
 
   return (
-    <div className="grid md:grid-cols-3 gap-6">
-      <div className="md:col-span-1">
-        <Card>
-          <CardHeader>
-            <CardTitle>Start New Simulation</CardTitle>
-            <CardDescription>Enter the title of the lab experiment.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={handleFormSubmit} className="space-y-4">
-                <FormField control={form.control} name="experimentTitle" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Experiment Title</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                            <Beaker className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                            <Input placeholder="e.g., Gram Staining of Bacteria..." className="pl-10" {...field} />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" disabled={isPending} className="w-full">
-                  {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2" />}
-                  Generate Simulation
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="md:col-span-2">
-        {isPending && (
-            <div className="flex justify-center items-center h-full">
-                <div className="text-center space-y-2">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
-                    <p className="text-muted-foreground">Generating Simulation for "{form.getValues('experimentTitle')}"...</p>
-                    <p className="text-xs text-muted-foreground/70">This might take a moment.</p>
-                </div>
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <Card className="w-full max-w-5xl shadow-2xl">
+        <CardHeader className="text-center">
+            <div className="mx-auto mb-4">
+                
             </div>
-        )}
-        
-        {state && 'title' in state ? (
-          <Card>
-            <CardHeader>
-                <CardTitle className="text-2xl font-bold">{state.title}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <SopSection title="Objectives" content={state.objectives} icon={GraduationCap} isList />
-                
-                <Accordion type="multiple" className="w-full space-y-4" defaultValue={['simulation', 'procedure']}>
-                     <AccordionItem value="simulation" className="border rounded-lg bg-background/50">
-                        <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline"><Bot className="mr-2"/>Virtual Lab Simulation</AccordionTrigger>
-                        <AccordionContent className="px-6 pb-4">
-                           <p className="text-muted-foreground whitespace-pre-wrap">{state.virtualLabSimulation}</p>
-                        </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="requirements" className="border rounded-lg bg-background/50">
-                        <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline"><FlaskConical className="mr-2"/>Requirements</AccordionTrigger>
-                        <AccordionContent className="px-6 pb-4 space-y-4">
-                            <SopSection title="Reagents" content={state.requirements.reagents} icon={Beaker} isList />
-                            <SopSection title="Instruments" content={state.requirements.instruments} icon={Microscope} isList />
-                            <SopSection title="Consumables" content={state.requirements.consumables} icon={TestTube} isList />
-                            <SopSection title="Special Requirements" content={state.requirements.special} icon={AlertTriangle} />
-                        </AccordionContent>
-                    </AccordionItem>
-                    
-                     <AccordionItem value="procedure" className="border rounded-lg bg-background/50">
-                        <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline"><ListOrdered className="mr-2"/>Procedure</AccordionTrigger>
-                        <AccordionContent className="px-6 pb-4">
-                           <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-                                {state.procedure.map((step, i) => <li key={i}>{step}</li>)}
-                           </ol>
-                        </AccordionContent>
-                    </AccordionItem>
-
-                     <AccordionItem value="viva" className="border rounded-lg bg-background/50">
-                        <AccordionTrigger className="p-4 text-lg font-semibold hover:no-underline"><FileQuestion className="mr-2"/>Viva-Voce</AccordionTrigger>
-                        <AccordionContent className="px-6 pb-4">
-                           <dl className="space-y-4 text-muted-foreground">
-                                {state.vivaVoce.map((viva, i) => (
-                                    <div key={i}>
-                                        <dt className="font-semibold text-foreground">{viva.question}</dt>
-                                        <dd className="pl-4">{viva.answer}</dd>
-                                    </div>
-                                ))}
-                           </dl>
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
-                
-                 <div className="grid md:grid-cols-2 gap-6">
-                    <Card className="bg-muted/50"><CardHeader><CardTitle>Observations</CardTitle></CardHeader><CardContent><p className="text-muted-foreground whitespace-pre-wrap">{state.observationGuidelines}</p></CardContent></Card>
-                    <Card className="bg-muted/50"><CardHeader><CardTitle>Result & Interpretation</CardTitle></CardHeader><CardContent><p className="text-muted-foreground whitespace-pre-wrap">{state.resultAndInterpretation}</p></CardContent></Card>
+          <CardTitle className="text-3xl font-headline">Welcome to Zuruu AI Pharmacy</CardTitle>
+          <CardDescription>Please select your role to continue</CardDescription>
+        </CardHeader>
+        <CardContent className="grid md:grid-cols-3 gap-8 p-8">
+          <div
+            onClick={() => setPatientOptionsModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <User className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Patient</h3>
+            <p className="text-muted-foreground mt-2">Access your profile or get emergency help.</p>
+          </div>
+          <div
+            onClick={() => setPharmacistModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <BriefcaseMedical className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Pharmacist</h3>
+            <p className="text-muted-foreground mt-2">Access the full suite of clinical tools.</p>
+          </div>
+           <div
+            onClick={openStudentLogin}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <School className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Student</h3>
+            <p className="text-muted-foreground mt-2">Login to access learning modules.</p>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Pharmacist Modal */}
+      <Dialog open={pharmacistModalOpen} onOpenChange={setPharmacistModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pharmacist Access</DialogTitle>
+            <DialogDescription>Please enter your access code to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="pharmacist-code">Access Code</Label>
+            <Input 
+              id="pharmacist-code" 
+              type="password" 
+              value={pharmacistCode}
+              onChange={(e) => setPharmacistCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handlePharmacistLogin()}
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePharmacistLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Patient Options Modal */}
+      <Dialog open={patientOptionsModalOpen} onOpenChange={setPatientOptionsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Options</DialogTitle>
+            <DialogDescription>How can we help you today?</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4">
+             <Button onClick={openPatientLogin} variant="outline" size="lg" className="h-auto py-4">
+              <LogIn className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">Patient Login</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Access your existing patient profile.</p>
+              </div>
+            </Button>
+             <Button onClick={handleNewPatient} variant="outline" size="lg" className="h-auto py-4">
+              <UserPlus className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">New Patient Registration</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Create a new patient history form.</p>
+              </div>
+            </Button>
+            <Button onClick={handleEmergency} variant="destructive" size="lg" className="h-auto py-4">
+                <Siren className="mr-4 text-destructive-foreground" />
+                 <div>
+                    <p className="font-semibold text-base text-left">Emergency Help</p>
+                    <p className="font-normal text-sm text-destructive-foreground/80 text-left">Immediately get assistance.</p>
                 </div>
-                 <div className="grid md:grid-cols-2 gap-6">
-                    <Card className="bg-muted/50"><CardHeader><CardTitle>Common Errors</CardTitle></CardHeader><CardContent><p className="text-muted-foreground whitespace-pre-wrap">{state.commonErrors}</p></CardContent></Card>
-                    <Card className="bg-muted/50"><CardHeader><CardTitle>Compliance</CardTitle></CardHeader><CardContent><p className="text-muted-foreground whitespace-pre-wrap">{state.complianceNotes}</p></CardContent></Card>
-                </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-                <Alert variant="destructive">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertTitle>Safety Precautions</AlertTitle>
-                    <AlertDescription>{state.safetyPrecautions}</AlertDescription>
-                </Alert>
-            </CardContent>
-          </Card>
-        ) : (
-          !isPending && (
-             <Card className="flex flex-col items-center justify-center h-full min-h-[300px] text-center p-6 bg-muted/50">
-                <Beaker className="h-16 w-16 text-muted-foreground/50 mb-4" />
-                <h3 className="text-xl font-semibold text-muted-foreground">Your Simulation Will Appear Here</h3>
-                <p className="text-muted-foreground/80 mt-2">Enter an experiment title to begin.</p>
-            </Card>
-          )
-        )}
-      </div>
+      {/* Patient Login Modal */}
+      <Dialog open={patientLoginModalOpen} onOpenChange={setPatientLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Login</DialogTitle>
+            <DialogDescription>Please enter your details to find your profile.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="patient-name">Full Name</Label>
+                <Input id="patient-name" value={patientName} onChange={(e) => setPatientName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="patient-phone">Phone Number</Label>
+                <Input id="patient-phone" value={patientPhone} onChange={(e) => setPatientPhone(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePatientLogin}>Continue</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+       {/* Student Login Modal */}
+       <Dialog open={studentLoginModalOpen} onOpenChange={setStudentLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Student Login</DialogTitle>
+            <DialogDescription>Please enter your details to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="student-name">Full Name</Label>
+                <Input id="student-name" value={studentName} onChange={(e) => setStudentName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="student-id">Student ID</Label>
+                <Input id="student-id" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g., user@university.edu"/>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="year-of-study">Year of Study</Label>
+                <Select value={yearOfStudy} onValueChange={setYearOfStudy}>
+                    <SelectTrigger id="year-of-study">
+                        <SelectValue placeholder="Select your year..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="1st Year">1st Year</SelectItem>
+                        <SelectItem value="2nd Year">2nd Year</SelectItem>
+                        <SelectItem value="3rd Year">3rd Year</SelectItem>
+                        <SelectItem value="4th Year">4th Year</SelectItem>
+                        <SelectItem value="5th Year">5th Year</SelectItem>
+                        <SelectItem value="Graduate">Graduate</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleStudentLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

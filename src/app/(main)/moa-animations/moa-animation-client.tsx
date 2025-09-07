@@ -1,172 +1,295 @@
-
 "use client";
 
-import { useState, useMemo } from "react";
-import Image from "next/image";
-import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePatient, UserProfile } from "@/contexts/patient-context";
+import { useMode } from "@/contexts/mode-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Search, Video } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { User, BriefcaseMedical, UserPlus, LogIn, ShieldEllipsis, School, Siren } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-// Placeholder data simulating what would come from Firebase
-const animations = [
-  {
-    id: '1',
-    title: 'Aspirin: COX-1 and COX-2 Inhibition',
-    description: 'This animation shows how Aspirin irreversibly inhibits cyclooxygenase (COX) enzymes, preventing the conversion of arachidonic acid into prostaglandins and thromboxanes, which reduces pain, inflammation, and platelet aggregation.',
-    drugClass: 'NSAID',
-    system: 'CVS/Pain',
-    thumbnailUrl: 'https://picsum.photos/600/400?random=1',
-    videoUrl: 'placeholder.mp4'
-  },
-  {
-    id: '2',
-    title: 'Metformin: Action in the Liver',
-    description: 'Discover how Metformin decreases hepatic glucose production, reduces glucose absorption in the gut, and improves insulin sensitivity by increasing peripheral glucose uptake.',
-    drugClass: 'Biguanide',
-    system: 'Endocrine',
-    thumbnailUrl: 'https://picsum.photos/600/400?random=2',
-    videoUrl: 'placeholder.mp4'
-  },
-  {
-    id: '3',
-    title: 'Lisinopril: ACE Inhibition',
-    description: 'A visual guide to how ACE inhibitors like Lisinopril block the conversion of Angiotensin I to Angiotensin II, leading to vasodilation and reduced blood pressure.',
-    drugClass: 'ACE Inhibitor',
-    system: 'CVS',
-    thumbnailUrl: 'https://picsum.photos/600/400?random=3',
-    videoUrl: 'placeholder.mp4'
-  },
-  {
-    id: '4',
-    title: 'Sertraline: Selective Serotonin Reuptake Inhibition (SSRI)',
-    description: 'This animation illustrates how Sertraline selectively blocks the reuptake of serotonin in the presynaptic neuron, increasing serotonin levels in the synaptic cleft and helping to regulate mood.',
-    drugClass: 'SSRI',
-    system: 'CNS',
-    thumbnailUrl: 'https://picsum.photos/600/400?random=4',
-    videoUrl: 'placeholder.mp4'
-  },
-  {
-    id: '5',
-    title: 'Atorvastatin: HMG-CoA Reductase Inhibition',
-    description: 'Learn how statins like Atorvastatin competitively inhibit HMG-CoA reductase, a key enzyme in the cholesterol synthesis pathway, leading to lower LDL cholesterol levels.',
-    drugClass: 'Statin',
-    system: 'CVS',
-    thumbnailUrl: 'https://picsum.photos/600/400?random=5',
-    videoUrl: 'placeholder.mp4'
-  },
-    {
-    id: '6',
-    title: 'Salbutamol: Beta-2 Agonist Action',
-    description: 'See how Salbutamol, a short-acting beta-2 adrenergic receptor agonist, causes smooth muscle relaxation in the airways, resulting in bronchodilation.',
-    drugClass: 'SABA',
-    system: 'Respiratory',
-    thumbnailUrl: 'https://picsum.photos/600/400?random=6',
-    videoUrl: 'placeholder.mp4'
-  },
-];
+const PHARMACIST_CODE = "239773";
 
-type Animation = typeof animations[0];
+export default function RoleSelectionPage() {
+  const [pharmacistModalOpen, setPharmacistModalOpen] = useState(false);
+  const [patientOptionsModalOpen, setPatientOptionsModalOpen] = useState(false);
+  const [patientLoginModalOpen, setPatientLoginModalOpen] = useState(false);
+  const [studentLoginModalOpen, setStudentLoginModalOpen] = useState(false);
+  
+  const [pharmacistCode, setPharmacistCode] = useState("");
+  const [patientName, setPatientName] = useState("");
+  const [patientPhone, setPatientPhone] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [yearOfStudy, setYearOfStudy] = useState("");
 
-export function MoaAnimationClient() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedAnimation, setSelectedAnimation] = useState<Animation | null>(null);
 
-  const filteredAnimations = useMemo(() => {
-    if (!searchTerm) return animations;
-    const lowercasedFilter = searchTerm.toLowerCase();
-    return animations.filter(
-      (anim) =>
-        anim.title.toLowerCase().includes(lowercasedFilter) ||
-        anim.drugClass.toLowerCase().includes(lowercasedFilter) ||
-        anim.system.toLowerCase().includes(lowercasedFilter)
+  const { setMode } = useMode();
+  const { patientState, setActiveUser, addOrUpdateUser, clearActiveUser } = usePatient();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handlePharmacistLogin = () => {
+    if (pharmacistCode === PHARMACIST_CODE) {
+      setMode("pharmacist");
+      clearActiveUser();
+      router.push("/dashboard");
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Incorrect Code",
+        description: "This is not for you as you are not a pharmacist.",
+      });
+    }
+  };
+
+  const handlePatientLogin = () => {
+    if (!patientName || !patientPhone) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please enter your name and phone number." });
+        return;
+    }
+    const existingUser = patientState.users.find(
+      (p) =>
+        p.role === 'patient' &&
+        p.demographics?.name?.toLowerCase() === patientName.toLowerCase() &&
+        p.demographics?.phoneNumber === patientPhone
     );
-  }, [searchTerm]);
+
+    setMode("patient");
+
+    if (existingUser) {
+      setActiveUser(existingUser.id);
+      toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+      router.push("/dashboard");
+    } else {
+       clearActiveUser();
+       const newUser: Omit<UserProfile, 'id'> = {
+         role: 'patient',
+         demographics: { name: patientName, phoneNumber: patientPhone }
+       };
+       addOrUpdateUser(newUser);
+       toast({ title: "Welcome!", description: "Let's create your patient history." });
+       router.push("/patient-history");
+    }
+    setPatientLoginModalOpen(false);
+  };
+  
+  const handleNewPatient = () => {
+    setMode('patient');
+    clearActiveUser();
+    router.push('/patient-history');
+  }
+
+  const handleStudentLogin = () => {
+    if (!studentName || !studentId || !yearOfStudy) {
+        toast({ variant: "destructive", title: "Missing Information", description: "Please fill out all fields." });
+        return;
+    }
+    if (!studentId.toLowerCase().includes('edu')) {
+        toast({ variant: "destructive", title: "Invalid Student ID" });
+        return;
+    }
+
+    const existingUser = patientState.users.find(
+      (u) =>
+        u.role === 'student' &&
+        u.demographics?.name?.toLowerCase() === studentName.toLowerCase() &&
+        u.studentId === studentId
+    );
+    
+    setMode("student");
+
+    if (existingUser) {
+        setActiveUser(existingUser.id);
+        toast({ title: "Welcome Back!", description: `Loading profile for ${existingUser.demographics?.name}.` });
+    } else {
+        const newUser: Omit<UserProfile, 'id'> = {
+            role: 'student',
+            demographics: { name: studentName, yearOfStudy: yearOfStudy },
+            studentId: studentId,
+        };
+        addOrUpdateUser(newUser);
+        toast({ title: "Welcome!", description: `Your student profile has been created, ${studentName}. Let's create your health record.` });
+    }
+    router.push("/dashboard");
+    setStudentLoginModalOpen(false);
+  };
+
+  const handleEmergency = () => {
+    setMode('patient'); // Emergency defaults to patient view
+    clearActiveUser();
+    router.push('/emergency');
+  }
+
+  const openPatientLogin = () => {
+    setPatientOptionsModalOpen(false);
+    setPatientLoginModalOpen(true);
+  }
+  
+  const openStudentLogin = () => {
+    setStudentLoginModalOpen(true);
+  }
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Search the Library</CardTitle>
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <Card className="w-full max-w-5xl shadow-2xl">
+        <CardHeader className="text-center">
+            <div className="mx-auto mb-4">
+                
+            </div>
+          <CardTitle className="text-3xl font-headline">Welcome to Zuruu AI Pharmacy</CardTitle>
+          <CardDescription>Please select your role to continue</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              placeholder="Search by drug name, class, or system..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+        <CardContent className="grid md:grid-cols-3 gap-8 p-8">
+          <div
+            onClick={() => setPatientOptionsModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <User className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Patient</h3>
+            <p className="text-muted-foreground mt-2">Access your profile or get emergency help.</p>
+          </div>
+          <div
+            onClick={() => setPharmacistModalOpen(true)}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <BriefcaseMedical className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Pharmacist</h3>
+            <p className="text-muted-foreground mt-2">Access the full suite of clinical tools.</p>
+          </div>
+           <div
+            onClick={openStudentLogin}
+            className="p-8 border rounded-lg text-center hover:bg-muted/50 hover:shadow-lg transition cursor-pointer flex flex-col items-center justify-center"
+          >
+            <School className="h-16 w-16 text-primary mb-4" />
+            <h3 className="text-2xl font-semibold">I am a Student</h3>
+            <p className="text-muted-foreground mt-2">Login to access learning modules.</p>
           </div>
         </CardContent>
       </Card>
-
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredAnimations.map((anim) => (
-          <Dialog key={anim.id} onOpenChange={(open) => !open && setSelectedAnimation(null)}>
-            <DialogTrigger asChild>
-                <Card 
-                    className="cursor-pointer group overflow-hidden" 
-                    onClick={() => setSelectedAnimation(anim)}
-                >
-                    <CardHeader className="p-0">
-                        <div className="relative h-48 w-full">
-                           <Image 
-                             src={anim.thumbnailUrl} 
-                             alt={anim.title} 
-                             layout="fill"
-                             objectFit="cover"
-                             className="group-hover:scale-105 transition-transform duration-300"
-                           />
-                           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                <Video className="h-12 w-12 text-white/70 group-hover:text-white transition-colors"/>
-                           </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-4">
-                        <CardTitle className="text-lg mb-2">{anim.title}</CardTitle>
-                        <div className="flex flex-wrap gap-2">
-                            <Badge variant="secondary">{anim.drugClass}</Badge>
-                            <Badge variant="outline">{anim.system}</Badge>
-                        </div>
-                    </CardContent>
-                </Card>
-            </DialogTrigger>
-            {selectedAnimation && selectedAnimation.id === anim.id && (
-                <DialogContent className="max-w-3xl">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl">{selectedAnimation.title}</DialogTitle>
-                  <DialogDescription>
-                    {selectedAnimation.drugClass} | {selectedAnimation.system}
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                    <p className="text-muted-foreground">[Video Player Placeholder]</p>
+      
+      {/* Pharmacist Modal */}
+      <Dialog open={pharmacistModalOpen} onOpenChange={setPharmacistModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pharmacist Access</DialogTitle>
+            <DialogDescription>Please enter your access code to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="pharmacist-code">Access Code</Label>
+            <Input 
+              id="pharmacist-code" 
+              type="password" 
+              value={pharmacistCode}
+              onChange={(e) => setPharmacistCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handlePharmacistLogin()}
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePharmacistLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Patient Options Modal */}
+      <Dialog open={patientOptionsModalOpen} onOpenChange={setPatientOptionsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Options</DialogTitle>
+            <DialogDescription>How can we help you today?</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4">
+             <Button onClick={openPatientLogin} variant="outline" size="lg" className="h-auto py-4">
+              <LogIn className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">Patient Login</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Access your existing patient profile.</p>
+              </div>
+            </Button>
+             <Button onClick={handleNewPatient} variant="outline" size="lg" className="h-auto py-4">
+              <UserPlus className="mr-4"/>
+              <div>
+                <p className="font-semibold text-base text-left">New Patient Registration</p>
+                <p className="font-normal text-sm text-muted-foreground text-left">Create a new patient history form.</p>
+              </div>
+            </Button>
+            <Button onClick={handleEmergency} variant="destructive" size="lg" className="h-auto py-4">
+                <Siren className="mr-4 text-destructive-foreground" />
+                 <div>
+                    <p className="font-semibold text-base text-left">Emergency Help</p>
+                    <p className="font-normal text-sm text-destructive-foreground/80 text-left">Immediately get assistance.</p>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-2">Mechanism of Action</h3>
-                  <p className="text-muted-foreground">{selectedAnimation.description}</p>
-                </div>
-              </DialogContent>
-            )}
-          </Dialog>
-        ))}
-      </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-       {filteredAnimations.length === 0 && (
-          <Card className="text-center py-12">
-            <CardHeader>
-                 <Search className="mx-auto h-12 w-12 text-muted-foreground" />
-                <CardTitle>No Animations Found</CardTitle>
-                <CardDescription>
-                    Your search for "{searchTerm}" did not match any animations.
-                </CardDescription>
-            </CardHeader>
-        </Card>
-      )}
+      {/* Patient Login Modal */}
+      <Dialog open={patientLoginModalOpen} onOpenChange={setPatientLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Patient Login</DialogTitle>
+            <DialogDescription>Please enter your details to find your profile.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="patient-name">Full Name</Label>
+                <Input id="patient-name" value={patientName} onChange={(e) => setPatientName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="patient-phone">Phone Number</Label>
+                <Input id="patient-phone" value={patientPhone} onChange={(e) => setPatientPhone(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePatientLogin}>Continue</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+       {/* Student Login Modal */}
+       <Dialog open={studentLoginModalOpen} onOpenChange={setStudentLoginModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Student Login</DialogTitle>
+            <DialogDescription>Please enter your details to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="student-name">Full Name</Label>
+                <Input id="student-name" value={studentName} onChange={(e) => setStudentName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="student-id">Student ID</Label>
+                <Input id="student-id" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g., user@university.edu"/>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="year-of-study">Year of Study</Label>
+                <Select value={yearOfStudy} onValueChange={setYearOfStudy}>
+                    <SelectTrigger id="year-of-study">
+                        <SelectValue placeholder="Select your year..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="1st Year">1st Year</SelectItem>
+                        <SelectItem value="2nd Year">2nd Year</SelectItem>
+                        <SelectItem value="3rd Year">3rd Year</SelectItem>
+                        <SelectItem value="4th Year">4th Year</SelectItem>
+                        <SelectItem value="5th Year">5th Year</SelectItem>
+                        <SelectItem value="Graduate">Graduate</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleStudentLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
