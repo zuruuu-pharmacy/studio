@@ -171,7 +171,7 @@ const qaChecklist = [
 ];
 
 
-export function AnalyticsDashboardClient() {
+export function ProgressTrackerClient() {
   const [selectedSubject, setSelectedSubject] = useState<typeof masteryData[0] | null>(null);
   const router = useRouter();
 
