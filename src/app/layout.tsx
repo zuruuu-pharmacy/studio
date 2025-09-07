@@ -8,6 +8,7 @@ import { OsceSessionsProvider } from '@/contexts/osce-sessions-context';
 import { DiscussionForumProvider } from '@/contexts/discussion-forum-context';
 import { PollsProvider } from '@/contexts/polls-context';
 import { PathologyProvider } from '@/contexts/pathology-context';
+import { EventCalendarProvider } from '@/contexts/event-calendar-context';
 
 // ✅ Recommended way to load Google Fonts in Next.js App Router
 import { PT_Sans } from 'next/font/google';
@@ -38,7 +39,9 @@ export default function RootLayout({
                 <DiscussionForumProvider>
                   <PollsProvider>
                     <PathologyProvider>
-                      {children}
+                      <EventCalendarProvider>
+                        {children}
+                      </EventCalendarProvider>
                     </PathologyProvider>
                     <Toaster />
                   </PollsProvider>
