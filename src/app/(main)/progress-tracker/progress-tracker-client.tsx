@@ -399,13 +399,6 @@ export function ProgressTrackerClient() {
                         <div className="space-y-4">
                             <h4 className="font-semibold mb-2 flex items-center gap-2"><Award className="text-primary"/>Measuring Success</h4>
                             <p className="text-sm text-muted-foreground mb-2">We track these key performance indicators to ensure this feature is effective and helpful for students and faculty:</p>
-                            <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
-                                <li>Student engagement with suggestions (% accepted / scheduled).</li>
-                                <li>Average mastery change after a student completes a recommended intervention.</li>
-                                <li>The time it takes for a student to improve a "flagged" or weak topic.</li>
-                                <li>Effectiveness of teacher-led interventions triggered by dashboard insights.</li>
-                                <li>Overall student satisfaction with the tracker (measured by Net Promoter Score).</li>
-                            </ul>
                         </div>
                     </Card>
                  </AccordionContent>
